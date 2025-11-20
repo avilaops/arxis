@@ -8,9 +8,10 @@ pub mod geodesic;
 pub mod gravitational_lensing;
 pub mod gravitational_waves;
 pub mod lisa;
+pub mod lisa_analysis;
+pub mod lisa_catalog;
 pub mod lisa_data;
 pub mod lisa_processing;
-pub mod lisa_analysis;
 pub mod lisa_visualization;
 pub mod relativity;
 
@@ -28,6 +29,13 @@ pub use gravitational_waves::{
     CompactBinary, Detector, GravitationalWave, Polarization, WaveformAnalysis,
 };
 pub use lisa::{LISAMission, LISASource, LISASourceType};
+pub use lisa_analysis::{
+    EventCandidate, MatchedFilter, MatchedFilterResult, TemplateBank, TemplateParameters,
+    WaveformTemplate,
+};
+pub use lisa_catalog::{
+    CatalogEvent, CatalogStatistics, DataQuality, EventCatalog, SkyLocation, SourceClassification,
+};
 pub use lisa_data::{
     DataValidator, LDCData, LDCMetadata, StrainTimeSeries, SyntheticDataGenerator,
 };
@@ -35,11 +43,5 @@ pub use lisa_processing::{
     DataProcessor, FrequencySpectrum, GlitchDetector, GlitchEvent, PowerSpectralDensity,
     TDIChannels, WindowFunction,
 };
-pub use lisa_analysis::{
-    EventCandidate, MatchedFilter, MatchedFilterResult, TemplateBank, TemplateParameters,
-    WaveformTemplate,
-};
-pub use lisa_visualization::{
-    SNRPlot, SkyMap, Spectrogram, TemplateBankPlot, TimeSeriesPlot,
-};
+pub use lisa_visualization::{SNRPlot, SkyMap, Spectrogram, TemplateBankPlot, TimeSeriesPlot};
 pub use relativity::{LorentzTransform, MinkowskiMetric, RiemannTensor, StressEnergyTensor};

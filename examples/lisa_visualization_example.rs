@@ -8,11 +8,9 @@
 /// 5. Sky map visualization
 ///
 /// Phase 4: Visualization Layer demonstration
-
 use arxis_quaternions::physics::{
-    EventCandidate, LISASource, MatchedFilter, PowerSpectralDensity, SNRPlot, SkyMap,
-    Spectrogram, SyntheticDataGenerator, TemplateBankPlot, TemplateBank, TemplateParameters,
-    TimeSeriesPlot,
+    EventCandidate, LISASource, MatchedFilter, PowerSpectralDensity, SNRPlot, SkyMap, Spectrogram,
+    SyntheticDataGenerator, TemplateBank, TemplateBankPlot, TemplateParameters, TimeSeriesPlot,
 };
 
 fn main() {
@@ -79,13 +77,13 @@ fn main() {
     // Create template bank
     let mut bank = TemplateBank::new(0.97);
     bank.generate_mbhb_grid((5e5, 2e6), (2e5, 1e6), 3, 3, 3e25, 500.0, 0.5);
-    
+
     println!("   Template bank: {} templates", bank.len());
 
     // Run matched filtering
     let psd = PowerSpectralDensity::lisa_noise_model(1e-4, 0.05, 200);
     let mf = MatchedFilter::new(bank, psd, 7.0);
-    
+
     let results = mf.search(&noisy_data);
     println!("   Candidates found: {}", results.len());
     println!();
@@ -100,19 +98,24 @@ fn main() {
         println!();
 
         // Get template and compute SNR time series
-        if let Some(template) = mf.bank.templates.iter().find(|t| t.id == best_result.template_id) {
+        if let Some(template) = mf
+            .bank
+            .templates
+            .iter()
+            .find(|t| t.id == best_result.template_id)
+        {
             let snr_ts = mf.filter_single(&noisy_data, template);
             let time: Vec<f64> = (0..snr_ts.len())
                 .map(|i| i as f64 / noisy_data.sampling_rate)
                 .collect();
 
             let snr_plot = SNRPlot::new(time, snr_ts, 7.0);
-            
+
             // Downsample for ASCII display
             let step = (snr_plot.time.len() / 100).max(1);
             let time_ds: Vec<f64> = snr_plot.time.iter().step_by(step).copied().collect();
             let snr_ds: Vec<f64> = snr_plot.snr.iter().step_by(step).copied().collect();
-            
+
             let snr_plot_ds = SNRPlot::new(time_ds, snr_ds, 7.0);
             println!("{}", snr_plot_ds.to_ascii(80, 15));
         }
@@ -129,7 +132,11 @@ fn main() {
     println!();
 
     let bank_plot = TemplateBankPlot::from_bank(&mf.bank);
-    println!("   Parameter space: ({}, {}) templates", bank_plot.m1.len(), bank_plot.m2.len());
+    println!(
+        "   Parameter space: ({}, {}) templates",
+        bank_plot.m1.len(),
+        bank_plot.m2.len()
+    );
     println!();
     println!("{}", bank_plot.to_ascii(60, 30));
 
@@ -143,18 +150,20 @@ fn main() {
     // Create event candidates
     let mut events = Vec::new();
     for (i, result) in results.iter().take(10).enumerate() {
-        let event = EventCandidate::from_result(
-            result,
-            format!("LISA-GW-{:06}", 240120 + i),
-        );
+        let event = EventCandidate::from_result(result, format!("LISA-GW-{:06}", 240120 + i));
         events.push(event);
     }
 
     if !events.is_empty() {
         println!("   Events to plot: {}", events.len());
         for (i, evt) in events.iter().take(5).enumerate() {
-            println!("   #{} {} - SNR: {:.2}, FAP: {:.2e}", 
-                i+1, evt.event_id, evt.snr, evt.false_alarm_prob);
+            println!(
+                "   #{} {} - SNR: {:.2}, FAP: {:.2e}",
+                i + 1,
+                evt.event_id,
+                evt.snr,
+                evt.false_alarm_prob
+            );
         }
         println!();
 
