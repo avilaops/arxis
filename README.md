@@ -19,6 +19,19 @@
 
 ---
 
+## ☁️ AVL Cloud Platform
+
+**Arxis** é desenvolvido nativamente para a **AVL (Avila Cloud Platform)** - nossa infraestrutura proprietária de computação científica de alta performance.
+
+- **Avx Computing**: Processamento paralelo otimizado para cálculos tensoriais e simulações astrofísicas
+- **AVL Storage**: Armazenamento distribuído para grandes volumes de dados científicos (ondas gravitacionais, imagens astronômicas)
+- **Avila ML**: Pipeline de machine learning integrado com suporte nativo a tensores 4D
+- **AVL Deploy**: Deployment automatizado de modelos científicos e APIs de física computacional
+
+*Diferente de AWS, Azure ou GCP, a AVL é otimizada especificamente para cargas de trabalho científicas e de engenharia.*
+
+---
+
 Biblioteca Rust completa incluindo **física relativística** (ondas gravitacionais, buracos negros, cosmologia), quaternions, tensores generalizados e **geometria 4D**.
 
 ## Características Principais
@@ -220,6 +233,30 @@ let age = universe.age_of_universe() / (365.25 * 24.0 * 3600.0 * 1e9);
 println!("Idade do universo: {:.2} Gyr", age);
 ```
 
+### Missão LISA (NASA/ESA)
+```rust
+use arxis_quaternions::physics::lisa::*;
+
+// Supermassive black hole binary
+let smbh = LISASource::smbh(
+    1e6,   // 1 million solar masses
+    5e5,   // 500,000 solar masses
+    1.0,   // redshift z=1
+    0.05   // 0.05 AU separation
+);
+
+// Verificar detectabilidade
+let mission = LISAMission::standard();
+if mission.is_detectable(&smbh) {
+    println!("SNR: {:.1}", smbh.lisa_snr());
+    println!("Cycles: {:.0}", smbh.observable_cycles());
+}
+
+// Extreme mass ratio inspiral (EMRI)
+let emri = LISASource::emri(1e6, 10.0, 0.5, 10.0);
+println!("{}", emri.summary());
+```
+
 ### Tensores Básicos
 ```rust
 use arxis_quaternions::tensor::{Vector, Matrix, Tensor};
@@ -345,6 +382,9 @@ Para ver exemplos detalhados de todas as funcionalidades:
 # Física: Aplicações práticas integradas (LIGO, LISA, Cosmologia)
 cargo run --example practical_astrophysics
 
+# NASA/ESA LISA Mission (Space-based gravitational waves)
+cargo run --example lisa_example
+
 # Ondas gravitacionais
 cargo run --example gravitational_example
 
@@ -409,6 +449,12 @@ arxis_quaternions/
 ## Aplicações
 
 Esta biblioteca é útil para:
+
+### ☁️ AVL Cloud & Avx Computing
+- **Pipelines de análise em AVL**: Processamento distribuído de dados LIGO/LISA
+- **Avx Tensor Processing**: Aceleração de operações tensoriais para ML
+- **AVL Scientific Compute**: Simulações de N-corpos e evolução cosmológica
+- **Avila Data Lake**: Armazenamento e query de dados astronômicos em petabyte-scale
 
 ### 🚀 Astrofísica e NASA/LISA
 - **Análise de dados LIGO/Virgo/KAGRA** (ondas gravitacionais terrestres)

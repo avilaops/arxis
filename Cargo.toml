@@ -1,7 +1,21 @@
+[workspace]
+members = [
+    ".",
+    "avx-config",
+    "avx-telemetry",
+    "avx-gateway",
+    "avx-api-core",
+    "avx-events",
+    "avx-cli",
+]
+resolver = "2"
+
 [package]
 name = "arxis_quaternions"
 version = "0.2.0"
 edition = "2021"
+authors = ["Avila DevOps <nicolas@avila.inc>"]
+description = "Arxis - Advanced quaternions, tensors, and General Relativity in Rust (Avila stack)"
 
 [lib]
 name = "arxis_quaternions"

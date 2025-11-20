@@ -1,0 +1,15 @@
+[package]
+name = "avx-events"
+version = "0.1.0"
+edition = "2021"
+authors = ["Avila DevOps <nicolas@avila.inc>"]
+description = "Avx Events - Event bus integration for Avila Experience Fabric"
+
+[dependencies]
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "time"] }
+tracing = "0.1"
+serde = { version = "1", features = ["derive"] }
+anyhow = "1"
+
+avx-config = { path = "../avx-config" }
+avx-telemetry = { path = "../avx-telemetry" }

@@ -1,0 +1,11 @@
+[package]
+name = "avx-config"
+version = "0.1.0"
+edition = "2021"
+authors = ["Avila DevOps <nicolas@avila.inc>"]
+description = "Avx stack configuration - Base configuration for Avila Experience Fabric"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+config = "0.14"
+thiserror = "1"

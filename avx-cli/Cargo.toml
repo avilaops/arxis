@@ -1,0 +1,11 @@
+[package]
+name = "avx-cli"
+version = "0.1.0"
+edition = "2021"
+authors = ["Avila DevOps <nicolas@avila.inc>"]
+description = "Avx CLI - Command-line tools for Avila Experience Fabric"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+anyhow = "1"
+avx-config = { path = "../avx-config" }

@@ -56,10 +56,10 @@ println!("SNR LIGO: {:.1}", snr);  // > 8 = detectável
 - **Massa final**: ~62 M☉ (buraco negro resultante)
 
 ### Aplicações Práticas
-✓ Análise de dados de LIGO/Virgo/KAGRA  
-✓ Estimativa de parâmetros (massas, spin, distância)  
-✓ Planejamento de observações futuras  
-✓ Cálculo de taxa de detecção esperada  
+✓ Análise de dados de LIGO/Virgo/KAGRA
+✓ Estimativa de parâmetros (massas, spin, distância)
+✓ Planejamento de observações futuras
+✓ Cálculo de taxa de detecção esperada
 
 ---
 
@@ -116,11 +116,11 @@ if images.len() >= 2 {
 - **Tempo de atraso**: Dias a semanas entre imagens
 
 ### Aplicações Práticas
-✓ Medição da constante de Hubble H₀ (método independente)  
-✓ Mapeamento de matéria escura em galáxias  
-✓ Estudo de estrutura de quasares (disco de acreção)  
-✓ Detecção de exoplanetas via microlensing  
-✓ Estudos com HST, JWST, VLT  
+✓ Medição da constante de Hubble H₀ (método independente)
+✓ Mapeamento de matéria escura em galáxias
+✓ Estudo de estrutura de quasares (disco de acreção)
+✓ Detecção de exoplanetas via microlensing
+✓ Estudos com HST, JWST, VLT
 
 ---
 
@@ -166,11 +166,11 @@ println!("Idade quando explodiu: {:.2} Gyr", age_today - lookback);
 - **Idade atual**: 13.8 bilhões de anos
 
 ### Aplicações Práticas
-✓ Determinação de parâmetros cosmológicos (H₀, Ω_m, Ω_Λ)  
-✓ Teste de modelos de energia escura  
-✓ Medição independente da geometria do universo  
-✓ Calibração de escada de distâncias cósmicas  
-✓ Projetos: SDSS, DES, LSST/Rubin  
+✓ Determinação de parâmetros cosmológicos (H₀, Ω_m, Ω_Λ)
+✓ Teste de modelos de energia escura
+✓ Medição independente da geometria do universo
+✓ Calibração de escada de distâncias cósmicas
+✓ Projetos: SDSS, DES, LSST/Rubin
 
 ---
 
@@ -215,11 +215,11 @@ println!("Merge em: {:.2e} anos", t_merge / (365.25 * 24.0 * 3600.0));
 - **Precessão periélica**: 4.2°/ano (efeito relativístico)
 
 ### Aplicações Práticas
-✓ Teste mais preciso da Relatividade Geral  
-✓ Confirmação da existência de ondas gravitacionais  
-✓ Estudo de matéria ultra-densa (equação de estado)  
-✓ Previsão de eventos futuros para LIGO  
-✓ Catálogo de pulsares binários conhecidos  
+✓ Teste mais preciso da Relatividade Geral
+✓ Confirmação da existência de ondas gravitacionais
+✓ Estudo de matéria ultra-densa (equação de estado)
+✓ Previsão de eventos futuros para LIGO
+✓ Catálogo de pulsares binários conhecidos
 
 ---
 
@@ -252,19 +252,19 @@ use arxis_quaternions::physics::*;
 fn main() {
     // Criar universo com parâmetros padrão (Planck 2018)
     let universe = FLRWUniverse::standard();
-    
+
     // Calcular distância a um quasar
     let d = universe.luminosity_distance(2.5);
     println!("Distância: {:.0} Mpc", d / 3.086e22);
-    
+
     // Criar sistema binário
     let binary = CompactBinary::new(30.0, 30.0, 400.0, d, 0.0);
-    
+
     // Verificar detectabilidade
     let wave = binary.generate_wave();
     let ligo = Detector::ligo();
     let snr = ligo.signal_to_noise_ratio(&wave, 0.2);
-    
+
     if snr > 8.0 {
         println!("DETECTÁVEL por LIGO!");
     }
@@ -368,8 +368,8 @@ Pull requests são bem-vindos! Áreas de interesse:
 
 ---
 
-**ARXIS** - Relatividade Geral na Prática  
+**ARXIS** - Relatividade Geral na Prática
 *Biblioteca Rust para Astrofísica Computacional*
 
-© 2024 Avila Framework  
+© 2024 Avila Framework
 Licença: MIT

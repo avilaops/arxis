@@ -8,7 +8,6 @@
 /// - LISA Mission Proposal: arXiv:1702.00786
 /// - LISA Science Requirements: ESA-L3-EST-SCI-RS-001
 /// - NASA LISA Page: https://lisa.nasa.gov/
-
 use crate::physics::{CompactBinary, GravitationalWave};
 use std::f64::consts::PI;
 
@@ -26,7 +25,7 @@ const PC: f64 = 3.0857e16;
 
 /// LISA frequency band: 0.1 mHz to 1 Hz
 const LISA_F_MIN: f64 = 1e-4; // Hz
-const LISA_F_MAX: f64 = 1.0;  // Hz
+const LISA_F_MAX: f64 = 1.0; // Hz
 
 /// Types of sources detectable by LISA
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -149,7 +148,7 @@ impl LISASource {
         let total_mass = (m1 + m2) * M_SUN;
 
         // Kepler's third law: a³ = G*M*T²/(4π²)
-        let separation = ((G * total_mass * period * period) / (4.0 * PI * PI)).powf(1.0/3.0);
+        let separation = ((G * total_mass * period * period) / (4.0 * PI * PI)).powf(1.0 / 3.0);
 
         // Galactic distance (assume in Milky Way)
         let distance = 10e3 * PC; // 10 kpc typical
@@ -196,9 +195,8 @@ impl LISASource {
         let f = self.gw_frequency();
 
         // Characteristic strain for circular binaries
-        let h_c = (G * m_chirp * M_SUN / C.powi(2)).powf(5.0/3.0)
-                * (PI * f).powf(2.0/3.0)
-                / self.distance;
+        let h_c = (G * m_chirp * M_SUN / C.powi(2)).powf(5.0 / 3.0) * (PI * f).powf(2.0 / 3.0)
+            / self.distance;
 
         h_c * 2.0
     }
@@ -210,7 +208,7 @@ impl LISASource {
         let m1 = self.mass_1;
         let m2 = self.mass_2;
 
-        (m1 * m2).powf(3.0/5.0) / (m1 + m2).powf(1.0/5.0)
+        (m1 * m2).powf(3.0 / 5.0) / (m1 + m2).powf(1.0 / 5.0)
     }
 
     /// Estimate signal-to-noise ratio (SNR) in LISA
@@ -270,8 +268,7 @@ impl LISASource {
         let m_total = m1 + m2;
 
         // Peters formula (quadrupole approximation)
-        let t_coal = 5.0 * C.powi(5) * a.powi(4)
-                   / (256.0 * G.powi(3) * m_total.powi(2) * mu);
+        let t_coal = 5.0 * C.powi(5) * a.powi(4) / (256.0 * G.powi(3) * m_total.powi(2) * mu);
 
         // Convert to years
         t_coal / (365.25 * 24.0 * 3600.0)
@@ -421,7 +418,7 @@ mod tests {
         // For equal masses, M_c = M * 2^(-1/5)
         let equal_mass = LISASource::smbh(1e6, 1e6, 1.0, 0.1);
         let m_c_equal = equal_mass.chirp_mass();
-        let expected = 1e6 * 2.0_f64.powf(-1.0/5.0);
+        let expected = 1e6 * 2.0_f64.powf(-1.0 / 5.0);
 
         assert!((m_c_equal - expected).abs() / expected < 1e-10);
     }

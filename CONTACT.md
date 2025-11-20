@@ -2,8 +2,8 @@
 
 ## Project Lead
 
-**Name**: Nicolas Ávila  
-**Role**: Founder & Lead Developer  
+**Name**: Nicolas Ávila
+**Role**: Founder & Lead Developer
 **Organization**: Avila Framework
 
 ### Contact Information
@@ -61,7 +61,7 @@ We're interested in:
 
 ### Let's Talk!
 
-**Email me**: nicolas@avila.inc  
+**Email me**: nicolas@avila.inc
 **Or WhatsApp**: +55 17 99781-1471
 
 I respond quickly and am flexible with time zones.
@@ -138,7 +138,7 @@ Available for:
 
 ARXIS is MIT licensed - free for commercial use.
 
-For custom licenses or commercial support:  
+For custom licenses or commercial support:
 **Email**: nicolas@avila.inc
 
 ---
@@ -171,7 +171,7 @@ ARXIS is free for educational purposes!
 
 For interviews, features, or press releases:
 
-**Email**: nicolas@avila.inc  
+**Email**: nicolas@avila.inc
 **Phone/WhatsApp**: +55 17 99781-1471
 
 **Available for**:
@@ -182,10 +182,10 @@ For interviews, features, or press releases:
 
 ### Press Kit
 
-**Project**: ARXIS - Advanced Rust library for astrophysics  
-**Founded**: 2025  
-**License**: MIT (Open Source)  
-**Language**: Rust  
+**Project**: ARXIS - Advanced Rust library for astrophysics
+**Founded**: 2025
+**License**: MIT (Open Source)
+**Language**: Rust
 **Applications**: NASA/LISA mission preparation, gravitational wave detection, cosmology
 
 **Key Stats**:
@@ -202,7 +202,7 @@ For interviews, features, or press releases:
 - **WhatsApp**: Within 12 hours
 - **GitHub Issues**: Within 48 hours
 
-**Time Zone**: UTC-3 (Brazil)  
+**Time Zone**: UTC-3 (Brazil)
 **Working Hours**: Flexible, responsive outside business hours for urgent matters
 
 ---

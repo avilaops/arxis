@@ -23,13 +23,13 @@
 
 ARXIS provides research-grade implementations of:
 
-| Module | LISA Relevance | Status |
-|--------|----------------|--------|
-| **Einstein Equations** | Schwarzschild/Kerr metrics | ✅ Complete |
-| **Geodesics** | Orbital mechanics, EMRIs | ✅ Complete |
-| **Gravitational Waves** | Binary coalescence, waveforms | ✅ Complete |
-| **Gravitational Lensing** | Source characterization | ✅ Complete |
-| **Cosmology** | Distance calculations, redshifts | ✅ Complete |
+| Module                    | LISA Relevance                   | Status     |
+| ------------------------- | -------------------------------- | ---------- |
+| **Einstein Equations**    | Schwarzschild/Kerr metrics       | ✅ Complete |
+| **Geodesics**             | Orbital mechanics, EMRIs         | ✅ Complete |
+| **Gravitational Waves**   | Binary coalescence, waveforms    | ✅ Complete |
+| **Gravitational Lensing** | Source characterization          | ✅ Complete |
+| **Cosmology**             | Distance calculations, redshifts | ✅ Complete |
 
 ### Test Coverage
 - **77 unit tests** passing
@@ -416,14 +416,14 @@ let prediction = model.classify(&features);
 
 ### Budget Estimate (Year 1)
 
-| Item | Cost |
-|------|------|
-| Development (1 FTE) | $80k |
-| Computing resources (AWS/Azure) | $10k |
-| Conference travel | $5k |
-| Publication fees (open access) | $3k |
-| Website/hosting | $2k |
-| **Total** | **$100k** |
+| Item                           | Cost      |
+| ------------------------------ | --------- |
+| Development (1 FTE)            | $80k      |
+| Computing resources (AVL)      | $10k      |
+| Conference travel              | $5k       |
+| Publication fees (open access) | $3k       |
+| Website/hosting                | $2k       |
+| **Total**                      | **$100k** |
 
 ---
 
@@ -449,7 +449,8 @@ let prediction = model.classify(&features);
 4. **Interoperability**
    - Python bindings planned
    - Standard data formats (HDF5)
-   - Cloud-ready (Docker, CI/CD)
+   - AVL Cloud-ready (Docker, CI/CD)
+   - Avx Computing integration for HPC workloads
 
 5. **Educational Value**
    - Clear code structure
@@ -464,7 +465,7 @@ let prediction = model.classify(&features);
 
 If you're reading this and interested in collaboration:
 
-**Contact**: 
+**Contact**:
 - **Email**: nicolas@avila.inc
 - **WhatsApp**: +55 17 99781-1471
 - **GitHub**: https://github.com/avilaops/arxis
@@ -536,9 +537,9 @@ If you use ARXIS in your research, please cite:
 
 ---
 
-**Document Version**: 1.0  
-**Last Updated**: November 19, 2025  
-**Status**: Ready for Collaboration  
+**Document Version**: 1.0
+**Last Updated**: November 19, 2025
+**Status**: Ready for Collaboration
 **Contact**: nicolas@avila.inc | +55 17 99781-1471
 
 ---
