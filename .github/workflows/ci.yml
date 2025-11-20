@@ -131,5 +131,5 @@ jobs:
               with:
                   tool: "cargo"
                   output-file-path: target/criterion/output.json
-                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  github-token: ${{ secrets.GH_TOKEN }}
                   auto-push: true
