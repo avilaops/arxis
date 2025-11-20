@@ -1,4 +1,5 @@
-# Arxis - Biblioteca de Matemática Avançada
+# Arxis - Biblioteca
+de Matemática Avançada
 
 Biblioteca Rust completa para computação matemática avançada, incluindo quaternions, tensores generalizados, física relativística e **geometria 4D**.
 

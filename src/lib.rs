@@ -40,8 +40,9 @@ pub mod prelude {
     };
     pub use crate::geometry::{DualQuat, Quat3D, SO4Rotation};
     pub use crate::physics::{
-        BlackHoleProperties, ChristoffelSymbols, EinsteinTensor, LorentzTransform, MetricTensor,
-        MinkowskiMetric,
+        BlackHoleProperties, ChristoffelSymbols, EinsteinTensor, GeodesicIntegrator,
+        GravitationalEffects, LorentzTransform, MetricTensor, MinkowskiMetric, OrbitCalculator,
+        OrbitType, ParticleState,
     };
     pub use crate::tensor::{Matrix, Scalar, Tensor, Tensor3D, Tensor4D, Vector};
 }
