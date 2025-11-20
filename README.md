@@ -43,6 +43,60 @@ Biblioteca Rust completa incluindo **física relativística** (ondas gravitacion
 - **Análise**: Estimativa de parâmetros (massas, distâncias, spins)
 - **Validação**: GW150914, PSR B1913+16
 
+#### 🛰️ LISA Scientific Pipeline (Complete)
+**Phase 0: Mathematical Kernel** ✅
+- Tensor operations, quaternion algebra, relativity framework
+
+**Phase 1: Input Layer** ✅ (`lisa_data.rs`)
+- LDC format ingestion (HDF5, JSON)
+- Synthetic data generation (MBHB, EMRI, Galactic binaries)
+- Data validation and quality checks
+- 6 tests passing
+
+**Phase 2: Processing Layer** ✅ (`lisa_processing.rs`)
+- FFT/IFFT for frequency domain analysis
+- Power Spectral Density (PSD) estimation
+- Data whitening and conditioning
+- Time-Delay Interferometry (TDI)
+- Glitch detection and mitigation
+- 6 tests passing
+
+**Phase 3: Analysis Layer** ✅ (`lisa_analysis.rs`)
+- Matched filtering for signal detection
+- Template bank generation (MBHB, EMRI, Galactic)
+- Parameter estimation (chirp mass, mass ratio, distance)
+- Event detection with SNR threshold
+- Signal consistency checks
+- 10 tests passing
+
+**Phase 4: Visualization Layer** ✅ (`lisa_visualization.rs`)
+- Time series plots (ASCII art rendering)
+- Spectrograms (STFT-based, grayscale colormap)
+- SNR plots with peak detection
+- Template bank coverage visualization
+- Sky maps with event localization
+- 5 tests passing
+
+**Phase 5: Event Catalog & Reporting** ✅ (`lisa_catalog.rs`)
+- Event database (CRUD operations)
+- Source classification (MBHB/EMRI/Galactic)
+- Metadata management (GPS/UTC time, confidence, FAR)
+- Query filters (by source, SNR, time)
+- Statistics computation (counts, distributions)
+- Export formats (JSON, CSV)
+- Report generation (formatted analysis)
+- 6 tests passing
+
+**Total: 33 tests passing across all LISA modules**
+
+**Examples:**
+- `lisa_data_example.rs` - Data generation and LDC format
+- `lisa_processing_example.rs` - Signal processing pipeline
+- `lisa_analysis_example.rs` - Matched filtering search
+- `lisa_visualization_example.rs` - Multi-plot demonstration
+- `lisa_catalog_example.rs` - Complete end-to-end pipeline
+
+
 ### 🕳️ Relatividade Geral
 - **Métricas**: Schwarzschild, Kerr, FLRW, Minkowski
 - **Geodésicas**: Trajetórias de partículas, órbitas relativísticas
@@ -169,6 +223,83 @@ Um tensor de ordem (rank) N é uma generalização de:
 
 ## Exemplos de Uso
 
+### LISA Complete Pipeline
+```rust
+use arxis_quaternions::physics::*;
+
+// Phase 1: Generate synthetic LISA data
+let gen = SyntheticDataGenerator::new(0.1, 10000.0);
+let source = LISASource::smbh(1e6, 5e5, 3e25, 1.0);
+let signal = gen.monochromatic_binary(
+    source.gw_frequency(),
+    source.characteristic_strain(),
+    0.0
+);
+let data = gen.signal_plus_noise(&signal, 1e-22);
+
+// Phase 2: Process data
+let spectrum = data.fft();
+let psd = PowerSpectralDensity::from_data(&data, 1024, 512);
+let whitened = data.whiten(&psd);
+
+// Phase 3: Matched filtering search
+let mut bank = TemplateBank::new(0.97);
+bank.generate_mbhb_grid((5e5, 3e6), (2e5, 1e6), 5, 4, 3e25, 10000.0, 0.1);
+let mf = MatchedFilter::new(bank, psd, 7.0);
+let results = mf.search(&whitened);
+let events = mf.cluster_events(&results, 500.0);
+
+// Phase 4: Visualize
+let plot = TimeSeriesPlot::from_strain(&whitened);
+println!("{}", plot.to_ascii(80, 20));
+
+let snr_plot = SNRPlot::new(
+    results.iter().map(|r| r.time).collect(),
+    results.iter().map(|r| r.snr).collect(),
+    7.0
+);
+println!("{}", snr_plot.to_ascii(80, 20));
+
+// Phase 5: Catalog events
+let mut catalog = EventCatalog::new(
+    "LISA-O1".to_string(),
+    "1.0.0".to_string(),
+    "arxis-0.2.0".to_string(),
+);
+
+for (i, result) in events.iter().enumerate() {
+    let event = CatalogEvent {
+        id: format!("LISA-GW-{:06}", 240120 + i),
+        gps_time: result.time,
+        utc_time: format!("2024-01-20T{:02}:{:02}:00Z", i/60, i%60),
+        snr: result.snr,
+        far: 1e-6,
+        false_alarm_prob: 0.01,
+        confidence: if result.snr > 15.0 { 0.95 } else { 0.80 },
+        source_type: SourceClassification::from_mass_ratio(
+            result.parameters.mass_ratio,
+            result.parameters.total_mass,
+        ),
+        parameters: result.parameters.clone(),
+        sky_location: None,
+        data_quality: DataQuality { glitches: 0, gaps: 0, score: 0.95 },
+        metadata: HashMap::new(),
+        pipeline_version: "arxis-0.2.0".to_string(),
+    };
+    catalog.add_event(event);
+}
+
+// Generate reports and export
+println!("{}", catalog.generate_report());
+catalog.export_json("catalog.json")?;
+catalog.export_csv("catalog.csv")?;
+
+// Query catalog
+let mbhb_events = catalog.filter_by_source(SourceClassification::MBHB);
+let high_snr = catalog.filter_by_snr(10.0);
+let stats = catalog.statistics();
+```
+
 ### Ondas Gravitacionais (LIGO/LISA)
 ```rust
 use arxis_quaternions::physics::*;
@@ -191,6 +322,7 @@ let ligo = Detector::ligo();
 let snr = ligo.signal_to_noise_ratio(&wave, 0.2);
 println!("SNR: {:.1} (detectável se > 8)", snr);
 ```
+
 
 ### Lentes Gravitacionais
 ```rust
