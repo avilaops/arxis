@@ -14,7 +14,9 @@ We release patches for security vulnerabilities for the following versions:
 
 **Please do not report security vulnerabilities through public GitHub issues.**
 
-Instead, please report them via email to: **nicolas@avila.inc**
+Instead, please report them via email to:
+- **nicolas@avila.inc**
+- **dev@avila.inc** (CC for team awareness)
 
 Include as much information as possible:
 
@@ -115,7 +117,9 @@ If you have suggestions on how this process could be improved, please submit a p
 
 ## Contact
 
-- **Security Email**: nicolas@avila.inc
+- **Security Emails**:
+  - nicolas@avila.inc (Primary)
+  - dev@avila.inc (Team CC)
 - **PGP Key**: Available upon request
 - **Response Time**: Within 48 hours
 
