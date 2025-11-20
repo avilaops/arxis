@@ -128,14 +128,14 @@ impl AnomalyDetector {
 
         // Calculate deviations from moving average
         let offset = window / 2;
-        for i in 0..ma.len() {
+        for (i, &ma_value) in ma.iter().enumerate() {
             let actual_idx = i + offset;
             if actual_idx >= ts.values.len() {
                 break;
             }
 
-            let deviation = (ts.values[actual_idx] - ma[i]).abs();
-            let relative_dev = deviation / ma[i].abs().max(1e-10);
+            let deviation = (ts.values[actual_idx] - ma_value).abs();
+            let relative_dev = deviation / ma_value.abs().max(1e-10);
 
             if relative_dev > 0.5 {
                 // 50% deviation threshold

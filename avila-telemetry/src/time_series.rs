@@ -64,9 +64,11 @@ impl TimeSeries {
         }
 
         if window > self.values.len() {
-            return Err(TelemetryError::InsufficientData(
-                format!("Window size {} is larger than data length {}", window, self.values.len()),
-            ));
+            return Err(TelemetryError::InsufficientData(format!(
+                "Window size {} is larger than data length {}",
+                window,
+                self.values.len()
+            )));
         }
 
         let mut result = Vec::with_capacity(self.values.len() - window + 1);
@@ -110,10 +112,7 @@ impl TimeSeries {
             return Vec::new();
         }
 
-        self.values
-            .windows(2)
-            .map(|w| w[1] - w[0])
-            .collect()
+        self.values.windows(2).map(|w| w[1] - w[0]).collect()
     }
 
     /// Calculate percentage change
@@ -189,15 +188,13 @@ impl Statistics {
         let mut sorted = values.to_vec();
         sorted.sort_by(|a, b| a.partial_cmp(b).unwrap());
 
-        let median = if count % 2 == 0 {
+        let median = if count.is_multiple_of(2) {
             (sorted[count / 2 - 1] + sorted[count / 2]) / 2.0
         } else {
             sorted[count / 2]
         };
 
-        let variance = values.iter()
-            .map(|x| (x - mean).powi(2))
-            .sum::<f64>() / count as f64;
+        let variance = values.iter().map(|x| (x - mean).powi(2)).sum::<f64>() / count as f64;
 
         let std_dev = variance.sqrt();
         let min = *sorted.first().unwrap();
