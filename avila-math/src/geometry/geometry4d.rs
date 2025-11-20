@@ -1,4 +1,4 @@
-use std::f64::consts::PI;
+// use std::f64::consts::PI;
 
 /// Ponto no espaço 4D: (x, y, z, w) ∈ ℝ⁴
 #[derive(Debug, Clone, Copy, PartialEq)]
