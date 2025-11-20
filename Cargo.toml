@@ -5,7 +5,7 @@ edition = "2021"
 
 [lib]
 name = "arxis_quaternions"
-path = "lib.rs"
+path = "src/lib.rs"
 
 [[example]]
 name = "rotations_example"

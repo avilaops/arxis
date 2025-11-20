@@ -1,8 +1,7 @@
 /// Operações para Relatividade Geral e transformações de Lorentz
 /// Usa tensores 4D para representar o tensor métrico, tensor de Riemann, etc.
-use crate::tensor::{Matrix, Tensor, Vector};
-use crate::tensor4d::Tensor4D;
-use std::f64::consts::PI;
+use crate::tensor::tensor::{Matrix, Vector};
+use crate::tensor::tensor4d::Tensor4D;
 
 /// Métrica de Minkowski (espaço-tempo plano da relatividade especial)
 /// Assinatura (-,+,+,+) ou (c=1)

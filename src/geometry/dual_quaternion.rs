@@ -1,4 +1,4 @@
-use crate::quaternion3d::Quat3D;
+use crate::geometry::quaternion3d::Quat3D;
 
 /// Dual Quaternion (Quaternion Duplo) - Representa rotações e translações em 4D
 /// Um dual quaternion é da forma: q̂ = q_real + ε * q_dual
