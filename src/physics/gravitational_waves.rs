@@ -9,7 +9,6 @@
 ///
 /// Baseado nas equações de Einstein linearizadas:
 /// □h_μν = -16πG T_μν (gauge TT - transverse traceless)
-
 use std::f64::consts::PI;
 
 /// Polarização de onda gravitacional
@@ -102,13 +101,7 @@ pub struct CompactBinary {
 
 impl CompactBinary {
     /// Cria novo sistema binário
-    pub fn new(
-        mass1: f64,
-        mass2: f64,
-        separation: f64,
-        distance: f64,
-        inclination: f64,
-    ) -> Self {
+    pub fn new(mass1: f64, mass2: f64, separation: f64, distance: f64, inclination: f64) -> Self {
         Self {
             mass1,
             mass2,
@@ -255,20 +248,15 @@ impl Detector {
     pub fn ligo() -> Self {
         Self::new(
             "LIGO".to_string(),
-            1e-23,    // Sensibilidade ~10^-23 /√Hz
-            10.0,     // 10 Hz
-            5000.0,   // 5 kHz
+            1e-23,  // Sensibilidade ~10^-23 /√Hz
+            10.0,   // 10 Hz
+            5000.0, // 5 kHz
         )
     }
 
     /// Detector Virgo
     pub fn virgo() -> Self {
-        Self::new(
-            "Virgo".to_string(),
-            2e-23,
-            10.0,
-            10000.0,
-        )
+        Self::new("Virgo".to_string(), 2e-23, 10.0, 10000.0)
     }
 
     /// LISA (Laser Interferometer Space Antenna) - detector espacial
@@ -276,8 +264,8 @@ impl Detector {
         Self::new(
             "LISA".to_string(),
             1e-20,
-            1e-4,    // 0.1 mHz
-            1.0,     // 1 Hz
+            1e-4, // 0.1 mHz
+            1.0,  // 1 Hz
         )
     }
 
@@ -341,11 +329,7 @@ impl WaveformAnalysis {
 
     /// Estima distância a partir da amplitude observada
     /// d ~ M_chirp / h × (πf M_chirp)^(2/3)
-    pub fn estimate_distance(
-        observed_amplitude: f64,
-        frequency: f64,
-        chirp_mass: f64,
-    ) -> f64 {
+    pub fn estimate_distance(observed_amplitude: f64, frequency: f64, chirp_mass: f64) -> f64 {
         4.0 * chirp_mass * (PI * frequency * chirp_mass).powf(2.0 / 3.0) / observed_amplitude
     }
 

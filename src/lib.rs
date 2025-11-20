@@ -41,9 +41,10 @@ pub mod prelude {
     pub use crate::geometry::{DualQuat, Quat3D, SO4Rotation};
     pub use crate::physics::{
         BlackHoleProperties, ChristoffelSymbols, CompactBinary, Detector, EinsteinTensor,
-        GeodesicIntegrator, GravitationalEffects, GravitationalWave, LorentzTransform,
-        MetricTensor, MinkowskiMetric, OrbitCalculator, OrbitType, ParticleState, Polarization,
-        WaveformAnalysis,
+        GeodesicIntegrator, GravitationalEffects, GravitationalLens, GravitationalWave,
+        LensingStatistics, LensType, LorentzTransform, MetricTensor, MicrolensingEvent,
+        MinkowskiMetric, OrbitCalculator, OrbitType, ParticleState, Polarization,
+        WaveformAnalysis, WeakLensing,
     };
     pub use crate::tensor::{Matrix, Scalar, Tensor, Tensor3D, Tensor4D, Vector};
 }
