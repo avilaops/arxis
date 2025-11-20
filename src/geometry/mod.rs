@@ -1,5 +1,5 @@
 /// Módulo de Geometria - Quaternions, Geometria 4D e Transformações
-/// 
+///
 /// Este módulo contém todas as estruturas e operações relacionadas à geometria,
 /// incluindo quaternions 3D, quaternions duplos, rotações SO(4) e geometria euclidiana 4D.
 

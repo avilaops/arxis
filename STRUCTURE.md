@@ -6,7 +6,7 @@ arxis/
 │   ├── lib.rs                 # Biblioteca principal com prelude
 │   │
 │   ├── geometry/              # 📐 Módulo de Geometria
-│   │   ├── mod.rs            
+│   │   ├── mod.rs
 │   │   ├── quaternion3d.rs    # Quaternions 3D (Quat3D)
 │   │   ├── dual_quaternion.rs # Quaternions duplos e SO(4)
 │   │   └── geometry4d.rs      # Geometria 4D, politopos, projeções
@@ -70,9 +70,9 @@ use arxis_quaternions::tensor::{Matrix, Tensor};
 
 ## Benefícios da Nova Estrutura
 
-✅ **Modular**: Cada domínio (geometria, física, tensores) separado  
-✅ **Escalável**: Fácil adicionar novos módulos (ex: `physics/quantum.rs`)  
-✅ **Organizado**: Imports claros refletem a hierarquia  
-✅ **Documentado**: Cada módulo tem seu propósito bem definido  
-✅ **Testável**: Testes organizados por módulo (32 testes passando)  
+✅ **Modular**: Cada domínio (geometria, física, tensores) separado
+✅ **Escalável**: Fácil adicionar novos módulos (ex: `physics/quantum.rs`)
+✅ **Organizado**: Imports claros refletem a hierarquia
+✅ **Documentado**: Cada módulo tem seu propósito bem definido
+✅ **Testável**: Testes organizados por módulo (32 testes passando)
 ✅ **Profissional**: Segue padrões da comunidade Rust

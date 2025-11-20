@@ -35,8 +35,13 @@ pub mod tensor;
 
 /// Prelude com imports mais comuns
 pub mod prelude {
+    pub use crate::geometry::{
+        Cell24, Matrix4x4, Point4D, Projection4Dto3D, RigidBody4D, Tesseract,
+    };
     pub use crate::geometry::{DualQuat, Quat3D, SO4Rotation};
-    pub use crate::geometry::{Cell24, Matrix4x4, Point4D, Projection4Dto3D, RigidBody4D, Tesseract};
-    pub use crate::physics::{LorentzTransform, MinkowskiMetric};
+    pub use crate::physics::{
+        BlackHoleProperties, ChristoffelSymbols, EinsteinTensor, LorentzTransform, MetricTensor,
+        MinkowskiMetric,
+    };
     pub use crate::tensor::{Matrix, Scalar, Tensor, Tensor3D, Tensor4D, Vector};
 }
