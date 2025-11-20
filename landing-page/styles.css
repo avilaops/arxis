@@ -15,28 +15,28 @@
     --color-purple: #8B4FE8;
     --color-rust: #CE422B;
     --color-green: #00C853;
-    
+
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, var(--color-cyan), var(--color-purple));
     --gradient-secondary: linear-gradient(135deg, var(--color-purple), var(--color-cyan));
     --gradient-gold: linear-gradient(135deg, #FFB800, #FFA000);
-    
+
     /* Spacing */
     --spacing-xs: 0.5rem;
     --spacing-sm: 1rem;
     --spacing-md: 2rem;
     --spacing-lg: 4rem;
     --spacing-xl: 6rem;
-    
+
     /* Typography */
     --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --font-code: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
-    
+
     /* Transitions */
     --transition-fast: 0.2s ease;
     --transition-normal: 0.3s ease;
     --transition-slow: 0.5s ease;
-    
+
     /* Shadows */
     --shadow-sm: 0 2px 8px rgba(0, 212, 255, 0.1);
     --shadow-md: 0 4px 16px rgba(0, 212, 255, 0.15);
@@ -198,7 +198,7 @@ a:hover {
     position: absolute;
     width: 100%;
     height: 100%;
-    background-image: 
+    background-image:
         radial-gradient(2px 2px at 20% 30%, white, transparent),
         radial-gradient(2px 2px at 60% 70%, white, transparent),
         radial-gradient(1px 1px at 50% 50%, white, transparent),
@@ -212,8 +212,15 @@ a:hover {
 }
 
 @keyframes twinkle {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 0.8; }
+
+    0%,
+    100% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
 }
 
 .gravitational-wave {
@@ -222,17 +229,20 @@ a:hover {
     height: 150%;
     top: -25%;
     left: -25%;
-    background: radial-gradient(ellipse at center, 
-        rgba(0, 212, 255, 0.1) 0%, 
-        transparent 50%);
+    background: radial-gradient(ellipse at center,
+            rgba(0, 212, 255, 0.1) 0%,
+            transparent 50%);
     animation: wave 15s ease-in-out infinite;
 }
 
 @keyframes wave {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: scale(1) rotate(0deg);
         opacity: 0.3;
     }
+
     50% {
         transform: scale(1.2) rotate(180deg);
         opacity: 0.5;
@@ -261,8 +271,15 @@ a:hover {
 }
 
 @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
 }
 
 .badge-icon {
@@ -387,22 +404,43 @@ a:hover {
 }
 
 /* Code Syntax Highlighting */
-.code-keyword { color: #FF6B6B; }
-.code-var { color: #4ECDC4; }
-.code-type { color: #FFE66D; }
-.code-function { color: #95E1D3; }
-.code-number { color: #C792EA; }
-.code-string { color: #C3E88D; }
-.code-comment { color: #676E95; font-style: italic; }
+.code-keyword {
+    color: #FF6B6B;
+}
+
+.code-var {
+    color: #4ECDC4;
+}
+
+.code-type {
+    color: #FFE66D;
+}
+
+.code-function {
+    color: #95E1D3;
+}
+
+.code-number {
+    color: #C792EA;
+}
+
+.code-string {
+    color: #C3E88D;
+}
+
+.code-comment {
+    color: #676E95;
+    font-style: italic;
+}
 
 /* ===================================
    Features Section
    =================================== */
 .features {
     padding: var(--spacing-xl) 0;
-    background: linear-gradient(180deg, 
-        var(--color-deep-blue) 0%, 
-        rgba(15, 30, 50, 1) 100%);
+    background: linear-gradient(180deg,
+            var(--color-deep-blue) 0%,
+            rgba(15, 30, 50, 1) 100%);
 }
 
 .section-title {
@@ -595,9 +633,9 @@ a:hover {
    =================================== */
 .code-examples {
     padding: var(--spacing-xl) 0;
-    background: linear-gradient(180deg, 
-        var(--color-deep-blue) 0%, 
-        rgba(15, 30, 50, 1) 100%);
+    background: linear-gradient(180deg,
+            var(--color-deep-blue) 0%,
+            rgba(15, 30, 50, 1) 100%);
 }
 
 .examples-tabs {
@@ -649,8 +687,15 @@ a:hover {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .example-content pre {
@@ -723,9 +768,9 @@ a:hover {
    =================================== */
 .documentation {
     padding: var(--spacing-xl) 0;
-    background: linear-gradient(180deg, 
-        rgba(15, 30, 50, 1) 0%, 
-        var(--color-deep-blue) 100%);
+    background: linear-gradient(180deg,
+            rgba(15, 30, 50, 1) 0%,
+            var(--color-deep-blue) 100%);
 }
 
 .docs-grid {
@@ -962,48 +1007,48 @@ a:hover {
     .nav-links {
         display: none;
     }
-    
+
     .hero-stats {
         gap: var(--spacing-md);
     }
-    
+
     .stat-number {
         font-size: 2rem;
     }
-    
+
     .features-grid,
     .docs-grid,
     .contact-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .arch-boxes {
         flex-direction: column;
         align-items: center;
     }
-    
+
     .arch-box {
         width: 100%;
         max-width: 400px;
     }
-    
+
     .footer-content {
         grid-template-columns: 1fr;
     }
-    
+
     .footer-links {
         grid-template-columns: 1fr;
     }
-    
+
     .footer-bottom {
         flex-direction: column;
         text-align: center;
     }
-    
+
     .examples-tabs {
         flex-direction: column;
     }
-    
+
     .tab-button {
         width: 100%;
     }
@@ -1013,21 +1058,21 @@ a:hover {
     .hero-title {
         font-size: 2.5rem;
     }
-    
+
     .hero-subtitle {
         font-size: 1.2rem;
     }
-    
+
     .section-title {
         font-size: 2rem;
     }
-    
+
     .hero-code,
     .example-content,
     .install-code {
         padding: var(--spacing-sm);
     }
-    
+
     .hero-code code,
     .example-content code,
     .install-code code {
@@ -1039,13 +1084,14 @@ a:hover {
    Print Styles
    =================================== */
 @media print {
+
     .navbar,
     .hero-background,
     .btn,
     .copy-button {
         display: none;
     }
-    
+
     body {
         background: white;
         color: black;
