@@ -3,7 +3,8 @@
 
 param(
     [switch]$DryRun = $false,
-    [switch]$SkipTests = $false
+    [switch]$SkipTests = $false,
+    [switch]$NoConfirm = $false
 )
 
 $ErrorActionPreference = "Stop"
@@ -127,7 +128,7 @@ Write-Host ""
 
 # Check if logged in to crates.io
 Write-Host "  Checking crates.io authentication..." -ForegroundColor Gray
-$credentials = "$env:USERPROFILE\.cargo\credentials"
+$credentials = "$env:USERPROFILE\.cargo\credentials.toml"
 if (-not (Test-Path $credentials)) {
     Write-Host "  ❌ Not logged in to crates.io!" -ForegroundColor Red
     Write-Host "  Run: cargo login <token>" -ForegroundColor Yellow
@@ -138,7 +139,7 @@ Write-Host "  ✅ Authenticated" -ForegroundColor Green
 # Check git status
 Write-Host "  Checking git status..." -ForegroundColor Gray
 $gitStatus = git status --porcelain
-if ($gitStatus -and -not $DryRun) {
+if ($gitStatus -and -not $DryRun -and -not $NoConfirm) {
     Write-Host "  ⚠️  Uncommitted changes detected!" -ForegroundColor Yellow
     Write-Host "  Consider committing changes before publishing." -ForegroundColor Yellow
     $continue = Read-Host "  Continue anyway? (y/N)"
@@ -147,7 +148,12 @@ if ($gitStatus -and -not $DryRun) {
         exit 1
     }
 }
-Write-Host "  ✅ Git clean" -ForegroundColor Green
+elseif ($gitStatus) {
+    Write-Host "  ⚠️  Uncommitted changes (continuing anyway)" -ForegroundColor Yellow
+}
+else {
+    Write-Host "  ✅ Git clean" -ForegroundColor Green
+}
 
 # Check LICENSE files
 Write-Host "  Checking LICENSE files..." -ForegroundColor Gray
@@ -169,7 +175,7 @@ if ($DryRun) {
 }
 
 # Confirm
-if (-not $DryRun) {
+if (-not $DryRun -and -not $NoConfirm) {
     Write-Host "⚠️  This will publish $($PublishOrder.Count) crates to crates.io" -ForegroundColor Yellow
     Write-Host "   This action CANNOT be undone!" -ForegroundColor Yellow
     Write-Host ""
@@ -178,6 +184,9 @@ if (-not $DryRun) {
         Write-Host "Aborted." -ForegroundColor Red
         exit 0
     }
+}
+elseif (-not $DryRun) {
+    Write-Host "⚠️  Publishing $($PublishOrder.Count) crates to crates.io (no confirmation)" -ForegroundColor Yellow
 }
 
 Write-Host ""

@@ -539,6 +539,7 @@ impl AsciiRenderer3D {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::f64::consts::PI;
 
     #[test]
     fn test_point4d_distance() {

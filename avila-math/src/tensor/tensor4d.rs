@@ -1,7 +1,6 @@
 /// Tensor de ordem 4 - Generalização de matrizes para 4 dimensões
 /// Aplicações: relatividade geral, processamento de imagens, aprendizado de máquina
-
-use crate::tensor::{Tensor, Matrix};
+use crate::tensor::{Matrix, Tensor};
 
 /// Tensor de ordem 3
 pub type Tensor3D = Tensor<3>;
@@ -231,9 +230,7 @@ impl Tensor4D {
                                     for j3 in 0..other.shape[3] {
                                         let val = self.get([i0, i1, i2, i3]).unwrap()
                                             * other.get([j0, j1, j2, j3]).unwrap();
-                                        result
-                                            .set([i0, i1, i2, i3, j0, j1, j2, j3], val)
-                                            .unwrap();
+                                        result.set([i0, i1, i2, i3, j0, j1, j2, j3], val).unwrap();
                                     }
                                 }
                             }
@@ -249,12 +246,8 @@ impl Tensor4D {
     /// Max pooling 2D em imagens (para redes neurais convolucionais)
     /// Assume formato (batch, channels, height, width)
     pub fn max_pool_2d(&self, pool_size: usize, stride: usize) -> Result<Self, String> {
-        let (batch, channels, height, width) = (
-            self.shape[0],
-            self.shape[1],
-            self.shape[2],
-            self.shape[3],
-        );
+        let (batch, channels, height, width) =
+            (self.shape[0], self.shape[1], self.shape[2], self.shape[3]);
 
         let out_h = (height - pool_size) / stride + 1;
         let out_w = (width - pool_size) / stride + 1;
@@ -268,9 +261,8 @@ impl Tensor4D {
                         let mut max_val = f64::NEG_INFINITY;
                         for ki in 0..pool_size {
                             for kj in 0..pool_size {
-                                let val = self
-                                    .get([b, c, i * stride + ki, j * stride + kj])
-                                    .unwrap();
+                                let val =
+                                    self.get([b, c, i * stride + ki, j * stride + kj]).unwrap();
                                 if val > max_val {
                                     max_val = val;
                                 }
@@ -287,12 +279,8 @@ impl Tensor4D {
 
     /// Average pooling 2D
     pub fn avg_pool_2d(&self, pool_size: usize, stride: usize) -> Result<Self, String> {
-        let (batch, channels, height, width) = (
-            self.shape[0],
-            self.shape[1],
-            self.shape[2],
-            self.shape[3],
-        );
+        let (batch, channels, height, width) =
+            (self.shape[0], self.shape[1], self.shape[2], self.shape[3]);
 
         let out_h = (height - pool_size) / stride + 1;
         let out_w = (width - pool_size) / stride + 1;
@@ -307,9 +295,7 @@ impl Tensor4D {
                         let mut sum = 0.0;
                         for ki in 0..pool_size {
                             for kj in 0..pool_size {
-                                sum += self
-                                    .get([b, c, i * stride + ki, j * stride + kj])
-                                    .unwrap();
+                                sum += self.get([b, c, i * stride + ki, j * stride + kj]).unwrap();
                             }
                         }
                         result.set([b, c, i, j], sum / pool_area).unwrap();
@@ -323,12 +309,8 @@ impl Tensor4D {
 
     /// Batch normalization (normaliza sobre o batch)
     pub fn batch_normalize(&self, epsilon: f64) -> Self {
-        let (batch, channels, height, width) = (
-            self.shape[0],
-            self.shape[1],
-            self.shape[2],
-            self.shape[3],
-        );
+        let (batch, channels, height, width) =
+            (self.shape[0], self.shape[1], self.shape[2], self.shape[3]);
 
         let mut result = self.clone();
 
@@ -447,8 +429,7 @@ pub mod image_ops {
                                         let input_val = input
                                             .get([b, ic, in_i - padding, in_j - padding])
                                             .unwrap_or(0.0);
-                                        let kernel_val =
-                                            kernel.get([oc, ic, ki, kj]).unwrap();
+                                        let kernel_val = kernel.get([oc, ic, ki, kj]).unwrap();
                                         sum += input_val * kernel_val;
                                     }
                                 }
@@ -464,11 +445,7 @@ pub mod image_ops {
     }
 
     /// Redimensiona imagem (interpolação nearest neighbor)
-    pub fn resize_nearest(
-        input: &Tensor3D,
-        new_height: usize,
-        new_width: usize,
-    ) -> Tensor3D {
+    pub fn resize_nearest(input: &Tensor3D, new_height: usize, new_width: usize) -> Tensor3D {
         let (channels, old_h, old_w) = (input.shape[0], input.shape[1], input.shape[2]);
         let mut result = Tensor3D::zeros([channels, new_height, new_width]);
 
@@ -523,7 +500,7 @@ mod tests {
         let mut t = Tensor4D::new(1, 1, 4, 4);
         for i in 0..4 {
             for j in 0..4 {
-                t.set([0, 0, i, j], ((i * 4 + j) as f64)).unwrap();
+                t.set([0, 0, i, j], (i * 4 + j) as f64).unwrap();
             }
         }
 
@@ -534,11 +511,7 @@ mod tests {
 
     #[test]
     fn test_relu_activation() {
-        let t = Tensor4D::from_data(
-            [1, 1, 2, 2],
-            vec![-1.0, 2.0, -3.0, 4.0],
-        )
-        .unwrap();
+        let t = Tensor4D::from_data([1, 1, 2, 2], vec![-1.0, 2.0, -3.0, 4.0]).unwrap();
         let activated = t.relu();
 
         assert_eq!(activated.get([0, 0, 0, 0]).unwrap(), 0.0);
