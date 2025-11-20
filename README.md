@@ -1,9 +1,52 @@
-# Arxis - Biblioteca
-de Matemática Avançada
+# 🚀 Arxis - Advanced Physics & Mathematics Library
 
-Biblioteca Rust completa para computação matemática avançada, incluindo quaternions, tensores generalizados, física relativística e **geometria 4D**.
+> **Research-grade Rust library for General Relativity, Gravitational Waves, and Advanced Mathematics**
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Rust](https://img.shields.io/badge/rust-1.70%2B-orange.svg)](https://www.rust-lang.org/)
+[![Tests](https://img.shields.io/badge/tests-77%20passing-brightgreen.svg)](https://github.com/avilaops/arxis)
+
+**🌌 NASA/LISA Mission Ready** - See [NASA_LISA_INTEGRATION.md](NASA_LISA_INTEGRATION.md) for collaboration opportunities.
+
+---
+
+## 📞 Contact
+
+**Project Lead**: Nicolas Ávila
+**Email**: nicolas@avila.inc
+**WhatsApp**: +55 17 99781-1471
+**GitHub**: https://github.com/avilaops/arxis
+
+---
+
+Biblioteca Rust completa incluindo **física relativística** (ondas gravitacionais, buracos negros, cosmologia), quaternions, tensores generalizados e **geometria 4D**.
 
 ## Características Principais
+
+### 🌊 Física de Ondas Gravitacionais (NASA/LIGO/LISA)
+- **Sistemas binários compactos**: Fusões de buracos negros e estrelas de nêutrons
+- **Formas de onda**: Inspiração, coalescência, ringdown
+- **Detecção**: Cálculo de SNR para LIGO, Virgo, LISA
+- **Análise**: Estimativa de parâmetros (massas, distâncias, spins)
+- **Validação**: GW150914, PSR B1913+16
+
+### 🕳️ Relatividade Geral
+- **Métricas**: Schwarzschild, Kerr, FLRW, Minkowski
+- **Geodésicas**: Trajetórias de partículas, órbitas relativísticas
+- **Curvatura**: Tensor de Riemann, tensor de Einstein
+- **Efeitos**: Precessão periélica, redshift gravitacional, deflexão de luz
+
+### 🔭 Lentes Gravitacionais
+- **Strong lensing**: Múltiplas imagens, anéis de Einstein
+- **Weak lensing**: Shear, convergência, cosmic shear
+- **Microlensing**: Curvas de luz, detecção de exoplanetas
+- **Modelos**: Point Mass, SIS, NFW
+
+### 🌌 Cosmologia
+- **Modelo FLRW**: Universo em expansão (Planck 2018)
+- **Distâncias**: Luminosa, angular, comóvel
+- **Evolução**: H(z), q(z), idade do universo
+- **Observáveis**: CMB, supernovas, estrutura em larga escala
 
 ### 🔄 Quaternions 3D (`Quat3D`)
 - Representação de rotações em 3D usando álgebra de quaternions
@@ -112,6 +155,70 @@ Um tensor de ordem (rank) N é uma generalização de:
 - **Ordem 4**: Tensor 4D (hipercubos, batches de imagens)
 
 ## Exemplos de Uso
+
+### Ondas Gravitacionais (LIGO/LISA)
+```rust
+use arxis_quaternions::physics::*;
+
+// Criar sistema binário (tipo GW150914)
+let binary = CompactBinary::new(
+    36.0,  // M1 em massas solares
+    29.0,  // M2 em massas solares
+    350.0, // separação em km
+    427e6 * 3.086e22, // distância em metros
+    0.0    // excentricidade
+);
+
+// Gerar forma de onda
+let wave = binary.generate_wave();
+let frequency = binary.gravitational_wave_frequency();
+
+// Calcular SNR para LIGO
+let ligo = Detector::ligo();
+let snr = ligo.signal_to_noise_ratio(&wave, 0.2);
+println!("SNR: {:.1} (detectável se > 8)", snr);
+```
+
+### Lentes Gravitacionais
+```rust
+use arxis_quaternions::physics::*;
+
+// Lente tipo Einstein Cross
+let lens = GravitationalLens::point_mass(
+    1e11,  // massa da galáxia em M☉
+    d_lens_pc,
+    d_source_pc,
+);
+
+// Raio de Einstein
+let theta_e = lens.einstein_radius_arcsec();
+
+// Múltiplas imagens
+let images = lens.image_positions(source_beta);
+for &theta in &images {
+    let mag = lens.magnification(theta);
+    println!("Imagem: θ={:.3}\" μ={:.1}×", theta * 206265.0, mag);
+}
+```
+
+### Cosmologia
+```rust
+use arxis_quaternions::physics::*;
+
+// Universo com parâmetros Planck 2018
+let universe = FLRWUniverse::standard();
+
+// Distância a supernova
+let z = 0.5;
+let d_L = universe.luminosity_distance(z);
+let distance_modulus = universe.distance_modulus(z);
+
+// Parâmetros de evolução
+let H_z = universe.hubble_parameter(z);
+let q_z = universe.deceleration_parameter(z);
+let age = universe.age_of_universe() / (365.25 * 24.0 * 3600.0 * 1e9);
+println!("Idade do universo: {:.2} Gyr", age);
+```
 
 ### Tensores Básicos
 ```rust
@@ -235,6 +342,24 @@ let so4_composed = so4_left.compose(&so4_right);
 Para ver exemplos detalhados de todas as funcionalidades:
 
 ```bash
+# Física: Aplicações práticas integradas (LIGO, LISA, Cosmologia)
+cargo run --example practical_astrophysics
+
+# Ondas gravitacionais
+cargo run --example gravitational_example
+
+# Lentes gravitacionais
+cargo run --example lensing_example
+
+# Cosmologia
+cargo run --example cosmology_example
+
+# Geodésicas e órbitas
+cargo run --example geodesic_example
+
+# Métricas de Einstein
+cargo run --example einstein_example
+
 # Quaternions e rotações 3D/4D
 cargo run --example rotations_example
 
@@ -284,6 +409,21 @@ arxis_quaternions/
 ## Aplicações
 
 Esta biblioteca é útil para:
+
+### 🚀 Astrofísica e NASA/LISA
+- **Análise de dados LIGO/Virgo/KAGRA** (ondas gravitacionais terrestres)
+- **Preparação para missão LISA** (ondas gravitacionais espaciais)
+- **Modelagem de fontes**: SMBHs, EMRIs, binários galácticos
+- **Estimativa de parâmetros**: massas, distâncias, spins
+- **LISA Data Challenge** participation
+- **Pulsar timing** (PSR B1913+16, NANOGrav)
+
+### 🔭 Cosmologia Observacional
+- Supernovas Tipo Ia (velas padrão)
+- Lentes gravitacionais (Einstein Cross, arcos)
+- Distâncias cosmológicas (redshift → Mpc)
+- Evolução do universo (H₀, q₀, idade)
+- Standard sirens (GW + EM)
 
 ### Computação Gráfica e Animação
 - Rotações suaves e interpolação de câmera
