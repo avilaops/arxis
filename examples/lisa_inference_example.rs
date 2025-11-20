@@ -9,7 +9,6 @@
 /// 3. Perform MCMC to estimate parameters with uncertainties
 /// 4. Generate posterior distributions and credible intervals
 /// 5. Compare recovered parameters to injection truth
-
 use arxis_quaternions::physics::{
     LISASource, MCMCSampler, PowerSpectralDensity, Prior, SyntheticDataGenerator,
 };
@@ -39,7 +38,11 @@ fn main() {
     println!("   ├─ M₂: {:.2e} M☉", true_m2);
     println!("   ├─ Mtotal: {:.2e} M☉", true_m1 + true_m2);
     println!("   ├─ q (mass ratio): {:.3}", true_m2 / true_m1);
-    println!("   ├─ Distance: {:.2e} m ({:.2} Gpc)", true_distance, true_distance / 3.086e25);
+    println!(
+        "   ├─ Distance: {:.2e} m ({:.2} Gpc)",
+        true_distance,
+        true_distance / 3.086e25
+    );
     println!("   └─ Phase: {:.2} rad", true_phase);
     println!();
 
@@ -65,7 +68,11 @@ fn main() {
     let data = gen.signal_plus_noise(&signal, noise_level);
 
     println!("   Observation:");
-    println!("   ├─ Duration: {:.0} s ({:.1} hours)", duration, duration / 3600.0);
+    println!(
+        "   ├─ Duration: {:.0} s ({:.1} hours)",
+        duration,
+        duration / 3600.0
+    );
     println!("   ├─ Sampling rate: {} Hz", sampling_rate);
     println!("   ├─ Noise level: {:.2e}", noise_level);
     println!("   └─ Expected SNR: {:.1}", h_c / noise_level);
@@ -84,15 +91,9 @@ fn main() {
     // Define prior distributions
     let priors = vec![
         // m1: Uniform prior [100k, 2M] solar masses
-        Prior::Uniform {
-            min: 1e5,
-            max: 2e6,
-        },
+        Prior::Uniform { min: 1e5, max: 2e6 },
         // m2: Uniform prior [100k, 2M] solar masses
-        Prior::Uniform {
-            min: 1e5,
-            max: 2e6,
-        },
+        Prior::Uniform { min: 1e5, max: 2e6 },
         // distance: Log-uniform prior [0.1, 10] Gpc
         Prior::LogUniform {
             min: 3e24,
@@ -151,7 +152,10 @@ fn main() {
     let mut result = sampler.run(n_samples, burn_in);
     let t_elapsed = t_start.elapsed();
 
-    println!("   ⏱️  Sampling completed in {:.1} s", t_elapsed.as_secs_f64());
+    println!(
+        "   ⏱️  Sampling completed in {:.1} s",
+        t_elapsed.as_secs_f64()
+    );
     println!();
 
     // ========================================================================
@@ -195,7 +199,11 @@ fn main() {
 
         // Calculate fractional error
         let frac_error = ((recovered - true_val) / true_val).abs();
-        println!("   {} Fractional error: {:.1}%", " ".repeat(31), frac_error * 100.0);
+        println!(
+            "   {} Fractional error: {:.1}%",
+            " ".repeat(31),
+            frac_error * 100.0
+        );
     }
 
     println!();
@@ -320,11 +328,15 @@ fn main() {
     println!();
     println!("📊 Key Results:");
     println!("   ├─ All parameters recovered within 90% credible intervals");
-    println!("   ├─ Effective sample size: {:.0} / {}", 
+    println!(
+        "   ├─ Effective sample size: {:.0} / {}",
         result.ess.iter().sum::<f64>() / result.ess.len() as f64,
         n_samples
     );
-    println!("   ├─ Acceptance rate: {:.1}%", result.acceptance_rate * 100.0);
+    println!(
+        "   ├─ Acceptance rate: {:.1}%",
+        result.acceptance_rate * 100.0
+    );
     println!("   └─ Computation time: {:.1} s", t_elapsed.as_secs_f64());
     println!();
     println!("🎯 Scientific Impact:");
