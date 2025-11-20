@@ -1,12 +1,3 @@
-/// Tensor genérico de rank arbitrário
-/// Ordem 0: escalar
-/// Ordem 1: vetor
-/// Ordem 2: matriz
-/// Ordem 3: tensor 3D
-/// Ordem 4: tensor 4D
-///
-/// Útil para relatividade geral, processamento de imagens, aprendizado de máquina
-use std::ops::{Add, Index, IndexMut, Mul, Sub};
 
 /// Tensor de ordem N com dados armazenados linearmente
 #[derive(Debug, Clone, PartialEq)]

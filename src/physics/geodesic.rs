@@ -11,7 +11,6 @@
 /// - Órbitas de partículas massivas e fótons
 /// - Precessão periélica
 /// - Redshift gravitacional
-
 use crate::physics::einstein::ChristoffelSymbols;
 use crate::tensor::tensor::Matrix;
 use std::f64::consts::PI;
@@ -118,7 +117,7 @@ where
 
         // k1
         let acc1 = self.compute_acceleration(state);
-        let mut k1_pos = state.velocity;
+        let k1_pos = state.velocity;
         let k1_vel = acc1;
 
         // k2
@@ -448,15 +447,9 @@ mod tests {
         let calc = OrbitCalculator::new(1.0);
 
         // Fóton
-        assert_eq!(
-            calc.classify_orbit(1.0, 5.0, true),
-            OrbitType::Photon
-        );
+        assert_eq!(calc.classify_orbit(1.0, 5.0, true), OrbitType::Photon);
 
         // Órbita hiperbólica (E >= 1)
-        assert_eq!(
-            calc.classify_orbit(1.5, 10.0, false),
-            OrbitType::Hyperbolic
-        );
+        assert_eq!(calc.classify_orbit(1.5, 10.0, false), OrbitType::Hyperbolic);
     }
 }

@@ -4,10 +4,17 @@ version = "0.1.0"
 edition = "2021"
 authors = ["Nicolas Ávila <nicolas@avila.inc>"]
 license = "MIT OR Apache-2.0"
-description = "Mathematical kernel for Avila ecosystem: vectors, matrices, quaternions, tensors, 4D geometry"
+description = "Arxis Foundation: The ARX (fortress) - Mathematical kernel with quaternions, tensors, 4D geometry, Conv4D, differential operators"
 repository = "https://github.com/avilaops/arxis"
-keywords = ["math", "linear-algebra", "quaternions", "tensors", "geometry"]
-categories = ["mathematics", "science", "game-development"]
+homepage = "https://avila.cloud"
+documentation = "https://docs.rs/avila-math"
+readme = "README.md"
+keywords = ["arxis", "quaternions", "tensors", "4d-geometry", "fortress"]
+categories = ["mathematics", "science", "algorithms", "game-development"]
+exclude = ["target/", "*.swp", ".git*"]
 
 [dependencies]
 rand = "0.8"
+rayon = "1.10"      # Paralelização para Conv4D
+rustfft = "6.2"     # FFT para análise espectral
+num-complex = "0.4" # Números complexos para FFT

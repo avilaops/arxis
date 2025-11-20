@@ -3,7 +3,7 @@
 use crate::{Result, TelemetryError, TimeSeries};
 
 /// Type of anomaly detected
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, serde::Serialize, serde::Deserialize)]
 pub enum AnomalyType {
     /// Point anomaly (single outlier)
     Point,
@@ -14,7 +14,7 @@ pub enum AnomalyType {
 }
 
 /// Represents a detected anomaly
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Anomaly {
     /// Index in the time series
     pub index: usize,
@@ -136,7 +136,8 @@ impl AnomalyDetector {
             let deviation = (ts.values[actual_idx] - ma[i]).abs();
             let relative_dev = deviation / ma[i].abs().max(1e-10);
 
-            if relative_dev > 0.5 {  // 50% deviation threshold
+            if relative_dev > 0.5 {
+                // 50% deviation threshold
                 anomalies.push(Anomaly {
                     index: actual_idx,
                     value: ts.values[actual_idx],
@@ -212,8 +213,12 @@ mod tests {
         assert!(!anomalies.is_empty(), "Should detect at least one anomaly");
         // The 100.0 value should be detected as an anomaly
         let has_large_value_anomaly = anomalies.iter().any(|a| a.value > 50.0);
-        assert!(has_large_value_anomaly, "Should detect the outlier value of 100.0");
-    }    #[test]
+        assert!(
+            has_large_value_anomaly,
+            "Should detect the outlier value of 100.0"
+        );
+    }
+    #[test]
     fn test_iqr_detection() {
         let data = vec![1.0, 2.0, 3.0, 2.0, 1.0, 100.0, 2.0, 1.0];
         let ts = TimeSeries::new(data);

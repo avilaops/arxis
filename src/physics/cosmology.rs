@@ -337,13 +337,13 @@ impl CosmologicalObservables {
 #[derive(Debug, Clone)]
 pub struct CosmicStructure {
     /// Parâmetros cosmológicos
-    params: CosmologicalParameters,
+    _params: CosmologicalParameters,
 }
 
 impl CosmicStructure {
     /// Cria nova instância
     pub fn new(params: CosmologicalParameters) -> Self {
-        Self { params }
+        Self { _params: params }
     }
 
     /// Escala de Jeans (escala mínima para colapso gravitacional)

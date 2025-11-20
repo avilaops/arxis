@@ -2,10 +2,38 @@
 name = "avx-telemetry"
 version = "0.1.0"
 edition = "2021"
-authors = ["Avila DevOps <nicolas@avila.inc>"]
-description = "Avx telemetry - Observability layer for Avila Experience Fabric"
+authors = ["Nicolas Ávila <nicolas@avila.inc>"]
+license = "MIT OR Apache-2.0"
+description = "Observability and distributed tracing for Avila Experience Fabric - Structured logging, metrics, and scientific time series"
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://avila.cloud"
+documentation = "https://docs.rs/avx-telemetry"
+readme = "README.md"
+keywords = ["telemetry", "tracing", "observability", "logging", "metrics"]
+categories = ["development-tools::debugging", "asynchronous"]
+exclude = ["target/", "*.swp", ".git*"]
 
 [dependencies]
 tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+tracing-subscriber = { version = "0.3", features = [
+    "env-filter",
+    "fmt",
+    "json",
+] }
 serde = { version = "1", features = ["derive"] }
+serde_json = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+avila-telemetry = { path = "../avila-telemetry" }
+
+# Middleware dependencies
+axum = { version = "0.7", optional = true }
+tower = { version = "0.5", optional = true }
+tokio = { version = "1", features = ["full"], optional = true }
+
+[features]
+default = []
+middleware = ["axum", "tower", "tokio"]
+
+[dev-dependencies]
+tokio = { version = "1", features = ["full", "test-util"] }
+rand = "0.8"

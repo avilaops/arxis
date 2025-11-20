@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 💬 Discussions
+    url: https://github.com/avilaops/arxis/discussions
+    about: For questions and general discussions
+  - name: 📚 Documentation
+    url: https://docs.rs/arxis_quaternions
+    about: Read the documentation
+  - name: 📧 Email Support
+    url: mailto:nicolas@avila.inc
+    about: Contact the maintainer directly

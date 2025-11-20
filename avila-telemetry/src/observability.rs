@@ -1,9 +1,9 @@
 //! Observability module integrating NASA and Google Cloud best practices
 
-use crate::{Result, TelemetryError, TimeSeries};
-use std::time::{Duration, Instant};
-use std::collections::HashMap;
+use crate::{Result, TimeSeries};
 use chrono::{DateTime, Utc};
+use std::collections::HashMap;
+use std::time::{Duration, Instant};
 
 /// Google's Four Golden Signals
 #[derive(Debug, Clone)]
@@ -45,7 +45,7 @@ pub struct SaturationMetrics {
 }
 
 /// NASA Data Quality Assessment
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct DataQualityAssessment {
     /// Accuracy score (0-1)
     pub accuracy: f64,
@@ -69,20 +69,18 @@ impl DataQualityAssessment {
 
     /// Calculate overall quality score
     pub fn calculate_overall(&mut self) {
-        self.overall_score = (
-            self.accuracy * 0.3 +
-            self.completeness * 0.25 +
-            self.consistency * 0.25 +
-            self.validity * 0.2
-        );
+        self.overall_score = self.accuracy * 0.3
+            + self.completeness * 0.25
+            + self.consistency * 0.25
+            + self.validity * 0.2;
     }
 }
 
 /// NASA-style Quality Control
 #[derive(Debug, Clone)]
 pub struct NASAQualityControl {
-    pub ucl: f64,  // Upper Control Limit
-    pub lcl: f64,  // Lower Control Limit
+    pub ucl: f64, // Upper Control Limit
+    pub lcl: f64, // Lower Control Limit
     pub target: f64,
     pub sigma: usize, // 3-sigma or 6-sigma
 }
@@ -150,11 +148,19 @@ pub enum ViolationSeverity {
     Emergency,
 }
 
+/// Data Quality metrics (NASA standards)
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct DataQualityMetrics {
+    pub glitches: usize,
+    pub gaps: usize,
+    pub score: f64, // 0.0 - 1.0
+}
+
 /// Service Level Objective (Google SRE)
 #[derive(Debug, Clone)]
 pub struct ServiceLevelObjective {
     pub name: String,
-    pub target: f64,  // e.g., 0.999 for 99.9%
+    pub target: f64, // e.g., 0.999 for 99.9%
     pub window: Duration,
     pub error_budget: ErrorBudget,
 }
@@ -240,10 +246,10 @@ impl StructuredLog {
 /// Alert levels (NASA-style)
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AlertLevel {
-    Green,   // Normal operations
-    Yellow,  // Caution
-    Red,     // Warning - immediate attention
-    Black,   // Emergency - system critical
+    Green,  // Normal operations
+    Yellow, // Caution
+    Red,    // Warning - immediate attention
+    Black,  // Emergency - system critical
 }
 
 #[derive(Debug, Clone)]
@@ -259,14 +265,14 @@ pub struct Alert {
 
 /// Performance metrics tracker
 pub struct PerformanceTracker {
-    start_time: Instant,
+    _start_time: Instant,
     measurements: Vec<Duration>,
 }
 
 impl PerformanceTracker {
     pub fn new() -> Self {
         Self {
-            start_time: Instant::now(),
+            _start_time: Instant::now(),
             measurements: Vec::new(),
         }
     }
@@ -328,15 +334,14 @@ impl DataQuality for TimeSeries {
         };
 
         // Completeness: no NaN or infinite values
-        let valid_count = self.values.iter()
-            .filter(|v| v.is_finite())
-            .count();
+        let valid_count = self.values.iter().filter(|v| v.is_finite()).count();
         let completeness = valid_count as f64 / self.values.len() as f64;
 
         // Consistency: check for sudden jumps
         let diffs = self.diff();
         let mean_diff = diffs.iter().sum::<f64>() / diffs.len() as f64;
-        let sudden_jumps = diffs.iter()
+        let sudden_jumps = diffs
+            .iter()
             .filter(|&&d| (d - mean_diff).abs() > 3.0 * stats.std_dev)
             .count();
         let consistency = 1.0 - (sudden_jumps as f64 / diffs.len() as f64);

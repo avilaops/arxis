@@ -1,7 +1,15 @@
 # Arquivos de build do Rust
 /target/
+**/target/
 **/*.rs.bk
 *.pdb
+*.rlib
+*.rmeta
+*.d
+*.dll
+*.lib
+*.exp
+*.exe
 
 # Arquivos do Cargo
 Cargo.lock
@@ -20,3 +28,22 @@ Thumbs.db
 # Arquivos temporários
 *.tmp
 *.bak
+*.ini
+Untitled-*
+
+# Logs e outputs
+logs/
+*.log
+*_output.txt
+Log - Second Agent/
+
+# Dados de teste (mover para tests/fixtures/)
+lisa_catalog.csv
+lisa_catalog.json
+lisa_output.txt
+
+# Pastas vazias/temporárias
+Avila-Engine/
+
+# Arquivos de lista gerados
+file_list.txt

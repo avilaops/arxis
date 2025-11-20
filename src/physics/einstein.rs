@@ -8,9 +8,9 @@
 /// - Kerr (buraco negro rotante)
 /// - FLRW (cosmologia, universo em expansão)
 /// - de Sitter (constante cosmológica positiva)
-
-use crate::tensor::tensor::{Matrix, Vector};
 use std::f64::consts::PI;
+
+use crate::tensor::tensor::Matrix;
 
 /// Símbolos de Christoffel Γ^λ_μν
 /// Representam a conexão afim do espaço-tempo curvo
@@ -63,10 +63,11 @@ impl ChristoffelSymbols {
                     for sigma in 0..4 {
                         let d_mu = metric_derivative(&metric_func, point, mu, nu, sigma, epsilon);
                         let d_nu = metric_derivative(&metric_func, point, nu, mu, sigma, epsilon);
-                        let d_sigma = metric_derivative(&metric_func, point, sigma, mu, nu, epsilon);
+                        let d_sigma =
+                            metric_derivative(&metric_func, point, sigma, mu, nu, epsilon);
 
-                        gamma += 0.5 * g_inv.get([lambda, sigma]).unwrap()
-                            * (d_mu + d_nu - d_sigma);
+                        gamma +=
+                            0.5 * g_inv.get([lambda, sigma]).unwrap() * (d_mu + d_nu - d_sigma);
                     }
 
                     christoffel.set(lambda, mu, nu, gamma);
@@ -89,9 +90,9 @@ impl MetricTensor {
     pub fn minkowski() -> Self {
         let mut components = Matrix::zeros([4, 4]);
         components.set([0, 0], -1.0).unwrap(); // tempo
-        components.set([1, 1], 1.0).unwrap();  // x
-        components.set([2, 2], 1.0).unwrap();  // y
-        components.set([3, 3], 1.0).unwrap();  // z
+        components.set([1, 1], 1.0).unwrap(); // x
+        components.set([2, 2], 1.0).unwrap(); // y
+        components.set([3, 3], 1.0).unwrap(); // z
         Self { components }
     }
 
@@ -115,11 +116,11 @@ impl MetricTensor {
             components.set([0, 0], -1e-10).unwrap();
             components.set([1, 1], 1e10).unwrap();
         } else {
-            components.set([0, 0], -f).unwrap();           // g_tt
-            components.set([1, 1], 1.0 / f).unwrap();      // g_rr
+            components.set([0, 0], -f).unwrap(); // g_tt
+            components.set([1, 1], 1.0 / f).unwrap(); // g_rr
         }
 
-        components.set([2, 2], r * r).unwrap();                    // g_θθ
+        components.set([2, 2], r * r).unwrap(); // g_θθ
         components.set([3, 3], r * r * theta.sin().powi(2)).unwrap(); // g_φφ
 
         Self { components }
@@ -151,13 +152,19 @@ impl MetricTensor {
         let delta = r * r - 2.0 * m * r + a * a;
 
         // Componentes diagonais
-        components.set([0, 0], -(1.0 - 2.0 * m * r / sigma)).unwrap();
+        components
+            .set([0, 0], -(1.0 - 2.0 * m * r / sigma))
+            .unwrap();
         components.set([1, 1], sigma / delta).unwrap();
         components.set([2, 2], sigma).unwrap();
-        components.set([3, 3],
-            ((r * r + a * a).powi(2) - a * a * delta * sin_theta * sin_theta)
-            / sigma * sin_theta * sin_theta
-        ).unwrap();
+        components
+            .set(
+                [3, 3],
+                ((r * r + a * a).powi(2) - a * a * delta * sin_theta * sin_theta) / sigma
+                    * sin_theta
+                    * sin_theta,
+            )
+            .unwrap();
 
         // Componente fora da diagonal (arrasto de referenciais)
         let g_t_phi = -2.0 * m * r * a * sin_theta * sin_theta / sigma;
@@ -185,7 +192,9 @@ impl MetricTensor {
         components.set([0, 0], -1.0).unwrap(); // tempo cosmológico
         components.set([1, 1], a * a / (1.0 - k * r * r)).unwrap();
         components.set([2, 2], a * a * r * r).unwrap();
-        components.set([3, 3], a * a * r * r * theta.sin().powi(2)).unwrap();
+        components
+            .set([3, 3], a * a * r * r * theta.sin().powi(2))
+            .unwrap();
 
         Self { components }
     }
@@ -254,10 +263,10 @@ impl MetricTensor {
 
                 for lambda in 0..4 {
                     for sigma in 0..4 {
-                        r_mu_nu += christoffel.get(lambda, sigma, lambda)
-                            * christoffel.get(sigma, mu, nu);
-                        r_mu_nu -= christoffel.get(lambda, sigma, nu)
-                            * christoffel.get(sigma, mu, lambda);
+                        r_mu_nu +=
+                            christoffel.get(lambda, sigma, lambda) * christoffel.get(sigma, mu, nu);
+                        r_mu_nu -=
+                            christoffel.get(lambda, sigma, nu) * christoffel.get(sigma, mu, lambda);
                     }
                 }
 

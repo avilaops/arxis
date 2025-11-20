@@ -16,7 +16,7 @@
 /// # References
 /// - LDC Event Format: https://lisa-ldc.lal.in2p3.fr/
 /// - GWOSC Event Catalog: https://www.gw-openscience.org/
-use crate::physics::{EventCandidate, LISASourceType, MatchedFilterResult, TemplateParameters};
+use crate::physics::{EventCandidate, TemplateParameters};
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::{self, Write};

@@ -28,8 +28,18 @@
 /// assert!((normalized.norm() - 1.0).abs() < 1e-10);
 /// ```
 pub mod geometry;
+
+/// Módulo de Tensores - Estruturas tensoriais generalizadas e operações
+///
+/// Este módulo implementa tensores de ordem arbitrária (0-4) com operações
+/// para álgebra linear, machine learning e processamento de dados multidimensionais.
 pub mod tensor;
 
+/// Módulo de Processamento de Sinais
+///
+/// FFT (1D-4D), análise espectral, janelas e filtros.
+pub mod signal;
+
 // Re-export commonly used types
-pub use geometry::{DualQuat, Quat3D, SO4Rotation};
+pub use geometry::{DualQuat, Matrix4, Quat3D, SO4Rotation, Vector2, Vector3, Vector4, AABB};
 pub use tensor::{Tensor, Tensor4D};

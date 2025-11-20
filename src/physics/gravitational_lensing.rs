@@ -366,7 +366,7 @@ impl LensingStatistics {
 
     /// Probabilidade de multiple imaging
     pub fn multiple_image_probability(
-        source_density: f64,
+        _source_density: f64,
         lens_density: f64,
         einstein_radius: f64,
         survey_area: f64,

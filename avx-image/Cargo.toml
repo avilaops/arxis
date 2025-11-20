@@ -1,0 +1,66 @@
+[package]
+name = "avx-image"
+version = "0.1.0"
+edition = "2021"
+authors = ["Nicolas Ávila <nicolas@avila.inc>"]
+license = "MIT OR Apache-2.0"
+description = "Computer Vision, OCR, Face Recognition & Photometry for Avila Platform - Image processing, feature extraction, analysis"
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://avila.cloud"
+documentation = "https://docs.rs/avx-image"
+readme = "README.md"
+keywords = [
+    "computer-vision",
+    "ocr",
+    "face-detection",
+    "image-processing",
+    "photometry",
+]
+categories = ["computer-vision", "multimedia::images", "science"]
+exclude = ["target/", "*.swp", ".git*", "examples/*.jpg", "examples/*.png"]
+
+[workspace]
+
+[dependencies]
+# Core image processing
+image = "0.25"
+imageproc = "0.25"
+ndarray = "0.16"
+
+# OCR (Optical Character Recognition)
+# TODO: Implementar OCR nativo em Rust, sem dependências externas
+# tesseract = "0.14"  # Temporário para benchmarking
+
+# Face detection & recognition
+# TODO: Implementar detecção facial nativa
+dlib-face-recognition = { version = "0.3", optional = true }
+
+# Deep Learning (optional)
+tract-onnx = { version = "0.21", optional = true }
+tract-core = { version = "0.21", optional = true }
+
+# Computer Vision fundamentals
+nalgebra = "0.33"
+rayon = "1.10"
+
+# Photometry & Color Science
+palette = "0.7"
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Utilities
+anyhow = "1"
+thiserror = "1"
+
+[dev-dependencies]
+criterion = "0.5"
+
+[features]
+default = ["ocr", "face-detection", "photometry"]
+ocr = []
+face-detection = []
+photometry = []
+deep-learning = ["tract-onnx", "tract-core"]
+full = ["ocr", "face-detection", "photometry", "deep-learning"]

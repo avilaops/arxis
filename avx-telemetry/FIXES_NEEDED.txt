@@ -1,0 +1,14 @@
+# Correções necessárias no avx-gateway/src/main.rs:
+
+1. Linha 5: Adicionar ServiceExt no import do axum
+   use axum::{..., Router, ServiceExt};
+
+2. Linha 38: Mudar de AvxMetrics::new("avx-gateway", ctx.clone()) para AvxMetrics::new()
+
+3. Linha 50: Mudar de AvxHeaderLayer::new(state.ctx).layer(app) para app.layer(AvxHeaderLayer::new(state.ctx))
+
+4. Linhas 86-88: Remover serialização direta de anomalies, usar apenas .len()
+
+5. Linha 93: Remover serialização de TelemetryError, usar string
+
+6. Linhas 113-120: Serializar manualmente DataQualityAssessment

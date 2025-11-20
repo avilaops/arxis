@@ -9,6 +9,7 @@ pub mod gravitational_lensing;
 pub mod gravitational_waves;
 pub mod lisa;
 pub mod lisa_analysis;
+pub mod lisa_binary;
 pub mod lisa_catalog;
 pub mod lisa_data;
 pub mod lisa_inference;
@@ -35,6 +36,7 @@ pub use lisa_analysis::{
     EventCandidate, MatchedFilter, MatchedFilterResult, TemplateBank, TemplateParameters,
     WaveformTemplate,
 };
+pub use lisa_binary::LisaBinaryFile;
 pub use lisa_catalog::{
     CatalogEvent, CatalogStatistics, DataQuality, EventCatalog, SkyLocation, SourceClassification,
 };

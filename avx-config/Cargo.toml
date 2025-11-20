@@ -2,8 +2,16 @@
 name = "avx-config"
 version = "0.1.0"
 edition = "2021"
-authors = ["Avila DevOps <nicolas@avila.inc>"]
-description = "Avx stack configuration - Base configuration for Avila Experience Fabric"
+authors = ["Nicolas Ávila <nicolas@avila.inc>"]
+license = "MIT OR Apache-2.0"
+description = "Configuration management for Avila Experience Fabric - Type-safe config loading from multiple sources"
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://avila.cloud"
+documentation = "https://docs.rs/avx-config"
+readme = "README.md"
+keywords = ["config", "configuration", "settings", "environment", "avx"]
+categories = ["config", "development-tools"]
+exclude = ["target/", "*.swp", ".git*"]
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }

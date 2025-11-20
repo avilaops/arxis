@@ -2,8 +2,16 @@
 name = "avx-gateway"
 version = "0.1.0"
 edition = "2021"
-authors = ["Avila DevOps <nicolas@avila.inc>"]
-description = "Avx gateway - Internal deepweb entry point for Avila Experience Fabric"
+authors = ["Nicolas Ávila <nicolas@avila.inc>"]
+license = "MIT OR Apache-2.0"
+description = "High-performance API gateway for Avila Experience Fabric - Routing, auth, rate limiting, load balancing"
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://avila.cloud"
+documentation = "https://docs.rs/avx-gateway"
+readme = "README.md"
+keywords = ["gateway", "api", "proxy", "microservices", "router"]
+categories = ["web-programming", "network-programming", "asynchronous"]
+exclude = ["target/", "*.swp", ".git*"]
 
 [dependencies]
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }

@@ -49,7 +49,7 @@ impl ARIMA {
     }
 
     /// Integrate (cumulative sum) the differenced data
-    fn integrate(&self, differenced: &[f64], original_data: &[f64]) -> Vec<f64> {
+    fn _integrate(&self, differenced: &[f64], original_data: &[f64]) -> Vec<f64> {
         let mut result = differenced.to_vec();
 
         for _ in 0..self.params.d {

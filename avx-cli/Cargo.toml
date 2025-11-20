@@ -2,8 +2,16 @@
 name = "avx-cli"
 version = "0.1.0"
 edition = "2021"
-authors = ["Avila DevOps <nicolas@avila.inc>"]
-description = "Avx CLI - Command-line tools for Avila Experience Fabric"
+authors = ["Nicolas Ávila <nicolas@avila.inc>"]
+license = "MIT OR Apache-2.0"
+description = "Command-line tools for Avila Experience Fabric - Project management, deployment, monitoring"
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://avila.cloud"
+documentation = "https://docs.rs/avx-cli"
+readme = "README.md"
+keywords = ["cli", "command-line", "tools", "deployment", "devops"]
+categories = ["command-line-utilities", "development-tools"]
+exclude = ["target/", "*.swp", ".git*"]
 
 [dependencies]
 clap = { version = "4", features = ["derive"] }

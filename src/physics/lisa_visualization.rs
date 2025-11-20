@@ -16,12 +16,9 @@
 /// This module generates **data for visualization** rather than rendering
 /// images directly. This allows flexible backend choices (plotters.rs,
 /// matplotlib via PyO3, web canvas, etc.)
-
-use crate::physics::{
-    EventCandidate, FrequencySpectrum, MatchedFilterResult, PowerSpectralDensity,
-    StrainTimeSeries, TemplateBank,
-};
 use std::f64::consts::PI;
+
+use crate::physics::{EventCandidate, StrainTimeSeries, TemplateBank};
 
 /// Time series plot data
 #[derive(Debug, Clone)]
@@ -62,7 +59,10 @@ impl TimeSeriesPlot {
         let t_min = self.time.iter().fold(f64::INFINITY, |a, &b| a.min(b));
         let t_max = self.time.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b));
         let a_min = self.amplitude.iter().fold(f64::INFINITY, |a, &b| a.min(b));
-        let a_max = self.amplitude.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b));
+        let a_max = self
+            .amplitude
+            .iter()
+            .fold(f64::NEG_INFINITY, |a, &b| a.max(b));
 
         // Plot data points
         for i in 0..self.time.len() {
@@ -220,7 +220,9 @@ impl Spectrogram {
                 let normalized = ((log_power - log_min) / (log_max - log_min)).clamp(0.0, 1.0);
 
                 let x = (t_idx as f64 / self.time.len() as f64 * width as f64) as usize;
-                let y = height - 1 - (f_idx as f64 / self.frequency.len() as f64 * height as f64) as usize;
+                let y = height
+                    - 1
+                    - (f_idx as f64 / self.frequency.len() as f64 * height as f64) as usize;
 
                 if x < width && y < height {
                     let char_idx = (normalized * (chars.len() - 1) as f64) as usize;
@@ -381,7 +383,9 @@ impl TemplateBankPlot {
         // Plot points
         for i in 0..self.m1.len() {
             let x = ((self.m1[i] - m1_min) / (m1_max - m1_min) * (width - 1) as f64) as usize;
-            let y = height - 1 - ((self.m2[i] - m2_min) / (m2_max - m2_min) * (height - 1) as f64) as usize;
+            let y = height
+                - 1
+                - ((self.m2[i] - m2_min) / (m2_max - m2_min) * (height - 1) as f64) as usize;
 
             if x < width && y < height {
                 canvas[y][x] = '●';
@@ -393,14 +397,8 @@ impl TemplateBankPlot {
             result.push_str(&row.iter().collect::<String>());
             result.push('\n');
         }
-        result.push_str(&format!(
-            "\nM1: [{:.1e}, {:.1e}] M☉\n",
-            m1_min, m1_max
-        ));
-        result.push_str(&format!(
-            "M2: [{:.1e}, {:.1e}] M☉\n",
-            m2_min, m2_max
-        ));
+        result.push_str(&format!("\nM1: [{:.1e}, {:.1e}] M☉\n", m1_min, m1_max));
+        result.push_str(&format!("M2: [{:.1e}, {:.1e}] M☉\n", m2_min, m2_max));
         result.push_str(&format!("Templates: {}\n", self.m1.len()));
 
         result

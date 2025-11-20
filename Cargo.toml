@@ -9,6 +9,7 @@ members = [
     "avx-cli",
     "avila-math",
     "avila-telemetry",
+    "avx-quantum-render",
 ]
 resolver = "2"
 
@@ -16,8 +17,30 @@ resolver = "2"
 name = "arxis_quaternions"
 version = "0.2.0"
 edition = "2021"
-authors = ["Avila DevOps <nicolas@avila.inc>"]
-description = "Arxis - Advanced quaternions, tensors, and General Relativity in Rust (Avila stack)"
+authors = ["Nicolas Ávila <nicolas@avila.inc>"]
+license = "MIT OR Apache-2.0"
+description = "Arxis: The Mathematical Citadel - Research-grade physics engine with quaternions, tensors, 4D geometry, gravitational waves, and General Relativity. ARX (fortress) + AXIS (engine)."
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://avila.cloud"
+documentation = "https://docs.rs/arxis_quaternions"
+readme = "README.md"
+keywords = [
+    "physics",
+    "quaternions",
+    "gravitational-waves",
+    "nasa-lisa",
+    "4d-geometry",
+]
+categories = ["science", "mathematics", "simulation", "algorithms"]
+exclude = [
+    "target/",
+    "*.swp",
+    ".git*",
+    "examples/*.ppm",
+    "output_*.ppm",
+    "*.png",
+    "*.jpg",
+]
 
 [lib]
 name = "arxis_quaternions"
@@ -49,5 +72,60 @@ rand_distr = "0.4"
 chrono = { version = "0.4", features = ["serde"] }
 avila-math = { path = "avila-math" }
 avila-telemetry = { path = "avila-telemetry" }
+rayon = "1.10"
+
+# Big Data & Parallel Processing
+polars = { version = "0.44", features = [
+    "lazy",
+    "sql",
+    "streaming",
+    "parquet",
+    "ipc",
+    "json",
+] }
+datafusion = "43.0" # SQL query engine para big data
+arrow = "53.0" # Apache Arrow (columnar format)
+parquet = "53.0" # Parquet file format
+
+# Machine Learning & Deep Learning
+ndarray = { version = "0.16", features = ["rayon", "serde"] }
+ndarray-linalg = "0.16"                                       # Linear algebra (BLAS/LAPACK)
+linfa = "0.7"                                                 # ML framework (KMeans, PCA, regression, etc)
+linfa-clustering = "0.7"
+linfa-reduction = "0.7"
+smartcore = "0.3"                                             # Comprehensive ML (SVM, Random Forest, Neural Nets)
+# candle-core = "0.7"                                           # Hugging Face ML framework (incompatível com rand_distr)
+# candle-nn = "0.7"
+
+# LLM & NLP
+tokenizers = "0.20" # Hugging Face tokenizers
+hf-hub = "0.3"      # Download models from Hugging Face
+llm-chain = "0.13"  # LLM chaining framework
+tiktoken-rs = "0.5" # OpenAI tokenizer
+
+# Computer Vision
+image = "0.25"
+imageproc = "0.25"
+rustfft = "6.2"    # FFT (já usado em avila-telemetry)
+
+# Graph Analytics & Network Science
+petgraph = "0.6"     # Graph data structures
+pathfinding = "4.11" # Pathfinding algorithms
+
+# Statistical Analysis
+statrs = "0.17"   # Statistical distributions (já usado)
+nalgebra = "0.33" # Linear algebra
+
+# Time Series (complementar ao avila-telemetry)
+prophet = { version = "0.1", optional = true } # Facebook Prophet (se disponível)
+
+# Distributed Computing
+tokio = { version = "1", features = ["full"] }
+reqwest = { version = "0.12", features = ["json"] }
+
+# Serialization for ML models
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+bincode = "1.3"
 
 [dev-dependencies]

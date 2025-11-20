@@ -2,8 +2,16 @@
 name = "avx-events"
 version = "0.1.0"
 edition = "2021"
-authors = ["Avila DevOps <nicolas@avila.inc>"]
-description = "Avx Events - Event bus integration for Avila Experience Fabric"
+authors = ["Nicolas Ávila <nicolas@avila.inc>"]
+license = "MIT OR Apache-2.0"
+description = "Event-driven architecture for Avila Experience Fabric - Pub/sub, event bus, and message patterns"
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://avila.cloud"
+documentation = "https://docs.rs/avx-events"
+readme = "README.md"
+keywords = ["events", "pubsub", "event-bus", "messaging", "async"]
+categories = ["asynchronous", "network-programming"]
+exclude = ["target/", "*.swp", ".git*"]
 
 [dependencies]
 tokio = { version = "1", features = ["macros", "rt-multi-thread", "time"] }

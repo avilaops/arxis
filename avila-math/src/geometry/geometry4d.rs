@@ -1,7 +1,3 @@
-/// Geometria 4D - Espaço Euclidiano Tetradimensional
-///
-/// Implementa estruturas e operações para trabalhar com geometria em ℝ⁴,
-/// incluindo politopos regulares, projeções e visualizações.
 use std::f64::consts::PI;
 
 /// Ponto no espaço 4D: (x, y, z, w) ∈ ℝ⁴
@@ -588,7 +584,7 @@ mod tests {
     fn test_projection() {
         let proj = Projection4Dto3D::new(4.0);
         let p4d = Point4D::new(1.0, 1.0, 1.0, 1.0);
-        let (x, y, z) = proj.project(&p4d);
+        let (x, _y, _z) = proj.project(&p4d);
 
         // Verifica que a projeção escalou corretamente
         assert!((x - 1.0 / 3.0).abs() < 1e-10);

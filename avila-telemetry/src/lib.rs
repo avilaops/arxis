@@ -22,26 +22,26 @@
 //! let ma = ts.moving_average(3);
 //! ```
 
-pub mod time_series;
 pub mod anomaly;
-pub mod forecasting;
-pub mod features;
 pub mod decomposition;
+pub mod features;
+pub mod forecasting;
 pub mod models;
 pub mod observability;
+pub mod time_series;
 
-pub use time_series::TimeSeries;
-pub use anomaly::{AnomalyDetector, AnomalyType, Anomaly};
-pub use forecasting::{Forecaster, ForecastResult, ExponentialSmoothing, MovingAverageForecaster};
+pub use anomaly::{Anomaly, AnomalyDetector, AnomalyType};
+pub use decomposition::{Decomposer, DecompositionResult, DecompositionType};
 pub use features::FeatureExtractor;
-pub use decomposition::{Decomposer, DecompositionType, DecompositionResult};
+pub use forecasting::{ExponentialSmoothing, ForecastResult, Forecaster, MovingAverageForecaster};
 pub use observability::{
-    GoldenSignals, DataQualityAssessment, NASAQualityControl, ServiceLevelObjective,
-    ErrorBudget, StructuredLog, LogSeverity, AlertLevel, Alert, PerformanceTracker, DataQuality,
+    Alert, AlertLevel, DataQuality, DataQualityAssessment, ErrorBudget, GoldenSignals, LogSeverity,
+    NASAQualityControl, PerformanceTracker, ServiceLevelObjective, StructuredLog,
 };
+pub use time_series::TimeSeries;
 
 /// Common error type for the library
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub enum TelemetryError {
     /// Invalid input data
     InvalidData(String),

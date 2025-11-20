@@ -8,8 +8,9 @@
 /// - LISA Mission Proposal: arXiv:1702.00786
 /// - LISA Science Requirements: ESA-L3-EST-SCI-RS-001
 /// - NASA LISA Page: https://lisa.nasa.gov/
-use crate::physics::{CompactBinary, GravitationalWave};
 use std::f64::consts::PI;
+
+use crate::physics::CompactBinary;
 
 /// Speed of light in m/s
 const C: f64 = 299792458.0;

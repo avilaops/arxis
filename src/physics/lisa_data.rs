@@ -357,7 +357,7 @@ impl SyntheticDataGenerator {
             let t = i as f64 / self.sampling_rate;
 
             // Linear chirp (simplified - real inspiral is more complex)
-            let f_t = f_start + (f_end - f_start) * t / self.duration;
+            let _f_t = f_start + (f_end - f_start) * t / self.duration;
 
             // Phase evolution
             let phase = 2.0

@@ -2,8 +2,16 @@
 name = "avx-api-core"
 version = "0.1.0"
 edition = "2021"
-authors = ["Avila DevOps <nicolas@avila.inc>"]
-description = "Avx API Core - Internal business logic APIs for Avila Experience Fabric"
+authors = ["Nicolas Ávila <nicolas@avila.inc>"]
+license = "MIT OR Apache-2.0"
+description = "Core API types and business logic for Avila Experience Fabric - Shared models, traits, and utilities"
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://avila.cloud"
+documentation = "https://docs.rs/avx-api-core"
+readme = "README.md"
+keywords = ["api", "core", "types", "models", "utilities"]
+categories = ["web-programming", "api-bindings"]
+exclude = ["target/", "*.swp", ".git*"]
 
 [dependencies]
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }

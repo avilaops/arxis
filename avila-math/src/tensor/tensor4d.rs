@@ -1,7 +1,7 @@
 /// Tensor de ordem 4 - Generalização de matrizes para 4 dimensões
 /// Aplicações: relatividade geral, processamento de imagens, aprendizado de máquina
 
-use crate::tensor::{Tensor, Matrix, Vector};
+use crate::tensor::{Tensor, Matrix};
 
 /// Tensor de ordem 3
 pub type Tensor3D = Tensor<3>;

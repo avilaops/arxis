@@ -1,0 +1,47 @@
+[package]
+name = "avx-quantum-render"
+version = "0.1.0"
+edition = "2021"
+authors = ["Nicolas Ávila <nicolas@avila.inc>"]
+license = "MIT OR Apache-2.0"
+description = "Quantum Electrodynamics (QED) renderer using Path Integral formulation for physically-accurate photon transport"
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://avila.cloud"
+documentation = "https://docs.rs/avx-quantum-render"
+readme = "README.md"
+keywords = ["quantum", "rendering", "qed", "physics", "photon"]
+categories = ["rendering", "science", "graphics"]
+exclude = ["target/", "*.swp", ".git*", "examples/*.ppm", "output_*.ppm"]
+
+[dependencies]
+# Core Avila ecosystem
+avila-math = { path = "../avila-math" }
+avx-config = { path = "../avx-config" }
+
+# Numerical computing
+rand = "0.8"
+rand_distr = "0.4"
+num-complex = "0.4"
+
+# Parallelism
+rayon = "1.8"
+
+# Serialization (always enabled for diagnostics)
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0" }
+
+# Image export (optional)
+image = { version = "0.24", optional = true }
+
+[dev-dependencies]
+criterion = "0.5"
+approx = "0.5"
+
+[features]
+default = ["diagnostics"]
+diagnostics = ["num-complex/serde"]
+image-export = ["dep:image"]
+
+[[bench]]
+name = "render_bench"
+harness = false
