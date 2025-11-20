@@ -7,6 +7,7 @@ pub mod einstein;
 pub mod geodesic;
 pub mod gravitational_lensing;
 pub mod gravitational_waves;
+pub mod lisa;
 pub mod relativity;
 
 pub use cosmology::{
@@ -22,4 +23,5 @@ pub use gravitational_lensing::{
 pub use gravitational_waves::{
     CompactBinary, Detector, GravitationalWave, Polarization, WaveformAnalysis,
 };
+pub use lisa::{LISAMission, LISASource, LISASourceType};
 pub use relativity::{LorentzTransform, MinkowskiMetric, RiemannTensor, StressEnergyTensor};
