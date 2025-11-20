@@ -1,0 +1,13 @@
+[package]
+name = "avila-math"
+version = "0.1.0"
+edition = "2021"
+authors = ["Nicolas Ávila <nicolas@avila.inc>"]
+license = "MIT OR Apache-2.0"
+description = "Mathematical kernel for Avila ecosystem: vectors, matrices, quaternions, tensors, 4D geometry"
+repository = "https://github.com/avilaops/arxis"
+keywords = ["math", "linear-algebra", "quaternions", "tensors", "geometry"]
+categories = ["mathematics", "science", "game-development"]
+
+[dependencies]
+rand = "0.8"
