@@ -87,7 +87,17 @@ Biblioteca Rust completa incluindo **física relativística** (ondas gravitacion
 - Report generation (formatted analysis)
 - 6 tests passing
 
-**Total: 33 tests passing across all LISA modules**
+**Phase 6: Bayesian Parameter Estimation** ✅ (`lisa_inference.rs`)
+- MCMC sampling (Metropolis-Hastings algorithm)
+- Prior distributions (Uniform, LogUniform, Gaussian, Fixed)
+- Likelihood calculation for GW signals
+- Posterior inference with uncertainties
+- Chain diagnostics (ESS, acceptance rate, convergence)
+- Credible intervals (5%-95%) and medians
+- Parameter recovery assessment
+- 6 tests passing
+
+**Total: 39 tests passing across all LISA modules**
 
 **Examples:**
 - `lisa_data_example.rs` - Data generation and LDC format
@@ -95,6 +105,7 @@ Biblioteca Rust completa incluindo **física relativística** (ondas gravitacion
 - `lisa_analysis_example.rs` - Matched filtering search
 - `lisa_visualization_example.rs` - Multi-plot demonstration
 - `lisa_catalog_example.rs` - Complete end-to-end pipeline
+- `lisa_inference_example.rs` - Bayesian parameter estimation with MCMC
 
 
 ### 🕳️ Relatividade Geral
