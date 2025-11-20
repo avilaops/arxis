@@ -8,6 +8,8 @@ pub mod geodesic;
 pub mod gravitational_lensing;
 pub mod gravitational_waves;
 pub mod lisa;
+pub mod lisa_data;
+pub mod lisa_processing;
 pub mod relativity;
 
 pub use cosmology::{
@@ -24,4 +26,11 @@ pub use gravitational_waves::{
     CompactBinary, Detector, GravitationalWave, Polarization, WaveformAnalysis,
 };
 pub use lisa::{LISAMission, LISASource, LISASourceType};
+pub use lisa_data::{
+    DataValidator, LDCData, LDCMetadata, StrainTimeSeries, SyntheticDataGenerator,
+};
+pub use lisa_processing::{
+    DataProcessor, FrequencySpectrum, GlitchDetector, GlitchEvent, PowerSpectralDensity,
+    TDIChannels, WindowFunction,
+};
 pub use relativity::{LorentzTransform, MinkowskiMetric, RiemannTensor, StressEnergyTensor};
