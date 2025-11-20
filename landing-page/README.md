@@ -3,12 +3,15 @@
 Landing page oficial do **Arxis** - The Mathematical Citadel
 
 **URL**: [arxis.avilaops.com](https://arxis.avilaops.com)
+**Hospedagem**: GitHub Pages
 
 ---
 
 ## 📋 Sobre
 
 Landing page moderna e responsiva para o projeto **Arxis**, biblioteca Rust de física e matemática de nível científico. Design inspirado no tema "Cosmic Deep Space" com animações e interatividade.
+
+**Deploy via GitHub Pages** - Configuração automática com domínio customizado.
 
 ### Características
 
@@ -58,15 +61,73 @@ landing-page/
 
 ---
 
-## 🚀 Deploy
+## 🚀 Deploy no GitHub Pages
 
-### Opção 1: GitHub Pages
+### Setup Inicial
 
-1. Criar repositório no GitHub (se ainda não existir)
-2. Push dos arquivos para o repositório
-3. Ir em **Settings** → **Pages**
-4. Selecionar branch `main` e pasta `/landing-page` (ou root)
-5. Salvar e aguardar deploy
+1. **Criar repositório** (se ainda não existir):
+   - Nome sugerido: `arxis` ou `arxis-website`
+   - Visibilidade: Public (para GitHub Pages gratuito)
+
+2. **Push dos arquivos**:
+```powershell
+cd landing-page
+git init
+git add .
+git commit -m "Initial commit - Arxis landing page"
+git branch -M main
+git remote add origin https://github.com/avilaops/arxis.git
+git push -u origin main
+```
+
+3. **Ativar GitHub Pages**:
+   - Ir em **Settings** → **Pages**
+   - Source: Deploy from a branch
+   - Branch: `main` / `/(root)`
+   - Save
+
+4. **Configurar domínio customizado**:
+   - Em **Custom domain**: `arxis.avilaops.com`
+   - Save (vai criar arquivo `CNAME` automaticamente)
+
+5. **Habilitar HTTPS**:
+   - ✅ Enforce HTTPS (marcar checkbox)
+
+### Configuração DNS
+
+No seu provedor DNS (ex: Cloudflare):
+
+```
+Type: CNAME
+Name: arxis
+Target: avilaops.github.io
+Proxy: ON (recomendado)
+TTL: Auto
+```
+
+**Aguardar**: Propagação DNS pode levar até 24-48h (geralmente 5-10min com Cloudflare)
+
+### Verificar Deploy
+
+- URL temporária: `https://avilaops.github.io/arxis/`
+- URL final: `https://arxis.avilaops.com`
+
+---
+
+## 🔄 Atualizar Site (após mudanças)
+
+```powershell
+cd landing-page
+git add .
+git commit -m "Update: descrição das mudanças"
+git push
+```
+
+GitHub Pages faz deploy automático em ~1-2 minutos.
+
+---
+
+## 📦 Alternativas de Deploy (Backup)
 
 ### Opção 2: Netlify
 
