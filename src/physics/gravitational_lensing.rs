@@ -40,12 +40,7 @@ pub struct GravitationalLens {
 
 impl GravitationalLens {
     /// Cria nova lente gravitacional
-    pub fn new(
-        mass: f64,
-        distance_lens: f64,
-        distance_source: f64,
-        lens_type: LensType,
-    ) -> Self {
+    pub fn new(mass: f64, distance_lens: f64, distance_source: f64, lens_type: LensType) -> Self {
         Self {
             mass,
             distance_lens,
@@ -108,9 +103,11 @@ impl GravitationalLens {
                     return 0.0;
                 }
                 let ln_term = if x < 1.0 {
-                    (2.0 / (1.0 - x * x).sqrt()) * (0.5 * (1.0 - x).ln() - 0.5 * (1.0 + x).ln()).atanh()
+                    (2.0 / (1.0 - x * x).sqrt())
+                        * (0.5 * (1.0 - x).ln() - 0.5 * (1.0 + x).ln()).atanh()
                 } else {
-                    (2.0 / (x * x - 1.0).sqrt()) * (0.5 * (x - 1.0).ln() - 0.5 * (x + 1.0).ln()).atan()
+                    (2.0 / (x * x - 1.0).sqrt())
+                        * (0.5 * (x - 1.0).ln() - 0.5 * (x + 1.0).ln()).atan()
                 };
                 theta_e * ln_term / x
             }
@@ -128,16 +125,16 @@ impl GravitationalLens {
     /// Retorna vetor de posições de imagens (pode haver múltiplas)
     pub fn image_positions(&self, source_beta: f64) -> Vec<f64> {
         let theta_e = self.einstein_radius();
-        
+
         match self.lens_type {
             LensType::PointMass => {
                 // Solução analítica: θ = (β ± √(β² + 4θ_E²)) / 2
                 let discriminant = source_beta * source_beta + 4.0 * theta_e * theta_e;
                 let sqrt_disc = discriminant.sqrt();
-                
+
                 vec![
-                    (source_beta + sqrt_disc) / 2.0,  // Imagem positiva
-                    (source_beta - sqrt_disc) / 2.0,  // Imagem negativa
+                    (source_beta + sqrt_disc) / 2.0, // Imagem positiva
+                    (source_beta - sqrt_disc) / 2.0, // Imagem negativa
                 ]
             }
             LensType::SIS => {
@@ -167,7 +164,7 @@ impl GravitationalLens {
         }
 
         let theta_e = self.einstein_radius();
-        
+
         match self.lens_type {
             LensType::PointMass | LensType::SIS => {
                 let ratio = theta_e / theta;
@@ -351,21 +348,13 @@ pub struct LensingStatistics;
 impl LensingStatistics {
     /// Profundidade óptica τ para microlentes
     /// Probabilidade de uma fonte estar magnificada
-    pub fn optical_depth(
-        number_density: f64,
-        distance: f64,
-        einstein_radius: f64,
-    ) -> f64 {
+    pub fn optical_depth(number_density: f64, distance: f64, einstein_radius: f64) -> f64 {
         // τ = π θ_E² n_L D
         PI * einstein_radius * einstein_radius * number_density * distance
     }
 
     /// Taxa de eventos de microlente (eventos por ano)
-    pub fn event_rate(
-        optical_depth: f64,
-        einstein_time: f64,
-        number_of_sources: f64,
-    ) -> f64 {
+    pub fn event_rate(optical_depth: f64, einstein_time: f64, number_of_sources: f64) -> f64 {
         // Γ = (τ / t_E) N_sources
         (optical_depth / einstein_time) * number_of_sources
     }
@@ -396,7 +385,7 @@ mod tests {
         // Lente com 1 M☉ a 1000 pc da fonte a 2000 pc
         let lens = GravitationalLens::point_mass(1.0, 1000.0, 2000.0);
         let theta_e = lens.einstein_radius_arcsec();
-        
+
         // Ordem de grandeza: ~0.001 arcsec para massas solares
         assert!(theta_e > 0.0 && theta_e < 0.01);
     }
@@ -406,7 +395,7 @@ mod tests {
         let lens = GravitationalLens::point_mass(1e10, 1e6, 2e6);
         let theta = 1e-5;
         let alpha = lens.deflection_angle(theta);
-        
+
         // Deflexão deve ser positiva e finita
         assert!(alpha > 0.0);
         assert!(alpha.is_finite());
@@ -417,7 +406,7 @@ mod tests {
         let lens = GravitationalLens::point_mass(1e10, 1e6, 2e6);
         let source_beta = 1e-6;
         let images = lens.image_positions(source_beta);
-        
+
         // Lente pontual sempre produz 2 imagens
         assert_eq!(images.len(), 2);
         // Imagens em lados opostos
@@ -430,7 +419,7 @@ mod tests {
         let lens = GravitationalLens::point_mass(1e10, 1e6, 2e6);
         let theta = lens.einstein_radius() * 2.0;
         let mag = lens.magnification(theta);
-        
+
         // Magnificação deve ser > 1
         assert!(mag > 1.0);
         assert!(mag.is_finite());
@@ -439,10 +428,10 @@ mod tests {
     #[test]
     fn test_einstein_ring() {
         let lens = GravitationalLens::point_mass(1e10, 1e6, 2e6);
-        
+
         // Alinhamento perfeito forma anel
         assert!(lens.forms_einstein_ring(0.0, 1e-10));
-        
+
         // Desalinhamento não forma anel
         assert!(!lens.forms_einstein_ring(1e-5, 1e-10));
     }
@@ -451,7 +440,7 @@ mod tests {
     fn test_weak_lensing_shear() {
         let wl = WeakLensing::new(0.1, 0.02, 0.03);
         let gamma = wl.total_shear();
-        
+
         // γ = √(γ₁² + γ₂²)
         let expected = (0.02_f64.powi(2) + 0.03_f64.powi(2)).sqrt();
         assert!((gamma - expected).abs() < 1e-10);
@@ -461,7 +450,7 @@ mod tests {
     fn test_weak_lensing_magnification() {
         let wl = WeakLensing::new(0.05, 0.01, 0.01);
         let mag = wl.magnification();
-        
+
         // μ ≈ 1 / [(1-κ)² - γ²] > 1
         assert!(mag > 1.0);
         assert!(mag < 1.2); // Pequena magnificação para weak lensing
@@ -471,7 +460,7 @@ mod tests {
     fn test_microlensing_peak_magnification() {
         let event = MicrolensingEvent::new(1.0, 0.1, 30.0, 100.0);
         let mag_peak = event.peak_magnification();
-        
+
         // Para u₀ = 0.1, magnificação alta
         assert!(mag_peak > 10.0);
     }
@@ -479,11 +468,11 @@ mod tests {
     #[test]
     fn test_microlensing_symmetry() {
         let event = MicrolensingEvent::new(1.0, 0.5, 20.0, 50.0);
-        
+
         // Curva de luz simétrica em torno do pico
         let mag_before = event.magnification_at_time(40.0); // 10 dias antes
-        let mag_after = event.magnification_at_time(60.0);  // 10 dias depois
-        
+        let mag_after = event.magnification_at_time(60.0); // 10 dias depois
+
         assert!((mag_before - mag_after).abs() < 1e-10);
     }
 
@@ -491,7 +480,7 @@ mod tests {
     fn test_microlensing_detectability() {
         let event_strong = MicrolensingEvent::new(1.0, 0.1, 20.0, 50.0);
         let event_weak = MicrolensingEvent::new(1.0, 2.0, 20.0, 50.0);
-        
+
         // u₀ = 0.1 → detectável, u₀ = 2.0 → não detectável
         assert!(event_strong.is_detectable(1.34)); // threshold típico
         assert!(!event_weak.is_detectable(1.34));
@@ -500,7 +489,7 @@ mod tests {
     #[test]
     fn test_optical_depth() {
         let tau = LensingStatistics::optical_depth(1e8, 1e3, 1e-6);
-        
+
         // Profundidade óptica deve ser pequena mas positiva
         assert!(tau > 0.0);
         assert!(tau < 1.0);

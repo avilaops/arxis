@@ -38,7 +38,7 @@ fn main() {
         let beta = (i as f64) * theta_e / 2.0;
         let images = galaxy_lens.image_positions(beta);
         let sep = galaxy_lens.image_separation(beta);
-        
+
         if images.len() >= 2 {
             println!(
                 "  │  {:.4}  │   {:.4}    │   {:.4}    │    {:.4}    │",
@@ -62,7 +62,7 @@ fn main() {
         let theta_ratio = i as f64 * 0.5;
         let theta = theta_ratio * galaxy_lens.einstein_radius();
         let mag = galaxy_lens.magnification(theta);
-        
+
         println!(
             "  │    {:.2}     │     {:.2}     │    {:.2}×    │",
             theta_ratio, mag, mag
@@ -83,12 +83,12 @@ fn main() {
     println!("  Tempo de Atraso entre Imagens:");
     let source_beta = theta_e * 0.5;
     let images = galaxy_lens.image_positions(source_beta);
-    
+
     if images.len() >= 2 {
         let dt1 = galaxy_lens.time_delay(images[0], source_beta);
         let dt2 = galaxy_lens.time_delay(images[1], source_beta);
         let dt_diff = (dt1 - dt2).abs();
-        
+
         println!("    • Δt entre imagens: {:.2} dias", dt_diff / 86400.0);
         println!("    • Usado para medir H₀ (constante de Hubble)\n");
     }
@@ -108,7 +108,7 @@ fn main() {
 
     println!("  Ângulo de Deflexão α(θ) para θ = 2θ_E:");
     let theta_test = point_lens.einstein_radius() * 2.0;
-    
+
     println!("    • Point Mass:  α = {:.4e} rad", point_lens.deflection_angle(theta_test));
     println!("    • SIS:         α = {:.4e} rad (constante)", sis_lens.deflection_angle(theta_test));
     println!("    • NFW:         α = {:.4e} rad\n", nfw_lens.deflection_angle(theta_test));
@@ -143,7 +143,7 @@ fn main() {
         let e1_int = (i as f64 - 1.5) * 0.1;
         let e2_int = (i as f64 - 1.5) * 0.05;
         let (e1_obs, e2_obs) = weak_lens.distort_galaxy_shape(e1_int, e2_int);
-        
+
         println!(
             "  │  {:.3}   │  {:.3}   │  {:.3}   │  {:.3}   │",
             e1_int, e2_int, e1_obs, e2_obs
@@ -188,11 +188,11 @@ fn main() {
     for i in 0..15 {
         let t = 70.0 + (i as f64) * 4.0;
         let mag = microlens_event.magnification_at_time(t);
-        
+
         // Barra ASCII proporcional à magnificação
         let bar_length = ((mag - 1.0) * 10.0).min(20.0) as usize;
         let bar: String = "█".repeat(bar_length);
-        
+
         println!("  │   {:.1}     │    {:.3}     │ {}│", t, mag, bar);
     }
     println!("  └────────────┴──────────────┴──────────────────┘\n");

@@ -34,12 +34,12 @@ impl CosmologicalParameters {
     /// Cria parâmetros cosmológicos padrão (Planck 2018)
     pub fn planck_2018() -> Self {
         Self {
-            h0: 67.4,                   // km/s/Mpc
-            omega_matter: 0.315,        // Matéria (escura + bariônica)
-            omega_lambda: 0.685,        // Energia escura
-            omega_radiation: 9.24e-5,   // Radiação
-            omega_curvature: 0.0,       // Universo plano
-            cmb_temperature: 2.7255,    // K
+            h0: 67.4,                 // km/s/Mpc
+            omega_matter: 0.315,      // Matéria (escura + bariônica)
+            omega_lambda: 0.685,      // Energia escura
+            omega_radiation: 9.24e-5, // Radiação
+            omega_curvature: 0.0,     // Universo plano
+            cmb_temperature: 2.7255,  // K
         }
     }
 
@@ -103,7 +103,8 @@ impl CosmologicalParameters {
 
     /// Verifica se o universo é plano
     pub fn is_flat(&self) -> bool {
-        let total = self.omega_matter + self.omega_lambda + self.omega_radiation + self.omega_curvature;
+        let total =
+            self.omega_matter + self.omega_lambda + self.omega_radiation + self.omega_curvature;
         (total - 1.0).abs() < 1e-3
     }
 
@@ -141,13 +142,12 @@ impl FLRWUniverse {
     /// E(z) = √[Ω_m(1+z)³ + Ω_r(1+z)⁴ + Ω_k(1+z)² + Ω_Λ]
     pub fn hubble_parameter(&self, redshift: f64) -> f64 {
         let z1 = 1.0 + redshift;
-        let e_z = (
-            self.params.omega_matter * z1.powi(3)
+        let e_z = (self.params.omega_matter * z1.powi(3)
             + self.params.omega_radiation * z1.powi(4)
             + self.params.omega_curvature * z1.powi(2)
-            + self.params.omega_lambda
-        ).sqrt();
-        
+            + self.params.omega_lambda)
+            .sqrt();
+
         self.params.h0 * e_z
     }
 
@@ -168,18 +168,18 @@ impl FLRWUniverse {
         let n_steps = 1000;
         let dz = redshift / n_steps as f64;
         let c = 3e8; // m/s
-        
+
         let mut integral = 0.0;
         for i in 0..n_steps {
             let z1 = i as f64 * dz;
             let z2 = (i + 1) as f64 * dz;
-            
+
             let h1 = self.hubble_parameter(z1) * 1000.0 / 3.086e22; // para 1/s
             let h2 = self.hubble_parameter(z2) * 1000.0 / 3.086e22;
-            
-            integral += (1.0/h1 + 1.0/h2) * dz / 2.0;
+
+            integral += (1.0 / h1 + 1.0 / h2) * dz / 2.0;
         }
-        
+
         c * integral
     }
 
@@ -204,14 +204,14 @@ impl FLRWUniverse {
     pub fn lookback_time(&self, redshift: f64) -> f64 {
         let n_steps = 1000;
         let dz = redshift / n_steps as f64;
-        
+
         let mut integral = 0.0;
         for i in 0..n_steps {
             let z = i as f64 * dz + dz / 2.0;
             let h = self.hubble_parameter(z) * 1000.0 / 3.086e22;
             integral += 1.0 / ((1.0 + z) * h) * dz;
         }
-        
+
         integral
     }
 
@@ -227,9 +227,8 @@ impl FLRWUniverse {
         // Para z alto, Ω_r domina: H(z) ∝ (1+z)²
         let h0_si = self.params.hubble_parameter_si();
         let omega_r_sqrt = self.params.omega_radiation.sqrt();
-        
-        1.0 / (2.0 * h0_si * omega_r_sqrt) * 
-            (1.0 / (1.0 + z_start) - 1.0 / (1.0 + z_end))
+
+        1.0 / (2.0 * h0_si * omega_r_sqrt) * (1.0 / (1.0 + z_start) - 1.0 / (1.0 + z_end))
     }
 
     /// Horizonte de partícula (tamanho da região causalmente conectada)
@@ -250,12 +249,11 @@ impl FLRWUniverse {
     pub fn energy_density(&self, redshift: f64) -> f64 {
         let rho_c = self.params.critical_density();
         let z1 = 1.0 + redshift;
-        
-        rho_c * (
-            self.params.omega_matter * z1.powi(3)
-            + self.params.omega_radiation * z1.powi(4)
-            + self.params.omega_lambda
-        )
+
+        rho_c
+            * (self.params.omega_matter * z1.powi(3)
+                + self.params.omega_radiation * z1.powi(4)
+                + self.params.omega_lambda)
     }
 
     /// Taxa de expansão ȧ/a = H(z)
@@ -270,7 +268,7 @@ impl FLRWUniverse {
         let or = self.params.omega_radiation * z1.powi(4);
         let ol = self.params.omega_lambda;
         let e2 = om + or + ol;
-        
+
         (om + 2.0 * or - 2.0 * ol) / (2.0 * e2)
     }
 }
@@ -314,14 +312,11 @@ impl CosmologicalObservables {
 
     /// Volume comóvel por redshift
     /// dV/dz = 4π c χ²(z) / H(z)
-    pub fn comoving_volume_element(
-        universe: &FLRWUniverse,
-        redshift: f64,
-    ) -> f64 {
+    pub fn comoving_volume_element(universe: &FLRWUniverse, redshift: f64) -> f64 {
         let c = 3e8;
         let chi = universe.comoving_distance(redshift);
         let h = universe.hubble_parameter(redshift) * 1000.0 / 3.086e22;
-        
+
         4.0 * PI * c * chi * chi / h
     }
 
@@ -390,7 +385,7 @@ mod tests {
     #[test]
     fn test_planck_parameters() {
         let params = CosmologicalParameters::planck_2018();
-        
+
         assert!((params.h0 - 67.4).abs() < 0.1);
         assert!((params.omega_matter - 0.315).abs() < 0.01);
         assert!(params.is_flat());
@@ -399,11 +394,11 @@ mod tests {
     #[test]
     fn test_hubble_parameter() {
         let universe = FLRWUniverse::standard();
-        
+
         // H(z=0) = H₀
         let h0 = universe.hubble_parameter(0.0);
         assert!((h0 - universe.params.h0).abs() < 0.01);
-        
+
         // H(z) aumenta com z
         let h1 = universe.hubble_parameter(1.0);
         let h2 = universe.hubble_parameter(2.0);
@@ -413,10 +408,10 @@ mod tests {
     #[test]
     fn test_scale_factor() {
         let universe = FLRWUniverse::standard();
-        
+
         // a(z=0) = 1
         assert!((universe.scale_factor(0.0) - 1.0).abs() < 1e-10);
-        
+
         // a(z=1) = 0.5
         assert!((universe.scale_factor(1.0) - 0.5).abs() < 1e-10);
     }
@@ -425,17 +420,17 @@ mod tests {
     fn test_distance_relations() {
         let universe = FLRWUniverse::standard();
         let z = 0.5;
-        
+
         let d_c = universe.comoving_distance(z);
         let d_l = universe.luminosity_distance(z);
         let d_a = universe.angular_diameter_distance(z);
-        
+
         // d_L = (1+z) d_c
         assert!((d_l - (1.0 + z) * d_c).abs() / d_l < 0.01);
-        
+
         // d_A = d_c / (1+z)
         assert!((d_a - d_c / (1.0 + z)).abs() / d_a < 0.01);
-        
+
         // d_L = (1+z)² d_A
         assert!((d_l - (1.0 + z).powi(2) * d_a).abs() / d_l < 0.01);
     }
@@ -443,11 +438,11 @@ mod tests {
     #[test]
     fn test_lookback_time() {
         let universe = FLRWUniverse::standard();
-        
+
         // t_L(z=0) = 0
         let t0 = universe.lookback_time(0.0);
         assert!(t0.abs() < 1e-6);
-        
+
         // t_L aumenta com z
         let t1 = universe.lookback_time(1.0);
         let t2 = universe.lookback_time(2.0);
@@ -458,7 +453,7 @@ mod tests {
     fn test_age_of_universe() {
         let universe = FLRWUniverse::standard();
         let age = universe.age_of_universe();
-        
+
         // Idade deve ser ~13.8 bilhões de anos
         let age_gyr = age / (365.25 * 24.0 * 3600.0 * 1e9);
         assert!(age_gyr > 10.0 && age_gyr < 20.0);
@@ -469,7 +464,7 @@ mod tests {
         let t0 = 2.725;
         let z = 1100.0; // recombinação
         let t_rec = CosmologicalObservables::cmb_temperature(t0, z);
-        
+
         // T ≈ 3000 K na recombinação
         assert!(t_rec > 2000.0 && t_rec < 4000.0);
     }
@@ -477,11 +472,11 @@ mod tests {
     #[test]
     fn test_deceleration_parameter() {
         let universe = FLRWUniverse::standard();
-        
+
         // q hoje deve ser negativo (expansão acelerada)
         let q0 = universe.deceleration_parameter(0.0);
         assert!(q0 < 0.0);
-        
+
         // q no passado deve ser positivo (domínio de matéria)
         let q_past = universe.deceleration_parameter(5.0);
         assert!(q_past > 0.0);
@@ -492,7 +487,7 @@ mod tests {
         let lambda_em = 500.0; // nm (verde)
         let z = 1.0;
         let lambda_obs = CosmologicalObservables::observed_wavelength(lambda_em, z);
-        
+
         // λ_obs = λ_em (1+z) = 1000 nm (infravermelho)
         assert!((lambda_obs - 1000.0).abs() < 0.01);
     }
@@ -500,7 +495,7 @@ mod tests {
     #[test]
     fn test_einstein_de_sitter() {
         let params = CosmologicalParameters::einstein_de_sitter();
-        
+
         assert!((params.omega_matter - 1.0).abs() < 1e-10);
         assert!((params.omega_lambda).abs() < 1e-10);
         assert!(params.is_flat());
