@@ -10,6 +10,7 @@ pub mod gravitational_waves;
 pub mod lisa;
 pub mod lisa_data;
 pub mod lisa_processing;
+pub mod lisa_analysis;
 pub mod relativity;
 
 pub use cosmology::{
@@ -32,5 +33,9 @@ pub use lisa_data::{
 pub use lisa_processing::{
     DataProcessor, FrequencySpectrum, GlitchDetector, GlitchEvent, PowerSpectralDensity,
     TDIChannels, WindowFunction,
+};
+pub use lisa_analysis::{
+    EventCandidate, MatchedFilter, MatchedFilterResult, TemplateBank, TemplateParameters,
+    WaveformTemplate,
 };
 pub use relativity::{LorentzTransform, MinkowskiMetric, RiemannTensor, StressEnergyTensor};
