@@ -12,7 +12,6 @@
 /// 7. Export catalog (JSON, CSV)
 ///
 /// Phase 5: Event Catalog & Reporting demonstration
-
 use arxis_quaternions::physics::{
     CatalogEvent, EventCatalog, LISASource, MatchedFilter, PowerSpectralDensity,
     SourceClassification, SyntheticDataGenerator, TemplateBank,
@@ -38,28 +37,59 @@ fn main() {
     let gen = SyntheticDataGenerator::new(sampling_rate, duration);
 
     println!("   Observation parameters:");
-    println!("   ├─ Duration: {:.0} s ({:.1} hours)", duration, duration / 3600.0);
+    println!(
+        "   ├─ Duration: {:.0} s ({:.1} hours)",
+        duration,
+        duration / 3600.0
+    );
     println!("   ├─ Sampling rate: {} Hz", sampling_rate);
-    println!("   └─ Total samples: {}", (duration * sampling_rate) as usize);
+    println!(
+        "   └─ Total samples: {}",
+        (duration * sampling_rate) as usize
+    );
     println!();
 
     // Inject multiple signals
     println!("   Injecting signals:");
-    
+
     // Signal 1: MBHB
     let source1 = LISASource::smbh(1e6, 5e5, 3e25, 1.0);
-    let signal1 = gen.monochromatic_binary(source1.gw_frequency(), source1.characteristic_strain(), 0.0);
-    println!("   ├─ MBHB: M={:.1e}+{:.1e} M☉, f={:.6} Hz", 1e6, 5e5, source1.gw_frequency());
+    let signal1 =
+        gen.monochromatic_binary(source1.gw_frequency(), source1.characteristic_strain(), 0.0);
+    println!(
+        "   ├─ MBHB: M={:.1e}+{:.1e} M☉, f={:.6} Hz",
+        1e6,
+        5e5,
+        source1.gw_frequency()
+    );
 
     // Signal 2: Another MBHB
     let source2 = LISASource::smbh(2e6, 8e5, 5e25, 2.0);
-    let signal2 = gen.monochromatic_binary(source2.gw_frequency(), source2.characteristic_strain() * 0.8, 0.0);
-    println!("   ├─ MBHB: M={:.1e}+{:.1e} M☉, f={:.6} Hz", 2e6, 8e5, source2.gw_frequency());
+    let signal2 = gen.monochromatic_binary(
+        source2.gw_frequency(),
+        source2.characteristic_strain() * 0.8,
+        0.0,
+    );
+    println!(
+        "   ├─ MBHB: M={:.1e}+{:.1e} M☉, f={:.6} Hz",
+        2e6,
+        8e5,
+        source2.gw_frequency()
+    );
 
     // Signal 3: EMRI
     let source3 = LISASource::emri(1e5, 15.0, 1.5, 10.0);
-    let signal3 = gen.monochromatic_binary(source3.gw_frequency(), source3.characteristic_strain() * 0.5, 0.0);
-    println!("   └─ EMRI: M={:.1e}+{:.1e} M☉, f={:.6} Hz", 1e5, 15.0, source3.gw_frequency());
+    let signal3 = gen.monochromatic_binary(
+        source3.gw_frequency(),
+        source3.characteristic_strain() * 0.5,
+        0.0,
+    );
+    println!(
+        "   └─ EMRI: M={:.1e}+{:.1e} M☉, f={:.6} Hz",
+        1e5,
+        15.0,
+        source3.gw_frequency()
+    );
     println!();
 
     // Combine signals with noise
@@ -86,23 +116,23 @@ fn main() {
     // Create template bank
     let mut bank = TemplateBank::new(0.97);
     println!("   Building template bank...");
-    
+
     bank.generate_mbhb_grid(
-        (5e5, 3e6),  // m1 range
-        (2e5, 1e6),  // m2 range
-        5,           // n_m1
-        4,           // n_m2
-        3e25,        // distance
+        (5e5, 3e6), // m1 range
+        (2e5, 1e6), // m2 range
+        5,          // n_m1
+        4,          // n_m2
+        3e25,       // distance
         duration,
         sampling_rate,
     );
-    
+
     println!("   ├─ Generated {} MBHB templates", bank.len());
 
     // Add EMRI templates
     let initial_count = bank.len();
     bank.generate_emri_grid(
-        (5e4, 2e5),  // MBH mass range
+        (5e4, 2e5),   // MBH mass range
         (10.0, 30.0), // CO mass range
         3,            // n_mbh
         2,            // n_co
@@ -110,8 +140,11 @@ fn main() {
         duration,
         sampling_rate,
     );
-    
-    println!("   ├─ Generated {} EMRI templates", bank.len() - initial_count);
+
+    println!(
+        "   ├─ Generated {} EMRI templates",
+        bank.len() - initial_count
+    );
     println!("   └─ Total templates: {}", bank.len());
     println!();
 
@@ -162,7 +195,7 @@ fn main() {
         let event_id = format!("LISA-GW-{:06}", 240120 + i);
         let utc_time = format!("2024-01-20T{:02}:{:02}:00Z", i / 60, i % 60);
         let gps_time = result.time;
-        
+
         let event = CatalogEvent {
             id: event_id,
             gps_time,
@@ -203,15 +236,21 @@ fn main() {
 
     println!("   Event breakdown:");
     println!("   ├─ Total events: {}", stats.total_events);
-    println!("   ├─ MBHB: {} ({:.1}%)", 
+    println!(
+        "   ├─ MBHB: {} ({:.1}%)",
         stats.mbhb_count,
-        100.0 * stats.mbhb_count as f64 / stats.total_events as f64);
-    println!("   ├─ EMRI: {} ({:.1}%)", 
+        100.0 * stats.mbhb_count as f64 / stats.total_events as f64
+    );
+    println!(
+        "   ├─ EMRI: {} ({:.1}%)",
         stats.emri_count,
-        100.0 * stats.emri_count as f64 / stats.total_events as f64);
-    println!("   └─ Galactic: {} ({:.1}%)", 
+        100.0 * stats.emri_count as f64 / stats.total_events as f64
+    );
+    println!(
+        "   └─ Galactic: {} ({:.1}%)",
         stats.galactic_count,
-        100.0 * stats.galactic_count as f64 / stats.total_events as f64);
+        100.0 * stats.galactic_count as f64 / stats.total_events as f64
+    );
     println!();
 
     println!("   SNR statistics:");
@@ -222,13 +261,13 @@ fn main() {
 
     // Filter examples
     println!("   Query examples:");
-    
+
     let mbhb_events = catalog.filter_by_source(SourceClassification::MBHB);
     println!("   ├─ MBHB events: {}", mbhb_events.len());
-    
+
     let high_snr = catalog.filter_by_snr(10.0);
     println!("   ├─ SNR > 10: {}", high_snr.len());
-    
+
     let time_range = catalog.filter_by_time(0.0, 5000.0);
     println!("   └─ Events in [0, 5000]s: {}", time_range.len());
     println!();
@@ -299,9 +338,11 @@ fn main() {
             println!("   │  ├─ M₂: {:.2e} M☉", event.parameters.mass_2);
             println!("   │  ├─ Mchirp: {:.2e} M☉", event.parameters.chirp_mass);
             println!("   │  └─ Mtotal: {:.2e} M☉", event.parameters.total_mass);
-            println!("   ├─ Distance: {:.2e} m ({:.1} Gpc)", 
+            println!(
+                "   ├─ Distance: {:.2e} m ({:.1} Gpc)",
                 event.parameters.distance,
-                event.parameters.distance / 3.086e25);
+                event.parameters.distance / 3.086e25
+            );
             println!("   ├─ Data Quality:");
             println!("   │  ├─ Glitches: {}", event.data_quality.glitches);
             println!("   │  ├─ Gaps: {}", event.data_quality.gaps);
