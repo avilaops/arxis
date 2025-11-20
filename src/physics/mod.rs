@@ -13,6 +13,7 @@ pub mod lisa_catalog;
 pub mod lisa_data;
 pub mod lisa_inference;
 pub mod lisa_processing;
+pub mod lisa_telemetry;
 pub mod lisa_visualization;
 pub mod relativity;
 

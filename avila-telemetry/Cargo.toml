@@ -1,0 +1,38 @@
+[package]
+name = "avila-telemetry"
+version = "0.1.0"
+edition = "2021"
+authors = ["Nicolas Avila <avilaops@gmail.com>"]
+license = "MIT OR Apache-2.0"
+description = "Time series analysis, telemetry, and forecasting library"
+repository = "https://github.com/avilaops/telemetry"
+keywords = ["telemetry", "time-series", "forecasting", "anomaly-detection"]
+categories = ["science", "algorithms"]
+
+[dependencies]
+# Core dependencies
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+
+# Numerical computing
+ndarray = "0.15"
+num-traits = "0.2"
+
+# Statistics
+statrs = "0.16"
+
+# Optional: FFT and signal processing
+rustfft = { version = "6.1", optional = true }
+
+[dev-dependencies]
+criterion = "0.5"
+approx = "0.5"
+
+[features]
+default = ["fft"]
+fft = ["rustfft"]
+
+[[bench]]
+name = "time_series_bench"
+harness = false

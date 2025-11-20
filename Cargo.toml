@@ -8,6 +8,7 @@ members = [
     "avx-events",
     "avx-cli",
     "avila-math",
+    "avila-telemetry",
 ]
 resolver = "2"
 
@@ -45,6 +46,8 @@ path = "examples/geometry4d_example.rs"
 [dependencies]
 rand = "0.8"
 rand_distr = "0.4"
+chrono = { version = "0.4", features = ["serde"] }
 avila-math = { path = "avila-math" }
+avila-telemetry = { path = "avila-telemetry" }
 
 [dev-dependencies]
