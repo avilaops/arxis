@@ -30,21 +30,15 @@
 ///     "OK"
 /// }
 /// ```
-
-use axum::{
-    body::Body,
-    extract::Request,
-    middleware::Next,
-    response::Response,
-};
-use std::sync::{Arc, Mutex};
-use std::time::Instant;
-use tower::{Layer, Service};
-use std::task::{Context, Poll};
+use axum::{body::Body, extract::Request, middleware::Next, response::Response};
 use std::future::Future;
 use std::pin::Pin;
+use std::sync::{Arc, Mutex};
+use std::task::{Context, Poll};
+use std::time::Instant;
+use tower::{Layer, Service};
 
-use crate::{AvxMetrics, AvxContext};
+use crate::AvxMetrics;
 
 /// Collector de latências em memória
 ///
@@ -111,10 +105,7 @@ impl LatencyCollector {
 
     /// Retorna snapshot atual das latências
     pub fn snapshot(&self) -> Vec<f64> {
-        self.latencies
-            .lock()
-            .map(|l| l.clone())
-            .unwrap_or_default()
+        self.latencies.lock().map(|l| l.clone()).unwrap_or_default()
     }
 
     /// Retorna estatísticas das latências
@@ -131,10 +122,8 @@ impl LatencyCollector {
         let sum: f64 = latencies.iter().sum();
         let mean = sum / latencies.len() as f64;
 
-        let variance: f64 = latencies
-            .iter()
-            .map(|x| (x - mean).powi(2))
-            .sum::<f64>() / latencies.len() as f64;
+        let variance: f64 =
+            latencies.iter().map(|x| (x - mean).powi(2)).sum::<f64>() / latencies.len() as f64;
         let std_dev = variance.sqrt();
 
         LatencyStatistics {

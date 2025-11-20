@@ -49,7 +49,7 @@ pub fn init_tracing(ctx: &AvxContext) {
 }
 
 /// AVX-specific telemetry wrapper for time series metrics
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct AvxMetrics {
     detector: Arc<AnomalyDetector>,
 }

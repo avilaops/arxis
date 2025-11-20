@@ -27,6 +27,7 @@ pub struct Anomaly {
 }
 
 /// Anomaly detector using various statistical methods
+#[derive(Debug)]
 pub struct AnomalyDetector {
     /// Z-score threshold for detection
     pub z_threshold: f64,
