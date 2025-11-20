@@ -1,0 +1,37 @@
+{
+    "folders": [
+        {
+            "path": "AvilaKernel"
+        },
+        {
+            "path": "AvilaMath"
+        },
+        {
+            "path": "AvilaRenderer"
+        },
+        {
+            "path": "AvilaEditor"
+        },
+        {
+            "path": "Arxis"
+        }
+    ],
+    "settings": {
+        "rust-analyzer.linkedProjects": [
+            "AvilaKernel/Cargo.toml",
+            "AvilaMath/Cargo.toml",
+            "AvilaRenderer/Cargo.toml",
+            "AvilaEditor/Cargo.toml",
+            "Arxis/Cargo.toml"
+        ],
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "rust-lang.rust-analyzer",
+        "files.watcherExclude": {
+            "**/target/**": true,
+            "**/node_modules/**": true,
+            "**/.git/**": true,
+            "**/.obsidian/**": true,
+            "**/.vscode/**": false
+        }
+    }
+}

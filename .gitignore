@@ -47,3 +47,10 @@ Avila-Engine/
 
 # Arquivos de lista gerados
 file_list.txt
+
+# Variáveis de ambiente e secrets
+.env
+.env.local
+**/.env
+**/.env.local
+*.env
