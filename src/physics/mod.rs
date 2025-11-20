@@ -11,6 +11,7 @@ pub mod lisa;
 pub mod lisa_data;
 pub mod lisa_processing;
 pub mod lisa_analysis;
+pub mod lisa_visualization;
 pub mod relativity;
 
 pub use cosmology::{
@@ -37,5 +38,8 @@ pub use lisa_processing::{
 pub use lisa_analysis::{
     EventCandidate, MatchedFilter, MatchedFilterResult, TemplateBank, TemplateParameters,
     WaveformTemplate,
+};
+pub use lisa_visualization::{
+    SNRPlot, SkyMap, Spectrogram, TemplateBankPlot, TimeSeriesPlot,
 };
 pub use relativity::{LorentzTransform, MinkowskiMetric, RiemannTensor, StressEnergyTensor};

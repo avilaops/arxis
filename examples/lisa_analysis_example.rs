@@ -10,7 +10,6 @@
 /// 5. Extract event parameters
 ///
 /// This showcases the **Phase 3: Analysis Layer** of the LISA pipeline.
-
 use arxis_quaternions::physics::{
     EventCandidate, LISASource, MatchedFilter, PowerSpectralDensity, StrainTimeSeries,
     SyntheticDataGenerator, TemplateBank, TemplateParameters, WaveformTemplate,
@@ -43,8 +42,15 @@ fn main() {
     println!("   Primary mass: {:.1e} M☉", m1);
     println!("   Secondary mass: {:.1e} M☉", m2);
     println!("   Total mass: {:.1e} M☉", m1 + m2);
-    println!("   Chirp mass: {:.1e} M☉", ((m1 * m2).powf(3.0 / 5.0)) / ((m1 + m2).powf(1.0 / 5.0)));
-    println!("   Distance: {:.1e} m ({:.1} Gpc)", distance, distance / 3.086e25);
+    println!(
+        "   Chirp mass: {:.1e} M☉",
+        ((m1 * m2).powf(3.0 / 5.0)) / ((m1 + m2).powf(1.0 / 5.0))
+    );
+    println!(
+        "   Distance: {:.1e} m ({:.1} Gpc)",
+        distance,
+        distance / 3.086e25
+    );
     println!("   Redshift: {:.2}", redshift);
     println!("   GW frequency: {:.6} Hz", f_gw);
     println!("   Characteristic strain: {:.2e}", h_c);
@@ -59,7 +65,10 @@ fn main() {
     let noise_level = 1e-22;
     let data = gen.signal_plus_noise(&signal, noise_level);
 
-    println!("   Generated {} s of data at {} Hz", duration, sampling_rate);
+    println!(
+        "   Generated {} s of data at {} Hz",
+        duration, sampling_rate
+    );
     println!("   Signal samples: {}", signal.h_plus.len());
     println!("   Noise level: {:.2e}", noise_level);
     println!("   Signal RMS: {:.2e}", signal.rms_strain());
@@ -77,10 +86,10 @@ fn main() {
     // Method A: MBHB Grid (simple m1, m2 grid)
     println!("   Method A: MBHB Mass Grid");
     bank.generate_mbhb_grid(
-        (5e5, 2e6),  // m1 range
-        (2e5, 1e6),  // m2 range
-        4,           // n_m1
-        4,           // n_m2
+        (5e5, 2e6), // m1 range
+        (2e5, 1e6), // m2 range
+        4,          // n_m1
+        4,          // n_m2
         distance,
         duration,
         sampling_rate,
@@ -91,10 +100,10 @@ fn main() {
     let mut bank2 = TemplateBank::new(0.97);
     println!("   Method B: Chirp Mass Grid");
     bank2.generate_chirp_mass_grid(
-        (1e5, 5e5),  // Chirp mass range
-        (0.2, 0.8),  // Mass ratio range
-        5,           // n_chirp
-        4,           // n_ratio
+        (1e5, 5e5), // Chirp mass range
+        (0.2, 0.8), // Mass ratio range
+        5,          // n_chirp
+        4,          // n_ratio
         distance,
         duration,
         sampling_rate,
@@ -107,14 +116,21 @@ fn main() {
 
     // Estimate template count
     let (est_m1, est_m2) = bank.estimate_template_count((5e5, 2e6), (2e5, 1e6));
-    println!("   Recommended templates: {}×{} = {}", est_m1, est_m2, est_m1 * est_m2);
+    println!(
+        "   Recommended templates: {}×{} = {}",
+        est_m1,
+        est_m2,
+        est_m1 * est_m2
+    );
 
     // Optimize bank
     let original_count = bank.len();
     bank.optimize(0.98);
     let optimized_count = bank.len();
-    println!("   Optimized: {} → {} templates ({:.1}% reduction)", 
-        original_count, optimized_count, 
+    println!(
+        "   Optimized: {} → {} templates ({:.1}% reduction)",
+        original_count,
+        optimized_count,
         100.0 * (1.0 - optimized_count as f64 / original_count as f64)
     );
     println!();
@@ -129,7 +145,10 @@ fn main() {
     let psd = PowerSpectralDensity::lisa_noise_model(1e-4, 0.05, 1000);
     println!("   LISA noise PSD:");
     println!("   f_min = {:.6} Hz", psd.frequencies[0]);
-    println!("   f_max = {:.6} Hz", psd.frequencies[psd.frequencies.len() - 1]);
+    println!(
+        "   f_max = {:.6} Hz",
+        psd.frequencies[psd.frequencies.len() - 1]
+    );
     println!("   PSD at {} Hz: {:.2e} Hz⁻¹", f_gw, psd.interpolate(f_gw));
     println!();
 
@@ -142,8 +161,15 @@ fn main() {
     let results = mf.search(&data);
     let t_elapsed = t_start.elapsed();
 
-    println!("   Search completed in {:.2} ms", t_elapsed.as_secs_f64() * 1000.0);
-    println!("   Found {} candidates above SNR = {}", results.len(), snr_threshold);
+    println!(
+        "   Search completed in {:.2} ms",
+        t_elapsed.as_secs_f64() * 1000.0
+    );
+    println!(
+        "   Found {} candidates above SNR = {}",
+        results.len(),
+        snr_threshold
+    );
     println!();
 
     // ========================================================================
@@ -156,8 +182,13 @@ fn main() {
         // Show top 5 candidates
         println!("   Top candidates:");
         for (i, result) in results.iter().take(5).enumerate() {
-            println!("   #{} SNR = {:.2}, Time = {:.1} s, Template: {}",
-                i + 1, result.snr, result.time, result.template_id);
+            println!(
+                "   #{} SNR = {:.2}, Time = {:.1} s, Template: {}",
+                i + 1,
+                result.snr,
+                result.time,
+                result.template_id
+            );
         }
         println!();
 
@@ -166,7 +197,11 @@ fn main() {
         let clustered = mf.cluster_events(&results, time_window);
 
         println!("   Clustering with {:.0}s window:", time_window);
-        println!("   {} candidates → {} clusters", results.len(), clustered.len());
+        println!(
+            "   {} candidates → {} clusters",
+            results.len(),
+            clustered.len()
+        );
         println!();
 
         // ========================================================================
@@ -210,8 +245,14 @@ fn main() {
         let m2_error = ((m2_recovered - m2) / m2 * 100.0).abs();
 
         println!("   Injected vs Recovered:");
-        println!("   ├─ M₁: {:.2e} → {:.2e} M☉ (Δ = {:.1}%)", m1, m1_recovered, m1_error);
-        println!("   ├─ M₂: {:.2e} → {:.2e} M☉ (Δ = {:.1}%)", m2, m2_recovered, m2_error);
+        println!(
+            "   ├─ M₁: {:.2e} → {:.2e} M☉ (Δ = {:.1}%)",
+            m1, m1_recovered, m1_error
+        );
+        println!(
+            "   ├─ M₂: {:.2e} → {:.2e} M☉ (Δ = {:.1}%)",
+            m2, m2_recovered, m2_error
+        );
         println!("   ├─ SNR: {:.2}", best.snr);
         println!("   └─ Template match: {}", best.template_id);
         println!();
@@ -222,10 +263,12 @@ fn main() {
             println!("   SNR comparison:");
             println!("   ├─ Measured: {:.2}", best.snr);
             println!("   ├─ Optimal: {:.2}", snr_opt);
-            println!("   └─ Efficiency: {:.1}%", (best.snr / snr_opt * 100.0).min(100.0));
+            println!(
+                "   └─ Efficiency: {:.1}%",
+                (best.snr / snr_opt * 100.0).min(100.0)
+            );
             println!();
         }
-
     } else {
         println!("   ⚠️  No candidates found above threshold!");
         println!("   This could mean:");

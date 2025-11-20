@@ -76,7 +76,7 @@ impl TemplateParameters {
     /// Create from masses and distance
     pub fn from_masses(m1: f64, m2: f64, distance: f64, f_start: f64, f_end: f64) -> Self {
         let (m1, m2) = if m1 >= m2 { (m1, m2) } else { (m2, m1) };
-        
+
         let total_mass = m1 + m2;
         let mass_ratio = m2 / m1;
         let symmetric_mass_ratio = (m1 * m2) / (total_mass * total_mass);
