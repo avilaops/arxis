@@ -1,0 +1,33 @@
+[package]
+name = "arxis_quaternions"
+version = "0.2.0"
+edition = "2021"
+
+[lib]
+name = "arxis_quaternions"
+path = "lib.rs"
+
+[[example]]
+name = "rotations_example"
+path = "examples/rotations_example.rs"
+
+[[example]]
+name = "tensors_example"
+path = "examples/tensors_example.rs"
+
+[[example]]
+name = "relativity_example"
+path = "examples/relativity_example.rs"
+
+[[example]]
+name = "ml_example"
+path = "examples/ml_example.rs"
+
+[[example]]
+name = "geometry4d_example"
+path = "examples/geometry4d_example.rs"
+
+[dependencies]
+rand = "0.8"
+
+[dev-dependencies]
