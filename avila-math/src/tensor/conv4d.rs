@@ -169,6 +169,149 @@ impl Conv4DLayer {
     pub fn forward(&self, input: &Tensor6D) -> Result<Tensor6D, String> {
         conv4d(input, &self.weights, self.bias.as_ref(), &self.config)
     }
+
+    /// Backward pass - calcula gradientes
+    ///
+    /// # Arguments
+    /// * `input` - Tensor de entrada original [batch, in_channels, d1, d2, d3, d4]
+    /// * `grad_output` - Gradiente da loss em relação à saída [batch, out_channels, o1, o2, o3, o4]
+    ///
+    /// # Returns
+    /// * `grad_input` - Gradiente em relação à entrada
+    /// * `grad_weights` - Gradiente em relação aos pesos
+    /// * `grad_bias` - Gradiente em relação ao bias (se existir)
+    pub fn backward(
+        &self,
+        input: &Tensor6D,
+        grad_output: &Tensor6D,
+    ) -> Result<(Tensor6D, Tensor6D, Option<Tensor<1>>), String> {
+        let batch = input.shape[0];
+        let in_channels = input.shape[1];
+        let input_size = [
+            input.shape[2],
+            input.shape[3],
+            input.shape[4],
+            input.shape[5],
+        ];
+
+        let out_channels = grad_output.shape[1];
+        let output_size = [
+            grad_output.shape[2],
+            grad_output.shape[3],
+            grad_output.shape[4],
+            grad_output.shape[5],
+        ];
+
+        let kernel_size = [
+            self.weights.shape[2],
+            self.weights.shape[3],
+            self.weights.shape[4],
+            self.weights.shape[5],
+        ];
+
+        // Gradiente em relação à entrada
+        let mut grad_input = Tensor6D::zeros(input.shape);
+
+        // Gradiente em relação aos pesos
+        let mut grad_weights = Tensor6D::zeros(self.weights.shape);
+
+        // Gradiente em relação ao bias
+        let grad_bias = if self.bias.is_some() {
+            Some(Tensor::<1>::zeros([out_channels]))
+        } else {
+            None
+        };
+
+        let channels_per_group = in_channels / self.config.groups;
+
+        // Calcula gradientes em paralelo por batch
+        let grad_results: Vec<_> = (0..batch)
+            .into_par_iter()
+            .map(|b| {
+                conv4d_backward_single_batch(
+                    input,
+                    &self.weights,
+                    grad_output,
+                    b,
+                    in_channels,
+                    out_channels,
+                    &input_size,
+                    &kernel_size,
+                    &output_size,
+                    channels_per_group,
+                    &self.config,
+                )
+            })
+            .collect();
+
+        // Acumula gradientes de todos os batches
+        for (b, (grad_in_batch, grad_w_batch)) in grad_results.into_iter().enumerate() {
+            // Acumula grad_input
+            for ic in 0..in_channels {
+                for i1 in 0..input_size[0] {
+                    for i2 in 0..input_size[1] {
+                        for i3 in 0..input_size[2] {
+                            for i4 in 0..input_size[3] {
+                                let idx = ic * input_size[0] * input_size[1] * input_size[2] * input_size[3]
+                                    + i1 * input_size[1] * input_size[2] * input_size[3]
+                                    + i2 * input_size[2] * input_size[3]
+                                    + i3 * input_size[3]
+                                    + i4;
+                                let current = grad_input.get([b, ic, i1, i2, i3, i4]).unwrap();
+                                grad_input.set([b, ic, i1, i2, i3, i4], current + grad_in_batch[idx]).unwrap();
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Acumula grad_weights
+            for oc in 0..out_channels {
+                for ic in 0..channels_per_group {
+                    for k1 in 0..kernel_size[0] {
+                        for k2 in 0..kernel_size[1] {
+                            for k3 in 0..kernel_size[2] {
+                                for k4 in 0..kernel_size[3] {
+                                    let idx = oc * channels_per_group * kernel_size[0] * kernel_size[1] * kernel_size[2] * kernel_size[3]
+                                        + ic * kernel_size[0] * kernel_size[1] * kernel_size[2] * kernel_size[3]
+                                        + k1 * kernel_size[1] * kernel_size[2] * kernel_size[3]
+                                        + k2 * kernel_size[2] * kernel_size[3]
+                                        + k3 * kernel_size[3]
+                                        + k4;
+                                    let current = grad_weights.get([oc, ic, k1, k2, k3, k4]).unwrap();
+                                    grad_weights.set([oc, ic, k1, k2, k3, k4], current + grad_w_batch[idx]).unwrap();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Calcula gradiente do bias (soma sobre batch e dimensões espaciais)
+        if let Some(ref mut gb) = grad_bias.as_ref() {
+            for oc in 0..out_channels {
+                let mut sum = 0.0;
+                for b in 0..batch {
+                    for o1 in 0..output_size[0] {
+                        for o2 in 0..output_size[1] {
+                            for o3 in 0..output_size[2] {
+                                for o4 in 0..output_size[3] {
+                                    sum += grad_output.get([b, oc, o1, o2, o3, o4]).unwrap();
+                                }
+                            }
+                        }
+                    }
+                }
+                // Cria novo tensor com o valor atualizado
+                let mut new_grad_bias = gb.clone();
+                new_grad_bias.set([oc], sum).unwrap();
+                return Ok((grad_input, grad_weights, Some(new_grad_bias)));
+            }
+        }
+
+        Ok((grad_input, grad_weights, grad_bias))
+    }
 }
 
 /// Convolução 4D completa com suporte a batch e múltiplos canais
@@ -375,6 +518,103 @@ fn conv4d_single_batch(
     }
 
     result
+}
+
+/// Backward pass para um único item do batch (paralelizável)
+#[allow(clippy::too_many_arguments)]
+fn conv4d_backward_single_batch(
+    input: &Tensor6D,
+    weights: &Tensor6D,
+    grad_output: &Tensor6D,
+    batch_idx: usize,
+    in_channels: usize,
+    out_channels: usize,
+    input_size: &[usize; 4],
+    kernel_size: &[usize; 4],
+    output_size: &[usize; 4],
+    channels_per_group: usize,
+    config: &Conv4DConfig,
+) -> (Vec<f64>, Vec<f64>) {
+    let grad_input_size = in_channels * input_size[0] * input_size[1] * input_size[2] * input_size[3];
+    let grad_weights_size = out_channels * channels_per_group * kernel_size[0] * kernel_size[1] * kernel_size[2] * kernel_size[3];
+
+    let mut grad_input = vec![0.0; grad_input_size];
+    let mut grad_weights = vec![0.0; grad_weights_size];
+
+    // Para cada canal de saída
+    for oc in 0..out_channels {
+        let group = oc / (out_channels / config.groups);
+        let group_start = group * channels_per_group;
+        let group_end = group_start + channels_per_group;
+
+        // Para cada posição de saída
+        for o1 in 0..output_size[0] {
+            for o2 in 0..output_size[1] {
+                for o3 in 0..output_size[2] {
+                    for o4 in 0..output_size[3] {
+                        let grad_out_val = grad_output.get([batch_idx, oc, o1, o2, o3, o4]).unwrap();
+
+                        // Para cada canal de entrada no grupo
+                        for ic in group_start..group_end {
+                            // Para cada posição do kernel
+                            for k1 in 0..kernel_size[0] {
+                                for k2 in 0..kernel_size[1] {
+                                    for k3 in 0..kernel_size[2] {
+                                        for k4 in 0..kernel_size[3] {
+                                            // Calcula posição na entrada
+                                            let i1 = o1 * config.stride[0] + k1 * config.dilation[0];
+                                            let i2 = o2 * config.stride[1] + k2 * config.dilation[1];
+                                            let i3 = o3 * config.stride[2] + k3 * config.dilation[2];
+                                            let i4 = o4 * config.stride[3] + k4 * config.dilation[3];
+
+                                            // Verifica bounds com padding
+                                            if i1 >= config.padding[0]
+                                                && i2 >= config.padding[1]
+                                                && i3 >= config.padding[2]
+                                                && i4 >= config.padding[3]
+                                            {
+                                                let i1 = i1 - config.padding[0];
+                                                let i2 = i2 - config.padding[1];
+                                                let i3 = i3 - config.padding[2];
+                                                let i4 = i4 - config.padding[3];
+
+                                                if i1 < input_size[0]
+                                                    && i2 < input_size[1]
+                                                    && i3 < input_size[2]
+                                                    && i4 < input_size[3]
+                                                {
+                                                    // Gradiente em relação à entrada
+                                                    let weight_val = weights.get([oc, ic - group_start, k1, k2, k3, k4]).unwrap();
+                                                    let grad_in_idx = ic * input_size[0] * input_size[1] * input_size[2] * input_size[3]
+                                                        + i1 * input_size[1] * input_size[2] * input_size[3]
+                                                        + i2 * input_size[2] * input_size[3]
+                                                        + i3 * input_size[3]
+                                                        + i4;
+                                                    grad_input[grad_in_idx] += grad_out_val * weight_val;
+
+                                                    // Gradiente em relação aos pesos
+                                                    let input_val = input.get([batch_idx, ic, i1, i2, i3, i4]).unwrap();
+                                                    let grad_w_idx = oc * channels_per_group * kernel_size[0] * kernel_size[1] * kernel_size[2] * kernel_size[3]
+                                                        + (ic - group_start) * kernel_size[0] * kernel_size[1] * kernel_size[2] * kernel_size[3]
+                                                        + k1 * kernel_size[1] * kernel_size[2] * kernel_size[3]
+                                                        + k2 * kernel_size[2] * kernel_size[3]
+                                                        + k3 * kernel_size[3]
+                                                        + k4;
+                                                    grad_weights[grad_w_idx] += grad_out_val * input_val;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    (grad_input, grad_weights)
 }
 
 /// Max Pooling 4D
@@ -623,3 +863,52 @@ mod tests {
         assert!(result.is_ok());
     }
 }
+
+    #[test]
+    fn test_conv4d_backward_pass() {
+        let mut input = Tensor6D::zeros([1, 2, 4, 4, 4, 4]);
+        for i in 0..input.data.len() {
+            input.data[i] = (i as f64) * 0.01;
+        }
+
+        let mut layer = Conv4DLayer::new(2, 3, [2, 2, 2, 2], Conv4DConfig::default());
+        layer.init_xavier();
+
+        let output = layer.forward(&input).unwrap();
+        assert_eq!(output.shape, [1, 3, 3, 3, 3, 3]);
+
+        let mut grad_output = Tensor6D::zeros(output.shape);
+        for i in 0..grad_output.data.len() {
+            grad_output.data[i] = 0.1;
+        }
+
+        let result = layer.backward(&input, &grad_output);
+        assert!(result.is_ok());
+
+        let (grad_input, grad_weights, _) = result.unwrap();
+        assert_eq!(grad_input.shape, input.shape);
+        assert_eq!(grad_weights.shape, layer.weights.shape);
+
+        let grad_input_sum: f64 = grad_input.data.iter().sum();
+        let grad_weights_sum: f64 = grad_weights.data.iter().sum();
+        assert!(grad_input_sum.abs() > 1e-10);
+        assert!(grad_weights_sum.abs() > 1e-10);
+    }
+
+    #[test]
+    fn test_conv4d_backward_with_bias() {
+        let input = Tensor6D::zeros([1, 1, 3, 3, 3, 3]);
+        let mut layer = Conv4DLayer::new(1, 2, [2, 2, 2, 2], Conv4DConfig::default())
+            .with_bias(2);
+        layer.init_he();
+
+        let output = layer.forward(&input).unwrap();
+        let grad_output = Tensor6D::filled(output.shape, 0.5);
+
+        let result = layer.backward(&input, &grad_output);
+        assert!(result.is_ok());
+
+        let (_, _, grad_bias) = result.unwrap();
+        assert!(grad_bias.is_some());
+        assert_eq!(grad_bias.unwrap().shape, [2]);
+    }

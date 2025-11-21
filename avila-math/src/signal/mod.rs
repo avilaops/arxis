@@ -1,6 +1,6 @@
 //! # Signal Processing Module
 //!
-//! FFT, spectral analysis, and signal processing operations for N-dimensional data.
+//! FFT, spectral analysis, wavelet transforms, and signal processing operations for N-dimensional data.
 //!
 //! ## Features
 //! - 1D, 2D, 3D, and 4D FFT (Fast Fourier Transform)
@@ -9,13 +9,17 @@
 //! - Frequency domain filtering
 //! - Cross-correlation and convolution
 //! - Window functions (Hann, Hamming, Blackman)
+//! - Continuous Wavelet Transform (CWT)
+//! - Discrete Wavelet Transform (DWT)
 
 pub mod fft;
 pub mod spectral;
+pub mod wavelet;
 pub mod windows;
 
 pub use fft::{fft_1d, fft_2d, fft_3d, fft_4d, ifft_1d, ifft_2d, ifft_3d, ifft_4d};
 pub use spectral::{cross_correlation, power_spectral_density, spectrogram};
+pub use wavelet::{cwt, dwt, idwt, dwt_multilevel, wavelet_energy, scale_to_frequency};
 pub use windows::{apply_window, blackman_window, hamming_window, hann_window};
 
 /// Frequency bin to actual frequency conversion
