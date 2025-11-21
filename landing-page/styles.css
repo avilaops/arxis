@@ -154,24 +154,24 @@ a:hover {
 }
 
 .nav-links a:hover {
-    color: var(--color-cyan);
+    color: var(--color-stellar-orange);
 }
 
 .btn-github {
     display: flex;
     align-items: center;
     gap: var(--spacing-xs);
-    background: rgba(0, 212, 255, 0.1);
+    background: rgba(255, 140, 0, 0.1);
     padding: 0.5rem 1rem;
     border-radius: 8px;
-    border: 1px solid var(--color-cyan);
-    color: var(--color-cyan);
+    border: 1px solid var(--color-stellar-orange);
+    color: var(--color-stellar-orange);
     transition: all var(--transition-fast);
 }
 
 .btn-github:hover {
-    background: var(--color-cyan);
-    color: var(--color-deep-blue);
+    background: var(--color-stellar-orange);
+    color: var(--color-white);
     box-shadow: var(--shadow-glow);
     transform: translateY(-2px);
 }
@@ -234,7 +234,7 @@ a:hover {
     top: -25%;
     left: -25%;
     background: radial-gradient(ellipse at center,
-            rgba(0, 212, 255, 0.1) 0%,
+            rgba(255, 140, 0, 0.1) 0%,
             transparent 50%);
     animation: wave 15s ease-in-out infinite;
 }
@@ -265,8 +265,8 @@ a:hover {
     display: inline-flex;
     align-items: center;
     gap: var(--spacing-xs);
-    background: rgba(0, 212, 255, 0.1);
-    border: 1px solid rgba(0, 212, 255, 0.3);
+    background: rgba(255, 140, 0, 0.1);
+    border: 1px solid rgba(255, 140, 0, 0.3);
     padding: 0.5rem 1rem;
     border-radius: 50px;
     font-size: 0.9rem;
@@ -302,7 +302,7 @@ a:hover {
     font-size: clamp(1.5rem, 3vw, 2rem);
     font-weight: 600;
     margin-bottom: var(--spacing-sm);
-    color: var(--color-cyan);
+    color: var(--color-stellar-orange);
 }
 
 .hero-description {
@@ -337,7 +337,7 @@ a:hover {
 
 .stat-label {
     font-size: 1rem;
-    color: var(--color-cyan);
+    color: var(--color-stellar-orange);
 }
 
 .hero-cta {
@@ -363,7 +363,7 @@ a:hover {
 
 .btn-primary {
     background: var(--gradient-primary);
-    color: var(--color-deep-blue);
+    color: var(--color-white);
     box-shadow: var(--shadow-md);
 }
 
@@ -373,14 +373,14 @@ a:hover {
 }
 
 .btn-secondary {
-    background: rgba(0, 212, 255, 0.1);
-    color: var(--color-cyan);
-    border: 2px solid var(--color-cyan);
+    background: rgba(255, 140, 0, 0.1);
+    color: var(--color-stellar-orange);
+    border: 2px solid var(--color-stellar-orange);
 }
 
 .btn-secondary:hover {
-    background: var(--color-cyan);
-    color: var(--color-deep-blue);
+    background: var(--color-stellar-orange);
+    color: var(--color-white);
     transform: translateY(-4px);
 }
 
@@ -388,7 +388,7 @@ a:hover {
     max-width: 700px;
     margin: 0 auto;
     background: rgba(15, 30, 50, 0.8);
-    border: 1px solid rgba(0, 212, 255, 0.2);
+    border: 1px solid rgba(255, 215, 0, 0.15);
     border-radius: 16px;
     padding: var(--spacing-md);
     box-shadow: var(--shadow-lg);
@@ -443,7 +443,7 @@ a:hover {
 .features {
     padding: var(--spacing-xl) 0;
     background: linear-gradient(180deg,
-            var(--color-deep-blue) 0%,
+            var(--color-white) 0%,
             rgba(15, 30, 50, 1) 100%);
 }
 
@@ -470,14 +470,14 @@ a:hover {
 
 .feature-card {
     background: rgba(15, 30, 50, 0.6);
-    border: 1px solid rgba(0, 212, 255, 0.2);
+    border: 1px solid rgba(255, 215, 0, 0.15);
     border-radius: 16px;
     padding: var(--spacing-md);
     transition: all var(--transition-normal);
 }
 
 .feature-card:hover {
-    border-color: var(--color-cyan);
+    border-color: var(--color-stellar-orange);
     box-shadow: var(--shadow-lg);
     transform: translateY(-8px);
 }
@@ -489,7 +489,7 @@ a:hover {
 
 .feature-card h3 {
     font-size: 1.5rem;
-    color: var(--color-cyan);
+    color: var(--color-stellar-orange);
     margin-bottom: var(--spacing-sm);
 }
 
@@ -514,7 +514,7 @@ a:hover {
    =================================== */
 .architecture {
     padding: var(--spacing-xl) 0;
-    background: var(--color-deep-blue);
+    background: var(--color-white);
 }
 
 .architecture-diagram {
@@ -529,7 +529,7 @@ a:hover {
 .arch-label {
     text-align: center;
     font-weight: 600;
-    color: var(--color-cyan);
+    color: var(--color-stellar-orange);
     margin-bottom: var(--spacing-sm);
     font-size: 1.1rem;
 }
@@ -542,8 +542,8 @@ a:hover {
 }
 
 .arch-box {
-    background: rgba(0, 212, 255, 0.1);
-    border: 2px solid var(--color-cyan);
+    background: rgba(255, 140, 0, 0.1);
+    border: 2px solid var(--color-stellar-orange);
     border-radius: 12px;
     padding: var(--spacing-md);
     min-width: 250px;
@@ -552,7 +552,7 @@ a:hover {
 }
 
 .arch-box:hover {
-    background: rgba(0, 212, 255, 0.2);
+    background: rgba(255, 215, 0, 0.15);
     box-shadow: var(--shadow-glow);
     transform: scale(1.05);
 }
@@ -601,7 +601,7 @@ a:hover {
 .arch-arrow {
     text-align: center;
     font-size: 2rem;
-    color: var(--color-cyan);
+    color: var(--color-stellar-orange);
     margin: var(--spacing-sm) 0;
 }
 
@@ -623,7 +623,7 @@ a:hover {
 }
 
 .arch-feature h4 {
-    color: var(--color-cyan);
+    color: var(--color-stellar-orange);
     margin-bottom: var(--spacing-xs);
 }
 
@@ -638,7 +638,7 @@ a:hover {
 .code-examples {
     padding: var(--spacing-xl) 0;
     background: linear-gradient(180deg,
-            var(--color-deep-blue) 0%,
+            var(--color-white) 0%,
             rgba(15, 30, 50, 1) 100%);
 }
 
@@ -652,8 +652,8 @@ a:hover {
 
 .tab-button {
     padding: 0.75rem 1.5rem;
-    background: rgba(0, 212, 255, 0.1);
-    border: 1px solid rgba(0, 212, 255, 0.3);
+    background: rgba(255, 140, 0, 0.1);
+    border: 1px solid rgba(255, 140, 0, 0.3);
     border-radius: 8px;
     color: var(--color-white);
     font-family: var(--font-body);
@@ -664,13 +664,13 @@ a:hover {
 }
 
 .tab-button:hover {
-    background: rgba(0, 212, 255, 0.2);
-    border-color: var(--color-cyan);
+    background: rgba(255, 215, 0, 0.15);
+    border-color: var(--color-stellar-orange);
 }
 
 .tab-button.active {
     background: var(--gradient-primary);
-    color: var(--color-deep-blue);
+    color: var(--color-white);
     border: none;
 }
 
@@ -679,7 +679,7 @@ a:hover {
     max-width: 900px;
     margin: 0 auto;
     background: rgba(15, 30, 50, 0.8);
-    border: 1px solid rgba(0, 212, 255, 0.2);
+    border: 1px solid rgba(255, 215, 0, 0.15);
     border-radius: 16px;
     padding: var(--spacing-md);
     box-shadow: var(--shadow-lg);
@@ -719,7 +719,7 @@ a:hover {
    =================================== */
 .stats-section {
     padding: var(--spacing-xl) 0;
-    background: var(--color-deep-blue);
+    background: var(--color-white);
 }
 
 .stats-grid {
@@ -731,14 +731,14 @@ a:hover {
 .stat-card {
     text-align: center;
     padding: var(--spacing-md);
-    background: rgba(0, 212, 255, 0.05);
-    border: 1px solid rgba(0, 212, 255, 0.2);
+    background: rgba(255, 165, 0, 0.05);
+    border: 1px solid rgba(255, 215, 0, 0.15);
     border-radius: 16px;
     transition: all var(--transition-normal);
 }
 
 .stat-card:hover {
-    border-color: var(--color-cyan);
+    border-color: var(--color-stellar-orange);
     box-shadow: var(--shadow-md);
     transform: translateY(-4px);
 }
@@ -756,7 +756,7 @@ a:hover {
 
 .stat-card .stat-label {
     font-size: 1.2rem;
-    color: var(--color-cyan);
+    color: var(--color-stellar-orange);
     font-weight: 600;
     display: block;
     margin-bottom: var(--spacing-xs);
@@ -774,7 +774,7 @@ a:hover {
     padding: var(--spacing-xl) 0;
     background: linear-gradient(180deg,
             rgba(15, 30, 50, 1) 0%,
-            var(--color-deep-blue) 100%);
+            var(--color-white) 100%);
 }
 
 .docs-grid {
@@ -785,8 +785,8 @@ a:hover {
 }
 
 .doc-card {
-    background: rgba(0, 212, 255, 0.05);
-    border: 1px solid rgba(0, 212, 255, 0.2);
+    background: rgba(255, 165, 0, 0.05);
+    border: 1px solid rgba(255, 215, 0, 0.15);
     border-radius: 16px;
     padding: var(--spacing-md);
     transition: all var(--transition-normal);
@@ -795,7 +795,7 @@ a:hover {
 }
 
 .doc-card:hover {
-    border-color: var(--color-cyan);
+    border-color: var(--color-stellar-orange);
     box-shadow: var(--shadow-lg);
     transform: translateY(-8px);
 }
@@ -806,7 +806,7 @@ a:hover {
 }
 
 .doc-card h3 {
-    color: var(--color-cyan);
+    color: var(--color-stellar-orange);
     margin-bottom: var(--spacing-sm);
 }
 
@@ -817,13 +817,13 @@ a:hover {
 }
 
 .doc-link {
-    color: var(--color-cyan);
+    color: var(--color-stellar-orange);
     font-weight: 600;
     transition: all var(--transition-fast);
 }
 
 .doc-card:hover .doc-link {
-    color: var(--color-purple);
+    color: var(--color-solar-yellow);
 }
 
 .installation {
@@ -833,7 +833,7 @@ a:hover {
 
 .installation h3 {
     text-align: center;
-    color: var(--color-cyan);
+    color: var(--color-stellar-orange);
     margin-bottom: var(--spacing-md);
     font-size: 1.8rem;
 }
@@ -841,7 +841,7 @@ a:hover {
 .install-code {
     position: relative;
     background: rgba(15, 30, 50, 0.8);
-    border: 1px solid rgba(0, 212, 255, 0.2);
+    border: 1px solid rgba(255, 215, 0, 0.15);
     border-radius: 16px;
     padding: var(--spacing-md);
 }
@@ -862,17 +862,17 @@ a:hover {
     top: var(--spacing-sm);
     right: var(--spacing-sm);
     padding: 0.5rem;
-    background: rgba(0, 212, 255, 0.2);
-    border: 1px solid var(--color-cyan);
+    background: rgba(255, 215, 0, 0.15);
+    border: 1px solid var(--color-stellar-orange);
     border-radius: 8px;
-    color: var(--color-cyan);
+    color: var(--color-stellar-orange);
     cursor: pointer;
     transition: all var(--transition-fast);
 }
 
 .copy-button:hover {
-    background: var(--color-cyan);
-    color: var(--color-deep-blue);
+    background: var(--color-stellar-orange);
+    color: var(--color-white);
 }
 
 /* ===================================
@@ -880,7 +880,7 @@ a:hover {
    =================================== */
 .contact {
     padding: var(--spacing-xl) 0;
-    background: var(--color-deep-blue);
+    background: var(--color-white);
 }
 
 .contact-grid {
@@ -894,14 +894,14 @@ a:hover {
 .contact-card {
     text-align: center;
     padding: var(--spacing-md);
-    background: rgba(0, 212, 255, 0.05);
-    border: 1px solid rgba(0, 212, 255, 0.2);
+    background: rgba(255, 165, 0, 0.05);
+    border: 1px solid rgba(255, 215, 0, 0.15);
     border-radius: 16px;
     transition: all var(--transition-normal);
 }
 
 .contact-card:hover {
-    border-color: var(--color-cyan);
+    border-color: var(--color-stellar-orange);
     box-shadow: var(--shadow-md);
     transform: translateY(-4px);
 }
@@ -912,7 +912,7 @@ a:hover {
 }
 
 .contact-card h3 {
-    color: var(--color-cyan);
+    color: var(--color-stellar-orange);
     margin-bottom: var(--spacing-xs);
 }
 
@@ -925,9 +925,9 @@ a:hover {
    Footer
    =================================== */
 .footer {
-    background: rgba(5, 10, 20, 1);
+    background: var(--color-light-gray);
     padding: var(--spacing-xl) 0 var(--spacing-md) 0;
-    border-top: 1px solid rgba(0, 212, 255, 0.2);
+    border-top: 3px solid var(--color-solar-yellow);
 }
 
 .footer-content {
@@ -945,7 +945,7 @@ a:hover {
 
 .footer-tagline {
     font-size: 1.1rem;
-    color: var(--color-cyan);
+    color: var(--color-stellar-orange);
     font-weight: 600;
 }
 
@@ -960,7 +960,7 @@ a:hover {
 }
 
 .footer-column h4 {
-    color: var(--color-cyan);
+    color: var(--color-stellar-orange);
     margin-bottom: var(--spacing-sm);
     font-size: 1.1rem;
 }
@@ -980,7 +980,7 @@ a:hover {
 
 .footer-column ul li a:hover {
     opacity: 1;
-    color: var(--color-cyan);
+    color: var(--color-stellar-orange);
     padding-left: 4px;
 }
 
@@ -989,13 +989,13 @@ a:hover {
     justify-content: space-between;
     align-items: center;
     padding-top: var(--spacing-md);
-    border-top: 1px solid rgba(0, 212, 255, 0.1);
+    border-top: 2px solid var(--color-medium-gray);
     flex-wrap: wrap;
     gap: var(--spacing-sm);
 }
 
 .footer-bottom p {
-    opacity: 0.7;
+    color: var(--color-text-gray);
     font-size: 0.9rem;
 }
 
