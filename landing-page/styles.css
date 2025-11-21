@@ -176,6 +176,68 @@ a:hover {
     transform: translateY(-2px);
 }
 
+/* Theme Toggle Button */
+.theme-toggle,
+.lang-toggle {
+    background: rgba(255, 140, 0, 0.1);
+    border: 1px solid rgba(255, 140, 0, 0.3);
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--color-stellar-orange);
+    font-weight: 600;
+}
+
+.theme-toggle:hover,
+.lang-toggle:hover {
+    background: var(--color-stellar-orange);
+    color: var(--color-white);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.lang-code {
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+/* Dark Mode Styles */
+[data-theme="dark"] {
+    --color-white: #0A0A0A;
+    --color-deep-space: #FFFFFF;
+    --color-light-gray: #1A1A1A;
+    --color-medium-gray: #2A2A2A;
+    --color-text-gray: #CCCCCC;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] body {
+    background-color: var(--color-white);
+    color: var(--color-deep-space);
+}
+
+[data-theme="dark"] .navbar {
+    background: rgba(10, 10, 10, 0.95);
+    border-bottom-color: rgba(255, 215, 0, 0.2);
+}
+
+[data-theme="dark"] .feature-card,
+[data-theme="dark"] .doc-card {
+    background: var(--color-light-gray);
+    border-color: rgba(255, 215, 0, 0.3);
+}
+
+[data-theme="dark"] pre {
+    background: var(--color-light-gray);
+}
+
 /* ===================================
    Hero Section
    =================================== */

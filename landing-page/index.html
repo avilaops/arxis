@@ -68,10 +68,10 @@
                 <span class="logo-text">ARXIS</span>
             </div>
             <div class="nav-links">
-                <a href="#features">Features</a>
-                <a href="#architecture">Architecture</a>
-                <a href="#docs">Documentation</a>
-                <a href="#contact">Contact</a>
+                <a href="#features" data-i18n="nav-features">Features</a>
+                <a href="#architecture" data-i18n="nav-architecture">Architecture</a>
+                <a href="#docs" data-i18n="nav-documentation">Documentation</a>
+                <a href="#contact" data-i18n="nav-contact">Contact</a>
                 <a href="https://github.com/avilaops/arxis" class="btn-github" target="_blank">
                     <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
                         <path
@@ -79,6 +79,17 @@
                     </svg>
                     GitHub
                 </a>
+                
+                <!-- Theme Toggle -->
+                <button class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">
+                    <span class="theme-icon">🌙</span>
+                </button>
+                
+                <!-- Language Toggle -->
+                <button class="lang-toggle" id="langToggle" title="Toggle language" aria-label="Toggle language">
+                    <span class="flag">🇧🇷</span>
+                    <span class="lang-code">PT</span>
+                </button>
             </div>
         </div>
     </nav>
@@ -94,15 +105,14 @@
                 <span class="badge-icon">🏛️</span>
                 <span>ARX (fortress) + AXIS (engine) = ARXIS</span>
             </div>
-            <h1 class="hero-title">
+            <h1 class="hero-title" data-i18n="hero-title">
                 The Mathematical <span class="gradient-text">Citadel</span>
             </h1>
-            <p class="hero-subtitle">
+            <p class="hero-subtitle" data-i18n="hero-subtitle">
                 Research-Grade Physics & Mathematics in Rust
             </p>
-            <p class="hero-description">
-                From the fortress of quaternions to the axis of gravitational waves.<br>
-                Where solid foundations meet powerful engines.
+            <p class="hero-description" data-i18n="hero-description">
+                From the fortress of quaternions to the axis of gravitational waves.
             </p>
 
             <div class="hero-stats">

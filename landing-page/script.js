@@ -3,6 +3,105 @@
 // The Mathematical Citadel
 // ===================================
 
+// ===================================
+// Theme Toggle (Dark/Light Mode)
+// ===================================
+const themeToggle = document.getElementById('themeToggle');
+const body = document.body;
+const themeIcon = document.querySelector('.theme-icon');
+
+// Load saved theme from localStorage
+const currentTheme = localStorage.getItem('arxis-theme') || 'light';
+body.setAttribute('data-theme', currentTheme);
+themeIcon.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+
+themeToggle.addEventListener('click', () => {
+    const theme = body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    body.setAttribute('data-theme', theme);
+    localStorage.setItem('arxis-theme', theme);
+    themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
+});
+
+// ===================================
+// Language Toggle (PT-BR/EN)
+// ===================================
+const langToggle = document.getElementById('langToggle');
+const langCode = document.querySelector('.lang-code');
+const flagIcon = document.querySelector('.flag');
+
+const translations = {
+    'pt-BR': {
+        'nav-features': 'Recursos',
+        'nav-architecture': 'Arquitetura',
+        'nav-documentation': 'Documentação',
+        'nav-contact': 'Contato',
+        'hero-title': 'A Cidadela Matemática',
+        'hero-subtitle': 'Física e Matemática de Nível Científico em Rust',
+        'hero-description': 'Da fortaleza dos quaternions ao eixo das ondas gravitacionais.',
+        'hero-cta-primary': 'Entre na Cidadela',
+        'hero-cta-secondary': 'Ver no GitHub',
+        'features-title': 'Construído para Computação Científica',
+        'architecture-title': 'Arquitetura em Camadas',
+        'docs-title': 'Comece Agora',
+        'contact-title': 'Entre em Contato',
+        'footer-tagline': 'A Cidadela Matemática',
+        'footer-desc': 'Física e matemática de nível científico em Rust',
+    },
+    'en': {
+        'nav-features': 'Features',
+        'nav-architecture': 'Architecture',
+        'nav-documentation': 'Documentation',
+        'nav-contact': 'Contact',
+        'hero-title': 'The Mathematical Citadel',
+        'hero-subtitle': 'Research-Grade Physics & Mathematics in Rust',
+        'hero-description': 'From the fortress of quaternions to the axis of gravitational waves.',
+        'hero-cta-primary': 'Enter the Citadel',
+        'hero-cta-secondary': 'View on GitHub',
+        'features-title': 'Built for Scientific Computing',
+        'architecture-title': 'Layered Architecture',
+        'docs-title': 'Get Started',
+        'contact-title': 'Get in Touch',
+        'footer-tagline': 'The Mathematical Citadel',
+        'footer-desc': 'Research-grade physics & mathematics in Rust',
+    }
+};
+
+// Load saved language from localStorage
+let currentLang = localStorage.getItem('arxis-lang') || 'en';
+langCode.textContent = currentLang === 'pt-BR' ? 'PT' : 'EN';
+flagIcon.textContent = currentLang === 'pt-BR' ? '🇧🇷' : '🇺🇸';
+
+function applyTranslations(lang) {
+    const elements = document.querySelectorAll('[data-i18n]');
+    elements.forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang] && translations[lang][key]) {
+            // Preserve HTML for spans like gradient-text
+            if (el.querySelector('.gradient-text')) {
+                const gradientText = el.querySelector('.gradient-text').textContent;
+                if (lang === 'pt-BR') {
+                    el.innerHTML = 'A <span class="gradient-text">Cidadela</span> Matemática';
+                } else {
+                    el.innerHTML = 'The Mathematical <span class="gradient-text">Citadel</span>';
+                }
+            } else {
+                el.textContent = translations[lang][key];
+            }
+        }
+    });
+}
+
+// Apply translations on load
+applyTranslations(currentLang);
+
+langToggle.addEventListener('click', () => {
+    currentLang = currentLang === 'pt-BR' ? 'en' : 'pt-BR';
+    localStorage.setItem('arxis-lang', currentLang);
+    langCode.textContent = currentLang === 'pt-BR' ? 'PT' : 'EN';
+    flagIcon.textContent = currentLang === 'pt-BR' ? '🇧🇷' : '🇺🇸';
+    applyTranslations(currentLang);
+});
+
 document.addEventListener('DOMContentLoaded', function () {
     // ===================================
     // Smooth Scroll for Navigation Links
