@@ -54,6 +54,12 @@ pub struct AvxMetrics {
     detector: Arc<AnomalyDetector>,
 }
 
+impl Default for AvxMetrics {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl AvxMetrics {
     pub fn new() -> Self {
         Self {

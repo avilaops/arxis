@@ -133,18 +133,18 @@ impl TextProcessor {
 
         // Aplica convolução em cada dimensão do embedding
         let seq_len = embeddings.nrows();
-        
+
         if seq_len < kernel.weights.len() {
             return None; // Sequência muito curta para o kernel
         }
-        
+
         let output_len = (seq_len - kernel.weights.len()) / kernel.stride + 1;
         let mut result = Array2::zeros((output_len, self.embedding_dim));
 
         for dim in 0..self.embedding_dim {
             let signal = embeddings.column(dim).to_owned();
             let convolved = kernel.convolve(&signal.view());
-            
+
             // Garante que o resultado tem o tamanho correto
             let copy_len = output_len.min(convolved.len());
             for i in 0..copy_len {

@@ -130,6 +130,7 @@ Arxis é dividido em **módulos especializados** que se complementam:
 ```
 📦 Arxis Ecosystem
 │
+├── 🎵 avila-convexa1d     # Dados sequenciais 1D (áudio, texto, convolução)
 ├── 🧮 avila-math          # Matemática fundamental (vetores, matrizes, tensores)
 ├── 📊 avila-dataframe     # Processamento de dados (tipo Pandas, mas em Rust)
 ├── 🤖 avila-ml            # Machine Learning (redes neurais, treinamento)
@@ -459,3 +460,4 @@ Cada linha que você escreve pode estar processando dados de um **telescópio es
 ---
 
 **Bem-vindo ao Arxis. Vamos construir algo extraordinário.** 🚀
+

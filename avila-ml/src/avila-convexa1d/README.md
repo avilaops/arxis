@@ -49,16 +49,16 @@ use avila_convexa1d::{AudioProcessor, ConvolutionKernel};
 fn main() {
     // Cria processador de áudio
     let processor = AudioProcessor::default();
-    
+
     // Gera sinal senoidal (440Hz, 1 segundo)
     let signal = processor.generate_sine_wave(440.0, 1.0, 0.8);
-    
+
     // Extrai features
     let features = processor.extract_features(&signal);
     println!("Energia: {:.4}", features.energy);
     println!("ZCR: {:.4}", features.zcr);
     println!("MFCC: {:?}", features.mfcc);
-    
+
     // Aplica filtro gaussiano
     let kernel = ConvolutionKernel::gaussian(64, 10.0);
     let filtered = processor.temporal_convolution(&signal, &kernel);
@@ -72,20 +72,20 @@ use avila_convexa1d::TextProcessor;
 
 fn main() {
     let mut processor = TextProcessor::new(16);
-    
+
     // Constrói vocabulário
     let corpus = vec![
         "AvilaDB é o banco de dados do Brasil".to_string(),
         "Processamento de texto com Rust".to_string(),
     ];
     processor.build_vocab(&corpus);
-    
+
     // Extrai features
     let text = "AvilaDB é incrível";
     let features = processor.extract_features(text);
     println!("Tokens: {}", features.token_count);
     println!("Densidade lexical: {:.3}", features.lexical_density);
-    
+
     // Converte para embeddings
     if let Some(embeddings) = processor.text_to_embeddings(text) {
         println!("Shape: {}x{}", embeddings.nrows(), embeddings.ncols());
@@ -109,24 +109,24 @@ avila-convexa1d/
 
 ## 📊 Features de Áudio
 
-| Feature | Descrição |
-|---------|-----------|
-| **Energia** | Potência média do sinal |
-| **ZCR** | Taxa de cruzamento por zero (zero-crossing rate) |
-| **RMS** | Root Mean Square - amplitude efetiva |
-| **MFCC** | Coeficientes cepstrais na escala Mel |
-| **Envelope** | Envoltória do sinal |
-| **Espectrograma** | Representação tempo-frequência |
+| Feature           | Descrição                                        |
+| ----------------- | ------------------------------------------------ |
+| **Energia**       | Potência média do sinal                          |
+| **ZCR**           | Taxa de cruzamento por zero (zero-crossing rate) |
+| **RMS**           | Root Mean Square - amplitude efetiva             |
+| **MFCC**          | Coeficientes cepstrais na escala Mel             |
+| **Envelope**      | Envoltória do sinal                              |
+| **Espectrograma** | Representação tempo-frequência                   |
 
 ## 📝 Features de Texto
 
-| Feature | Descrição |
-|---------|-----------|
-| **Token Count** | Número total de tokens |
-| **Unique Tokens** | Vocabulário único |
+| Feature              | Descrição                    |
+| -------------------- | ---------------------------- |
+| **Token Count**      | Número total de tokens       |
+| **Unique Tokens**    | Vocabulário único            |
 | **Avg Token Length** | Comprimento médio dos tokens |
-| **Lexical Density** | Razão tokens únicos / total |
-| **Embeddings** | Representação vetorial densa |
+| **Lexical Density**  | Razão tokens únicos / total  |
+| **Embeddings**       | Representação vetorial densa |
 
 ## 🧪 Executar Exemplos
 
@@ -210,12 +210,12 @@ async fn main() {
     let client = AvilaClient::connect("http://localhost:8000").await?;
     let db = client.database("audioml").await?;
     let features_collection = db.collection("audio_features").await?;
-    
+
     // Processa áudio
     let processor = AudioProcessor::default();
     let signal = load_audio();
     let features = processor.extract_features(&signal);
-    
+
     // Salva no AvilaDB
     features_collection.insert(features).await?;
 }

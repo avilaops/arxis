@@ -1,7 +1,7 @@
 //! Document verification and forgery detection
 
 use crate::core::ImageBuffer;
-use crate::forensics::{DocumentVerification, ForgeryType};
+use crate::forensics::DocumentVerification;
 use crate::Result;
 
 /// Verify document authenticity

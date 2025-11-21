@@ -1,0 +1,24 @@
+[workspace]
+
+[package]
+name = "avila-convexa2d"
+version = "0.1.0"
+edition = "2021"
+authors = ["AVL Cloud Platform <support@avila.cloud>"]
+description = "Processamento de dados bidimensionais 2D - Imagens e Matrizes em Rust puro"
+license = "MIT"
+repository = "https://github.com/avilacloud/avila-convexa2d"
+homepage = "https://avila.cloud"
+documentation = "https://docs.rs/avila-convexa2d"
+keywords = ["image", "matrix", "convolution", "2d", "computer-vision"]
+categories = ["algorithms", "science", "multimedia::images", "computer-vision"]
+readme = "README.md"
+
+[dependencies]
+ndarray = "0.15"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+num-traits = "0.2"
+
+[dev-dependencies]
+criterion = "0.5"

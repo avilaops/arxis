@@ -4,7 +4,6 @@
 
 use crate::core::{ImageBuffer, Preprocessing};
 use crate::{AvxImageError, Result};
-use ndarray::{Array1, Array2, Array3};
 use std::f32::consts::PI;
 
 /// Feature extraction methods

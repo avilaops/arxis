@@ -7,7 +7,8 @@ use ndarray::ArrayD;
 use num_traits::{Float, NumAssign};
 use std::sync::{Arc, Mutex};
 
-/// ReLU activation: max(0, x)
+/// ReLU activation function
+#[derive(Default)]
 pub struct ReLU;
 
 impl ReLU {
@@ -34,6 +35,7 @@ impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Modu
 }
 
 /// Sigmoid activation: 1 / (1 + e^(-x))
+#[derive(Default)]
 pub struct Sigmoid;
 
 impl Sigmoid {
@@ -60,6 +62,7 @@ impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Modu
 }
 
 /// Tanh activation: (e^x - e^(-x)) / (e^x + e^(-x))
+#[derive(Default)]
 pub struct Tanh;
 
 impl Tanh {
@@ -166,6 +169,7 @@ impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Modu
 }
 
 /// GELU activation (Gaussian Error Linear Unit)
+#[derive(Default)]
 pub struct GELU;
 
 impl GELU {

@@ -1,7 +1,7 @@
 //! Image buffer implementation with optimized storage
 
 use image::{DynamicImage, GenericImageView, ImageBuffer as ImgBuf, Luma, Rgb, Rgba};
-use ndarray::{Array2, Array3};
+use ndarray::Array3;
 use std::path::Path;
 
 use crate::{AvxImageError, Result};

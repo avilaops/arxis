@@ -13,6 +13,7 @@ where
 }
 
 /// Mean Squared Error loss
+#[derive(Default)]
 pub struct MSELoss;
 
 impl MSELoss {
@@ -33,6 +34,12 @@ impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Loss
 /// Binary Cross Entropy loss
 pub struct BCELoss {
     epsilon: f32,
+}
+
+impl Default for BCELoss {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl BCELoss {
@@ -76,6 +83,12 @@ impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Loss
 /// Cross Entropy loss (for multi-class classification)
 pub struct CrossEntropyLoss {
     epsilon: f32,
+}
+
+impl Default for CrossEntropyLoss {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl CrossEntropyLoss {
@@ -145,7 +158,8 @@ impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Loss
     }
 }
 
-/// L1 Loss (Mean Absolute Error)
+/// L1 loss (Mean Absolute Error)
+#[derive(Default)]
 pub struct L1Loss;
 
 impl L1Loss {

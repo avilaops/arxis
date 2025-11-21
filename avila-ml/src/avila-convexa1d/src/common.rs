@@ -161,7 +161,7 @@ mod tests {
 
         // Com padding de 1 (size/2) e stride de 1, resultado tem 5 amostras
         assert_eq!(result.len(), 5);
-        
+
         // Verifica que a convolução foi aplicada
         assert!(result[0] > 0.0);
         assert!(result[result.len() - 1] > 0.0);

@@ -1,7 +1,7 @@
 //! Fingerprint analysis and matching
 
 use crate::core::ImageBuffer;
-use crate::forensics::{FingerprintAnalysis, Minutia, MinutiaType, PatternType};
+use crate::forensics::{FingerprintAnalysis, PatternType};
 use crate::Result;
 
 /// Analyze fingerprint image

@@ -1,6 +1,6 @@
 //! DICOM file format support
 
-use crate::medical::{DicomMetadata, MedicalImage, Modality};
+use crate::medical::MedicalImage;
 use crate::Result;
 
 /// Load DICOM file
