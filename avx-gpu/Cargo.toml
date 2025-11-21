@@ -9,6 +9,7 @@ members = [
     "avx-gpu-backends/rocm",
     "avx-gpu-std",
     "avx-gpu-macros",
+    "examples",
 ]
 resolver = "2"
 

@@ -448,4 +448,4 @@ See [LICENSE-MIT](../LICENSE-MIT) and [LICENSE-APACHE](../LICENSE-APACHE) for de
 - **Repository**: https://github.com/avilaops/arxis
 - **Documentation**: https://docs.rs/avx-events
 - **Crates.io**: https://crates.io/crates/avx-events
-- **AVX Platform**: https://avila.cloud
+- **AVX Platform**: https://avilaops.com

@@ -23,8 +23,8 @@ pub struct WgpuBackend {
     device: Arc<wgpu::Device>,
     queue: Arc<wgpu::Queue>,
     adapter: Arc<wgpu::Adapter>,
-    buffers: Arc<Mutex<HashMap<u64, wgpu::Buffer>>>,
-    pipelines: Arc<Mutex<HashMap<u64, wgpu::ComputePipeline>>>,
+    buffers: Arc<Mutex<HashMap<u64, Arc<wgpu::Buffer>>>>,
+    pipelines: Arc<Mutex<HashMap<u64, Arc<wgpu::ComputePipeline>>>>,
     next_handle: Arc<Mutex<u64>>,
 }
 
@@ -79,7 +79,7 @@ impl WgpuBackend {
         id
     }
 
-    fn get_buffer(&self, handle: BufferHandle) -> Result<wgpu::Buffer> {
+    fn get_buffer(&self, handle: BufferHandle) -> Result<Arc<wgpu::Buffer>> {
         self.buffers
             .lock()
             .get(&handle.0)
@@ -87,7 +87,7 @@ impl WgpuBackend {
             .ok_or_else(|| Error::BackendError(format!("Invalid buffer handle: {:?}", handle)))
     }
 
-    fn get_pipeline(&self, handle: KernelHandle) -> Result<wgpu::ComputePipeline> {
+    fn get_pipeline(&self, handle: KernelHandle) -> Result<Arc<wgpu::ComputePipeline>> {
         self.pipelines
             .lock()
             .get(&handle.0)
@@ -159,7 +159,7 @@ impl Backend for WgpuBackend {
         });
 
         let handle_id = self.next_handle();
-        self.buffers.lock().insert(handle_id, buffer);
+        self.buffers.lock().insert(handle_id, Arc::new(buffer));
 
         Ok(BufferHandle(handle_id))
     }
@@ -245,7 +245,7 @@ impl Backend for WgpuBackend {
         });
 
         let handle_id = self.next_handle();
-        self.pipelines.lock().insert(handle_id, pipeline);
+        self.pipelines.lock().insert(handle_id, Arc::new(pipeline));
 
         Ok(KernelHandle(handle_id))
     }

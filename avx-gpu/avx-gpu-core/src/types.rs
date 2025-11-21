@@ -18,7 +18,7 @@ impl GpuScalar for u64 {}
 
 /// 2D vector
 #[repr(C)]
-#[derive(Debug, Clone, Copy, Pod, Zeroable)]
+#[derive(Debug, Clone, Copy)]
 pub struct Vec2<T: GpuScalar> {
     pub x: T,
     pub y: T,
@@ -26,7 +26,7 @@ pub struct Vec2<T: GpuScalar> {
 
 /// 3D vector
 #[repr(C)]
-#[derive(Debug, Clone, Copy, Pod, Zeroable)]
+#[derive(Debug, Clone, Copy)]
 pub struct Vec3<T: GpuScalar> {
     pub x: T,
     pub y: T,
@@ -35,7 +35,7 @@ pub struct Vec3<T: GpuScalar> {
 
 /// 4D vector
 #[repr(C)]
-#[derive(Debug, Clone, Copy, Pod, Zeroable)]
+#[derive(Debug, Clone, Copy)]
 pub struct Vec4<T: GpuScalar> {
     pub x: T,
     pub y: T,
@@ -45,7 +45,7 @@ pub struct Vec4<T: GpuScalar> {
 
 /// 4x4 matrix (column-major)
 #[repr(C)]
-#[derive(Debug, Clone, Copy, Pod, Zeroable)]
+#[derive(Debug, Clone, Copy)]
 pub struct Mat4<T: GpuScalar> {
     pub cols: [Vec4<T>; 4],
 }

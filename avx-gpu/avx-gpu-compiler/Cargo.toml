@@ -12,3 +12,4 @@ avx-gpu-core = { path = "../avx-gpu-core" }
 naga.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
+anyhow.workspace = true

@@ -16,6 +16,8 @@ bytemuck.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
 parking_lot.workspace = true
+anyhow.workspace = true
+futures-intrusive.workspace = true
 
 [dev-dependencies]
 env_logger = "0.11"

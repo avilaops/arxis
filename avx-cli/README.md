@@ -313,7 +313,7 @@ See [LICENSE-MIT](../LICENSE-MIT) and [LICENSE-APACHE](../LICENSE-APACHE) for de
 - **Repository**: https://github.com/avilaops/arxis
 - **Documentation**: https://docs.rs/avx-cli
 - **Crates.io**: https://crates.io/crates/avx-cli
-- **AVX Platform**: https://avila.cloud
+- **AVX Platform**: https://avilaops.com
 
 ## Support
 

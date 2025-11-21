@@ -172,7 +172,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## 📚 Documentation
 
-- [API Documentation](https://docs.avila.cloud/avx-gpu)
+- [API Documentation](https://docs.avilaops.com/avx-gpu)
 - [User Guide](docs/guide.md)
 - [CUDA Migration Guide](docs/cuda-migration.md)
 - [Performance Tuning](docs/performance.md)
@@ -214,4 +214,4 @@ Built by the Avila Cloud team as part of the Arxis project. Special thanks to:
 
 ---
 
-**Made with ❤️ in Brazil by [Avila Cloud](https://avila.cloud)** 🇧🇷
+**Made with ❤️ in Brazil by [Avila](https://avilaops.com)** 🇧🇷

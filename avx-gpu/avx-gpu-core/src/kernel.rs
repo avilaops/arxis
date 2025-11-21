@@ -9,7 +9,7 @@ use std::sync::Arc;
 
 /// Opaque handle to compiled kernel
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct KernelHandle(pub(crate) u64);
+pub struct KernelHandle(pub u64);
 
 /// Trait for types that can be passed as kernel arguments
 pub trait KernelArg: Send + Sync {
@@ -29,7 +29,7 @@ impl KernelArg for BufferHandle {
     }
 }
 
-impl<T: bytemuck::Pod> KernelArg for &crate::buffer::Buffer<T> {
+impl<T: bytemuck::Pod + Send + Sync> KernelArg for &crate::buffer::Buffer<T> {
     fn as_arg(&self) -> KernelArgValue {
         KernelArgValue::Buffer(self.handle())
     }

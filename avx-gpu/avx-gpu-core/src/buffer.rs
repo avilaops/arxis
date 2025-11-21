@@ -28,7 +28,7 @@ impl Default for BufferUsage {
 
 /// Opaque handle to GPU buffer
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct BufferHandle(pub(crate) u64);
+pub struct BufferHandle(pub u64);
 
 /// Typed GPU buffer
 pub struct Buffer<T: bytemuck::Pod> {

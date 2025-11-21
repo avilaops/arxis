@@ -116,9 +116,13 @@ pub fn lu_decomposition(matrix: &Matrix) -> Result<(Matrix, Matrix, Matrix), Str
     let dmatrix = DMatrix::from_row_slice(n, n, &data);
     let lu = dmatrix.lu();
 
-    // Extrai P (permutação)
-    let p_matrix = lu.p();
-    let p_data: Vec<f64> = p_matrix.iter().copied().collect();
+    // Extrai P (permutação) - cria matriz identidade e aplica permutação
+    let mut p_data = vec![0.0; n * n];
+    for i in 0..n {
+        for j in 0..n {
+            p_data[i * n + j] = if lu.p().at_index(i) == j { 1.0 } else { 0.0 };
+        }
+    }
     let p = Matrix::from_data([n, n], p_data)?;
 
     // Extrai L

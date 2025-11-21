@@ -1,0 +1,22 @@
+[package]
+name = "avx-gpu-examples"
+version.workspace = true
+edition.workspace = true
+publish = false
+
+[[example]]
+name = "test_backend"
+path = "test_backend.rs"
+
+[[example]]
+name = "vector_add"
+path = "vector_add.rs"
+
+[[example]]
+name = "matrix_multiply"
+path = "matrix_multiply.rs"
+
+[dependencies]
+avx-gpu-core = { path = "../avx-gpu-core" }
+avx-gpu-backend-wgpu = { path = "../avx-gpu-backends/wgpu" }
+env_logger = "0.11"

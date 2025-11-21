@@ -1,6 +1,5 @@
 //! Memory management utilities
 
-use crate::error::Result;
 use dashmap::DashMap;
 use std::sync::Arc;
 

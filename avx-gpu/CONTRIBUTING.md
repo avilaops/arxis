@@ -89,6 +89,6 @@ Be respectful, inclusive, and professional. We're all here to build something gr
 
 - Open an issue for bugs or feature requests
 - Join our Discord for discussions
-- Email dev@avila.cloud for private inquiries
+- Email nicolas@avila.inc for private inquiries
 
 Thank you for contributing! 🚀

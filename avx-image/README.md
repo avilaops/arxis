@@ -4,7 +4,7 @@
 
 [![Rust](https://img.shields.io/badge/rust-100%25-orange.svg)](https://www.rust-lang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![AVL Platform](https://img.shields.io/badge/AVL-Platform-green.svg)](https://avila.cloud)
+[![AVL Platform](https://img.shields.io/badge/AVL-Platform-green.svg)](https://avilaops.com)
 
 ---
 
@@ -166,9 +166,9 @@ MIT License - see [LICENSE](LICENSE) for details
 
 ## 🔗 Links
 
-- **AVL Platform**: https://avila.cloud
+- **AVL Platform**: https://avilaops.com
 - **GitHub**: https://github.com/avilaops/arxis
-- **Documentation**: https://docs.avila.cloud/avx-image
+- **Documentation**: https://docs.avilaops.com/avx-image
 
 ---
 

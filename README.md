@@ -15,7 +15,7 @@
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Rust](https://img.shields.io/badge/rust-1.70%2B-CE422B.svg)](https://www.rust-lang.org/)
 [![Tests](https://img.shields.io/badge/tests-101%20passing-00C853.svg)](https://github.com/avilaops/arxis)
-[![AVL Cloud](https://img.shields.io/badge/AVL-Cloud%20Platform-00d4ff)](https://avila.cloud)
+[![AVL Cloud](https://img.shields.io/badge/AVL-Cloud%20Platform-00d4ff)](https://avilaops.com)
 
 **🌌 NASA/LISA Mission Ready** | **🏛️ Research-Grade** | **📚 [Documentation](https://docs.rs/arxis_quaternions)** | **💬 [Discussions](https://github.com/avilaops/arxis/discussions)**
 
@@ -129,7 +129,7 @@ arxis/
 
 ## ☁️ AVL Cloud Platform
 
-**Arxis** é a fundação da **AVL (Avila Cloud Platform)** - nossa infraestrutura proprietária de computação científica.
+**Arxis** é a fundação da **AVL (Avila Cloud Platform)** - infraestrutura de computação científica em desenvolvimento.
 
 Como a cidadela protege a cidade, Arxis protege seus cálculos:
 - **Avx Computing**: Processamento paralelo otimizado (o motor central)
@@ -138,6 +138,10 @@ Como a cidadela protege a cidade, Arxis protege seus cálculos:
 - **AVL Deploy**: Deployment automatizado (a plataforma de lançamento)
 
 *Diferente de AWS, Azure ou GCP, a AVL é construída sobre as fundações sólidas do Arxis - otimizada especificamente para cargas de trabalho científicas e de engenharia.*
+
+> **Status**: Arxis está em **active development**. O projeto é open-source (MIT/Apache-2.0) para uso científico e educacional.
+> 
+> **Links**: [Website](https://arxis.avilaops.com) | [Organization](https://avilaops.com) | [Contact](https://avila.inc)
 
 ---
 
@@ -1124,4 +1128,5 @@ Developed with ❤️ for the scientific community
 
 Contact: nicolas@avila.inc
 GitHub: [@avilaops](https://github.com/avilaops)
-Platform: [avila.cloud](https://avila.cloud)
+Website: [arxis.avilaops.com](https://arxis.avilaops.com)
+Organization: [avilaops.com](https://avilaops.com)

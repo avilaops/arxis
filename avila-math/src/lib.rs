@@ -40,6 +40,21 @@ pub mod tensor;
 /// FFT (1D-4D), análise espectral, janelas e filtros.
 pub mod signal;
 
+/// Módulo de Álgebra Linear Avançada
+///
+/// SVD, eigenvalues, QR, LU decompositions e resolução de sistemas lineares.
+pub mod linalg;
+
+/// Módulo de Cálculo Diferencial 4D
+///
+/// Operadores diferenciais (gradiente, divergência, Laplaciano) e campos vetoriais.
+pub mod calculus;
+
+/// Módulo de Interpolação 4D
+///
+/// Curvas de Bézier, splines cúbicas, interpolação linear/bilinear/trilinear.
+pub mod interpolation;
+
 // Re-export commonly used types
 pub use geometry::{DualQuat, Matrix4, Quat3D, SO4Rotation, Vector2, Vector3, Vector4, AABB};
 pub use tensor::{Tensor, Tensor4D};

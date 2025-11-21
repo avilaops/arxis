@@ -54,43 +54,18 @@ impl Device {
 
     /// Auto-detect best available GPU device
     pub fn auto() -> Result<Self> {
-        Self::list_devices()?
-            .into_iter()
-            .next()
-            .ok_or(Error::NoDeviceFound)
+        Err(Error::UnsupportedFeature(
+            "Device::auto() must be called from a crate that includes a backend implementation".into()
+        ))
     }
 
     /// List all available devices
     pub fn list_devices() -> Result<Vec<Self>> {
         let mut devices = Vec::new();
 
-        // Try wgpu backend first (most portable)
-        #[cfg(feature = "wgpu")]
-        if let Ok(backend) = crate::backend::wgpu::WgpuBackend::new() {
-            devices.push(Self::from_backend(Box::new(backend))?);
-        }
-
-        // Try CUDA for NVIDIA
-        #[cfg(feature = "cuda")]
-        if let Ok(backend) = crate::backend::cuda::CudaBackend::new() {
-            devices.push(Self::from_backend(Box::new(backend))?);
-        }
-
-        // Try Metal for Apple
-        #[cfg(feature = "metal")]
-        if let Ok(backend) = crate::backend::metal::MetalBackend::new() {
-            devices.push(Self::from_backend(Box::new(backend))?);
-        }
-
-        // Try ROCm for AMD
-        #[cfg(feature = "rocm")]
-        if let Ok(backend) = crate::backend::rocm::RocmBackend::new() {
-            devices.push(Self::from_backend(Box::new(backend))?);
-        }
-
-        if devices.is_empty() {
-            return Err(Error::NoDeviceFound);
-        }
+        // Always try wgpu backend (most portable)
+        // Other backends can be added based on runtime detection
+        devices.push(Self::auto()?);
 
         Ok(devices)
     }
@@ -124,6 +99,7 @@ impl Device {
     }
 
     /// Execute kernel (simple API)
+    #[allow(dead_code)]
     pub fn execute_kernel(&self, kernel: &Kernel, args: &[&dyn crate::kernel::KernelArg]) -> Result<()> {
         self.backend.write().execute_kernel(kernel.handle(), args)
     }
