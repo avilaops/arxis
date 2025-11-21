@@ -32,13 +32,12 @@ impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Modu
         // Q = input @ W_q, K = input @ W_k, V = input @ W_v
         let _q = self.query.forward(input);
         let _k = self.key.forward(input);
-        let v = self.value.forward(input);
 
         // Attention(Q, K, V) = softmax(QK^T / sqrt(d_k)) V
         // Simplified implementation - full version would handle batches properly
         // TODO: Implement proper scaled dot-product attention
 
-        v
+        self.value.forward(input)
     }
 
     fn parameters(&self) -> Vec<&Tensor<T>> {
@@ -69,7 +68,7 @@ pub struct MultiHeadAttention<T = f32> {
 impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> MultiHeadAttention<T> {
     pub fn new(embed_dim: usize, num_heads: usize) -> Self {
         assert!(
-            embed_dim % num_heads == 0,
+            embed_dim.is_multiple_of(num_heads),
             "embed_dim must be divisible by num_heads"
         );
 

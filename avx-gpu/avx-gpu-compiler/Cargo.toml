@@ -1,0 +1,14 @@
+[package]
+name = "avx-gpu-compiler"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "Kernel compiler for AVX-GPU"
+
+[dependencies]
+avx-gpu-core = { path = "../avx-gpu-core" }
+naga.workspace = true
+thiserror.workspace = true
+tracing.workspace = true

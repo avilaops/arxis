@@ -354,10 +354,10 @@ mod tests {
     fn test_dot_product_large() {
         let a: Vec<f64> = (0..100).map(|x| x as f64).collect();
         let b: Vec<f64> = (0..100).map(|x| x as f64 * 2.0).collect();
-        
+
         let result_simd = dot_product_simd(&a, &b);
         let result_scalar = dot_product_scalar(&a, &b);
-        
+
         assert!((result_simd - result_scalar).abs() < 1e-10);
     }
 
@@ -403,7 +403,7 @@ mod tests {
         // Testa com tamanho que não é múltiplo de 4
         let a = vec![1.0, 2.0, 3.0, 4.0, 5.0];
         let b = vec![6.0, 7.0, 8.0, 9.0, 10.0];
-        
+
         let dot = dot_product_simd(&a, &b);
         assert_eq!(dot, 130.0); // 1*6 + 2*7 + 3*8 + 4*9 + 5*10
     }

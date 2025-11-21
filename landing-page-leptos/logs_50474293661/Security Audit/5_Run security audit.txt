@@ -1,0 +1,624 @@
+﻿2025-11-21T11:49:34.1369074Z ##[group]Run cargo audit
+2025-11-21T11:49:34.1369322Z [36;1mcargo audit[0m
+2025-11-21T11:49:34.1387416Z shell: /usr/bin/bash -e {0}
+2025-11-21T11:49:34.1387673Z env:
+2025-11-21T11:49:34.1387859Z   CARGO_TERM_COLOR: always
+2025-11-21T11:49:34.1388073Z   RUST_BACKTRACE: 1
+2025-11-21T11:49:34.1388262Z   CARGO_HOME: /home/runner/.cargo
+2025-11-21T11:49:34.1388486Z   CARGO_INCREMENTAL: 0
+2025-11-21T11:49:34.1388670Z ##[endgroup]
+2025-11-21T11:49:34.2662246Z [1m[92m    Updating[0m crates.io index
+2025-11-21T11:49:36.1495564Z [1m[92m     Locking[0m 904 packages to latest compatible versions
+2025-11-21T11:49:36.1534608Z [1m[92m      Adding[0m arrow v53.4.1 [1m[33m(available: v57.0.0)[0m
+2025-11-21T11:49:36.1583508Z [1m[92m      Adding[0m async-compression v0.4.19 [1m[33m(available: v0.4.33)[0m
+2025-11-21T11:49:36.1606288Z [1m[92m      Adding[0m axum v0.7.9 [1m[33m(available: v0.8.7)[0m
+2025-11-21T11:49:36.1622094Z [1m[92m      Adding[0m bincode v1.3.3 [1m[33m(available: v2.0.1)[0m
+2025-11-21T11:49:36.1658233Z [1m[92m      Adding[0m chrono v0.4.39 [1m[33m(available: v0.4.42)[0m
+2025-11-21T11:49:36.1820027Z [1m[92m      Adding[0m colored_json v4.1.0 [1m[33m(available: v5.0.0)[0m
+2025-11-21T11:49:36.1824879Z [1m[92m      Adding[0m config v0.14.1 [1m[33m(available: v0.15.19)[0m
+2025-11-21T11:49:36.1827009Z [1m[92m      Adding[0m console v0.15.11 [1m[33m(available: v0.16.1)[0m
+2025-11-21T11:49:36.1835444Z [1m[92m      Adding[0m criterion v0.5.1 [1m[33m(available: v0.7.0)[0m
+2025-11-21T11:49:36.1856281Z [1m[92m      Adding[0m cudarc v0.9.15 [1m[33m(available: v0.18.1)[0m
+2025-11-21T11:49:36.1878476Z [1m[92m      Adding[0m datafusion v43.0.0 [1m[33m(available: v51.0.0)[0m
+2025-11-21T11:49:36.1913431Z [1m[92m      Adding[0m dialoguer v0.11.0 [1m[33m(available: v0.12.0)[0m
+2025-11-21T11:49:36.1956452Z [1m[92m      Adding[0m generic-array v0.14.7 [1m[33m(available: v0.14.9)[0m
+2025-11-21T11:49:36.2010162Z [1m[92m      Adding[0m hf-hub v0.3.2 [1m[33m(available: v0.4.3)[0m
+2025-11-21T11:49:36.2150845Z [1m[92m      Adding[0m image v0.24.9 [1m[33m(available: v0.25.9)[0m
+2025-11-21T11:49:36.2160786Z [1m[92m      Adding[0m indicatif v0.17.11 [1m[33m(available: v0.18.3)[0m
+2025-11-21T11:49:36.2184742Z [1m[92m      Adding[0m kiddo v4.2.1 [1m[33m(available: v5.2.2)[0m
+2025-11-21T11:49:36.2192381Z [1m[92m      Adding[0m leptos v0.6.15 [1m[33m(available: v0.8.12)[0m
+2025-11-21T11:49:36.2214798Z [1m[92m      Adding[0m leptos_meta v0.6.15 [1m[33m(available: v0.8.5)[0m
+2025-11-21T11:49:36.2225421Z [1m[92m      Adding[0m leptos_router v0.6.15 [1m[33m(available: v0.8.9)[0m
+2025-11-21T11:49:36.2238527Z [1m[92m      Adding[0m linfa v0.7.1 [1m[33m(available: v0.8.0)[0m
+2025-11-21T11:49:36.2239333Z [1m[92m      Adding[0m linfa-clustering v0.7.1 [1m[33m(available: v0.8.0)[0m
+2025-11-21T11:49:36.2240397Z [1m[92m      Adding[0m linfa-reduction v0.7.1 [1m[33m(available: v0.8.0)[0m
+2025-11-21T11:49:36.2304266Z [1m[92m      Adding[0m nalgebra v0.32.6 [1m[33m(available: v0.34.1)[0m
+2025-11-21T11:49:36.2308725Z [1m[92m      Adding[0m nalgebra v0.33.2 [1m[33m(available: v0.34.1)[0m
+2025-11-21T11:49:36.2316600Z [1m[92m      Adding[0m ndarray v0.15.6 [1m[33m(available: v0.17.1)[0m
+2025-11-21T11:49:36.2318569Z [1m[92m      Adding[0m ndarray v0.16.1 [1m[33m(available: v0.17.1)[0m
+2025-11-21T11:49:36.2320154Z [1m[92m      Adding[0m ndarray-linalg v0.16.0 [1m[33m(available: v0.18.0)[0m
+2025-11-21T11:49:36.2321021Z [1m[92m      Adding[0m ndarray-rand v0.14.0 [1m[33m(available: v0.16.0)[0m
+2025-11-21T11:49:36.2321689Z [1m[92m      Adding[0m ndarray-stats v0.5.1 [1m[33m(available: v0.6.0)[0m
+2025-11-21T11:49:36.2406246Z [1m[92m      Adding[0m parquet v53.4.1 [1m[33m(available: v57.0.0)[0m
+2025-11-21T11:49:36.2430128Z [1m[92m      Adding[0m petgraph v0.6.5 [1m[33m(available: v0.8.3)[0m
+2025-11-21T11:49:36.2448094Z [1m[92m      Adding[0m polars v0.44.2 [1m[33m(available: v0.52.0)[0m
+2025-11-21T11:49:36.2524824Z [1m[92m      Adding[0m prophet v0.1.1 [1m[33m(available: v0.4.2)[0m
+2025-11-21T11:49:36.2587857Z [1m[92m      Adding[0m rand v0.8.5 [1m[33m(available: v0.9.2)[0m
+2025-11-21T11:49:36.2593543Z [1m[92m      Adding[0m rand_distr v0.4.3 [1m[33m(available: v0.5.1)[0m
+2025-11-21T11:49:36.2594065Z [1m[92m      Adding[0m rand_xoshiro v0.6.0 [1m[33m(available: v0.7.0)[0m
+2025-11-21T11:49:36.3042957Z [1m[92m      Adding[0m smartcore v0.3.2 [1m[33m(available: v0.4.6)[0m
+2025-11-21T11:49:36.3049352Z [1m[92m      Adding[0m sprs v0.11.1 [1m[33m(available: v0.11.4)[0m
+2025-11-21T11:49:36.3054111Z [1m[92m      Adding[0m statrs v0.16.1 [1m[33m(available: v0.18.0)[0m
+2025-11-21T11:49:36.3054609Z [1m[92m      Adding[0m statrs v0.17.1 [1m[33m(available: v0.18.0)[0m
+2025-11-21T11:49:36.3117658Z [1m[92m      Adding[0m tabled v0.15.0 [1m[33m(available: v0.20.0)[0m
+2025-11-21T11:49:36.3128348Z [1m[92m      Adding[0m thiserror v1.0.69 [1m[33m(available: v2.0.17)[0m
+2025-11-21T11:49:36.3137174Z [1m[92m      Adding[0m tiktoken-rs v0.5.9 [1m[33m(available: v0.9.1)[0m
+2025-11-21T11:49:36.3145306Z [1m[92m      Adding[0m tokenizers v0.20.4 [1m[33m(available: v0.22.1)[0m
+2025-11-21T11:49:36.3372553Z [1m[92m      Adding[0m wgpu v22.1.0 [1m[33m(available: v27.0.1)[0m
+2025-11-21T11:49:36.3592302Z [1m[92m      Adding[0m zstd-safe v7.2.1 [1m[33m(available: v7.2.4)[0m
+2025-11-21T11:49:36.3593238Z [1m[92m      Adding[0m zstd-sys v2.0.13+zstd.1.5.6 [1m[33m(available: v2.0.16+zstd.1.5.7)[0m
+2025-11-21T11:49:36.4403908Z [0m[0m[1m[32m    Fetching[0m advisory database from `https://github.com/RustSec/advisory-db.git`
+2025-11-21T11:49:38.3531465Z [0m[0m[1m[32m      Loaded[0m 873 security advisories (from /home/runner/.cargo/advisory-db)
+2025-11-21T11:49:38.3532255Z [0m[0m[1m[32m    Updating[0m crates.io index
+2025-11-21T11:49:38.3717474Z [0m[0m[1m[32m    Scanning[0m Cargo.lock for vulnerabilities (918 crate dependencies)
+2025-11-21T11:49:39.0208812Z [0m[0m[1m[31mCrate:    [0m fast-float
+2025-11-21T11:49:39.0209466Z [0m[0m[1m[31mVersion:  [0m 0.2.0
+2025-11-21T11:49:39.0210097Z [0m[0m[1m[31mTitle:    [0m Segmentation fault due to lack of bound check
+2025-11-21T11:49:39.0210800Z [0m[0m[1m[31mDate:     [0m 2025-01-13
+2025-11-21T11:49:39.0211296Z [0m[0m[1m[31mID:       [0m RUSTSEC-2025-0003
+2025-11-21T11:49:39.0211974Z [0m[0m[1m[31mURL:      [0m https://rustsec.org/advisories/RUSTSEC-2025-0003
+2025-11-21T11:49:39.0212637Z [0m[0m[1m[31mSolution: [0m No fixed upgrade is available!
+2025-11-21T11:49:39.0212957Z [0m[0m[1m[31mDependency tree:
+2025-11-21T11:49:39.0213203Z [0mfast-float 0.2.0
+2025-11-21T11:49:39.0213442Z ├── polars-io 0.44.2
+2025-11-21T11:49:39.0213673Z │   ├── polars-stream 0.44.2
+2025-11-21T11:49:39.0213935Z │   │   └── polars-lazy 0.44.2
+2025-11-21T11:49:39.0214260Z │   │       ├── polars-sql 0.44.2
+2025-11-21T11:49:39.0214736Z │   │       │   └── polars 0.44.2
+2025-11-21T11:49:39.0215236Z │   │       │       ├── avila-ml 0.1.0
+2025-11-21T11:49:39.0215727Z │   │       │       └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0216629Z │   │       └── polars 0.44.2
+2025-11-21T11:49:39.0217042Z │   ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0217381Z │   │   ├── polars-stream 0.44.2
+2025-11-21T11:49:39.0217629Z │   │   ├── polars-sql 0.44.2
+2025-11-21T11:49:39.0217879Z │   │   ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0218130Z │   │   │   └── polars-lazy 0.44.2
+2025-11-21T11:49:39.0218448Z │   │   ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0218772Z │   │   │   ├── polars-stream 0.44.2
+2025-11-21T11:49:39.0219070Z │   │   │   └── polars-lazy 0.44.2
+2025-11-21T11:49:39.0219367Z │   │   ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0219653Z │   │   └── polars-expr 0.44.2
+2025-11-21T11:49:39.0219946Z │   │       ├── polars-stream 0.44.2
+2025-11-21T11:49:39.0220244Z │   │       ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0220589Z │   │       ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0221329Z │   │       └── polars-lazy 0.44.2
+2025-11-21T11:49:39.0221636Z │   ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0221920Z │   ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0222235Z │   ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0222515Z │   ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0222779Z │   └── polars 0.44.2
+2025-11-21T11:49:39.0223046Z └── polars-arrow 0.44.2
+2025-11-21T11:49:39.0223313Z     ├── polars-time 0.44.2
+2025-11-21T11:49:39.0223596Z     │   ├── polars-sql 0.44.2
+2025-11-21T11:49:39.0223878Z     │   ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0224178Z     │   ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0224483Z     │   ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0224769Z     │   ├── polars-io 0.44.2
+2025-11-21T11:49:39.0225051Z     │   ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0225331Z     │   └── polars 0.44.2
+2025-11-21T11:49:39.0225600Z     ├── polars-sql 0.44.2
+2025-11-21T11:49:39.0225859Z     ├── polars-row 0.44.2
+2025-11-21T11:49:39.0226138Z     │   ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0226437Z     │   ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0226722Z     │   └── polars-core 0.44.2
+2025-11-21T11:49:39.0227004Z     │       ├── polars-time 0.44.2
+2025-11-21T11:49:39.0227327Z     │       ├── polars-stream 0.44.2
+2025-11-21T11:49:39.0227633Z     │       ├── polars-sql 0.44.2
+2025-11-21T11:49:39.0227930Z     │       ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0228221Z     │       ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0228519Z     │       ├── polars-ops 0.44.2
+2025-11-21T11:49:39.0228825Z     │       │   ├── polars-time 0.44.2
+2025-11-21T11:49:39.0229134Z     │       │   ├── polars-sql 0.44.2
+2025-11-21T11:49:39.0229451Z     │       │   ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0229760Z     │       │   ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0230086Z     │       │   ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0230402Z     │       │   ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0231235Z     │       │   ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0231626Z     │       │   └── polars 0.44.2
+2025-11-21T11:49:39.0232035Z     │       ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0232459Z     │       ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0232774Z     │       ├── polars-io 0.44.2
+2025-11-21T11:49:39.0233070Z     │       ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0233358Z     │       └── polars 0.44.2
+2025-11-21T11:49:39.0233650Z     ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0233920Z     ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0234201Z     ├── polars-parquet 0.44.2
+2025-11-21T11:49:39.0234487Z     │   ├── polars-stream 0.44.2
+2025-11-21T11:49:39.0234780Z     │   ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0235057Z     │   ├── polars-io 0.44.2
+2025-11-21T11:49:39.0235333Z     │   └── polars 0.44.2
+2025-11-21T11:49:39.0235601Z     ├── polars-ops 0.44.2
+2025-11-21T11:49:39.0235863Z     ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0236111Z     ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0236341Z     ├── polars-json 0.44.2
+2025-11-21T11:49:39.0236579Z     │   ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0236832Z     │   ├── polars-ops 0.44.2
+2025-11-21T11:49:39.0237112Z     │   ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0237599Z     │   ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0237844Z     │   └── polars-io 0.44.2
+2025-11-21T11:49:39.0238079Z     ├── polars-io 0.44.2
+2025-11-21T11:49:39.0238321Z     ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0238553Z     ├── polars-core 0.44.2
+2025-11-21T11:49:39.0238812Z     ├── polars-compute 0.44.2
+2025-11-21T11:49:39.0239068Z     │   ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0239323Z     │   ├── polars-parquet 0.44.2
+2025-11-21T11:49:39.0239598Z     │   ├── polars-ops 0.44.2
+2025-11-21T11:49:39.0239839Z     │   ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0240090Z     │   └── polars-core 0.44.2
+2025-11-21T11:49:39.0240321Z     └── polars 0.44.2
+2025-11-21T11:49:39.0240443Z 
+2025-11-21T11:49:39.0240575Z [0m[0m[1m[31mCrate:    [0m pyo3
+2025-11-21T11:49:39.0241066Z [0m[0m[1m[31mVersion:  [0m 0.21.2
+2025-11-21T11:49:39.0245417Z [0m[0m[1m[31mTitle:    [0m Risk of buffer overflow in `PyString::from_object`
+2025-11-21T11:49:39.0245822Z [0m[0m[1m[31mDate:     [0m 2025-04-01
+2025-11-21T11:49:39.0246142Z [0m[0m[1m[31mID:       [0m RUSTSEC-2025-0020
+2025-11-21T11:49:39.0246544Z [0m[0m[1m[31mURL:      [0m https://rustsec.org/advisories/RUSTSEC-2025-0020
+2025-11-21T11:49:39.0246906Z [0m[0m[1m[31mSolution: [0m Upgrade to >=0.24.1
+2025-11-21T11:49:39.0247193Z [0m[0m[1m[31mDependency tree:
+2025-11-21T11:49:39.0247426Z [0mpyo3 0.21.2
+2025-11-21T11:49:39.0247644Z ├── polars-utils 0.44.2
+2025-11-21T11:49:39.0247874Z │   ├── polars-time 0.44.2
+2025-11-21T11:49:39.0248114Z │   │   ├── polars-sql 0.44.2
+2025-11-21T11:49:39.0248354Z │   │   │   └── polars 0.44.2
+2025-11-21T11:49:39.0248595Z │   │   │       ├── avila-ml 0.1.0
+2025-11-21T11:49:39.0248865Z │   │   │       └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0249130Z │   │   ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0249386Z │   │   │   ├── polars-stream 0.44.2
+2025-11-21T11:49:39.0249676Z │   │   │   │   └── polars-lazy 0.44.2
+2025-11-21T11:49:39.0249953Z │   │   │   │       ├── polars-sql 0.44.2
+2025-11-21T11:49:39.0250233Z │   │   │   │       └── polars 0.44.2
+2025-11-21T11:49:39.0250495Z │   │   │   ├── polars-sql 0.44.2
+2025-11-21T11:49:39.0251018Z │   │   │   ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0251285Z │   │   │   │   └── polars-lazy 0.44.2
+2025-11-21T11:49:39.0251564Z │   │   │   ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0251843Z │   │   │   │   ├── polars-stream 0.44.2
+2025-11-21T11:49:39.0252121Z │   │   │   │   └── polars-lazy 0.44.2
+2025-11-21T11:49:39.0252386Z │   │   │   ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0252642Z │   │   │   └── polars-expr 0.44.2
+2025-11-21T11:49:39.0252900Z │   │   │       ├── polars-stream 0.44.2
+2025-11-21T11:49:39.0253178Z │   │   │       ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0253457Z │   │   │       ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0253741Z │   │   │       └── polars-lazy 0.44.2
+2025-11-21T11:49:39.0254037Z │   │   ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0254294Z │   │   ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0254651Z │   │   ├── polars-io 0.44.2
+2025-11-21T11:49:39.0254953Z │   │   │   ├── polars-stream 0.44.2
+2025-11-21T11:49:39.0255210Z │   │   │   ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0255475Z │   │   │   ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0255738Z │   │   │   ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0256008Z │   │   │   ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0256259Z │   │   │   ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0256518Z │   │   │   └── polars 0.44.2
+2025-11-21T11:49:39.0256777Z │   │   ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0257019Z │   │   └── polars 0.44.2
+2025-11-21T11:49:39.0257275Z │   ├── polars-stream 0.44.2
+2025-11-21T11:49:39.0257511Z │   ├── polars-sql 0.44.2
+2025-11-21T11:49:39.0257755Z │   ├── polars-schema 0.44.2
+2025-11-21T11:49:39.0257994Z │   │   ├── polars-ops 0.44.2
+2025-11-21T11:49:39.0258240Z │   │   │   ├── polars-time 0.44.2
+2025-11-21T11:49:39.0258700Z │   │   │   ├── polars-sql 0.44.2
+2025-11-21T11:49:39.0258961Z │   │   │   ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0259316Z │   │   │   ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0259583Z │   │   │   ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0259852Z │   │   │   ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0260101Z │   │   │   ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0260354Z │   │   │   └── polars 0.44.2
+2025-11-21T11:49:39.0260590Z │   │   ├── polars-io 0.44.2
+2025-11-21T11:49:39.0261040Z │   │   ├── polars-core 0.44.2
+2025-11-21T11:49:39.0261447Z [0m[0m[1m[31merror:[0m 3 vulnerabilities found!
+2025-11-21T11:49:39.0261779Z [0m[0m[1m[33mwarning:[0m 7 allowed warnings found
+2025-11-21T11:49:39.0262066Z │   │   │   ├── polars-time 0.44.2
+2025-11-21T11:49:39.0262321Z │   │   │   ├── polars-stream 0.44.2
+2025-11-21T11:49:39.0262587Z │   │   │   ├── polars-sql 0.44.2
+2025-11-21T11:49:39.0262839Z │   │   │   ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0263117Z │   │   │   ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0263370Z │   │   │   ├── polars-ops 0.44.2
+2025-11-21T11:49:39.0263641Z │   │   │   ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0263922Z │   │   │   ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0264176Z │   │   │   ├── polars-io 0.44.2
+2025-11-21T11:49:39.0264426Z │   │   │   ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0264675Z │   │   │   └── polars 0.44.2
+2025-11-21T11:49:39.0264917Z │   │   └── polars-arrow 0.44.2
+2025-11-21T11:49:39.0265188Z │   │       ├── polars-time 0.44.2
+2025-11-21T11:49:39.0265436Z │   │       ├── polars-sql 0.44.2
+2025-11-21T11:49:39.0265693Z │   │       ├── polars-row 0.44.2
+2025-11-21T11:49:39.0265948Z │   │       │   ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0266222Z │   │       │   ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0266490Z │   │       │   └── polars-core 0.44.2
+2025-11-21T11:49:39.0266746Z │   │       ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0267005Z │   │       ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0267279Z │   │       ├── polars-parquet 0.44.2
+2025-11-21T11:49:39.0267560Z │   │       │   ├── polars-stream 0.44.2
+2025-11-21T11:49:39.0267827Z │   │       │   ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0268104Z │   │       │   ├── polars-io 0.44.2
+2025-11-21T11:49:39.0268354Z │   │       │   └── polars 0.44.2
+2025-11-21T11:49:39.0268604Z │   │       ├── polars-ops 0.44.2
+2025-11-21T11:49:39.0268870Z │   │       ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0269137Z │   │       ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0269387Z │   │       ├── polars-json 0.44.2
+2025-11-21T11:49:39.0269638Z │   │       │   ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0269907Z │   │       │   ├── polars-ops 0.44.2
+2025-11-21T11:49:39.0270177Z │   │       │   ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0270459Z │   │       │   ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0270862Z │   │       │   └── polars-io 0.44.2
+2025-11-21T11:49:39.0271127Z │   │       ├── polars-io 0.44.2
+2025-11-21T11:49:39.0271379Z │   │       ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0271656Z │   │       ├── polars-core 0.44.2
+2025-11-21T11:49:39.0271924Z │   │       ├── polars-compute 0.44.2
+2025-11-21T11:49:39.0272314Z │   │       │   ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0272588Z │   │       │   ├── polars-parquet 0.44.2
+2025-11-21T11:49:39.0272858Z │   │       │   ├── polars-ops 0.44.2
+2025-11-21T11:49:39.0273126Z │   │       │   ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0273388Z │   │       │   └── polars-core 0.44.2
+2025-11-21T11:49:39.0273648Z │   │       └── polars 0.44.2
+2025-11-21T11:49:39.0273885Z │   ├── polars-row 0.44.2
+2025-11-21T11:49:39.0274125Z │   ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0274357Z │   ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0274604Z │   ├── polars-parquet 0.44.2
+2025-11-21T11:49:39.0274854Z │   ├── polars-ops 0.44.2
+2025-11-21T11:49:39.0275098Z │   ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0275349Z │   ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0275578Z │   ├── polars-json 0.44.2
+2025-11-21T11:49:39.0275891Z │   ├── polars-io 0.44.2
+2025-11-21T11:49:39.0276123Z │   ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0276363Z │   ├── polars-core 0.44.2
+2025-11-21T11:49:39.0276610Z │   ├── polars-compute 0.44.2
+2025-11-21T11:49:39.0276863Z │   ├── polars-arrow 0.44.2
+2025-11-21T11:49:39.0277090Z │   └── polars 0.44.2
+2025-11-21T11:49:39.0277315Z ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0277554Z ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0277785Z └── polars-io 0.44.2
+2025-11-21T11:49:39.0277900Z 
+2025-11-21T11:49:39.0278054Z [0m[0m[1m[31mCrate:    [0m rustc-serialize
+2025-11-21T11:49:39.0278341Z [0m[0m[1m[31mVersion:  [0m 0.3.25
+2025-11-21T11:49:39.0278761Z [0m[0m[1m[31mTitle:    [0m Stack overflow in rustc_serialize when parsing deeply nested JSON
+2025-11-21T11:49:39.0279155Z [0m[0m[1m[31mDate:     [0m 2022-01-01
+2025-11-21T11:49:39.0279449Z [0m[0m[1m[31mID:       [0m RUSTSEC-2022-0004
+2025-11-21T11:49:39.0279830Z [0m[0m[1m[31mURL:      [0m https://rustsec.org/advisories/RUSTSEC-2022-0004
+2025-11-21T11:49:39.0280245Z [0m[0m[1m[31mSolution: [0m No fixed upgrade is available!
+2025-11-21T11:49:39.0280559Z [0m[0m[1m[31mDependency tree:
+2025-11-21T11:49:39.0281048Z [0mrustc-serialize 0.3.25
+2025-11-21T11:49:39.0281289Z ├── num-rational 0.1.43
+2025-11-21T11:49:39.0281506Z │   └── num 0.1.43
+2025-11-21T11:49:39.0281732Z │       └── prophet 0.1.1
+2025-11-21T11:49:39.0281981Z │           └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0282246Z ├── num-complex 0.1.44
+2025-11-21T11:49:39.0282460Z │   ├── num 0.1.43
+2025-11-21T11:49:39.0282675Z │   └── ndarray 0.8.4
+2025-11-21T11:49:39.0282890Z │       ├── prophet 0.1.1
+2025-11-21T11:49:39.0283129Z │       └── ndarray-rand 0.4.0
+2025-11-21T11:49:39.0283374Z │           └── prophet 0.1.1
+2025-11-21T11:49:39.0283597Z └── num-bigint 0.1.45
+2025-11-21T11:49:39.0283828Z     ├── num-rational 0.1.43
+2025-11-21T11:49:39.0284048Z     └── num 0.1.43
+2025-11-21T11:49:39.0284158Z 
+2025-11-21T11:49:39.0284281Z [0m[0m[1m[33mCrate:    [0m instant
+2025-11-21T11:49:39.0284554Z [0m[0m[1m[33mVersion:  [0m 0.1.13
+2025-11-21T11:49:39.0284832Z [0m[0m[1m[33mWarning:  [0m unmaintained
+2025-11-21T11:49:39.0285145Z [0m[0m[1m[33mTitle:    [0m `instant` is unmaintained
+2025-11-21T11:49:39.0285449Z [0m[0m[1m[33mDate:     [0m 2024-09-01
+2025-11-21T11:49:39.0285737Z [0m[0m[1m[33mID:       [0m RUSTSEC-2024-0384
+2025-11-21T11:49:39.0286106Z [0m[0m[1m[33mURL:      [0m https://rustsec.org/advisories/RUSTSEC-2024-0384
+2025-11-21T11:49:39.0286442Z [0m[0m[1m[33mDependency tree:
+2025-11-21T11:49:39.0286683Z [0minstant 0.1.13
+2025-11-21T11:49:39.0286912Z └── datafusion-common 43.0.0
+2025-11-21T11:49:39.0287159Z     ├── datafusion-sql 43.0.0
+2025-11-21T11:49:39.0287403Z     │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0287653Z     │       └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0287947Z     ├── datafusion-physical-plan 43.0.0
+2025-11-21T11:49:39.0288263Z     │   ├── datafusion-physical-optimizer 43.0.0
+2025-11-21T11:49:39.0288560Z     │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0288828Z     │   ├── datafusion-catalog 43.0.0
+2025-11-21T11:49:39.0289090Z     │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0289465Z     │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0289735Z     ├── datafusion-physical-optimizer 43.0.0
+2025-11-21T11:49:39.0290057Z     ├── datafusion-physical-expr-common 43.0.0
+2025-11-21T11:49:39.0290368Z     │   ├── datafusion-physical-plan 43.0.0
+2025-11-21T11:49:39.0290792Z     │   ├── datafusion-physical-expr 43.0.0
+2025-11-21T11:49:39.0291099Z     │   │   ├── datafusion-physical-plan 43.0.0
+2025-11-21T11:49:39.0291430Z     │   │   ├── datafusion-physical-optimizer 43.0.0
+2025-11-21T11:49:39.0291747Z     │   │   ├── datafusion-optimizer 43.0.0
+2025-11-21T11:49:39.0292023Z     │   │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0292323Z     │   │   ├── datafusion-functions-window 43.0.0
+2025-11-21T11:49:39.0292616Z     │   │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0292921Z     │   │   ├── datafusion-functions-aggregate 43.0.0
+2025-11-21T11:49:39.0293339Z     │   │   │   ├── datafusion-functions-nested 43.0.0
+2025-11-21T11:49:39.0293639Z     │   │   │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0293917Z     │   │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0294182Z     │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0294481Z     │   ├── datafusion-functions-window-common 43.0.0
+2025-11-21T11:49:39.0294799Z     │   │   ├── datafusion-physical-plan 43.0.0
+2025-11-21T11:49:39.0295116Z     │   │   ├── datafusion-functions-window 43.0.0
+2025-11-21T11:49:39.0295414Z     │   │   └── datafusion-expr 43.0.0
+2025-11-21T11:49:39.0295694Z     │   │       ├── datafusion-sql 43.0.0
+2025-11-21T11:49:39.0295989Z     │   │       ├── datafusion-physical-plan 43.0.0
+2025-11-21T11:49:39.0296303Z     │   │       ├── datafusion-physical-expr 43.0.0
+2025-11-21T11:49:39.0296602Z     │   │       ├── datafusion-optimizer 43.0.0
+2025-11-21T11:49:39.0296916Z     │   │       ├── datafusion-functions-window 43.0.0
+2025-11-21T11:49:39.0297257Z     │   │       ├── datafusion-functions-nested 43.0.0
+2025-11-21T11:49:39.0297579Z     │   │       ├── datafusion-functions-aggregate 43.0.0
+2025-11-21T11:49:39.0297915Z     │   │       ├── datafusion-functions 43.0.0
+2025-11-21T11:49:39.0298225Z     │   │       │   ├── datafusion-functions-nested 43.0.0
+2025-11-21T11:49:39.0298523Z     │   │       │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0298803Z     │   │       ├── datafusion-execution 43.0.0
+2025-11-21T11:49:39.0299120Z     │   │       │   ├── datafusion-physical-plan 43.0.0
+2025-11-21T11:49:39.0299454Z     │   │       │   ├── datafusion-physical-optimizer 43.0.0
+2025-11-21T11:49:39.0299788Z     │   │       │   ├── datafusion-functions-nested 43.0.0
+2025-11-21T11:49:39.0300124Z     │   │       │   ├── datafusion-functions-aggregate 43.0.0
+2025-11-21T11:49:39.0300440Z     │   │       │   ├── datafusion-functions 43.0.0
+2025-11-21T11:49:39.0300890Z     │   │       │   ├── datafusion-catalog 43.0.0
+2025-11-21T11:49:39.0301195Z     │   │       │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0301482Z     │   │       ├── datafusion-catalog 43.0.0
+2025-11-21T11:49:39.0301761Z     │   │       └── datafusion 43.0.0
+2025-11-21T11:49:39.0302146Z     │   ├── datafusion-functions-window 43.0.0
+2025-11-21T11:49:39.0302461Z     │   ├── datafusion-functions-nested 43.0.0
+2025-11-21T11:49:39.0302796Z     │   ├── datafusion-functions-aggregate-common 43.0.0
+2025-11-21T11:49:39.0303141Z     │   │   ├── datafusion-physical-plan 43.0.0
+2025-11-21T11:49:39.0303446Z     │   │   ├── datafusion-physical-expr 43.0.0
+2025-11-21T11:49:39.0303771Z     │   │   ├── datafusion-functions-aggregate 43.0.0
+2025-11-21T11:49:39.0304076Z     │   │   └── datafusion-expr 43.0.0
+2025-11-21T11:49:39.0304385Z     │   ├── datafusion-functions-aggregate 43.0.0
+2025-11-21T11:49:39.0304681Z     │   ├── datafusion-expr 43.0.0
+2025-11-21T11:49:39.0304951Z     │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0305224Z     ├── datafusion-physical-expr 43.0.0
+2025-11-21T11:49:39.0305585Z     ├── datafusion-optimizer 43.0.0
+2025-11-21T11:49:39.0305900Z     ├── datafusion-functions-window-common 43.0.0
+2025-11-21T11:49:39.0306216Z     ├── datafusion-functions-window 43.0.0
+2025-11-21T11:49:39.0306535Z     ├── datafusion-functions-nested 43.0.0
+2025-11-21T11:49:39.0307069Z     ├── datafusion-functions-aggregate-common 43.0.0
+2025-11-21T11:49:39.0307594Z     ├── datafusion-functions-aggregate 43.0.0
+2025-11-21T11:49:39.0308003Z     ├── datafusion-functions 43.0.0
+2025-11-21T11:49:39.0308470Z     ├── datafusion-expr-common 43.0.0
+2025-11-21T11:49:39.0308866Z     │   ├── datafusion-physical-optimizer 43.0.0
+2025-11-21T11:49:39.0309200Z     │   ├── datafusion-physical-expr-common 43.0.0
+2025-11-21T11:49:39.0309506Z     │   ├── datafusion-physical-expr 43.0.0
+2025-11-21T11:49:39.0309850Z     │   ├── datafusion-functions-aggregate-common 43.0.0
+2025-11-21T11:49:39.0310156Z     │   └── datafusion-expr 43.0.0
+2025-11-21T11:49:39.0310426Z     ├── datafusion-expr 43.0.0
+2025-11-21T11:49:39.0310834Z     ├── datafusion-execution 43.0.0
+2025-11-21T11:49:39.0311118Z     ├── datafusion-catalog 43.0.0
+2025-11-21T11:49:39.0311372Z     └── datafusion 43.0.0
+2025-11-21T11:49:39.0311519Z 
+2025-11-21T11:49:39.0311640Z [0m[0m[1m[33mCrate:    [0m json5
+2025-11-21T11:49:39.0311910Z [0m[0m[1m[33mVersion:  [0m 0.4.1
+2025-11-21T11:49:39.0312184Z [0m[0m[1m[33mWarning:  [0m unmaintained
+2025-11-21T11:49:39.0312512Z [0m[0m[1m[33mTitle:    [0m json5 crate is unmaintained
+2025-11-21T11:49:39.0312820Z [0m[0m[1m[33mDate:     [0m 2025-11-16
+2025-11-21T11:49:39.0313120Z [0m[0m[1m[33mID:       [0m RUSTSEC-2025-0120
+2025-11-21T11:49:39.0313573Z [0m[0m[1m[33mURL:      [0m https://rustsec.org/advisories/RUSTSEC-2025-0120
+2025-11-21T11:49:39.0313918Z [0m[0m[1m[33mDependency tree:
+2025-11-21T11:49:39.0314147Z [0mjson5 0.4.1
+2025-11-21T11:49:39.0314355Z └── config 0.14.1
+2025-11-21T11:49:39.0314573Z     ├── leptos_config 0.6.15
+2025-11-21T11:49:39.0314809Z     │   └── leptos 0.6.15
+2025-11-21T11:49:39.0315063Z     │       ├── leptos_router 0.6.15
+2025-11-21T11:49:39.0315325Z     │       │   └── arxis_landing 0.1.0
+2025-11-21T11:49:39.0315594Z     │       ├── leptos_meta 0.6.15
+2025-11-21T11:49:39.0315856Z     │       │   └── arxis_landing 0.1.0
+2025-11-21T11:49:39.0316116Z     │       └── arxis_landing 0.1.0
+2025-11-21T11:49:39.0316357Z     └── avx-config 0.1.0
+2025-11-21T11:49:39.0316603Z         ├── avx-quantum-render 0.1.0
+2025-11-21T11:49:39.0316860Z         ├── avx-gateway 0.1.0
+2025-11-21T11:49:39.0317104Z         ├── avx-events 0.1.0
+2025-11-21T11:49:39.0317343Z         │   └── avx-cli 0.1.0
+2025-11-21T11:49:39.0317570Z         ├── avx-cli 0.1.0
+2025-11-21T11:49:39.0317808Z         └── avx-api-core 0.1.0
+2025-11-21T11:49:39.0317940Z 
+2025-11-21T11:49:39.0318070Z [0m[0m[1m[33mCrate:    [0m number_prefix
+2025-11-21T11:49:39.0318348Z [0m[0m[1m[33mVersion:  [0m 0.4.0
+2025-11-21T11:49:39.0318615Z [0m[0m[1m[33mWarning:  [0m unmaintained
+2025-11-21T11:49:39.0318957Z [0m[0m[1m[33mTitle:    [0m number_prefix crate is unmaintained
+2025-11-21T11:49:39.0319286Z [0m[0m[1m[33mDate:     [0m 2025-11-17
+2025-11-21T11:49:39.0319577Z [0m[0m[1m[33mID:       [0m RUSTSEC-2025-0119
+2025-11-21T11:49:39.0320087Z [0m[0m[1m[33mURL:      [0m https://rustsec.org/advisories/RUSTSEC-2025-0119
+2025-11-21T11:49:39.0320418Z [0m[0m[1m[33mDependency tree:
+2025-11-21T11:49:39.0320813Z [0mnumber_prefix 0.4.0
+2025-11-21T11:49:39.0321040Z └── indicatif 0.17.11
+2025-11-21T11:49:39.0321266Z     ├── tokenizers 0.20.4
+2025-11-21T11:49:39.0321510Z     │   └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0321768Z     ├── hf-hub 0.3.2
+2025-11-21T11:49:39.0321996Z     │   └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0322247Z     └── avx-cli 0.1.0
+2025-11-21T11:49:39.0322359Z 
+2025-11-21T11:49:39.0322486Z [0m[0m[1m[33mCrate:    [0m paste
+2025-11-21T11:49:39.0322750Z [0m[0m[1m[33mVersion:  [0m 1.0.15
+2025-11-21T11:49:39.0323035Z [0m[0m[1m[33mWarning:  [0m unmaintained
+2025-11-21T11:49:39.0323446Z [0m[0m[1m[33mTitle:    [0m paste - no longer maintained
+2025-11-21T11:49:39.0342635Z [0m[0m[1m[33mDate:     [0m 2024-10-07
+2025-11-21T11:49:39.0343024Z [0m[0m[1m[33mID:       [0m RUSTSEC-2024-0436
+2025-11-21T11:49:39.0343454Z [0m[0m[1m[33mURL:      [0m https://rustsec.org/advisories/RUSTSEC-2024-0436
+2025-11-21T11:49:39.0343798Z [0m[0m[1m[33mDependency tree:
+2025-11-21T11:49:39.0344046Z [0mpaste 1.0.15
+2025-11-21T11:49:39.0344260Z ├── tokenizers 0.20.4
+2025-11-21T11:49:39.0344503Z │   └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0344731Z ├── simba 0.9.1
+2025-11-21T11:49:39.0344942Z │   └── nalgebra 0.33.2
+2025-11-21T11:49:39.0345184Z │       └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0345426Z ├── simba 0.8.1
+2025-11-21T11:49:39.0345634Z │   └── nalgebra 0.32.6
+2025-11-21T11:49:39.0345851Z │       ├── statrs 0.17.1
+2025-11-21T11:49:39.0346103Z │       │   └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0346365Z │       ├── imageproc 0.25.0
+2025-11-21T11:49:39.0346632Z │       │   └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0346897Z │       └── avila-clustering 0.1.0
+2025-11-21T11:49:39.0347138Z ├── simba 0.6.0
+2025-11-21T11:49:39.0347432Z │   └── nalgebra 0.29.0
+2025-11-21T11:49:39.0347653Z │       └── statrs 0.16.1
+2025-11-21T11:49:39.0347904Z │           └── avila-telemetry 0.1.0
+2025-11-21T11:49:39.0348171Z │               ├── avx-telemetry 0.1.0
+2025-11-21T11:49:39.0348450Z │               │   ├── avx-gateway 0.1.0
+2025-11-21T11:49:39.0348721Z │               │   ├── avx-events 0.1.0
+2025-11-21T11:49:39.0348993Z │               │   │   └── avx-cli 0.1.0
+2025-11-21T11:49:39.0349253Z │               │   ├── avx-cli 0.1.0
+2025-11-21T11:49:39.0349526Z │               │   └── avx-api-core 0.1.0
+2025-11-21T11:49:39.0349802Z │               └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0350057Z ├── rav1e 0.8.1
+2025-11-21T11:49:39.0350254Z │   └── ravif 0.12.0
+2025-11-21T11:49:39.0350474Z │       └── image 0.25.9
+2025-11-21T11:49:39.0350836Z │           ├── imageproc 0.25.0
+2025-11-21T11:49:39.0351119Z │           └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0351379Z ├── parquet 53.4.1
+2025-11-21T11:49:39.0351605Z │   ├── datafusion-common 43.0.0
+2025-11-21T11:49:39.0352093Z │   │   ├── datafusion-sql 43.0.0
+2025-11-21T11:49:39.0352347Z │   │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0352620Z │   │   │       └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0352909Z │   │   ├── datafusion-physical-plan 43.0.0
+2025-11-21T11:49:39.0353235Z │   │   │   ├── datafusion-physical-optimizer 43.0.0
+2025-11-21T11:49:39.0353544Z │   │   │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0353816Z │   │   │   ├── datafusion-catalog 43.0.0
+2025-11-21T11:49:39.0354097Z │   │   │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0354350Z │   │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0354643Z │   │   ├── datafusion-physical-optimizer 43.0.0
+2025-11-21T11:49:39.0354968Z │   │   ├── datafusion-physical-expr-common 43.0.0
+2025-11-21T11:49:39.0355295Z │   │   │   ├── datafusion-physical-plan 43.0.0
+2025-11-21T11:49:39.0355692Z │   │   │   ├── datafusion-physical-expr 43.0.0
+2025-11-21T11:49:39.0356005Z │   │   │   │   ├── datafusion-physical-plan 43.0.0
+2025-11-21T11:49:39.0356355Z │   │   │   │   ├── datafusion-physical-optimizer 43.0.0
+2025-11-21T11:49:39.0356665Z │   │   │   │   ├── datafusion-optimizer 43.0.0
+2025-11-21T11:49:39.0356950Z │   │   │   │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0357248Z │   │   │   │   ├── datafusion-functions-window 43.0.0
+2025-11-21T11:49:39.0357546Z │   │   │   │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0357849Z │   │   │   │   ├── datafusion-functions-aggregate 43.0.0
+2025-11-21T11:49:39.0358185Z │   │   │   │   │   ├── datafusion-functions-nested 43.0.0
+2025-11-21T11:49:39.0358488Z │   │   │   │   │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0358769Z │   │   │   │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0359042Z │   │   │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0359342Z │   │   │   ├── datafusion-functions-window-common 43.0.0
+2025-11-21T11:49:39.0359693Z │   │   │   │   ├── datafusion-physical-plan 43.0.0
+2025-11-21T11:49:39.0360009Z │   │   │   │   ├── datafusion-functions-window 43.0.0
+2025-11-21T11:49:39.0360332Z │   │   │   │   └── datafusion-expr 43.0.0
+2025-11-21T11:49:39.0360693Z │   │   │   │       ├── datafusion-sql 43.0.0
+2025-11-21T11:49:39.0361086Z │   │   │   │       ├── datafusion-physical-plan 43.0.0
+2025-11-21T11:49:39.0361479Z │   │   │   │       ├── datafusion-physical-expr 43.0.0
+2025-11-21T11:49:39.0361799Z │   │   │   │       ├── datafusion-optimizer 43.0.0
+2025-11-21T11:49:39.0362129Z │   │   │   │       ├── datafusion-functions-window 43.0.0
+2025-11-21T11:49:39.0362455Z │   │   │   │       ├── datafusion-functions-nested 43.0.0
+2025-11-21T11:49:39.0362796Z │   │   │   │       ├── datafusion-functions-aggregate 43.0.0
+2025-11-21T11:49:39.0363111Z │   │   │   │       ├── datafusion-functions 43.0.0
+2025-11-21T11:49:39.0363446Z │   │   │   │       │   ├── datafusion-functions-nested 43.0.0
+2025-11-21T11:49:39.0363772Z │   │   │   │       │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0364068Z │   │   │   │       ├── datafusion-execution 43.0.0
+2025-11-21T11:49:39.0364407Z │   │   │   │       │   ├── datafusion-physical-plan 43.0.0
+2025-11-21T11:49:39.0364743Z │   │   │   │       │   ├── datafusion-physical-optimizer 43.0.0
+2025-11-21T11:49:39.0365096Z │   │   │   │       │   ├── datafusion-functions-nested 43.0.0
+2025-11-21T11:49:39.0365437Z │   │   │   │       │   ├── datafusion-functions-aggregate 43.0.0
+2025-11-21T11:49:39.0365770Z │   │   │   │       │   ├── datafusion-functions 43.0.0
+2025-11-21T11:49:39.0366074Z │   │   │   │       │   ├── datafusion-catalog 43.0.0
+2025-11-21T11:49:39.0366369Z │   │   │   │       │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0366658Z │   │   │   │       ├── datafusion-catalog 43.0.0
+2025-11-21T11:49:39.0366945Z │   │   │   │       └── datafusion 43.0.0
+2025-11-21T11:49:39.0367251Z │   │   │   ├── datafusion-functions-window 43.0.0
+2025-11-21T11:49:39.0367565Z │   │   │   ├── datafusion-functions-nested 43.0.0
+2025-11-21T11:49:39.0367945Z │   │   │   ├── datafusion-functions-aggregate-common 43.0.0
+2025-11-21T11:49:39.0368384Z │   │   │   │   ├── datafusion-physical-plan 43.0.0
+2025-11-21T11:49:39.0368703Z │   │   │   │   ├── datafusion-physical-expr 43.0.0
+2025-11-21T11:49:39.0369031Z │   │   │   │   ├── datafusion-functions-aggregate 43.0.0
+2025-11-21T11:49:39.0369343Z │   │   │   │   └── datafusion-expr 43.0.0
+2025-11-21T11:49:39.0369655Z │   │   │   ├── datafusion-functions-aggregate 43.0.0
+2025-11-21T11:49:39.0369960Z │   │   │   ├── datafusion-expr 43.0.0
+2025-11-21T11:49:39.0370241Z │   │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0370518Z │   │   ├── datafusion-physical-expr 43.0.0
+2025-11-21T11:49:39.0371049Z │   │   ├── datafusion-optimizer 43.0.0
+2025-11-21T11:49:39.0371388Z │   │   ├── datafusion-functions-window-common 43.0.0
+2025-11-21T11:49:39.0371726Z │   │   ├── datafusion-functions-window 43.0.0
+2025-11-21T11:49:39.0372033Z │   │   ├── datafusion-functions-nested 43.0.0
+2025-11-21T11:49:39.0372470Z │   │   ├── datafusion-functions-aggregate-common 43.0.0
+2025-11-21T11:49:39.0372814Z │   │   ├── datafusion-functions-aggregate 43.0.0
+2025-11-21T11:49:39.0373126Z │   │   ├── datafusion-functions 43.0.0
+2025-11-21T11:49:39.0373411Z │   │   ├── datafusion-expr-common 43.0.0
+2025-11-21T11:49:39.0373715Z │   │   │   ├── datafusion-physical-optimizer 43.0.0
+2025-11-21T11:49:39.0374050Z │   │   │   ├── datafusion-physical-expr-common 43.0.0
+2025-11-21T11:49:39.0374371Z │   │   │   ├── datafusion-physical-expr 43.0.0
+2025-11-21T11:49:39.0374721Z │   │   │   ├── datafusion-functions-aggregate-common 43.0.0
+2025-11-21T11:49:39.0375033Z │   │   │   └── datafusion-expr 43.0.0
+2025-11-21T11:49:39.0375307Z │   │   ├── datafusion-expr 43.0.0
+2025-11-21T11:49:39.0375581Z │   │   ├── datafusion-execution 43.0.0
+2025-11-21T11:49:39.0375858Z │   │   ├── datafusion-catalog 43.0.0
+2025-11-21T11:49:39.0376125Z │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0376366Z │   ├── datafusion 43.0.0
+2025-11-21T11:49:39.0376625Z │   └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0376855Z ├── metal 0.29.0
+2025-11-21T11:49:39.0377084Z │   └── wgpu-hal 22.0.0
+2025-11-21T11:49:39.0377309Z │       ├── wgpu-core 22.1.0
+2025-11-21T11:49:39.0377547Z │       │   └── wgpu 22.1.0
+2025-11-21T11:49:39.0377800Z │       │       └── avila-clustering 0.1.0
+2025-11-21T11:49:39.0378057Z │       └── wgpu 22.1.0
+2025-11-21T11:49:39.0378287Z ├── macro_rules_attribute 0.2.2
+2025-11-21T11:49:39.0378525Z │   └── tokenizers 0.20.4
+2025-11-21T11:49:39.0378752Z ├── llm-chain 0.13.0
+2025-11-21T11:49:39.0378974Z │   └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0379225Z ├── leptos_reactive 0.6.15
+2025-11-21T11:49:39.0379461Z │   ├── leptos_server 0.6.15
+2025-11-21T11:49:39.0379701Z │   │   └── leptos 0.6.15
+2025-11-21T11:49:39.0379937Z │   │       ├── leptos_router 0.6.15
+2025-11-21T11:49:39.0380214Z │   │       │   └── arxis_landing 0.1.0
+2025-11-21T11:49:39.0380474Z │   │       ├── leptos_meta 0.6.15
+2025-11-21T11:49:39.0380836Z │   │       │   └── arxis_landing 0.1.0
+2025-11-21T11:49:39.0381094Z │   │       └── arxis_landing 0.1.0
+2025-11-21T11:49:39.0381349Z │   ├── leptos_dom 0.6.15
+2025-11-21T11:49:39.0381669Z │   │   └── leptos 0.6.15
+2025-11-21T11:49:39.0381884Z │   └── leptos 0.6.15
+2025-11-21T11:49:39.0382104Z ├── leptos_dom 0.6.15
+2025-11-21T11:49:39.0382341Z ├── datafusion-physical-expr 43.0.0
+2025-11-21T11:49:39.0382620Z ├── datafusion-optimizer 43.0.0
+2025-11-21T11:49:39.0382888Z ├── datafusion-functions-window 43.0.0
+2025-11-21T11:49:39.0383187Z ├── datafusion-functions-nested 43.0.0
+2025-11-21T11:49:39.0383480Z ├── datafusion-functions-aggregate 43.0.0
+2025-11-21T11:49:39.0383781Z ├── datafusion-expr-common 43.0.0
+2025-11-21T11:49:39.0384053Z ├── datafusion-expr 43.0.0
+2025-11-21T11:49:39.0384304Z ├── datafusion-common 43.0.0
+2025-11-21T11:49:39.0384551Z └── datafusion 43.0.0
+2025-11-21T11:49:39.0384668Z 
+2025-11-21T11:49:39.0384818Z [0m[0m[1m[33mCrate:    [0m proc-macro-error
+2025-11-21T11:49:39.0385203Z [0m[0m[1m[33mVersion:  [0m 1.0.4
+2025-11-21T11:49:39.0385475Z [0m[0m[1m[33mWarning:  [0m unmaintained
+2025-11-21T11:49:39.0385811Z [0m[0m[1m[33mTitle:    [0m proc-macro-error is unmaintained
+2025-11-21T11:49:39.0386139Z [0m[0m[1m[33mDate:     [0m 2024-09-01
+2025-11-21T11:49:39.0386436Z [0m[0m[1m[33mID:       [0m RUSTSEC-2024-0370
+2025-11-21T11:49:39.0386822Z [0m[0m[1m[33mURL:      [0m https://rustsec.org/advisories/RUSTSEC-2024-0370
+2025-11-21T11:49:39.0387161Z [0m[0m[1m[33mDependency tree:
+2025-11-21T11:49:39.0387427Z [0mproc-macro-error 1.0.4
+2025-11-21T11:49:39.0387654Z ├── tabled_derive 0.7.0
+2025-11-21T11:49:39.0387881Z │   └── tabled 0.15.0
+2025-11-21T11:49:39.0388094Z │       └── avx-cli 0.1.0
+2025-11-21T11:49:39.0388316Z └── syn_derive 0.1.8
+2025-11-21T11:49:39.0388524Z     └── rstml 0.11.2
+2025-11-21T11:49:39.0388756Z         ├── leptos_macro 0.6.15
+2025-11-21T11:49:39.0389001Z         │   ├── leptos_server 0.6.15
+2025-11-21T11:49:39.0389261Z         │   │   └── leptos 0.6.15
+2025-11-21T11:49:39.0389547Z         │   │       ├── leptos_router 0.6.15
+2025-11-21T11:49:39.0389833Z         │   │       │   └── arxis_landing 0.1.0
+2025-11-21T11:49:39.0390129Z         │   │       ├── leptos_meta 0.6.15
+2025-11-21T11:49:39.0390404Z         │   │       │   └── arxis_landing 0.1.0
+2025-11-21T11:49:39.0390834Z         │   │       └── arxis_landing 0.1.0
+2025-11-21T11:49:39.0391150Z         │   └── leptos 0.6.15
+2025-11-21T11:49:39.0391406Z         └── leptos_hot_reload 0.6.15
+2025-11-21T11:49:39.0391669Z             └── leptos_macro 0.6.15
+2025-11-21T11:49:39.0391831Z 
+2025-11-21T11:49:39.0391968Z [0m[0m[1m[33mCrate:    [0m rustc-serialize
+2025-11-21T11:49:39.0392257Z [0m[0m[1m[33mVersion:  [0m 0.3.25
+2025-11-21T11:49:39.0392531Z [0m[0m[1m[33mWarning:  [0m unmaintained
+2025-11-21T11:49:39.0392864Z [0m[0m[1m[33mTitle:    [0m rustc-serialize is unmaintained
+2025-11-21T11:49:39.0393186Z [0m[0m[1m[33mDate:     [0m 2025-04-28
+2025-11-21T11:49:39.0393495Z [0m[0m[1m[33mID:       [0m RUSTSEC-2025-0025
+2025-11-21T11:49:39.0393867Z [0m[0m[1m[33mURL:      [0m https://rustsec.org/advisories/RUSTSEC-2025-0025
+2025-11-21T11:49:39.0394110Z 
+2025-11-21T11:49:39.0394231Z [0m[0m[1m[33mCrate:    [0m fast-float
+2025-11-21T11:49:39.0394497Z [0m[0m[1m[33mVersion:  [0m 0.2.0
+2025-11-21T11:49:39.0394762Z [0m[0m[1m[33mWarning:  [0m unsound
+2025-11-21T11:49:39.0395071Z [0m[0m[1m[33mTitle:    [0m Multiple soundness issues
+2025-11-21T11:49:39.0395372Z [0m[0m[1m[33mDate:     [0m 2024-10-31
+2025-11-21T11:49:39.0395664Z [0m[0m[1m[33mID:       [0m RUSTSEC-2024-0379
+2025-11-21T11:49:39.0396024Z [0m[0m[1m[33mURL:      [0m https://rustsec.org/advisories/RUSTSEC-2024-0379
+2025-11-21T11:49:39.0396249Z 
+2025-11-21T11:49:39.0406284Z ##[error]Process completed with exit code 1.

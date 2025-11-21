@@ -1,0 +1,62 @@
+﻿2025-11-21T11:47:05.3496530Z ##[group]Run actions/checkout@v4
+2025-11-21T11:47:05.3497949Z with:
+2025-11-21T11:47:05.3498624Z   repository: avilaops/arxis
+2025-11-21T11:47:05.3499763Z   token: ***
+2025-11-21T11:47:05.3500393Z   ssh-strict: true
+2025-11-21T11:47:05.3501049Z   ssh-user: git
+2025-11-21T11:47:05.3501724Z   persist-credentials: true
+2025-11-21T11:47:05.3502478Z   clean: true
+2025-11-21T11:47:05.3503157Z   sparse-checkout-cone-mode: true
+2025-11-21T11:47:05.3503962Z   fetch-depth: 1
+2025-11-21T11:47:05.3504609Z   fetch-tags: false
+2025-11-21T11:47:05.3505291Z   show-progress: true
+2025-11-21T11:47:05.3505997Z   lfs: false
+2025-11-21T11:47:05.3506617Z   submodules: false
+2025-11-21T11:47:05.3507713Z   set-safe-directory: true
+2025-11-21T11:47:05.3508735Z env:
+2025-11-21T11:47:05.3509362Z   CARGO_TERM_COLOR: always
+2025-11-21T11:47:05.3510095Z   RUST_BACKTRACE: 1
+2025-11-21T11:47:05.3510750Z ##[endgroup]
+2025-11-21T11:47:05.5971241Z Syncing repository: avilaops/arxis
+2025-11-21T11:47:05.5973705Z ##[group]Getting Git version info
+2025-11-21T11:47:05.5974757Z Working directory is 'D:\a\arxis\arxis'
+2025-11-21T11:47:05.7037191Z [command]"C:\Program Files\Git\bin\git.exe" version
+2025-11-21T11:47:06.1340856Z git version 2.51.2.windows.1
+2025-11-21T11:47:06.1398513Z ##[endgroup]
+2025-11-21T11:47:06.1467094Z Temporarily overriding HOME='D:\a\_temp\8d8dc025-3da5-4d60-9b38-c10721c56e56' before making global git config changes
+2025-11-21T11:47:06.1468027Z Adding repository directory to the temporary git global config as a safe directory
+2025-11-21T11:47:06.1468741Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\arxis\arxis
+2025-11-21T11:47:06.2015227Z Deleting the contents of 'D:\a\arxis\arxis'
+2025-11-21T11:47:06.2022675Z ##[group]Initializing the repository
+2025-11-21T11:47:06.2032617Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\arxis\arxis
+2025-11-21T11:47:06.2989572Z Initialized empty Git repository in D:/a/arxis/arxis/.git/
+2025-11-21T11:47:06.3231547Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/avilaops/arxis
+2025-11-21T11:47:06.3656009Z ##[endgroup]
+2025-11-21T11:47:06.3656640Z ##[group]Disabling automatic garbage collection
+2025-11-21T11:47:06.3666597Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2025-11-21T11:47:06.3975084Z ##[endgroup]
+2025-11-21T11:47:06.3975698Z ##[group]Setting up auth
+2025-11-21T11:47:06.3989428Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2025-11-21T11:47:06.4305570Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2025-11-21T11:47:08.1166292Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-11-21T11:47:08.1486063Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2025-11-21T11:47:08.6850136Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2025-11-21T11:47:08.7155415Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2025-11-21T11:47:09.2934713Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2025-11-21T11:47:09.3245962Z ##[endgroup]
+2025-11-21T11:47:09.3246368Z ##[group]Fetching the repository
+2025-11-21T11:47:09.3260089Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +e65e4a0f85718bd61c7a88bc718253fa99eaf13d:refs/remotes/origin/main
+2025-11-21T11:47:10.9787926Z From https://github.com/avilaops/arxis
+2025-11-21T11:47:10.9788582Z  * [new ref]         e65e4a0f85718bd61c7a88bc718253fa99eaf13d -> origin/main
+2025-11-21T11:47:11.0125755Z ##[endgroup]
+2025-11-21T11:47:11.0126400Z ##[group]Determining the checkout info
+2025-11-21T11:47:11.0129273Z ##[endgroup]
+2025-11-21T11:47:11.0143746Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2025-11-21T11:47:11.0628275Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2025-11-21T11:47:11.0983719Z ##[group]Checking out the ref
+2025-11-21T11:47:11.0995631Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force -B main refs/remotes/origin/main
+2025-11-21T11:47:11.4712193Z branch 'main' set up to track 'origin/main'.
+2025-11-21T11:47:11.4720661Z Switched to a new branch 'main'
+2025-11-21T11:47:11.4769326Z ##[endgroup]
+2025-11-21T11:47:11.5199434Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+2025-11-21T11:47:11.5466559Z e65e4a0f85718bd61c7a88bc718253fa99eaf13d

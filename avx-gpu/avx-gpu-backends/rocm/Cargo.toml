@@ -1,0 +1,18 @@
+[package]
+name = "avx-gpu-backend-rocm"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "ROCm/HIP backend for AVX-GPU (AMD GPUs)"
+
+[dependencies]
+avx-gpu-core = { path = "../../avx-gpu-core" }
+bytemuck.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+parking_lot.workspace = true
+
+[features]
+default = []

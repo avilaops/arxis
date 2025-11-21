@@ -1,7 +1,11 @@
 #![allow(clippy::needless_range_loop)]
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 /// Tensor de ordem N com dados armazenados linearmente
 #[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Tensor<const N: usize> {
     pub data: Vec<f64>,
     pub shape: [usize; N],

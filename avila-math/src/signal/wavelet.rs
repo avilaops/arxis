@@ -43,20 +43,20 @@ pub fn cwt(signal: &[f64], scales: &[f64]) -> Vec<Vec<Complex<f64>>> {
 
     for &scale in scales {
         let mut row = Vec::with_capacity(n);
-        
+
         for t in 0..n {
             let mut sum = Complex::new(0.0, 0.0);
-            
+
             // Convolução com wavelet Morlet escalada
             for k in 0..n {
                 let tau = k as f64 - t as f64;
                 let wavelet = morlet_wavelet(tau / scale, scale);
                 sum += wavelet * signal[k];
             }
-            
+
             row.push(sum / scale.sqrt());
         }
-        
+
         coefficients.push(row);
     }
 
@@ -72,7 +72,7 @@ fn morlet_wavelet(t: f64, scale: f64) -> Complex<f64> {
     let norm = (PI.powf(-0.25)) / scale.sqrt();
     let envelope = (-t * t / 2.0).exp();
     let oscillation = Complex::new(0.0, omega0 * t).exp();
-    
+
     norm * envelope * oscillation
 }
 
@@ -258,9 +258,9 @@ mod tests {
     fn test_cwt_basic() {
         let signal = vec![0.0, 1.0, 0.5, -0.5, -1.0, 0.0];
         let scales = vec![1.0, 2.0, 4.0];
-        
+
         let coeffs = cwt(&signal, &scales);
-        
+
         assert_eq!(coeffs.len(), scales.len());
         assert_eq!(coeffs[0].len(), signal.len());
     }
@@ -268,9 +268,9 @@ mod tests {
     #[test]
     fn test_dwt_basic() {
         let signal = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
-        
+
         let (approx, detail) = dwt(&signal);
-        
+
         assert_eq!(approx.len(), signal.len() / 2);
         assert_eq!(detail.len(), signal.len() / 2);
     }
@@ -278,12 +278,12 @@ mod tests {
     #[test]
     fn test_dwt_idwt_reconstruction() {
         let signal = vec![1.0, 2.0, 3.0, 4.0];
-        
+
         let (approx, detail) = dwt(&signal);
         let reconstructed = idwt(&approx, &detail);
-        
+
         assert_eq!(reconstructed.len(), signal.len());
-        
+
         // Verifica reconstrução aproximada (pode ter pequenos erros numéricos)
         for (orig, recon) in signal.iter().zip(reconstructed.iter()) {
             assert!((orig - recon).abs() < 1e-10);
@@ -294,9 +294,9 @@ mod tests {
     fn test_dwt_multilevel() {
         let signal = vec![1.0; 16];
         let levels = 3;
-        
+
         let coeffs = dwt_multilevel(&signal, levels);
-        
+
         assert_eq!(coeffs.len(), levels);
         assert_eq!(coeffs[0].0.len(), 8); // First level: 16 -> 8
         assert_eq!(coeffs[1].0.len(), 4); // Second level: 8 -> 4
@@ -309,9 +309,9 @@ mod tests {
             vec![Complex::new(1.0, 1.0), Complex::new(2.0, 0.0)],
             vec![Complex::new(0.5, 0.5), Complex::new(1.0, 1.0)],
         ];
-        
+
         let energy = wavelet_energy(&coeffs);
-        
+
         assert_eq!(energy.len(), 2);
         assert!((energy[0] - 6.0).abs() < 1e-10); // 1² + 1² + 2² = 6
         assert!((energy[1] - 2.5).abs() < 1e-10); // 0.5² + 0.5² + 1² + 1² = 2.5
@@ -321,9 +321,9 @@ mod tests {
     fn test_scale_to_frequency() {
         let scale = 10.0;
         let delta_t = 0.1;
-        
+
         let freq = scale_to_frequency(scale, delta_t);
-        
+
         assert!(freq > 0.0);
         assert!(freq < 1.0); // Deve ser razoável para esses parâmetros
     }
@@ -332,9 +332,9 @@ mod tests {
     fn test_morlet_wavelet() {
         let t = 0.0;
         let scale = 1.0;
-        
+
         let psi = morlet_wavelet(t, scale);
-        
+
         // Em t=0, Morlet tem valor máximo
         assert!(psi.norm() > 0.5);
     }
@@ -343,11 +343,11 @@ mod tests {
     fn test_daubechies_coefficients_sum() {
         let h = daubechies4_low_pass();
         let g = daubechies4_high_pass();
-        
+
         // Filtros devem ser normalizados
         let h_sum: f64 = h.iter().map(|x| x * x).sum();
         let g_sum: f64 = g.iter().map(|x| x * x).sum();
-        
+
         assert!((h_sum - 1.0).abs() < 1e-10);
         assert!((g_sum - 1.0).abs() < 1e-10);
     }

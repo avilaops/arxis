@@ -175,7 +175,7 @@ mod tests {
         let input = Tensor::ones(&[100]);
 
         dropout.train();
-        let output_train = dropout.forward(&input);
+        let _output_train = dropout.forward(&input);
 
         dropout.eval();
         let output_eval = dropout.forward(&input);

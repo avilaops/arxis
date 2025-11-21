@@ -132,7 +132,7 @@ impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Data
         if self.drop_last {
             total / self.batch_size
         } else {
-            (total + self.batch_size - 1) / self.batch_size
+            total.div_ceil(self.batch_size)
         }
     }
 }
@@ -236,7 +236,7 @@ mod tests {
         let dataset = TensorDataset::new(data, targets);
         assert_eq!(dataset.len(), 3);
 
-        let (x, y) = dataset.get(0);
+        let (x, _y) = dataset.get(0);
         assert_eq!(x.shape(), &[10]);
     }
 

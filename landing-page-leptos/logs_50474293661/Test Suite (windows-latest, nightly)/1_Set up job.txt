@@ -1,0 +1,31 @@
+﻿2025-11-21T11:46:59.7655008Z Current runner version: '2.329.0'
+2025-11-21T11:46:59.7721024Z ##[group]Runner Image Provisioner
+2025-11-21T11:46:59.7721816Z Hosted Compute Agent
+2025-11-21T11:46:59.7722347Z Version: 20251016.436
+2025-11-21T11:46:59.7722885Z Commit: 8ab8ac8bfd662a3739dab9fe09456aba92132568
+2025-11-21T11:46:59.7723557Z Build Date: 2025-10-15T20:44:12Z
+2025-11-21T11:46:59.7724307Z ##[endgroup]
+2025-11-21T11:46:59.7724828Z ##[group]Operating System
+2025-11-21T11:46:59.7725407Z Microsoft Windows Server 2025
+2025-11-21T11:46:59.7725921Z 10.0.26100
+2025-11-21T11:46:59.7726379Z Datacenter
+2025-11-21T11:46:59.7726775Z ##[endgroup]
+2025-11-21T11:46:59.7727497Z ##[group]Runner Image
+2025-11-21T11:46:59.7727978Z Image: windows-2025
+2025-11-21T11:46:59.7728457Z Version: 20251102.77.1
+2025-11-21T11:46:59.7729407Z Included Software: https://github.com/actions/runner-images/blob/win25/20251102.77/images/windows/Windows2025-Readme.md
+2025-11-21T11:46:59.7730729Z Image Release: https://github.com/actions/runner-images/releases/tag/win25%2F20251102.77
+2025-11-21T11:46:59.7732067Z ##[endgroup]
+2025-11-21T11:46:59.7733069Z ##[group]GITHUB_TOKEN Permissions
+2025-11-21T11:46:59.7734826Z Contents: read
+2025-11-21T11:46:59.7735354Z Metadata: read
+2025-11-21T11:46:59.7735787Z Packages: read
+2025-11-21T11:46:59.7736297Z ##[endgroup]
+2025-11-21T11:46:59.7738240Z Secret source: Actions
+2025-11-21T11:46:59.7738901Z Prepare workflow directory
+2025-11-21T11:46:59.8196307Z Prepare all required actions
+2025-11-21T11:46:59.8235736Z Getting action download info
+2025-11-21T11:47:00.0835546Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2025-11-21T11:47:00.5114071Z Download action repository 'dtolnay/rust-toolchain@master' (SHA:0b1efabc08b657293548b77fb76cc02d26091c7e)
+2025-11-21T11:47:00.7100269Z Download action repository 'actions/cache@v3' (SHA:6f8efc29b200d32929f49075959781ed54ec270c)
+2025-11-21T11:47:01.0195681Z Complete job name: Test Suite (windows-latest, nightly)

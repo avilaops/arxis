@@ -1,0 +1,14 @@
+﻿2025-11-21T11:47:22.6373245Z ##[group]Run actions/cache@v3
+2025-11-21T11:47:22.6373546Z with:
+2025-11-21T11:47:22.6373693Z   path: ~/.cargo/git
+2025-11-21T11:47:22.6373880Z   key: Windows-cargo-index-
+2025-11-21T11:47:22.6374076Z   enableCrossOsArchive: false
+2025-11-21T11:47:22.6374280Z   fail-on-cache-miss: false
+2025-11-21T11:47:22.6374478Z   lookup-only: false
+2025-11-21T11:47:22.6374633Z env:
+2025-11-21T11:47:22.6374766Z   CARGO_TERM_COLOR: always
+2025-11-21T11:47:22.6374938Z   RUST_BACKTRACE: 1
+2025-11-21T11:47:22.6375105Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2025-11-21T11:47:22.6375318Z   CARGO_INCREMENTAL: 0
+2025-11-21T11:47:22.6375479Z ##[endgroup]
+2025-11-21T11:47:23.0375692Z Cache not found for input keys: Windows-cargo-index-

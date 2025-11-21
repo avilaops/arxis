@@ -1,8 +1,11 @@
-name: Deploy to GitHub Pages
+name: Deploy Landing Page to GitHub Pages
 
 on:
     push:
         branches: [main]
+        paths:
+            - "landing-page-leptos/**"
+            - ".github/workflows/deploy.yml"
     workflow_dispatch:
 
 permissions:
@@ -33,9 +36,12 @@ jobs:
                   wget -qO- https://github.com/trunk-rs/trunk/releases/download/v0.21.4/trunk-x86_64-unknown-linux-gnu.tar.gz | tar -xzf-
                   sudo mv trunk /usr/local/bin/
 
-            - name: Build Leptos WASM
+            - name: Build Landing Page (Leptos)
               working-directory: landing-page-leptos
-              run: trunk build --release --public-url /arxis/
+              run: trunk build --release
+
+            - name: Copy CNAME to dist
+              run: cp landing-page-leptos/CNAME landing-page-leptos/dist/
 
             - name: Setup Pages
               uses: actions/configure-pages@v4

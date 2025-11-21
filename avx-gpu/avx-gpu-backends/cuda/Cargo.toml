@@ -1,0 +1,20 @@
+[package]
+name = "avx-gpu-backend-cuda"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "CUDA backend for AVX-GPU (NVIDIA GPUs)"
+
+[dependencies]
+avx-gpu-core = { path = "../../avx-gpu-core" }
+cudarc = { workspace = true, optional = true }
+bytemuck.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+parking_lot.workspace = true
+
+[features]
+default = []
+cuda = ["cudarc"]

@@ -1,0 +1,2823 @@
+﻿2025-11-21T11:47:00.7181475Z ##[group]Run cargo fmt --all -- --check
+2025-11-21T11:47:00.7182855Z [36;1mcargo fmt --all -- --check[0m
+2025-11-21T11:47:00.7220183Z shell: /usr/bin/bash -e {0}
+2025-11-21T11:47:00.7220804Z env:
+2025-11-21T11:47:00.7221231Z   CARGO_TERM_COLOR: always
+2025-11-21T11:47:00.7221823Z   RUST_BACKTRACE: 1
+2025-11-21T11:47:00.7222543Z   CARGO_HOME: /home/runner/.cargo
+2025-11-21T11:47:00.7223231Z   CARGO_INCREMENTAL: 0
+2025-11-21T11:47:00.7223755Z ##[endgroup]
+2025-11-21T11:47:01.0784116Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/algorithms/gmm.rs:1:
+2025-11-21T11:47:01.0786747Z  //! Gaussian Mixture Models
+2025-11-21T11:47:01.0787821Z  
+2025-11-21T11:47:01.0793138Z +use crate::{ClusteringError, Result};
+2025-11-21T11:47:01.0794563Z  use ndarray::{Array1, Array2, ArrayView2};
+2025-11-21T11:47:01.0795942Z -use crate::{Result, ClusteringError};
+2025-11-21T11:47:01.0797072Z  
+2025-11-21T11:47:01.0797796Z  /// Covariance type for GMM
+2025-11-21T11:47:01.0798797Z  #[derive(Debug, Clone, Copy)]
+2025-11-21T11:47:01.0800738Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/algorithms/hdbscan.rs:1:
+2025-11-21T11:47:01.0803182Z  //! HDBSCAN (Hierarchical Density-Based Spatial Clustering)
+2025-11-21T11:47:01.0804562Z  
+2025-11-21T11:47:01.0805400Z -use ndarray::{Array1, Array2, ArrayView2};
+2025-11-21T11:47:01.0806694Z -use crate::{Result, ClusteringError};
+2025-11-21T11:47:01.0807911Z  use crate::metrics::distance::Metric;
+2025-11-21T11:47:01.0809167Z +use crate::{ClusteringError, Result};
+2025-11-21T11:47:01.0810376Z +use ndarray::{Array1, Array2, ArrayView2};
+2025-11-21T11:47:01.0811501Z  
+2025-11-21T11:47:01.0812463Z  /// HDBSCAN algorithm variant
+2025-11-21T11:47:01.0813537Z  #[derive(Debug, Clone, Copy)]
+2025-11-21T11:47:01.0815384Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/algorithms/hdbscan.rs:108:
+2025-11-21T11:47:01.0817268Z  
+2025-11-21T11:47:01.0818013Z  /// Result of HDBSCAN clustering
+2025-11-21T11:47:01.0819105Z  pub struct HDBSCANResult {
+2025-11-21T11:47:01.0820183Z -    pub labels: Array1<i32>,  // -1 for noise
+2025-11-21T11:47:01.0821521Z +    pub labels: Array1<i32>, // -1 for noise
+2025-11-21T11:47:01.0822610Z      probabilities: Option<Array1<f64>>,
+2025-11-21T11:47:01.0823532Z      outlier_scores: Option<Array1<f64>>,
+2025-11-21T11:47:01.0824349Z  }
+2025-11-21T11:47:01.0825416Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/algorithms/hdbscan.rs:119:
+2025-11-21T11:47:01.0826608Z      }
+2025-11-21T11:47:01.0827212Z  
+2025-11-21T11:47:01.0827990Z      pub fn probabilities(&self) -> Result<&Array1<f64>> {
+2025-11-21T11:47:01.0828985Z -        self.probabilities.as_ref()
+2025-11-21T11:47:01.0829944Z -            .ok_or_else(|| ClusteringError::InvalidParameter(
+2025-11-21T11:47:01.0830988Z -                "prediction_data was not enabled".to_string()
+2025-11-21T11:47:01.0831814Z -            ))
+2025-11-21T11:47:01.0832718Z +        self.probabilities.as_ref().ok_or_else(|| {
+2025-11-21T11:47:01.0833954Z +            ClusteringError::InvalidParameter("prediction_data was not enabled".to_string())
+2025-11-21T11:47:01.0835067Z +        })
+2025-11-21T11:47:01.0835670Z      }
+2025-11-21T11:47:01.0836252Z  
+2025-11-21T11:47:01.0837009Z      pub fn outlier_scores(&self) -> Result<&Array1<f64>> {
+2025-11-21T11:47:01.0838290Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/algorithms/hdbscan.rs:129:
+2025-11-21T11:47:01.0839486Z -        self.outlier_scores.as_ref()
+2025-11-21T11:47:01.0840579Z -            .ok_or_else(|| ClusteringError::InvalidParameter(
+2025-11-21T11:47:01.0841634Z -                "outlier scores not computed".to_string()
+2025-11-21T11:47:01.0842699Z -            ))
+2025-11-21T11:47:01.0843518Z +        self.outlier_scores.as_ref().ok_or_else(|| {
+2025-11-21T11:47:01.0844730Z +            ClusteringError::InvalidParameter("outlier scores not computed".to_string())
+2025-11-21T11:47:01.0845826Z +        })
+2025-11-21T11:47:01.0846417Z      }
+2025-11-21T11:47:01.0846985Z  }
+2025-11-21T11:47:01.0847560Z  
+2025-11-21T11:47:01.0848553Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/algorithms/hierarchical.rs:1:
+2025-11-21T11:47:01.0850080Z  //! Hierarchical clustering
+2025-11-21T11:47:01.0850788Z  
+2025-11-21T11:47:01.0851559Z +use crate::{ClusteringError, Result};
+2025-11-21T11:47:01.0852663Z  use ndarray::{Array1, Array2, ArrayView2};
+2025-11-21T11:47:01.0853574Z -use crate::{Result, ClusteringError};
+2025-11-21T11:47:01.0854368Z  
+2025-11-21T11:47:01.0855020Z  /// Linkage criterion for hierarchical clustering
+2025-11-21T11:47:01.0855876Z  #[derive(Debug, Clone, Copy)]
+2025-11-21T11:47:01.0857286Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/algorithms/hierarchical.rs:103:
+2025-11-21T11:47:01.0858444Z      }
+2025-11-21T11:47:01.0859012Z  
+2025-11-21T11:47:01.0859739Z      pub fn dendrogram(&self) -> Result<&Dendrogram> {
+2025-11-21T11:47:01.0860647Z -        self.dendrogram.as_ref()
+2025-11-21T11:47:01.0861535Z -            .ok_or_else(|| ClusteringError::InvalidParameter(
+2025-11-21T11:47:01.0862720Z -                "compute_full_tree was not enabled".to_string()
+2025-11-21T11:47:01.0863580Z -            ))
+2025-11-21T11:47:01.0864278Z +        self.dendrogram.as_ref().ok_or_else(|| {
+2025-11-21T11:47:01.0865452Z +            ClusteringError::InvalidParameter("compute_full_tree was not enabled".to_string())
+2025-11-21T11:47:01.0866530Z +        })
+2025-11-21T11:47:01.0867092Z      }
+2025-11-21T11:47:01.0867657Z  }
+2025-11-21T11:47:01.0868217Z  
+2025-11-21T11:47:01.0869433Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/algorithms/kmedoids.rs:1:
+2025-11-21T11:47:01.0870666Z  //! KMedoids clustering (PAM, CLARA, CLARANS)
+2025-11-21T11:47:01.0871484Z  
+2025-11-21T11:47:01.0872376Z +use crate::metrics::distance::{euclidean_distance, Metric};
+2025-11-21T11:47:01.0872985Z +use crate::{ClusteringError, Result};
+2025-11-21T11:47:01.0873513Z  use ndarray::{Array1, Array2, ArrayView2};
+2025-11-21T11:47:01.0874017Z  use rand::{Rng, SeedableRng};
+2025-11-21T11:47:01.0874492Z  use rand_xoshiro::Xoshiro256PlusPlus;
+2025-11-21T11:47:01.0875189Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/algorithms/kmedoids.rs:6:
+2025-11-21T11:47:01.0876219Z -use crate::{Result, ClusteringError};
+2025-11-21T11:47:01.0876830Z -use crate::metrics::distance::{Metric, euclidean_distance};
+2025-11-21T11:47:01.0877345Z  
+2025-11-21T11:47:01.0877722Z  /// KMedoids algorithm variant
+2025-11-21T11:47:01.0878175Z  #[derive(Debug, Clone, Copy)]
+2025-11-21T11:47:01.0878834Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/algorithms/kmedoids.rs:12:
+2025-11-21T11:47:01.0880440Z      /// PAM (Partitioning Around Medoids) - exact but O(n²)
+2025-11-21T11:47:01.0881352Z      PAM,
+2025-11-21T11:47:01.0882329Z      /// CLARA (Clustering LARge Applications) - sampling-based
+2025-11-21T11:47:01.0883384Z -    CLARA { sample_size: usize, n_samples: usize },
+2025-11-21T11:47:01.0884260Z +    CLARA {
+2025-11-21T11:47:01.0884925Z +        sample_size: usize,
+2025-11-21T11:47:01.0885703Z +        n_samples: usize,
+2025-11-21T11:47:01.0886407Z +    },
+2025-11-21T11:47:01.0887279Z      /// CLARANS (Clustering Large Applications based on RANdomized Search)
+2025-11-21T11:47:01.0888412Z -    CLARANS { num_local: usize, max_neighbor: usize },
+2025-11-21T11:47:01.0889293Z +    CLARANS {
+2025-11-21T11:47:01.0889951Z +        num_local: usize,
+2025-11-21T11:47:01.0890720Z +        max_neighbor: usize,
+2025-11-21T11:47:01.0891455Z +    },
+2025-11-21T11:47:01.0892038Z  }
+2025-11-21T11:47:01.0892808Z  
+2025-11-21T11:47:01.0893427Z  /// KMedoids clustering
+2025-11-21T11:47:01.0894577Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/algorithms/kmedoids.rs:60:
+2025-11-21T11:47:01.0895489Z      pub fn fit(&self, data: &ArrayView2<f64>) -> Result<KMedoidsResult> {
+2025-11-21T11:47:01.0896107Z          match self.algorithm {
+2025-11-21T11:47:01.0896678Z              KMedoidsAlgorithm::PAM => self.fit_pam(data),
+2025-11-21T11:47:01.0897336Z -            KMedoidsAlgorithm::CLARA { sample_size, n_samples } => {
+2025-11-21T11:47:01.0898236Z -                self.fit_clara(data, sample_size, n_samples)
+2025-11-21T11:47:01.0899368Z -            }
+2025-11-21T11:47:01.0900329Z -            KMedoidsAlgorithm::CLARANS { num_local, max_neighbor } => {
+2025-11-21T11:47:01.0901506Z -                self.fit_clarans(data, num_local, max_neighbor)
+2025-11-21T11:47:01.0902616Z -            }
+2025-11-21T11:47:01.0903372Z +            KMedoidsAlgorithm::CLARA {
+2025-11-21T11:47:01.0904226Z +                sample_size,
+2025-11-21T11:47:01.0905152Z +                n_samples,
+2025-11-21T11:47:01.0906011Z +            } => self.fit_clara(data, sample_size, n_samples),
+2025-11-21T11:47:01.0907218Z +            KMedoidsAlgorithm::CLARANS {
+2025-11-21T11:47:01.0908075Z +                num_local,
+2025-11-21T11:47:01.0908834Z +                max_neighbor,
+2025-11-21T11:47:01.0909742Z +            } => self.fit_clarans(data, num_local, max_neighbor),
+2025-11-21T11:47:01.0910622Z          }
+2025-11-21T11:47:01.0911245Z      }
+2025-11-21T11:47:01.0911844Z  
+2025-11-21T11:47:01.0913163Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/algorithms/kmedoids.rs:74:
+2025-11-21T11:47:01.0914381Z          let mut rng = self.get_rng();
+2025-11-21T11:47:01.0915153Z  
+2025-11-21T11:47:01.0915808Z          // Initialize medoids randomly
+2025-11-21T11:47:01.0917187Z -        let mut medoid_indices: Vec<usize> = rand::seq::index::sample(&mut rng, n_samples, self.n_clusters)
+2025-11-21T11:47:01.0918400Z -            .into_vec();
+2025-11-21T11:47:01.0919205Z +        let mut medoid_indices: Vec<usize> =
+2025-11-21T11:47:01.0920377Z +            rand::seq::index::sample(&mut rng, n_samples, self.n_clusters).into_vec();
+2025-11-21T11:47:01.0921419Z  
+2025-11-21T11:47:01.0922349Z          let mut labels = Array1::zeros(n_samples);
+2025-11-21T11:47:01.0923283Z          let mut total_cost = f64::INFINITY;
+2025-11-21T11:47:01.0924545Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/algorithms/kmedoids.rs:142:
+2025-11-21T11:47:01.0925685Z          })
+2025-11-21T11:47:01.0926299Z      }
+2025-11-21T11:47:01.0926886Z  
+2025-11-21T11:47:01.0927832Z -    fn fit_clara(&self, data: &ArrayView2<f64>, sample_size: usize, n_samples_iter: usize)
+2025-11-21T11:47:01.0928979Z -        -> Result<KMedoidsResult> {
+2025-11-21T11:47:01.0929786Z +    fn fit_clara(
+2025-11-21T11:47:01.0930457Z +        &self,
+2025-11-21T11:47:01.0931166Z +        data: &ArrayView2<f64>,
+2025-11-21T11:47:01.0931958Z +        sample_size: usize,
+2025-11-21T11:47:01.0932924Z +        n_samples_iter: usize,
+2025-11-21T11:47:01.0960312Z +    ) -> Result<KMedoidsResult> {
+2025-11-21T11:47:01.0961314Z          let n_samples = data.dim().0;
+2025-11-21T11:47:01.0962364Z          let mut rng = self.get_rng();
+2025-11-21T11:47:01.0963319Z          let mut best_result: Option<KMedoidsResult> = None;
+2025-11-21T11:47:01.0964607Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/algorithms/kmedoids.rs:151:
+2025-11-21T11:47:01.0965698Z  
+2025-11-21T11:47:01.0966356Z          // Run PAM on multiple samples
+2025-11-21T11:47:01.0967226Z          for _ in 0..n_samples_iter {
+2025-11-21T11:47:01.0968313Z -            let sample_indices = rand::seq::index::sample(&mut rng, n_samples,
+2025-11-21T11:47:01.0969438Z -                sample_size.min(n_samples)).into_vec();
+2025-11-21T11:47:01.0970334Z +            let sample_indices =
+2025-11-21T11:47:01.0971424Z +                rand::seq::index::sample(&mut rng, n_samples, sample_size.min(n_samples))
+2025-11-21T11:47:01.0972708Z +                    .into_vec();
+2025-11-21T11:47:01.0973448Z  
+2025-11-21T11:47:01.0974112Z              // Create sample dataset
+2025-11-21T11:47:01.0975242Z              let mut sample_data = Array2::zeros((sample_indices.len(), data.dim().1));
+2025-11-21T11:47:01.0976739Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/algorithms/kmedoids.rs:164:
+2025-11-21T11:47:01.0978117Z              let sample_result = self.fit_pam(&sample_data.view())?;
+2025-11-21T11:47:01.0978995Z  
+2025-11-21T11:47:01.0979671Z              // Evaluate on full dataset
+2025-11-21T11:47:01.0980987Z -            let medoid_indices: Vec<usize> = sample_result.medoid_indices.iter()
+2025-11-21T11:47:01.0982350Z +            let medoid_indices: Vec<usize> = sample_result
+2025-11-21T11:47:01.0983266Z +                .medoid_indices
+2025-11-21T11:47:01.0984046Z +                .iter()
+2025-11-21T11:47:01.0984842Z                  .map(|&i| sample_indices[i])
+2025-11-21T11:47:01.0985700Z                  .collect();
+2025-11-21T11:47:01.0986417Z  
+2025-11-21T11:47:01.0987467Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/algorithms/kmedoids.rs:190:
+2025-11-21T11:47:01.0989106Z          best_result.ok_or_else(|| ClusteringError::ConvergenceFailure(0))
+2025-11-21T11:47:01.0990094Z      }
+2025-11-21T11:47:01.0990713Z  
+2025-11-21T11:47:01.0991493Z -    fn fit_clarans(&self, data: &ArrayView2<f64>, num_local: usize, max_neighbor: usize)
+2025-11-21T11:47:01.0992351Z -        -> Result<KMedoidsResult> {
+2025-11-21T11:47:01.0992848Z +    fn fit_clarans(
+2025-11-21T11:47:01.0993248Z +        &self,
+2025-11-21T11:47:01.0993686Z +        data: &ArrayView2<f64>,
+2025-11-21T11:47:01.0994239Z +        num_local: usize,
+2025-11-21T11:47:01.0995018Z +        max_neighbor: usize,
+2025-11-21T11:47:01.0995802Z +    ) -> Result<KMedoidsResult> {
+2025-11-21T11:47:01.0996630Z          let n_samples = data.dim().0;
+2025-11-21T11:47:01.0997470Z          let mut rng = self.get_rng();
+2025-11-21T11:47:01.0998420Z          let mut best_result: Option<KMedoidsResult> = None;
+2025-11-21T11:47:01.0999707Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/algorithms/kmedoids.rs:199:
+2025-11-21T11:47:01.1000851Z  
+2025-11-21T11:47:01.1001517Z          for _ in 0..num_local {
+2025-11-21T11:47:01.1002535Z              // Random initialization
+2025-11-21T11:47:01.1003867Z -            let mut medoid_indices: Vec<usize> = rand::seq::index::sample(&mut rng, n_samples, self.n_clusters)
+2025-11-21T11:47:01.1005090Z -                .into_vec();
+2025-11-21T11:47:01.1005902Z +            let mut medoid_indices: Vec<usize> =
+2025-11-21T11:47:01.1007042Z +                rand::seq::index::sample(&mut rng, n_samples, self.n_clusters).into_vec();
+2025-11-21T11:47:01.1008032Z  
+2025-11-21T11:47:01.1008908Z              let mut labels = self.assign_to_medoids(data, &medoid_indices)?;
+2025-11-21T11:47:01.1010210Z              let mut cost = self.compute_total_cost(data, &medoid_indices, &labels)?;
+2025-11-21T11:47:01.1011707Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/algorithms/kmedoids.rs:250:
+2025-11-21T11:47:01.1013423Z          best_result.ok_or_else(|| ClusteringError::ConvergenceFailure(0))
+2025-11-21T11:47:01.1014428Z      }
+2025-11-21T11:47:01.1015023Z  
+2025-11-21T11:47:01.1015939Z -    fn assign_to_medoids(&self, data: &ArrayView2<f64>, medoid_indices: &[usize])
+2025-11-21T11:47:01.1017039Z -        -> Result<Array1<usize>> {
+2025-11-21T11:47:01.1017858Z +    fn assign_to_medoids(
+2025-11-21T11:47:01.1018573Z +        &self,
+2025-11-21T11:47:01.1019266Z +        data: &ArrayView2<f64>,
+2025-11-21T11:47:01.1020091Z +        medoid_indices: &[usize],
+2025-11-21T11:47:01.1020903Z +    ) -> Result<Array1<usize>> {
+2025-11-21T11:47:01.1021730Z          let n_samples = data.dim().0;
+2025-11-21T11:47:01.1022834Z          let mut labels = Array1::zeros(n_samples);
+2025-11-21T11:47:01.1023622Z  
+2025-11-21T11:47:01.1024589Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/algorithms/kmedoids.rs:279:
+2025-11-21T11:47:01.1025729Z          Ok(labels)
+2025-11-21T11:47:01.1026398Z      }
+2025-11-21T11:47:01.1026994Z  
+2025-11-21T11:47:01.1027966Z -    fn compute_total_cost(&self, data: &ArrayView2<f64>, medoid_indices: &[usize],
+2025-11-21T11:47:01.1029207Z -                         labels: &Array1<usize>) -> Result<f64> {
+2025-11-21T11:47:01.1030142Z +    fn compute_total_cost(
+2025-11-21T11:47:01.1030874Z +        &self,
+2025-11-21T11:47:01.1031562Z +        data: &ArrayView2<f64>,
+2025-11-21T11:47:01.1032551Z +        medoid_indices: &[usize],
+2025-11-21T11:47:01.1033390Z +        labels: &Array1<usize>,
+2025-11-21T11:47:01.1034467Z +    ) -> Result<f64> {
+2025-11-21T11:47:01.1035225Z          let n_samples = data.dim().0;
+2025-11-21T11:47:01.1036056Z          let mut total_cost = 0.0;
+2025-11-21T11:47:01.1036760Z  
+2025-11-21T11:47:01.1037749Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/algorithms/spectral.rs:1:
+2025-11-21T11:47:01.1038869Z  //! Spectral clustering
+2025-11-21T11:47:01.1039534Z  
+2025-11-21T11:47:01.1040205Z +use crate::{ClusteringError, Result};
+2025-11-21T11:47:01.1041069Z  use ndarray::{Array1, Array2, ArrayView2};
+2025-11-21T11:47:01.1042299Z -use crate::{Result, ClusteringError};
+2025-11-21T11:47:01.1043110Z  
+2025-11-21T11:47:01.1043774Z  /// Affinity type for spectral clustering
+2025-11-21T11:47:01.1044614Z  #[derive(Debug, Clone)]
+2025-11-21T11:47:01.1045742Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/algorithms/streaming.rs:1:
+2025-11-21T11:47:01.1046915Z  //! Streaming and incremental clustering
+2025-11-21T11:47:01.1047721Z  
+2025-11-21T11:47:01.1048338Z +use crate::{ClusteringError, Result};
+2025-11-21T11:47:01.1048875Z  use ndarray::{Array2, ArrayView2};
+2025-11-21T11:47:01.1049392Z -use crate::{Result, ClusteringError};
+2025-11-21T11:47:01.1049848Z  
+2025-11-21T11:47:01.1050247Z  /// Streaming KMeans for online learning
+2025-11-21T11:47:01.1050760Z  pub struct StreamingKMeans {
+2025-11-21T11:47:01.1051843Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/gpu/cuda.rs:3:
+2025-11-21T11:47:01.1053150Z  #[cfg(feature = "gpu")]
+2025-11-21T11:47:01.1053976Z  use cudarc::driver::CudaDevice;
+2025-11-21T11:47:01.1054708Z  
+2025-11-21T11:47:01.1055410Z +use crate::{ClusteringError, Result};
+2025-11-21T11:47:01.1056292Z  use ndarray::ArrayView2;
+2025-11-21T11:47:01.1057101Z -use crate::{Result, ClusteringError};
+2025-11-21T11:47:01.1057896Z  
+2025-11-21T11:47:01.1058522Z  #[cfg(feature = "gpu")]
+2025-11-21T11:47:01.1059267Z  pub struct GpuKMeans {
+2025-11-21T11:47:01.1060287Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/gpu/cuda.rs:18:
+2025-11-21T11:47:01.1061441Z          let device = CudaDevice::new(0)
+2025-11-21T11:47:01.1062884Z              .map_err(|e| ClusteringError::GpuError(format!("Failed to initialize CUDA: {}", e)))?;
+2025-11-21T11:47:01.1063960Z  
+2025-11-21T11:47:01.1064566Z -        Ok(Self {
+2025-11-21T11:47:01.1065246Z -            n_clusters,
+2025-11-21T11:47:01.1065963Z -            device,
+2025-11-21T11:47:01.1066627Z -        })
+2025-11-21T11:47:01.1067327Z +        Ok(Self { n_clusters, device })
+2025-11-21T11:47:01.1068091Z      }
+2025-11-21T11:47:01.1068720Z  
+2025-11-21T11:47:01.1069572Z      pub fn fit(&self, data: &ArrayView2<f64>) -> Result<GpuClusteringResult> {
+2025-11-21T11:47:01.1070917Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/gpu/cuda.rs:46:
+2025-11-21T11:47:01.1071967Z  impl GpuKMeans {
+2025-11-21T11:47:01.1072945Z      pub fn new(_n_clusters: usize) -> Result<Self> {
+2025-11-21T11:47:01.1073909Z          Err(ClusteringError::GpuError(
+2025-11-21T11:47:01.1074980Z -            "GPU support not enabled. Compile with --features gpu".to_string()
+2025-11-21T11:47:01.1076260Z +            "GPU support not enabled. Compile with --features gpu".to_string(),
+2025-11-21T11:47:01.1077237Z          ))
+2025-11-21T11:47:01.1077833Z      }
+2025-11-21T11:47:01.1078411Z  }
+2025-11-21T11:47:01.1079349Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/gpu/rocm.rs:3:
+2025-11-21T11:47:01.1080449Z  #[cfg(feature = "gpu-wgpu")]
+2025-11-21T11:47:01.1081252Z  use wgpu::{Device, Queue};
+2025-11-21T11:47:01.1081943Z  
+2025-11-21T11:47:01.1082867Z -use crate::{Result, ClusteringError};
+2025-11-21T11:47:01.1083779Z +use crate::{ClusteringError, Result};
+2025-11-21T11:47:01.1084568Z  
+2025-11-21T11:47:01.1085242Z  #[cfg(feature = "gpu-wgpu")]
+2025-11-21T11:47:01.1086034Z  pub struct RocmKMeans {
+2025-11-21T11:47:01.1087089Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/gpu/rocm.rs:38:
+2025-11-21T11:47:01.1088138Z  impl RocmKMeans {
+2025-11-21T11:47:01.1088954Z      pub fn new(_n_clusters: usize) -> Result<Self> {
+2025-11-21T11:47:01.1090182Z          Err(ClusteringError::GpuError(
+2025-11-21T11:47:01.1091373Z -            "GPU-wgpu support not enabled. Compile with --features gpu-wgpu".to_string()
+2025-11-21T11:47:01.1092986Z +            "GPU-wgpu support not enabled. Compile with --features gpu-wgpu".to_string(),
+2025-11-21T11:47:01.1093997Z          ))
+2025-11-21T11:47:01.1094557Z      }
+2025-11-21T11:47:01.1095113Z  }
+2025-11-21T11:47:01.1096421Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/metrics/distance.rs:1:
+2025-11-21T11:47:01.1097732Z  //! Distance metrics for clustering
+2025-11-21T11:47:01.1098461Z  
+2025-11-21T11:47:01.1099121Z +use crate::{ClusteringError, Result};
+2025-11-21T11:47:01.1099939Z  use ndarray::ArrayView1;
+2025-11-21T11:47:01.1100702Z -use crate::{Result, ClusteringError};
+2025-11-21T11:47:01.1101453Z  
+2025-11-21T11:47:01.1102256Z  /// Distance metric for clustering
+2025-11-21T11:47:01.1103042Z  #[derive(Debug, Clone)]
+2025-11-21T11:47:01.1104131Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/metrics/distance.rs:77:
+2025-11-21T11:47:01.1105263Z  
+2025-11-21T11:47:01.1105905Z  /// Manhattan distance
+2025-11-21T11:47:01.1106935Z  pub fn manhattan_distance(x: &ArrayView1<f64>, y: &ArrayView1<f64>) -> f64 {
+2025-11-21T11:47:01.1107992Z -    x.iter()
+2025-11-21T11:47:01.1108649Z -        .zip(y.iter())
+2025-11-21T11:47:01.1109393Z -        .map(|(a, b)| (a - b).abs())
+2025-11-21T11:47:01.1110178Z -        .sum()
+2025-11-21T11:47:01.1111014Z +    x.iter().zip(y.iter()).map(|(a, b)| (a - b).abs()).sum()
+2025-11-21T11:47:01.1111940Z  }
+2025-11-21T11:47:01.1112735Z  
+2025-11-21T11:47:01.1113360Z  /// Cosine distance
+2025-11-21T11:47:01.1114468Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/metrics/manifold.rs:1:
+2025-11-21T11:47:01.1115747Z  //! Manifold-related computations for clustering
+2025-11-21T11:47:01.1116608Z  
+2025-11-21T11:47:01.1117332Z +use crate::{ClusteringError, Result};
+2025-11-21T11:47:01.1118202Z  use ndarray::ArrayView1;
+2025-11-21T11:47:01.1119042Z -use crate::{Result, ClusteringError};
+2025-11-21T11:47:01.1119846Z  
+2025-11-21T11:47:01.1120568Z  pub use crate::metrics::distance::Manifold;
+2025-11-21T11:47:01.1121404Z  
+2025-11-21T11:47:01.1122556Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/metrics/manifold.rs:8:
+2025-11-21T11:47:01.1123777Z  /// Compute Christoffel symbols for a given manifold
+2025-11-21T11:47:01.1125127Z -pub fn christoffel_symbols(manifold: &Manifold, point: &ArrayView1<f64>) -> Result<Vec<Vec<Vec<f64>>>> {
+2025-11-21T11:47:01.1126448Z +pub fn christoffel_symbols(
+2025-11-21T11:47:01.1127223Z +    manifold: &Manifold,
+2025-11-21T11:47:01.1127979Z +    point: &ArrayView1<f64>,
+2025-11-21T11:47:01.1128798Z +) -> Result<Vec<Vec<Vec<f64>>>> {
+2025-11-21T11:47:01.1129704Z      // TODO: Implement Christoffel symbol computation
+2025-11-21T11:47:01.1130770Z      // Needed for geodesic calculations in curved spacetime
+2025-11-21T11:47:01.1131738Z      unimplemented!("christoffel_symbols")
+2025-11-21T11:47:01.1133098Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/metrics/mod.rs:1:
+2025-11-21T11:47:01.1134401Z  //! Metrics for distance, validation, and manifold operations
+2025-11-21T11:47:01.1135304Z  
+2025-11-21T11:47:01.1135900Z  pub mod distance;
+2025-11-21T11:47:01.1136566Z -pub mod validation;
+2025-11-21T11:47:01.1137251Z  pub mod manifold;
+2025-11-21T11:47:01.1137903Z +pub mod validation;
+2025-11-21T11:47:01.1138526Z  
+2025-11-21T11:47:01.1139504Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/metrics/validation.rs:1:
+2025-11-21T11:47:01.1140703Z  //! Cluster validation metrics
+2025-11-21T11:47:01.1141433Z  
+2025-11-21T11:47:01.1142476Z -use ndarray::{Array1, Array2, ArrayView1, ArrayView2};
+2025-11-21T11:47:01.1143497Z -use crate::{Result, ClusteringError};
+2025-11-21T11:47:01.1144377Z  use crate::metrics::distance::Metric;
+2025-11-21T11:47:01.1145246Z +use crate::{ClusteringError, Result};
+2025-11-21T11:47:01.1146180Z +use ndarray::{Array1, Array2, ArrayView1, ArrayView2};
+2025-11-21T11:47:01.1147255Z  
+2025-11-21T11:47:01.1147906Z  /// Silhouette score (internal metric)
+2025-11-21T11:47:01.1148718Z  pub fn silhouette_score(
+2025-11-21T11:47:01.1149396Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/metrics/validation.rs:17:
+2025-11-21T11:47:01.1150033Z  }
+2025-11-21T11:47:01.1150371Z  
+2025-11-21T11:47:01.1150846Z  /// Davies-Bouldin index (internal metric, lower is better)
+2025-11-21T11:47:01.1151404Z -pub fn davies_bouldin_score(
+2025-11-21T11:47:01.1152362Z -    data: &ArrayView2<f64>,
+2025-11-21T11:47:01.1153365Z -    labels: &ArrayView1<usize>,
+2025-11-21T11:47:01.1154118Z -) -> Result<f64> {
+2025-11-21T11:47:01.1155269Z +pub fn davies_bouldin_score(data: &ArrayView2<f64>, labels: &ArrayView1<usize>) -> Result<f64> {
+2025-11-21T11:47:01.1156539Z      // TODO: Implement Davies-Bouldin index
+2025-11-21T11:47:01.1157461Z      unimplemented!("davies_bouldin_score")
+2025-11-21T11:47:01.1158251Z  }
+2025-11-21T11:47:01.1159268Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/metrics/validation.rs:27:
+2025-11-21T11:47:01.1160371Z  
+2025-11-21T11:47:01.1161203Z  /// Calinski-Harabasz index (internal metric, higher is better)
+2025-11-21T11:47:01.1162363Z -pub fn calinski_harabasz_score(
+2025-11-21T11:47:01.1163184Z -    data: &ArrayView2<f64>,
+2025-11-21T11:47:01.1163964Z -    labels: &ArrayView1<usize>,
+2025-11-21T11:47:01.1164705Z -) -> Result<f64> {
+2025-11-21T11:47:01.1165863Z +pub fn calinski_harabasz_score(data: &ArrayView2<f64>, labels: &ArrayView1<usize>) -> Result<f64> {
+2025-11-21T11:47:01.1167175Z      // TODO: Implement Calinski-Harabasz index
+2025-11-21T11:47:01.1168195Z      // Ratio of between-cluster to within-cluster dispersion
+2025-11-21T11:47:01.1169176Z      unimplemented!("calinski_harabasz_score")
+2025-11-21T11:47:01.1170388Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/scientific/curved.rs:1:
+2025-11-21T11:47:01.1171590Z  //! Clustering in curved spacetime manifolds
+2025-11-21T11:47:01.1172569Z  
+2025-11-21T11:47:01.1173261Z -use ndarray::{Array1, ArrayView2};
+2025-11-21T11:47:01.1174168Z -use crate::{Result, ClusteringError};
+2025-11-21T11:47:01.1174921Z  use crate::metrics::distance::Manifold;
+2025-11-21T11:47:01.1175463Z +use crate::{ClusteringError, Result};
+2025-11-21T11:47:01.1175987Z +use ndarray::{Array1, ArrayView2};
+2025-11-21T11:47:01.1176426Z  
+2025-11-21T11:47:01.1176827Z  /// DBSCAN adapted for curved spacetime
+2025-11-21T11:47:01.1177331Z  pub struct ManifoldDBSCAN {
+2025-11-21T11:47:01.1178366Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/scientific/mod.rs:1:
+2025-11-21T11:47:01.1179568Z  //! Scientific computing features for clustering
+2025-11-21T11:47:01.1180388Z  
+2025-11-21T11:47:01.1180992Z -pub mod spacetime;
+2025-11-21T11:47:01.1181646Z  pub mod curved;
+2025-11-21T11:47:01.1182481Z  pub mod physics;
+2025-11-21T11:47:01.1183132Z +pub mod spacetime;
+2025-11-21T11:47:01.1183778Z  
+2025-11-21T11:47:01.1184784Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/scientific/physics.rs:1:
+2025-11-21T11:47:01.1186141Z  //! Physics-aware clustering that preserves conservation laws
+2025-11-21T11:47:01.1187042Z  
+2025-11-21T11:47:01.1187748Z +use crate::{ClusteringError, Result};
+2025-11-21T11:47:01.1188663Z  use ndarray::{Array1, Array2, ArrayView2};
+2025-11-21T11:47:01.1189507Z -use crate::{Result, ClusteringError};
+2025-11-21T11:47:01.1190288Z  
+2025-11-21T11:47:01.1190925Z  /// Conservation laws to enforce
+2025-11-21T11:47:01.1191737Z  #[derive(Debug, Clone, Copy)]
+2025-11-21T11:47:01.1193068Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/scientific/physics.rs:60:
+2025-11-21T11:47:01.1194268Z  impl PhysicsClusteringResult {
+2025-11-21T11:47:01.1195242Z      /// Check if conservation laws are satisfied within tolerance
+2025-11-21T11:47:01.1196340Z      pub fn is_valid(&self, tolerance: f64) -> bool {
+2025-11-21T11:47:01.1197296Z -        self.conservation_errors.iter()
+2025-11-21T11:47:01.1198182Z -            .all(|&err| err < tolerance)
+2025-11-21T11:47:01.1199200Z +        self.conservation_errors.iter().all(|&err| err < tolerance)
+2025-11-21T11:47:01.1200372Z      }
+2025-11-21T11:47:01.1200966Z  }
+2025-11-21T11:47:01.1201550Z  
+2025-11-21T11:47:01.1202729Z Diff in /home/runner/work/arxis/arxis/avila-clustering/src/scientific/spacetime.rs:1:
+2025-11-21T11:47:01.1204036Z  //! 4D spacetime clustering for gravitational wave events
+2025-11-21T11:47:01.1204893Z  
+2025-11-21T11:47:01.1205506Z -use ndarray::Array2;
+2025-11-21T11:47:01.1206283Z -use crate::{Result, ClusteringError};
+2025-11-21T11:47:01.1207134Z  use crate::metrics::distance::Metric;
+2025-11-21T11:47:01.1208201Z +use crate::{ClusteringError, Result};
+2025-11-21T11:47:01.1209170Z +use ndarray::Array2;
+2025-11-21T11:47:01.1209816Z  
+2025-11-21T11:47:01.1210690Z  /// 4D tensor representation (n_samples, 3_spatial, time_bins, freq_bins)
+2025-11-21T11:47:01.1211872Z -pub type Tensor4D = Array2<f64>;  // Simplified for now
+2025-11-21T11:47:01.1213118Z +pub type Tensor4D = Array2<f64>; // Simplified for now
+2025-11-21T11:47:01.1213988Z  
+2025-11-21T11:47:01.1214773Z  /// KMeans clustering adapted for 4D spacetime data
+2025-11-21T11:47:01.1215704Z  pub struct SpaceTimeKMeans {
+2025-11-21T11:47:01.1216823Z Diff in /home/runner/work/arxis/arxis/avila-linalg/examples/basic_usage.rs:34:
+2025-11-21T11:47:01.1218003Z      println!("Matriz identidade:");
+2025-11-21T11:47:01.1218835Z      println!("{:?}", identity);
+2025-11-21T11:47:01.1219425Z  
+2025-11-21T11:47:01.1219830Z -    let m = Matrix3x3::from_rows([
+2025-11-21T11:47:01.1220289Z -        [1.0, 2.0, 3.0],
+2025-11-21T11:47:01.1220715Z -        [4.0, 5.0, 6.0],
+2025-11-21T11:47:01.1221135Z -        [7.0, 8.0, 9.0],
+2025-11-21T11:47:01.1221527Z -    ]);
+2025-11-21T11:47:01.1222051Z +    let m = Matrix3x3::from_rows([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]);
+2025-11-21T11:47:01.1223183Z      println!("\nMatriz M:");
+2025-11-21T11:47:01.1223943Z      println!("{:?}", m);
+2025-11-21T11:47:01.1224617Z  
+2025-11-21T11:47:01.1225542Z Diff in /home/runner/work/arxis/arxis/avila-linalg/examples/basic_usage.rs:55:
+2025-11-21T11:47:01.1226750Z      // Matriz × Vetor
+2025-11-21T11:47:01.1227670Z      println!("🎯 Transformações (Matriz × Vetor):");
+2025-11-21T11:47:01.1228632Z      let rotation = Matrix3x3::from_rows([
+2025-11-21T11:47:01.1229638Z -        [0.0, -1.0, 0.0],  // Rotação 90° em torno de Z
+2025-11-21T11:47:01.1230653Z +        [0.0, -1.0, 0.0], // Rotação 90° em torno de Z
+2025-11-21T11:47:01.1231473Z          [1.0, 0.0, 0.0],
+2025-11-21T11:47:01.1232361Z          [0.0, 0.0, 1.0],
+2025-11-21T11:47:01.1233292Z      ]);
+2025-11-21T11:47:01.1234182Z Diff in /home/runner/work/arxis/arxis/avila-linalg/examples/basic_usage.rs:82:
+2025-11-21T11:47:01.1234974Z  
+2025-11-21T11:47:01.1235576Z      // Matriz dinâmica
+2025-11-21T11:47:01.1236231Z      println!("📊 Matriz Dinâmica (MxN):");
+2025-11-21T11:47:01.1236860Z -    let mat = MatrixMxN::from_vec(
+2025-11-21T11:47:01.1237403Z -        2, 3,
+2025-11-21T11:47:01.1237845Z -        vec![
+2025-11-21T11:47:01.1238311Z -            1.0, 2.0, 3.0,
+2025-11-21T11:47:01.1238826Z -            4.0, 5.0, 6.0,
+2025-11-21T11:47:01.1239315Z -        ]
+2025-11-21T11:47:01.1239735Z -    );
+2025-11-21T11:47:01.1240340Z +    let mat = MatrixMxN::from_vec(2, 3, vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+2025-11-21T11:47:01.1241103Z      println!("Matriz 2×3:");
+2025-11-21T11:47:01.1241648Z      for i in 0..mat.rows() {
+2025-11-21T11:47:01.1242373Z          print!("[ ");
+2025-11-21T11:47:01.1243104Z Diff in /home/runner/work/arxis/arxis/avila-linalg/examples/engine_aaa.rs:19:
+2025-11-21T11:47:01.1243843Z  
+2025-11-21T11:47:01.1244385Z      // Rotação de 90° em Z usando quaternion
+2025-11-21T11:47:01.1245023Z      let axis = Vector3::new(0.0, 0.0, 1.0);
+2025-11-21T11:47:01.1245622Z -    let angle = PI / 2.0;  // 90 graus
+2025-11-21T11:47:01.1246216Z +    let angle = PI / 2.0; // 90 graus
+2025-11-21T11:47:01.1246788Z      let quat = Quaternion::from_axis_angle(axis, angle);
+2025-11-21T11:47:01.1247270Z  
+2025-11-21T11:47:01.1247836Z -    println!("Quaternion (90° em Z): w={:.4}, x={:.4}, y={:.4}, z={:.4}",
+2025-11-21T11:47:01.1248677Z -             quat.w, quat.x, quat.y, quat.z);
+2025-11-21T11:47:01.1249157Z +    println!(
+2025-11-21T11:47:01.1249706Z +        "Quaternion (90° em Z): w={:.4}, x={:.4}, y={:.4}, z={:.4}",
+2025-11-21T11:47:01.1250270Z +        quat.w, quat.x, quat.y, quat.z
+2025-11-21T11:47:01.1250710Z +    );
+2025-11-21T11:47:01.1251036Z  
+2025-11-21T11:47:01.1251484Z      // Rotacionar vetor (1, 0, 0) → (0, 1, 0)
+2025-11-21T11:47:01.1251993Z      let v = Vector3::new(1.0, 0.0, 0.0);
+2025-11-21T11:47:01.1253019Z Diff in /home/runner/work/arxis/arxis/avila-linalg/examples/engine_aaa.rs:30:
+2025-11-21T11:47:01.1253672Z      let rotated = quat.rotate_vector(v);
+2025-11-21T11:47:01.1254248Z -    println!("Vetor (1,0,0) rotacionado: ({:.4}, {:.4}, {:.4})",
+2025-11-21T11:47:01.1254839Z -             rotated.x(), rotated.y(), rotated.z());
+2025-11-21T11:47:01.1255313Z +    println!(
+2025-11-21T11:47:01.1255763Z +        "Vetor (1,0,0) rotacionado: ({:.4}, {:.4}, {:.4})",
+2025-11-21T11:47:01.1256273Z +        rotated.x(),
+2025-11-21T11:47:01.1256669Z +        rotated.y(),
+2025-11-21T11:47:01.1257060Z +        rotated.z()
+2025-11-21T11:47:01.1257433Z +    );
+2025-11-21T11:47:01.1257759Z  
+2025-11-21T11:47:01.1258197Z      // Converte para matriz de rotação
+2025-11-21T11:47:01.1258686Z      let rot_matrix = quat.to_matrix3();
+2025-11-21T11:47:01.1259327Z Diff in /home/runner/work/arxis/arxis/avila-linalg/examples/engine_aaa.rs:36:
+2025-11-21T11:47:01.1259997Z      println!("Matriz 3×3 equivalente:");
+2025-11-21T11:47:01.1260479Z      for i in 0..3 {
+2025-11-21T11:47:01.1260903Z -        println!("  [{:.4}, {:.4}, {:.4}]",
+2025-11-21T11:47:01.1261401Z -                 rot_matrix.data()[i][0],
+2025-11-21T11:47:01.1261892Z -                 rot_matrix.data()[i][1],
+2025-11-21T11:47:01.1262605Z -                 rot_matrix.data()[i][2]);
+2025-11-21T11:47:01.1263063Z +        println!(
+2025-11-21T11:47:01.1263455Z +            "  [{:.4}, {:.4}, {:.4}]",
+2025-11-21T11:47:01.1263920Z +            rot_matrix.data()[i][0],
+2025-11-21T11:47:01.1264391Z +            rot_matrix.data()[i][1],
+2025-11-21T11:47:01.1264862Z +            rot_matrix.data()[i][2]
+2025-11-21T11:47:01.1265283Z +        );
+2025-11-21T11:47:01.1265624Z      }
+2025-11-21T11:47:01.1265961Z      println!();
+2025-11-21T11:47:01.1266318Z  
+2025-11-21T11:47:01.1266855Z Diff in /home/runner/work/arxis/arxis/avila-linalg/examples/engine_aaa.rs:46:
+2025-11-21T11:47:01.1267610Z      println!("🎬 SLERP (Interpolação para Animações):");
+2025-11-21T11:47:01.1268260Z      println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+2025-11-21T11:47:01.1268734Z  
+2025-11-21T11:47:01.1269243Z -    let q1 = Quaternion::<f64>::identity();  // Sem rotação
+2025-11-21T11:47:01.1270023Z -    let q2 = Quaternion::from_axis_angle(Vector3::new(0.0, 1.0, 0.0), PI / 2.0);  // 90° em Y
+2025-11-21T11:47:01.1270781Z +    let q1 = Quaternion::<f64>::identity(); // Sem rotação
+2025-11-21T11:47:01.1271547Z +    let q2 = Quaternion::from_axis_angle(Vector3::new(0.0, 1.0, 0.0), PI / 2.0); // 90° em Y
+2025-11-21T11:47:01.1272341Z  
+2025-11-21T11:47:01.1272842Z      println!("Interpolação de 0° → 90° em Y:");
+2025-11-21T11:47:01.1273479Z      for t in [0.0, 0.25, 0.5, 0.75, 1.0] {
+2025-11-21T11:47:01.1274381Z Diff in /home/runner/work/arxis/arxis/avila-linalg/examples/engine_aaa.rs:54:
+2025-11-21T11:47:01.1275032Z          let interpolated = q1.slerp(&q2, t);
+2025-11-21T11:47:01.1275663Z          let test_vec = interpolated.rotate_vector(Vector3::new(1.0, 0.0, 0.0));
+2025-11-21T11:47:01.1276308Z -        println!("  t={:.2}: vetor = ({:.3}, {:.3}, {:.3})",
+2025-11-21T11:47:01.1276907Z -                 t, test_vec.x(), test_vec.y(), test_vec.z());
+2025-11-21T11:47:01.1277389Z +        println!(
+2025-11-21T11:47:01.1277822Z +            "  t={:.2}: vetor = ({:.3}, {:.3}, {:.3})",
+2025-11-21T11:47:01.1278272Z +            t,
+2025-11-21T11:47:01.1278664Z +            test_vec.x(),
+2025-11-21T11:47:01.1279083Z +            test_vec.y(),
+2025-11-21T11:47:01.1279498Z +            test_vec.z()
+2025-11-21T11:47:01.1280057Z +        );
+2025-11-21T11:47:01.1280399Z      }
+2025-11-21T11:47:01.1280737Z      println!();
+2025-11-21T11:47:01.1281095Z  
+2025-11-21T11:47:01.1281627Z Diff in /home/runner/work/arxis/arxis/avila-linalg/examples/engine_aaa.rs:75:
+2025-11-21T11:47:01.1282475Z      println!("Escala (2x, 3y, 4z): {:?}", scaled.to_vector3());
+2025-11-21T11:47:01.1282974Z  
+2025-11-21T11:47:01.1283371Z      // Rotação em Y
+2025-11-21T11:47:01.1283876Z -    let rotation_y = Matrix4x4::rotation_y(PI / 4.0);  // 45°
+2025-11-21T11:47:01.1284628Z +    let rotation_y = Matrix4x4::rotation_y(PI / 4.0); // 45°
+2025-11-21T11:47:01.1285314Z      let rotated_4d = rotation_y * Vector4::from_point(Vector3::new(1.0, 0.0, 0.0));
+2025-11-21T11:47:01.1286151Z -    println!("Rotação 45° em Y: ({:.3}, {:.3}, {:.3})",
+2025-11-21T11:47:01.1286739Z -             rotated_4d.x(), rotated_4d.y(), rotated_4d.z());
+2025-11-21T11:47:01.1287235Z +    println!(
+2025-11-21T11:47:01.1287692Z +        "Rotação 45° em Y: ({:.3}, {:.3}, {:.3})",
+2025-11-21T11:47:01.1288170Z +        rotated_4d.x(),
+2025-11-21T11:47:01.1288575Z +        rotated_4d.y(),
+2025-11-21T11:47:01.1288980Z +        rotated_4d.z()
+2025-11-21T11:47:01.1289359Z +    );
+2025-11-21T11:47:01.1289695Z      println!();
+2025-11-21T11:47:01.1290041Z  
+2025-11-21T11:47:01.1290475Z      // 4. COMPOSIÇÃO DE TRANSFORMAÇÕES (TRS)
+2025-11-21T11:47:01.1291122Z Diff in /home/runner/work/arxis/arxis/avila-linalg/examples/engine_aaa.rs:86:
+2025-11-21T11:47:01.1291866Z      println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+2025-11-21T11:47:01.1292573Z  
+2025-11-21T11:47:01.1292998Z      let t = Matrix4x4::translation(0.0, 5.0, 0.0);
+2025-11-21T11:47:01.1293542Z -    let r = Matrix4x4::rotation_z(PI / 6.0);  // 30°
+2025-11-21T11:47:01.1294091Z +    let r = Matrix4x4::rotation_z(PI / 6.0); // 30°
+2025-11-21T11:47:01.1294598Z      let s = Matrix4x4::scale(2.0);
+2025-11-21T11:47:01.1295006Z  
+2025-11-21T11:47:01.1295373Z      // Ordem importa! T * R * S
+2025-11-21T11:47:01.1295997Z Diff in /home/runner/work/arxis/arxis/avila-linalg/examples/engine_aaa.rs:94:
+2025-11-21T11:47:01.1296571Z  
+2025-11-21T11:47:01.1297061Z      let local_point = Vector4::from_point(Vector3::new(1.0, 0.0, 0.0));
+2025-11-21T11:47:01.1297637Z      let world_point = trs * local_point;
+2025-11-21T11:47:01.1298212Z -    println!("Ponto local (1,0,0) no mundo: ({:.3}, {:.3}, {:.3})",
+2025-11-21T11:47:01.1298840Z -             world_point.x(), world_point.y(), world_point.z());
+2025-11-21T11:47:01.1299348Z +    println!(
+2025-11-21T11:47:01.1299810Z +        "Ponto local (1,0,0) no mundo: ({:.3}, {:.3}, {:.3})",
+2025-11-21T11:47:01.1300324Z +        world_point.x(),
+2025-11-21T11:47:01.1300743Z +        world_point.y(),
+2025-11-21T11:47:01.1301151Z +        world_point.z()
+2025-11-21T11:47:01.1301538Z +    );
+2025-11-21T11:47:01.1301869Z      println!();
+2025-11-21T11:47:01.1302335Z  
+2025-11-21T11:47:01.1302753Z      // 5. CÂMERA - Look At Matrix
+2025-11-21T11:47:01.1303392Z Diff in /home/runner/work/arxis/arxis/avila-linalg/examples/engine_aaa.rs:102:
+2025-11-21T11:47:01.1304100Z      println!("📹 CÂMERA (Look-At Matrix):");
+2025-11-21T11:47:01.1304700Z      println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+2025-11-21T11:47:01.1305155Z  
+2025-11-21T11:47:01.1305694Z -    let eye = Vector3::new(0.0, 5.0, 10.0);      // Posição da câmera
+2025-11-21T11:47:01.1306381Z -    let target = Vector3::new(0.0, 0.0, 0.0);    // Olhando para origem
+2025-11-21T11:47:01.1307024Z -    let up = Vector3::new(0.0, 1.0, 0.0);        // Up vector
+2025-11-21T11:47:01.1307708Z +    let eye = Vector3::new(0.0, 5.0, 10.0); // Posição da câmera
+2025-11-21T11:47:01.1308340Z +    let target = Vector3::new(0.0, 0.0, 0.0); // Olhando para origem
+2025-11-21T11:47:01.1308948Z +    let up = Vector3::new(0.0, 1.0, 0.0); // Up vector
+2025-11-21T11:47:01.1309402Z  
+2025-11-21T11:47:01.1309842Z      let view_matrix = Matrix4x4::look_at(eye, target, up);
+2025-11-21T11:47:01.1310324Z  
+2025-11-21T11:47:01.1310854Z Diff in /home/runner/work/arxis/arxis/avila-linalg/examples/engine_aaa.rs:111:
+2025-11-21T11:47:01.1311753Z      println!("Câmera em (0, 5, 10) olhando para origem:");
+2025-11-21T11:47:01.1312630Z      let world_pos = Vector4::from_point(Vector3::new(0.0, 0.0, 0.0));
+2025-11-21T11:47:01.1313240Z      let view_space = view_matrix * world_pos;
+2025-11-21T11:47:01.1313883Z -    println!("  Origem no espaço da câmera: ({:.3}, {:.3}, {:.3})",
+2025-11-21T11:47:01.1314506Z -             view_space.x(), view_space.y(), view_space.z());
+2025-11-21T11:47:01.1314995Z +    println!(
+2025-11-21T11:47:01.1315643Z +        "  Origem no espaço da câmera: ({:.3}, {:.3}, {:.3})",
+2025-11-21T11:47:01.1316146Z +        view_space.x(),
+2025-11-21T11:47:01.1316551Z +        view_space.y(),
+2025-11-21T11:47:01.1316956Z +        view_space.z()
+2025-11-21T11:47:01.1317324Z +    );
+2025-11-21T11:47:01.1317657Z      println!();
+2025-11-21T11:47:01.1318009Z  
+2025-11-21T11:47:01.1318413Z      // 6. PROJEÇÃO PERSPECTIVA
+2025-11-21T11:47:01.1319026Z Diff in /home/runner/work/arxis/arxis/avila-linalg/examples/engine_aaa.rs:119:
+2025-11-21T11:47:01.1319722Z      println!("🎥 PROJEÇÃO PERSPECTIVA:");
+2025-11-21T11:47:01.1320310Z      println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+2025-11-21T11:47:01.1320774Z  
+2025-11-21T11:47:01.1321148Z -    let fovy = PI / 3.0;  // 60 graus FOV
+2025-11-21T11:47:01.1321655Z -    let aspect = 16.0 / 9.0;  // 16:9 aspect ratio
+2025-11-21T11:47:01.1322270Z +    let fovy = PI / 3.0; // 60 graus FOV
+2025-11-21T11:47:01.1322765Z +    let aspect = 16.0 / 9.0; // 16:9 aspect ratio
+2025-11-21T11:47:01.1323278Z      let near = 0.1;
+2025-11-21T11:47:01.1323663Z      let far = 100.0;
+2025-11-21T11:47:01.1324032Z  
+2025-11-21T11:47:01.1324554Z Diff in /home/runner/work/arxis/arxis/avila-linalg/examples/engine_aaa.rs:127:
+2025-11-21T11:47:01.1325315Z      let projection = Matrix4x4::perspective(fovy, aspect, near, far);
+2025-11-21T11:47:01.1325859Z  
+2025-11-21T11:47:01.1326350Z -    println!("FOV: {:.1}°, Aspect: {:.2}, Near: {}, Far: {}",
+2025-11-21T11:47:01.1326927Z -             fovy * 180.0 / PI, aspect, near, far);
+2025-11-21T11:47:01.1327384Z +    println!(
+2025-11-21T11:47:01.1327863Z +        "FOV: {:.1}°, Aspect: {:.2}, Near: {}, Far: {}",
+2025-11-21T11:47:01.1328345Z +        fovy * 180.0 / PI,
+2025-11-21T11:47:01.1328745Z +        aspect,
+2025-11-21T11:47:01.1329099Z +        near,
+2025-11-21T11:47:01.1329452Z +        far
+2025-11-21T11:47:01.1329790Z +    );
+2025-11-21T11:47:01.1330111Z  
+2025-11-21T11:47:01.1330481Z      // Projetar ponto 3D no plano da tela
+2025-11-21T11:47:01.1331076Z      let point_3d = Vector4::from_point(Vector3::new(0.0, 0.0, -5.0));
+2025-11-21T11:47:01.1331800Z Diff in /home/runner/work/arxis/arxis/avila-linalg/examples/engine_aaa.rs:141:
+2025-11-21T11:47:01.1332649Z          clip_space.z() / clip_space.w(),
+2025-11-21T11:47:01.1333093Z      );
+2025-11-21T11:47:01.1333413Z  
+2025-11-21T11:47:01.1333906Z -    println!("Ponto (0,0,-5) em NDC: ({:.3}, {:.3}, {:.3})", ndc.x(), ndc.y(), ndc.z());
+2025-11-21T11:47:01.1334469Z +    println!(
+2025-11-21T11:47:01.1334902Z +        "Ponto (0,0,-5) em NDC: ({:.3}, {:.3}, {:.3})",
+2025-11-21T11:47:01.1335360Z +        ndc.x(),
+2025-11-21T11:47:01.1335719Z +        ndc.y(),
+2025-11-21T11:47:01.1336081Z +        ndc.z()
+2025-11-21T11:47:01.1336420Z +    );
+2025-11-21T11:47:01.1336752Z      println!();
+2025-11-21T11:47:01.1337100Z  
+2025-11-21T11:47:01.1337538Z      // 7. PROJEÇÃO ORTOGRÁFICA (para UI/HUD)
+2025-11-21T11:47:01.1338181Z Diff in /home/runner/work/arxis/arxis/avila-linalg/examples/engine_aaa.rs:149:
+2025-11-21T11:47:01.1338913Z      println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+2025-11-21T11:47:01.1339357Z  
+2025-11-21T11:47:01.1339742Z      let ortho = Matrix4x4::orthographic(
+2025-11-21T11:47:01.1340217Z -        -10.0, 10.0,  // left, right
+2025-11-21T11:47:01.1340682Z -        -10.0, 10.0,  // bottom, top
+2025-11-21T11:47:01.1341134Z -        -1.0, 1.0,    // near, far
+2025-11-21T11:47:01.1341578Z +        -10.0, 10.0, // left, right
+2025-11-21T11:47:01.1342034Z +        -10.0, 10.0, // bottom, top
+2025-11-21T11:47:01.1342871Z +        -1.0, 1.0, // near, far
+2025-11-21T11:47:01.1343281Z      );
+2025-11-21T11:47:01.1343598Z  
+2025-11-21T11:47:01.1344074Z      let ui_point = Vector4::from_point(Vector3::new(5.0, 5.0, 0.0));
+2025-11-21T11:47:01.1344795Z Diff in /home/runner/work/arxis/arxis/avila-linalg/examples/engine_aaa.rs:158:
+2025-11-21T11:47:01.1345438Z      let screen_point = ortho * ui_point;
+2025-11-21T11:47:01.1345874Z  
+2025-11-21T11:47:01.1346240Z      println!("Ponto UI (5, 5, 0):");
+2025-11-21T11:47:01.1346853Z -    println!("  Em NDC: ({:.3}, {:.3}, {:.3})",
+2025-11-21T11:47:01.1347417Z -             screen_point.x(), screen_point.y(), screen_point.z());
+2025-11-21T11:47:01.1347937Z +    println!(
+2025-11-21T11:47:01.1348330Z +        "  Em NDC: ({:.3}, {:.3}, {:.3})",
+2025-11-21T11:47:01.1348784Z +        screen_point.x(),
+2025-11-21T11:47:01.1349209Z +        screen_point.y(),
+2025-11-21T11:47:01.1349630Z +        screen_point.z()
+2025-11-21T11:47:01.1350016Z +    );
+2025-11-21T11:47:01.1350354Z      println!();
+2025-11-21T11:47:01.1350703Z  
+2025-11-21T11:47:01.1351181Z      // 8. PIPELINE COMPLETO: World → View → Projection
+2025-11-21T11:47:01.1351861Z Diff in /home/runner/work/arxis/arxis/avila-linalg/examples/engine_aaa.rs:173:
+2025-11-21T11:47:01.1352804Z      let local_vertex = Vector4::from_point(Vector3::new(1.0, 1.0, 1.0));
+2025-11-21T11:47:01.1353338Z  
+2025-11-21T11:47:01.1353725Z      // Transformações:
+2025-11-21T11:47:01.1354299Z -    let world_vertex = model * local_vertex;  // Model → World
+2025-11-21T11:47:01.1354989Z -    let view_vertex = view_matrix * world_vertex;  // World → View
+2025-11-21T11:47:01.1355685Z -    let clip_vertex = projection * view_vertex;  // View → Clip
+2025-11-21T11:47:01.1356364Z +    let world_vertex = model * local_vertex; // Model → World
+2025-11-21T11:47:01.1357038Z +    let view_vertex = view_matrix * world_vertex; // World → View
+2025-11-21T11:47:01.1357709Z +    let clip_vertex = projection * view_vertex; // View → Clip
+2025-11-21T11:47:01.1358209Z  
+2025-11-21T11:47:01.1358626Z      println!("Vértice (1,1,1) do cubo:");
+2025-11-21T11:47:01.1359128Z -    println!("  Local:     ({:.2}, {:.2}, {:.2})",
+2025-11-21T11:47:01.1359701Z -             local_vertex.x(), local_vertex.y(), local_vertex.z());
+2025-11-21T11:47:01.1360264Z -    println!("  World:     ({:.2}, {:.2}, {:.2})",
+2025-11-21T11:47:01.1360839Z -             world_vertex.x(), world_vertex.y(), world_vertex.z());
+2025-11-21T11:47:01.1361401Z -    println!("  View:      ({:.2}, {:.2}, {:.2})",
+2025-11-21T11:47:01.1361962Z -             view_vertex.x(), view_vertex.y(), view_vertex.z());
+2025-11-21T11:47:01.1362660Z -    println!("  Clip:      ({:.2}, {:.2}, {:.2}, {:.2})",
+2025-11-21T11:47:01.1363283Z -             clip_vertex.x(), clip_vertex.y(), clip_vertex.z(), clip_vertex.w());
+2025-11-21T11:47:01.1363828Z +    println!(
+2025-11-21T11:47:01.1364226Z +        "  Local:     ({:.2}, {:.2}, {:.2})",
+2025-11-21T11:47:01.1364686Z +        local_vertex.x(),
+2025-11-21T11:47:01.1365114Z +        local_vertex.y(),
+2025-11-21T11:47:01.1365522Z +        local_vertex.z()
+2025-11-21T11:47:01.1365911Z +    );
+2025-11-21T11:47:01.1366239Z +    println!(
+2025-11-21T11:47:01.1366642Z +        "  World:     ({:.2}, {:.2}, {:.2})",
+2025-11-21T11:47:01.1367321Z +        world_vertex.x(),
+2025-11-21T11:47:01.1367779Z +        world_vertex.y(),
+2025-11-21T11:47:01.1368193Z +        world_vertex.z()
+2025-11-21T11:47:01.1368584Z +    );
+2025-11-21T11:47:01.1368913Z +    println!(
+2025-11-21T11:47:01.1369320Z +        "  View:      ({:.2}, {:.2}, {:.2})",
+2025-11-21T11:47:01.1369777Z +        view_vertex.x(),
+2025-11-21T11:47:01.1370189Z +        view_vertex.y(),
+2025-11-21T11:47:01.1370611Z +        view_vertex.z()
+2025-11-21T11:47:01.1370991Z +    );
+2025-11-21T11:47:01.1371326Z +    println!(
+2025-11-21T11:47:01.1371733Z +        "  Clip:      ({:.2}, {:.2}, {:.2}, {:.2})",
+2025-11-21T11:47:01.1372434Z +        clip_vertex.x(),
+2025-11-21T11:47:01.1372855Z +        clip_vertex.y(),
+2025-11-21T11:47:01.1373426Z +        clip_vertex.z(),
+2025-11-21T11:47:01.1373833Z +        clip_vertex.w()
+2025-11-21T11:47:01.1374219Z +    );
+2025-11-21T11:47:01.1374532Z  
+2025-11-21T11:47:01.1374916Z      let ndc_vertex = Vector3::new(
+2025-11-21T11:47:01.1375388Z          clip_vertex.x() / clip_vertex.w(),
+2025-11-21T11:47:01.1376040Z Diff in /home/runner/work/arxis/arxis/avila-linalg/examples/engine_aaa.rs:192:
+2025-11-21T11:47:01.1376675Z          clip_vertex.y() / clip_vertex.w(),
+2025-11-21T11:47:01.1377153Z          clip_vertex.z() / clip_vertex.w(),
+2025-11-21T11:47:01.1377708Z      );
+2025-11-21T11:47:01.1378223Z -    println!("  NDC:       ({:.3}, {:.3}, {:.3})", ndc_vertex.x(), ndc_vertex.y(), ndc_vertex.z());
+2025-11-21T11:47:01.1378799Z +    println!(
+2025-11-21T11:47:01.1379194Z +        "  NDC:       ({:.3}, {:.3}, {:.3})",
+2025-11-21T11:47:01.1379653Z +        ndc_vertex.x(),
+2025-11-21T11:47:01.1380054Z +        ndc_vertex.y(),
+2025-11-21T11:47:01.1380460Z +        ndc_vertex.z()
+2025-11-21T11:47:01.1380840Z +    );
+2025-11-21T11:47:01.1381167Z      println!();
+2025-11-21T11:47:01.1381522Z  
+2025-11-21T11:47:01.1382055Z      // 9. MÚLTIPLAS ROTAÇÕES (Evita Gimbal Lock com Quaternions)
+2025-11-21T11:47:01.1383046Z Diff in /home/runner/work/arxis/arxis/avila-linalg/examples/engine_aaa.rs:202:
+2025-11-21T11:47:01.1383672Z      // Euler angles: Roll, Pitch, Yaw
+2025-11-21T11:47:01.1384275Z      let euler_quat = Quaternion::from_euler(PI / 6.0, PI / 4.0, PI / 3.0);
+2025-11-21T11:47:01.1384944Z      println!("Euler (30°, 45°, 60°) → Quaternion:");
+2025-11-21T11:47:01.1385495Z -    println!("  w={:.4}, x={:.4}, y={:.4}, z={:.4}",
+2025-11-21T11:47:01.1386079Z -             euler_quat.w, euler_quat.x, euler_quat.y, euler_quat.z);
+2025-11-21T11:47:01.1386582Z +    println!(
+2025-11-21T11:47:01.1386982Z +        "  w={:.4}, x={:.4}, y={:.4}, z={:.4}",
+2025-11-21T11:47:01.1387517Z +        euler_quat.w, euler_quat.x, euler_quat.y, euler_quat.z
+2025-11-21T11:47:01.1388224Z +    );
+2025-11-21T11:47:01.1388771Z  
+2025-11-21T11:47:01.1389290Z      // Composição de rotações
+2025-11-21T11:47:01.1389913Z      let q_pitch = Quaternion::from_axis_angle(Vector3::new(1.0, 0.0, 0.0), PI / 4.0);
+2025-11-21T11:47:01.1390700Z Diff in /home/runner/work/arxis/arxis/avila-linalg/examples/engine_aaa.rs:210:
+2025-11-21T11:47:01.1391474Z      let q_yaw = Quaternion::from_axis_angle(Vector3::new(0.0, 1.0, 0.0), PI / 3.0);
+2025-11-21T11:47:01.1392327Z -    let q_combined = q_yaw * q_pitch;  // Ordem importa!
+2025-11-21T11:47:01.1392945Z +    let q_combined = q_yaw * q_pitch; // Ordem importa!
+2025-11-21T11:47:01.1393421Z  
+2025-11-21T11:47:01.1393862Z      println!("Composição (Yaw × Pitch):");
+2025-11-21T11:47:01.1394377Z -    println!("  w={:.4}, x={:.4}, y={:.4}, z={:.4}",
+2025-11-21T11:47:01.1394971Z -             q_combined.w, q_combined.x, q_combined.y, q_combined.z);
+2025-11-21T11:47:01.1395491Z +    println!(
+2025-11-21T11:47:01.1395892Z +        "  w={:.4}, x={:.4}, y={:.4}, z={:.4}",
+2025-11-21T11:47:01.1396456Z +        q_combined.w, q_combined.x, q_combined.y, q_combined.z
+2025-11-21T11:47:01.1396949Z +    );
+2025-11-21T11:47:01.1397279Z      println!();
+2025-11-21T11:47:01.1397626Z  
+2025-11-21T11:47:01.1398134Z      println!("✅ Todas as operações de Engine AAA funcionando!");
+2025-11-21T11:47:01.1398795Z Diff in /home/runner/work/arxis/arxis/avila-linalg/src/lib.rs:24:
+2025-11-21T11:47:01.1399339Z  #![deny(missing_docs)]
+2025-11-21T11:47:01.1399743Z  #![warn(clippy::all)]
+2025-11-21T11:47:01.1400118Z  
+2025-11-21T11:47:01.1400454Z -pub mod vector;
+2025-11-21T11:47:01.1400824Z  pub mod matrix;
+2025-11-21T11:47:01.1401180Z  pub mod ops;
+2025-11-21T11:47:01.1401540Z  pub mod transform;
+2025-11-21T11:47:01.1402052Z Diff in /home/runner/work/arxis/arxis/avila-linalg/src/lib.rs:31:
+2025-11-21T11:47:01.1402698Z +pub mod vector;
+2025-11-21T11:47:01.1403049Z  
+2025-11-21T11:47:01.1403404Z  // Re-exports principais
+2025-11-21T11:47:01.1403907Z -pub use vector::{Vector2, Vector3, Vector4, VectorN};
+2025-11-21T11:47:01.1404695Z  pub use matrix::{Matrix2x2, Matrix3x3, Matrix4x4, MatrixMxN};
+2025-11-21T11:47:01.1405306Z +pub use vector::{Vector2, Vector3, Vector4, VectorN};
+2025-11-21T11:47:01.1405779Z  
+2025-11-21T11:47:01.1406220Z  /// Módulo prelude para imports convenientes
+2025-11-21T11:47:01.1406696Z  pub mod prelude {
+2025-11-21T11:47:01.1407201Z Diff in /home/runner/work/arxis/arxis/avila-linalg/src/lib.rs:38:
+2025-11-21T11:47:01.1407772Z -    pub use crate::vector::*;
+2025-11-21T11:47:01.1408213Z      pub use crate::matrix::*;
+2025-11-21T11:47:01.1408776Z      pub use crate::ops::*;
+2025-11-21T11:47:01.1409217Z      pub use crate::transform::*;
+2025-11-21T11:47:01.1409785Z Diff in /home/runner/work/arxis/arxis/avila-linalg/src/lib.rs:42:
+2025-11-21T11:47:01.1410356Z +    pub use crate::vector::*;
+2025-11-21T11:47:01.1410754Z  }
+2025-11-21T11:47:01.1411074Z  
+2025-11-21T11:47:01.1411392Z  #[cfg(test)]
+2025-11-21T11:47:01.1411893Z Diff in /home/runner/work/arxis/arxis/avila-linalg/src/matrix.rs:2:
+2025-11-21T11:47:01.1412656Z  //!
+2025-11-21T11:47:01.1413045Z  //! Implementa matrizes 2x2, 3x3, 4x4 e MxN
+2025-11-21T11:47:01.1413483Z  
+2025-11-21T11:47:01.1413869Z -use num_traits::{Float, Num, Zero, One};
+2025-11-21T11:47:01.1414323Z -use std::ops::Mul;
+2025-11-21T11:47:01.1414726Z  use crate::vector::Vector3;
+2025-11-21T11:47:01.1415176Z +use num_traits::{Float, Num, One, Zero};
+2025-11-21T11:47:01.1415629Z +use std::ops::Mul;
+2025-11-21T11:47:01.1415986Z  
+2025-11-21T11:47:01.1416379Z  /// Matriz 2x2 genérica
+2025-11-21T11:47:01.1416822Z  #[derive(Debug, Clone, Copy, PartialEq)]
+2025-11-21T11:47:01.1417424Z Diff in /home/runner/work/arxis/arxis/avila-linalg/src/matrix.rs:23:
+2025-11-21T11:47:01.1417966Z      where
+2025-11-21T11:47:01.1418316Z          T: Zero + One,
+2025-11-21T11:47:01.1418682Z      {
+2025-11-21T11:47:01.1419036Z -        Self::from_rows([
+2025-11-21T11:47:01.1419471Z -            [T::one(), T::zero()],
+2025-11-21T11:47:01.1419915Z -            [T::zero(), T::one()],
+2025-11-21T11:47:01.1420328Z -        ])
+2025-11-21T11:47:01.1420797Z +        Self::from_rows([[T::one(), T::zero()], [T::zero(), T::one()]])
+2025-11-21T11:47:01.1421306Z      }
+2025-11-21T11:47:01.1421626Z  
+2025-11-21T11:47:01.1421954Z      /// Transposta
+2025-11-21T11:47:01.1422690Z Diff in /home/runner/work/arxis/arxis/avila-linalg/src/matrix.rs:72:
+2025-11-21T11:47:01.1423265Z      where
+2025-11-21T11:47:01.1423609Z          T: Zero,
+2025-11-21T11:47:01.1423954Z      {
+2025-11-21T11:47:01.1424315Z -        Self::from_rows([
+2025-11-21T11:47:01.1424729Z -            [T::zero(); 3],
+2025-11-21T11:47:01.1425164Z -            [T::zero(); 3],
+2025-11-21T11:47:01.1425586Z -            [T::zero(); 3],
+2025-11-21T11:47:01.1425981Z -        ])
+2025-11-21T11:47:01.1426458Z +        Self::from_rows([[T::zero(); 3], [T::zero(); 3], [T::zero(); 3]])
+2025-11-21T11:47:01.1426970Z      }
+2025-11-21T11:47:01.1427291Z  
+2025-11-21T11:47:01.1427651Z      /// Acesso aos dados internos
+2025-11-21T11:47:01.1428239Z Diff in /home/runner/work/arxis/arxis/avila-linalg/src/matrix.rs:133:
+2025-11-21T11:47:01.1428960Z          let c22 = self.data[0][0] * self.data[1][1] - self.data[0][1] * self.data[1][0];
+2025-11-21T11:47:01.1429517Z  
+2025-11-21T11:47:01.1429924Z          // Adjunta (transposta da matriz de cofatores)
+2025-11-21T11:47:01.1430428Z -        let adj = Self::from_rows([
+2025-11-21T11:47:01.1430880Z -            [c00, c10, c20],
+2025-11-21T11:47:01.1431302Z -            [c01, c11, c21],
+2025-11-21T11:47:01.1431731Z -            [c02, c12, c22],
+2025-11-21T11:47:01.1432273Z -        ]);
+2025-11-21T11:47:01.1432841Z +        let adj = Self::from_rows([[c00, c10, c20], [c01, c11, c21], [c02, c12, c22]]);
+2025-11-21T11:47:01.1433394Z  
+2025-11-21T11:47:01.1433754Z          // Inversa = adjunta / det
+2025-11-21T11:47:01.1434224Z          let inv_det = T::one() / det;
+2025-11-21T11:47:01.1434818Z Diff in /home/runner/work/arxis/arxis/avila-linalg/src/matrix.rs:144:
+2025-11-21T11:47:01.1435393Z          Some(Self::from_rows([
+2025-11-21T11:47:01.1435956Z -            [adj.data[0][0] * inv_det, adj.data[0][1] * inv_det, adj.data[0][2] * inv_det],
+2025-11-21T11:47:01.1436818Z -            [adj.data[1][0] * inv_det, adj.data[1][1] * inv_det, adj.data[1][2] * inv_det],
+2025-11-21T11:47:01.1437536Z -            [adj.data[2][0] * inv_det, adj.data[2][1] * inv_det, adj.data[2][2] * inv_det],
+2025-11-21T11:47:01.1438087Z +            [
+2025-11-21T11:47:01.1438478Z +                adj.data[0][0] * inv_det,
+2025-11-21T11:47:01.1438954Z +                adj.data[0][1] * inv_det,
+2025-11-21T11:47:01.1439415Z +                adj.data[0][2] * inv_det,
+2025-11-21T11:47:01.1440002Z +            ],
+2025-11-21T11:47:01.1440351Z +            [
+2025-11-21T11:47:01.1440743Z +                adj.data[1][0] * inv_det,
+2025-11-21T11:47:01.1441217Z +                adj.data[1][1] * inv_det,
+2025-11-21T11:47:01.1441678Z +                adj.data[1][2] * inv_det,
+2025-11-21T11:47:01.1442224Z +            ],
+2025-11-21T11:47:01.1442577Z +            [
+2025-11-21T11:47:01.1442963Z +                adj.data[2][0] * inv_det,
+2025-11-21T11:47:01.1443430Z +                adj.data[2][1] * inv_det,
+2025-11-21T11:47:01.1443891Z +                adj.data[2][2] * inv_det,
+2025-11-21T11:47:01.1444315Z +            ],
+2025-11-21T11:47:01.1444667Z          ]))
+2025-11-21T11:47:01.1445000Z      }
+2025-11-21T11:47:01.1445317Z  }
+2025-11-21T11:47:01.1445816Z Diff in /home/runner/work/arxis/arxis/avila-linalg/src/matrix.rs:179:
+2025-11-21T11:47:01.1446360Z      where
+2025-11-21T11:47:01.1446706Z          T: Zero,
+2025-11-21T11:47:01.1447051Z      {
+2025-11-21T11:47:01.1447442Z -        Self { data: [[T::zero(); 4]; 4] }
+2025-11-21T11:47:01.1447874Z +        Self {
+2025-11-21T11:47:01.1448262Z +            data: [[T::zero(); 4]; 4],
+2025-11-21T11:47:01.1448681Z +        }
+2025-11-21T11:47:01.1449012Z      }
+2025-11-21T11:47:01.1449331Z  
+2025-11-21T11:47:01.1449700Z      /// Acesso aos dados internos
+2025-11-21T11:47:01.1450282Z Diff in /home/runner/work/arxis/arxis/avila-linalg/src/matrix.rs:325:
+2025-11-21T11:47:01.1450821Z  
+2025-11-21T11:47:01.1451152Z      #[test]
+2025-11-21T11:47:01.1451529Z      fn test_matrix3x3_det() {
+2025-11-21T11:47:01.1451983Z -        let m = Matrix3x3::from_rows([
+2025-11-21T11:47:01.1452636Z -            [1.0, 2.0, 3.0],
+2025-11-21T11:47:01.1453058Z -            [0.0, 1.0, 4.0],
+2025-11-21T11:47:01.1453474Z -            [5.0, 6.0, 0.0],
+2025-11-21T11:47:01.1453870Z -        ]);
+2025-11-21T11:47:01.1454393Z +        let m = Matrix3x3::from_rows([[1.0, 2.0, 3.0], [0.0, 1.0, 4.0], [5.0, 6.0, 0.0]]);
+2025-11-21T11:47:01.1454986Z          let det = m.det();
+2025-11-21T11:47:01.1455410Z          assert_eq!(det, 1.0);
+2025-11-21T11:47:01.1455829Z      }
+2025-11-21T11:47:01.1456322Z Diff in /home/runner/work/arxis/arxis/avila-linalg/src/matrix.rs:336:
+2025-11-21T11:47:01.1456853Z  
+2025-11-21T11:47:01.1457173Z      #[test]
+2025-11-21T11:47:01.1457559Z      fn test_matrix_vector_mul() {
+2025-11-21T11:47:01.1458027Z -        let m = Matrix3x3::from_rows([
+2025-11-21T11:47:01.1458472Z -            [1.0, 0.0, 0.0],
+2025-11-21T11:47:01.1458893Z -            [0.0, 1.0, 0.0],
+2025-11-21T11:47:01.1459303Z -            [0.0, 0.0, 1.0],
+2025-11-21T11:47:01.1459703Z -        ]);
+2025-11-21T11:47:01.1460233Z +        let m = Matrix3x3::from_rows([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]);
+2025-11-21T11:47:01.1460843Z          let v = Vector3::new(1.0, 2.0, 3.0);
+2025-11-21T11:47:01.1461308Z          let result = m * v;
+2025-11-21T11:47:01.1461729Z          assert_eq!(result, v);
+2025-11-21T11:47:01.1462538Z Diff in /home/runner/work/arxis/arxis/avila-linalg/src/transform.rs:8:
+2025-11-21T11:47:01.1463141Z  //! - Matrizes de view/camera
+2025-11-21T11:47:01.1463650Z  //! - Interpolação (lerp, slerp)
+2025-11-21T11:47:01.1464069Z  
+2025-11-21T11:47:01.1464454Z +use crate::matrix::{Matrix3x3, Matrix4x4};
+2025-11-21T11:47:01.1464938Z +use crate::vector::{Vector3, Vector4};
+2025-11-21T11:47:01.1465396Z  use num_traits::Float;
+2025-11-21T11:47:01.1465779Z  use std::ops::Mul;
+2025-11-21T11:47:01.1466190Z -use crate::vector::{Vector3, Vector4};
+2025-11-21T11:47:01.1466871Z -use crate::matrix::{Matrix3x3, Matrix4x4};
+2025-11-21T11:47:01.1467308Z  
+2025-11-21T11:47:01.1467753Z  /// Quaternion para rotações (evita gimbal lock)
+2025-11-21T11:47:01.1468211Z  ///
+2025-11-21T11:47:01.1468713Z Diff in /home/runner/work/arxis/arxis/avila-linalg/src/transform.rs:114:
+2025-11-21T11:47:01.1469312Z          let wz = self.w * self.z;
+2025-11-21T11:47:01.1469719Z  
+2025-11-21T11:47:01.1470072Z          Matrix4x4::from_rows([
+2025-11-21T11:47:01.1470614Z -            [T::one() - two * (yy + zz), two * (xy - wz), two * (xz + wy), T::zero()],
+2025-11-21T11:47:01.1471386Z -            [two * (xy + wz), T::one() - two * (xx + zz), two * (yz - wx), T::zero()],
+2025-11-21T11:47:01.1472038Z -            [two * (xz - wy), two * (yz + wx), T::one() - two * (xx + yy), T::zero()],
+2025-11-21T11:47:01.1472776Z +            [
+2025-11-21T11:47:01.1473184Z +                T::one() - two * (yy + zz),
+2025-11-21T11:47:01.1473834Z +                two * (xy - wz),
+2025-11-21T11:47:01.1474413Z +                two * (xz + wy),
+2025-11-21T11:47:01.1474906Z +                T::zero(),
+2025-11-21T11:47:01.1475432Z +            ],
+2025-11-21T11:47:01.1475865Z +            [
+2025-11-21T11:47:01.1476373Z +                two * (xy + wz),
+2025-11-21T11:47:01.1476880Z +                T::one() - two * (xx + zz),
+2025-11-21T11:47:01.1477509Z +                two * (yz - wx),
+2025-11-21T11:47:01.1478002Z +                T::zero(),
+2025-11-21T11:47:01.1478472Z +            ],
+2025-11-21T11:47:01.1478957Z +            [
+2025-11-21T11:47:01.1488219Z +                two * (xz - wy),
+2025-11-21T11:47:01.1488737Z +                two * (yz + wx),
+2025-11-21T11:47:01.1489242Z +                T::one() - two * (xx + yy),
+2025-11-21T11:47:01.1489705Z +                T::zero(),
+2025-11-21T11:47:01.1490100Z +            ],
+2025-11-21T11:47:01.1490541Z              [T::zero(), T::zero(), T::zero(), T::one()],
+2025-11-21T11:47:01.1490999Z          ])
+2025-11-21T11:47:01.1491342Z      }
+2025-11-21T11:47:01.1491857Z Diff in /home/runner/work/arxis/arxis/avila-linalg/src/transform.rs:175:
+2025-11-21T11:47:01.1492684Z  
+2025-11-21T11:47:01.1493063Z          // Garantir caminho mais curto
+2025-11-21T11:47:01.1493556Z          let (other, dot) = if dot < T::zero() {
+2025-11-21T11:47:01.1494040Z -            (Quaternion {
+2025-11-21T11:47:01.1494471Z -                w: -other.w,
+2025-11-21T11:47:01.1494901Z -                x: -other.x,
+2025-11-21T11:47:01.1495327Z -                y: -other.y,
+2025-11-21T11:47:01.1495751Z -                z: -other.z,
+2025-11-21T11:47:01.1496170Z -            }, -dot)
+2025-11-21T11:47:01.1496547Z +            (
+2025-11-21T11:47:01.1496923Z +                Quaternion {
+2025-11-21T11:47:01.1497353Z +                    w: -other.w,
+2025-11-21T11:47:01.1497794Z +                    x: -other.x,
+2025-11-21T11:47:01.1498223Z +                    y: -other.y,
+2025-11-21T11:47:01.1498658Z +                    z: -other.z,
+2025-11-21T11:47:01.1499064Z +                },
+2025-11-21T11:47:01.1499435Z +                -dot,
+2025-11-21T11:47:01.1499805Z +            )
+2025-11-21T11:47:01.1500151Z          } else {
+2025-11-21T11:47:01.1500526Z              (*other, dot)
+2025-11-21T11:47:01.1500900Z          };
+2025-11-21T11:47:01.1501414Z Diff in /home/runner/work/arxis/arxis/avila-linalg/src/transform.rs:298:
+2025-11-21T11:47:01.1502331Z      /// target: ponto que a câmera está olhando
+2025-11-21T11:47:01.1502911Z      /// up: vetor "para cima" (geralmente (0,1,0))
+2025-11-21T11:47:01.1503567Z      pub fn look_at(eye: Vector3<T>, target: Vector3<T>, up: Vector3<T>) -> Self {
+2025-11-21T11:47:01.1504204Z -        let f = (target - eye).normalize();  // forward
+2025-11-21T11:47:01.1504752Z -        let r = f.cross(&up).normalize();    // right
+2025-11-21T11:47:01.1505301Z -        let u = r.cross(&f);                 // up recalculado
+2025-11-21T11:47:01.1505846Z +        let f = (target - eye).normalize(); // forward
+2025-11-21T11:47:01.1506376Z +        let r = f.cross(&up).normalize(); // right
+2025-11-21T11:47:01.1507065Z +        let u = r.cross(&f); // up recalculado
+2025-11-21T11:47:01.1507517Z  
+2025-11-21T11:47:01.1507869Z          Self::from_rows([
+2025-11-21T11:47:01.1508311Z              [r.x(), r.y(), r.z(), -r.dot(&eye)],
+2025-11-21T11:47:01.1508923Z Diff in /home/runner/work/arxis/arxis/avila-linalg/src/transform.rs:326:
+2025-11-21T11:47:01.1509513Z          Self::from_rows([
+2025-11-21T11:47:01.1509990Z              [f / aspect, T::zero(), T::zero(), T::zero()],
+2025-11-21T11:47:01.1510618Z              [T::zero(), f, T::zero(), T::zero()],
+2025-11-21T11:47:01.1511211Z -            [T::zero(), T::zero(), -(far + near) / range, -(two * far * near) / range],
+2025-11-21T11:47:01.1511737Z +            [
+2025-11-21T11:47:01.1512275Z +                T::zero(),
+2025-11-21T11:47:01.1512755Z +                T::zero(),
+2025-11-21T11:47:01.1513182Z +                -(far + near) / range,
+2025-11-21T11:47:01.1513657Z +                -(two * far * near) / range,
+2025-11-21T11:47:01.1514097Z +            ],
+2025-11-21T11:47:01.1514531Z              [T::zero(), T::zero(), -T::one(), T::zero()],
+2025-11-21T11:47:01.1514978Z          ])
+2025-11-21T11:47:01.1515312Z      }
+2025-11-21T11:47:01.1515794Z Diff in /home/runner/work/arxis/arxis/avila-linalg/src/vector.rs:3:
+2025-11-21T11:47:01.1516403Z  //! Implementa vetores 2D, 3D, 4D e N-dimensionais
+2025-11-21T11:47:01.1516854Z  
+2025-11-21T11:47:01.1517232Z  use num_traits::{Float, Num, Zero};
+2025-11-21T11:47:01.1517684Z -use std::ops::{Add, Sub, Mul};
+2025-11-21T11:47:01.1518124Z +use std::ops::{Add, Mul, Sub};
+2025-11-21T11:47:01.1518768Z  
+2025-11-21T11:47:01.1519337Z  /// Vetor 2D genérico
+2025-11-21T11:47:01.1519793Z  #[derive(Debug, Clone, Copy, PartialEq)]
+2025-11-21T11:47:01.1520404Z Diff in /home/runner/work/arxis/arxis/avila-linalg/src/vector.rs:84:
+2025-11-21T11:47:01.1520950Z      ///
+2025-11-21T11:47:01.1521434Z      /// v · w = vₓwₓ + vᵧwᵧ + vᵤwᵤ
+2025-11-21T11:47:01.1521906Z      pub fn dot(&self, other: &Self) -> T {
+2025-11-21T11:47:01.1522661Z -        self.data[0] * other.data[0] +
+2025-11-21T11:47:01.1523174Z -        self.data[1] * other.data[1] +
+2025-11-21T11:47:01.1523631Z -        self.data[2] * other.data[2]
+2025-11-21T11:47:01.1524255Z +        self.data[0] * other.data[0] + self.data[1] * other.data[1] + self.data[2] * other.data[2]
+2025-11-21T11:47:01.1524836Z      }
+2025-11-21T11:47:01.1525156Z  
+2025-11-21T11:47:01.1525523Z      /// Produto vetorial (cross product)
+2025-11-21T11:47:01.1526117Z Diff in /home/runner/work/arxis/arxis/avila-linalg/src/vector.rs:125:
+2025-11-21T11:47:01.1526728Z      /// v̂ = v / ||v||
+2025-11-21T11:47:01.1527144Z      pub fn normalize(&self) -> Self {
+2025-11-21T11:47:01.1527606Z          let n = self.norm();
+2025-11-21T11:47:01.1527776Z -        Self::new(
+2025-11-21T11:47:01.1527950Z -            self.data[0] / n,
+2025-11-21T11:47:01.1528134Z -            self.data[1] / n,
+2025-11-21T11:47:01.1528308Z -            self.data[2] / n,
+2025-11-21T11:47:01.1528450Z -        )
+2025-11-21T11:47:01.1528743Z +        Self::new(self.data[0] / n, self.data[1] / n, self.data[2] / n)
+2025-11-21T11:47:01.1528884Z      }
+2025-11-21T11:47:01.1529024Z  
+2025-11-21T11:47:01.1529250Z      /// Projeção de self em other
+2025-11-21T11:47:01.1529565Z Diff in /home/runner/work/arxis/arxis/avila-linalg/src/vector.rs:158:
+2025-11-21T11:47:01.1529707Z      }
+2025-11-21T11:47:01.1529843Z  
+2025-11-21T11:47:01.1530010Z      /// Componente X
+2025-11-21T11:47:01.1530206Z -    pub fn x(&self) -> T { self.data[0] }
+2025-11-21T11:47:01.1530387Z +    pub fn x(&self) -> T {
+2025-11-21T11:47:01.1530542Z +        self.data[0]
+2025-11-21T11:47:01.1530689Z +    }
+2025-11-21T11:47:01.1530826Z  
+2025-11-21T11:47:01.1530982Z      /// Componente Y
+2025-11-21T11:47:01.1531186Z -    pub fn y(&self) -> T { self.data[1] }
+2025-11-21T11:47:01.1531361Z +    pub fn y(&self) -> T {
+2025-11-21T11:47:01.1531515Z +        self.data[1]
+2025-11-21T11:47:01.1531655Z +    }
+2025-11-21T11:47:01.1531799Z  
+2025-11-21T11:47:01.1532422Z      /// Componente Z
+2025-11-21T11:47:01.1532642Z -    pub fn z(&self) -> T { self.data[2] }
+2025-11-21T11:47:01.1532827Z +    pub fn z(&self) -> T {
+2025-11-21T11:47:01.1532985Z +        self.data[2]
+2025-11-21T11:47:01.1533129Z +    }
+2025-11-21T11:47:01.1533268Z  
+2025-11-21T11:47:01.1533431Z      /// Componente W
+2025-11-21T11:47:01.1533627Z -    pub fn w(&self) -> T { self.data[3] }
+2025-11-21T11:47:01.1533799Z +    pub fn w(&self) -> T {
+2025-11-21T11:47:01.1533961Z +        self.data[3]
+2025-11-21T11:47:01.1534101Z +    }
+2025-11-21T11:47:01.1534374Z  
+2025-11-21T11:47:01.1534542Z      /// Produto escalar
+2025-11-21T11:47:01.1534754Z      pub fn dot(&self, other: &Self) -> T {
+2025-11-21T11:47:01.1535077Z Diff in /home/runner/work/arxis/arxis/avila-linalg/src/vector.rs:174:
+2025-11-21T11:47:01.1535268Z -        self.data[0] * other.data[0] +
+2025-11-21T11:47:01.1535459Z -        self.data[1] * other.data[1] +
+2025-11-21T11:47:01.1535641Z -        self.data[2] * other.data[2] +
+2025-11-21T11:47:01.1535831Z -        self.data[3] * other.data[3]
+2025-11-21T11:47:01.1536016Z +        self.data[0] * other.data[0]
+2025-11-21T11:47:01.1536215Z +            + self.data[1] * other.data[1]
+2025-11-21T11:47:01.1536406Z +            + self.data[2] * other.data[2]
+2025-11-21T11:47:01.1536591Z +            + self.data[3] * other.data[3]
+2025-11-21T11:47:01.1536741Z      }
+2025-11-21T11:47:01.1536879Z  }
+2025-11-21T11:47:01.1537017Z  
+2025-11-21T11:47:01.1537345Z Diff in /home/runner/work/arxis/arxis/avila-math/src/geometry/aabb.rs:1:
+2025-11-21T11:47:01.1537688Z  /// Axis-Aligned Bounding Box for collision detection and spatial queries
+2025-11-21T11:47:01.1537831Z -
+2025-11-21T11:47:01.1538020Z  use super::vector::Vector3;
+2025-11-21T11:47:01.1538166Z  
+2025-11-21T11:47:01.1538357Z  /// Axis-Aligned Bounding Box (AABB)
+2025-11-21T11:47:01.1538686Z Diff in /home/runner/work/arxis/arxis/avila-math/src/geometry/aabb.rs:77:
+2025-11-21T11:47:01.1538874Z      /// Check if AABB contains a point
+2025-11-21T11:47:01.1539029Z      #[inline]
+2025-11-21T11:47:01.1539286Z      pub fn contains_point(&self, point: Vector3) -> bool {
+2025-11-21T11:47:01.1539531Z -        point.x >= self.min.x && point.x <= self.max.x &&
+2025-11-21T11:47:01.1539776Z -        point.y >= self.min.y && point.y <= self.max.y &&
+2025-11-21T11:47:01.1540006Z -        point.z >= self.min.z && point.z <= self.max.z
+2025-11-21T11:47:01.1540186Z +        point.x >= self.min.x
+2025-11-21T11:47:01.1540377Z +            && point.x <= self.max.x
+2025-11-21T11:47:01.1540563Z +            && point.y >= self.min.y
+2025-11-21T11:47:01.1540750Z +            && point.y <= self.max.y
+2025-11-21T11:47:01.1540934Z +            && point.z >= self.min.z
+2025-11-21T11:47:01.1541122Z +            && point.z <= self.max.z
+2025-11-21T11:47:01.1541264Z      }
+2025-11-21T11:47:01.1541405Z  
+2025-11-21T11:47:01.1541599Z      /// Check if two AABBs intersect
+2025-11-21T11:47:01.1541936Z Diff in /home/runner/work/arxis/arxis/avila-math/src/geometry/aabb.rs:86:
+2025-11-21T11:47:01.1542091Z      #[inline]
+2025-11-21T11:47:01.1542451Z      pub fn intersects(&self, other: &AABB) -> bool {
+2025-11-21T11:47:01.1542723Z -        self.min.x <= other.max.x && self.max.x >= other.min.x &&
+2025-11-21T11:47:01.1542985Z -        self.min.y <= other.max.y && self.max.y >= other.min.y &&
+2025-11-21T11:47:01.1543225Z -        self.min.z <= other.max.z && self.max.z >= other.min.z
+2025-11-21T11:47:01.1543416Z +        self.min.x <= other.max.x
+2025-11-21T11:47:01.1543603Z +            && self.max.x >= other.min.x
+2025-11-21T11:47:01.1543794Z +            && self.min.y <= other.max.y
+2025-11-21T11:47:01.1543976Z +            && self.max.y >= other.min.y
+2025-11-21T11:47:01.1544166Z +            && self.min.z <= other.max.z
+2025-11-21T11:47:01.1544348Z +            && self.max.z >= other.min.z
+2025-11-21T11:47:01.1544489Z      }
+2025-11-21T11:47:01.1544633Z  
+2025-11-21T11:47:01.1544868Z      /// Check if this AABB completely contains another
+2025-11-21T11:47:01.1545196Z Diff in /home/runner/work/arxis/arxis/avila-math/src/geometry/aabb.rs:94:
+2025-11-21T11:47:01.1545475Z      #[inline]
+2025-11-21T11:47:01.1545695Z      pub fn contains(&self, other: &AABB) -> bool {
+2025-11-21T11:47:01.1545953Z -        self.min.x <= other.min.x && self.max.x >= other.max.x &&
+2025-11-21T11:47:01.1546219Z -        self.min.y <= other.min.y && self.max.y >= other.max.y &&
+2025-11-21T11:47:01.1546466Z -        self.min.z <= other.min.z && self.max.z >= other.max.z
+2025-11-21T11:47:01.1546650Z +        self.min.x <= other.min.x
+2025-11-21T11:47:01.1546937Z +            && self.max.x >= other.max.x
+2025-11-21T11:47:01.1547123Z +            && self.min.y <= other.min.y
+2025-11-21T11:47:01.1547307Z +            && self.max.y >= other.max.y
+2025-11-21T11:47:01.1547494Z +            && self.min.z <= other.min.z
+2025-11-21T11:47:01.1547680Z +            && self.max.z >= other.max.z
+2025-11-21T11:47:01.1547828Z      }
+2025-11-21T11:47:01.1547967Z  
+2025-11-21T11:47:01.1548274Z      /// Get intersection of two AABBs (returns None if they don't intersect)
+2025-11-21T11:47:01.1548609Z Diff in /home/runner/work/arxis/arxis/avila-math/src/geometry/aabb.rs:188:
+2025-11-21T11:47:01.1548756Z      #[test]
+2025-11-21T11:47:01.1548947Z      fn test_aabb_intersection() {
+2025-11-21T11:47:01.1549293Z          let aabb1 = AABB::from_center_size(Vector3::zero(), Vector3::new(2.0, 2.0, 2.0));
+2025-11-21T11:47:01.1549662Z -        let aabb2 = AABB::from_center_size(Vector3::new(1.0, 0.0, 0.0), Vector3::new(2.0, 2.0, 2.0));
+2025-11-21T11:47:01.1549818Z +        let aabb2 =
+2025-11-21T11:47:01.1550161Z +            AABB::from_center_size(Vector3::new(1.0, 0.0, 0.0), Vector3::new(2.0, 2.0, 2.0));
+2025-11-21T11:47:01.1550366Z          assert!(aabb1.intersects(&aabb2));
+2025-11-21T11:47:01.1550506Z  
+2025-11-21T11:47:01.1550876Z -        let aabb3 = AABB::from_center_size(Vector3::new(5.0, 0.0, 0.0), Vector3::new(2.0, 2.0, 2.0));
+2025-11-21T11:47:01.1551036Z +        let aabb3 =
+2025-11-21T11:47:01.1551375Z +            AABB::from_center_size(Vector3::new(5.0, 0.0, 0.0), Vector3::new(2.0, 2.0, 2.0));
+2025-11-21T11:47:01.1551578Z          assert!(!aabb1.intersects(&aabb3));
+2025-11-21T11:47:01.1551725Z      }
+2025-11-21T11:47:01.1551864Z  
+2025-11-21T11:47:01.1552385Z Diff in /home/runner/work/arxis/arxis/avila-math/src/geometry/mod.rs:2:
+2025-11-21T11:47:01.1552540Z  ///
+2025-11-21T11:47:01.1552973Z  /// Este módulo contém todas as estruturas e operações relacionadas à geometria,
+2025-11-21T11:47:01.1553425Z  /// incluindo quaternions 3D, quaternions duplos, rotações SO(4) e geometria euclidiana 4D.
+2025-11-21T11:47:01.1553578Z -
+2025-11-21T11:47:01.1553738Z  pub mod aabb;
+2025-11-21T11:47:01.1553907Z  pub mod dual_quaternion;
+2025-11-21T11:47:01.1554067Z  pub mod geometry4d;
+2025-11-21T11:47:01.1554390Z Diff in /home/runner/work/arxis/arxis/avila-math/src/geometry/mod.rs:12:
+2025-11-21T11:47:01.1554538Z  
+2025-11-21T11:47:01.1554704Z  pub use aabb::AABB;
+2025-11-21T11:47:01.1554940Z  pub use dual_quaternion::{DualQuat, SO4Rotation};
+2025-11-21T11:47:01.1555426Z -pub use geometry4d::{Cell24, Matrix4x4, Point4D, Projection4Dto3D, RigidBody4D, Simplex4D, Tesseract, Vector4D};
+2025-11-21T11:47:01.1555605Z +pub use geometry4d::{
+2025-11-21T11:47:01.1556011Z +    Cell24, Matrix4x4, Point4D, Projection4Dto3D, RigidBody4D, Simplex4D, Tesseract, Vector4D,
+2025-11-21T11:47:01.1556159Z +};
+2025-11-21T11:47:01.1556341Z  pub use matrix::Matrix4;
+2025-11-21T11:47:01.1556530Z  pub use quaternion3d::Quat3D;
+2025-11-21T11:47:01.1556750Z  pub use vector::{Vector2, Vector3, Vector4};
+2025-11-21T11:47:01.1557114Z Diff in /home/runner/work/arxis/arxis/avila-math/src/tensor/tensor.rs:1:
+2025-11-21T11:47:01.1557263Z -
+2025-11-21T11:47:01.1557514Z  /// Tensor de ordem N com dados armazenados linearmente
+2025-11-21T11:47:01.1557712Z  #[derive(Debug, Clone, PartialEq)]
+2025-11-21T11:47:01.1557902Z  pub struct Tensor<const N: usize> {
+2025-11-21T11:47:01.1562824Z Diff in /home/runner/work/arxis/arxis/avila-ml/benches/autograd_benchmark.rs:1:
+2025-11-21T11:47:01.1563197Z -use criterion::{black_box, criterion_group, criterion_main, Criterion};
+2025-11-21T11:47:01.1563588Z  use avila_ml::tensor::{Tensor, TensorLike};
+2025-11-21T11:47:01.1563911Z +use criterion::{black_box, criterion_group, criterion_main, Criterion};
+2025-11-21T11:47:01.1564050Z  
+2025-11-21T11:47:01.1564278Z  fn bench_tensor_creation(c: &mut Criterion) {
+2025-11-21T11:47:01.1564500Z      c.bench_function("tensor_zeros_100x100", |b| {
+2025-11-21T11:47:01.1570792Z Diff in /home/runner/work/arxis/arxis/avila-ml/benches/nn_benchmark.rs:1:
+2025-11-21T11:47:01.1571302Z -use criterion::{black_box, criterion_group, criterion_main, Criterion};
+2025-11-21T11:47:01.1571504Z -use avila_ml::nn::{Module, Linear};
+2025-11-21T11:47:01.1571702Z  use avila_ml::nn::activation::ReLU;
+2025-11-21T11:47:01.1571901Z +use avila_ml::nn::{Linear, Module};
+2025-11-21T11:47:01.1572085Z  use avila_ml::tensor::Tensor;
+2025-11-21T11:47:01.1572645Z +use criterion::{black_box, criterion_group, criterion_main, Criterion};
+2025-11-21T11:47:01.1572790Z  
+2025-11-21T11:47:01.1573012Z  fn bench_linear_layer(c: &mut Criterion) {
+2025-11-21T11:47:01.1573221Z      let layer = Linear::<f32>::new(784, 128);
+2025-11-21T11:47:01.1579231Z Diff in /home/runner/work/arxis/arxis/avila-ml/examples/conv4d_astrophysics.rs:1:
+2025-11-21T11:47:01.1579605Z  //! 4D Convolution example for astrophysical data (e.g., LISA gravitational waves)
+2025-11-21T11:47:01.1579753Z  
+2025-11-21T11:47:01.1579939Z +use avila_ml::nn::Conv4d;
+2025-11-21T11:47:01.1580126Z  use avila_ml::prelude::*;
+2025-11-21T11:47:01.1580310Z  use avila_ml::tensor::Tensor;
+2025-11-21T11:47:01.1580491Z -use avila_ml::nn::Conv4d;
+2025-11-21T11:47:01.1580630Z  
+2025-11-21T11:47:01.1580782Z  fn main() {
+2025-11-21T11:47:01.1581184Z      println!("🚀 Avila ML - 4D Convolution for Astrophysical Data\n");
+2025-11-21T11:47:01.1581595Z Diff in /home/runner/work/arxis/arxis/avila-ml/examples/conv4d_astrophysics.rs:12:
+2025-11-21T11:47:01.1581906Z      // This represents a 4D spacetime grid with gravitational wave signals
+2025-11-21T11:47:01.1582082Z      let batch_size = 1;
+2025-11-21T11:47:01.1582526Z      let in_channels = 3; // h+, hx, frequency
+2025-11-21T11:47:01.1582728Z -    let t_size = 100;    // time steps
+2025-11-21T11:47:01.1582910Z +    let t_size = 100; // time steps
+2025-11-21T11:47:01.1583124Z      let spatial_size = 32; // spatial resolution
+2025-11-21T11:47:01.1583270Z  
+2025-11-21T11:47:01.1583630Z -    println!("📊 Data shape: [batch={}, channels={}, t={}, x={}, y={}, z={}]",
+2025-11-21T11:47:01.1583964Z -             batch_size, in_channels, t_size, spatial_size, spatial_size, spatial_size);
+2025-11-21T11:47:01.1584127Z +    println!(
+2025-11-21T11:47:01.1584442Z +        "📊 Data shape: [batch={}, channels={}, t={}, x={}, y={}, z={}]",
+2025-11-21T11:47:01.1584761Z +        batch_size, in_channels, t_size, spatial_size, spatial_size, spatial_size
+2025-11-21T11:47:01.1584907Z +    );
+2025-11-21T11:47:01.1585053Z  
+2025-11-21T11:47:01.1585270Z      // Generate synthetic gravitational wave data
+2025-11-21T11:47:01.1585466Z      let input = Tensor::<f32>::randn(&[
+2025-11-21T11:47:01.1585848Z Diff in /home/runner/work/arxis/arxis/avila-ml/examples/conv4d_astrophysics.rs:29:
+2025-11-21T11:47:01.1585991Z      ]);
+2025-11-21T11:47:01.1586132Z  
+2025-11-21T11:47:01.1586456Z      println!("✅ Input tensor size: {:?} elements", input.size());
+2025-11-21T11:47:01.1586773Z -    println!("   Memory: ~{:.2} MB\n", input.size() as f64 * 4.0 / 1024.0 / 1024.0);
+2025-11-21T11:47:01.1586924Z +    println!(
+2025-11-21T11:47:01.1587103Z +        "   Memory: ~{:.2} MB\n",
+2025-11-21T11:47:01.1587325Z +        input.size() as f64 * 4.0 / 1024.0 / 1024.0
+2025-11-21T11:47:01.1587467Z +    );
+2025-11-21T11:47:01.1587607Z  
+2025-11-21T11:47:01.1587796Z      // Create 4D convolutional layer
+2025-11-21T11:47:01.1588054Z      // This is unique to avila-ml for scientific computing!
+2025-11-21T11:47:01.1588419Z Diff in /home/runner/work/arxis/arxis/avila-ml/examples/conv4d_astrophysics.rs:36:
+2025-11-21T11:47:01.1588604Z      let conv4d = Conv4d::new(
+2025-11-21T11:47:01.1588928Z          in_channels,
+2025-11-21T11:47:01.1589103Z -        16, // output channels
+2025-11-21T11:47:01.1589283Z +        16,           // output channels
+2025-11-21T11:47:01.1589483Z          (5, 3, 3, 3), // kernel size (t, x, y, z)
+2025-11-21T11:47:01.1589631Z      );
+2025-11-21T11:47:01.1589769Z  
+2025-11-21T11:47:01.1590143Z Diff in /home/runner/work/arxis/arxis/avila-ml/examples/conv4d_astrophysics.rs:43:
+2025-11-21T11:47:01.1590379Z      println!("  - Input channels: {}", in_channels);
+2025-11-21T11:47:01.1590687Z      println!("  - Output channels: 16");
+2025-11-21T11:47:01.1590896Z      println!("  - Kernel size: (5, 3, 3, 3)");
+2025-11-21T11:47:01.1591091Z -    println!("  - Parameters: ~{}",
+2025-11-21T11:47:01.1591299Z -             in_channels * 16 * 5 * 3 * 3 * 3 + 16);
+2025-11-21T11:47:01.1591588Z +    println!("  - Parameters: ~{}", in_channels * 16 * 5 * 3 * 3 * 3 + 16);
+2025-11-21T11:47:01.1591839Z      println!("\n🔬 This layer can detect:");
+2025-11-21T11:47:01.1592352Z      println!("  ✓ Temporal patterns in gravitational waves");
+2025-11-21T11:47:01.1592661Z      println!("  ✓ Spatial structures in 3D space");
+2025-11-21T11:47:01.1596715Z Diff in /home/runner/work/arxis/arxis/avila-ml/examples/mnist_training.rs:1:
+2025-11-21T11:47:01.1596948Z  //! MNIST training example (simplified)
+2025-11-21T11:47:01.1597096Z  
+2025-11-21T11:47:01.1597339Z +use avila_ml::data::{DataLoader, TensorDataset};
+2025-11-21T11:47:01.1597533Z  use avila_ml::prelude::*;
+2025-11-21T11:47:01.1597719Z  use avila_ml::tensor::Tensor;
+2025-11-21T11:47:01.1597957Z -use avila_ml::data::{TensorDataset, DataLoader};
+2025-11-21T11:47:01.1598284Z -use avila_ml::utils::{one_hot, accuracy, EarlyStopping, CosineAnnealingLR};
+2025-11-21T11:47:01.1598616Z +use avila_ml::utils::{accuracy, one_hot, CosineAnnealingLR, EarlyStopping};
+2025-11-21T11:47:01.1598782Z  use std::sync::Arc;
+2025-11-21T11:47:01.1598946Z  
+2025-11-21T11:47:01.1599102Z  fn main() {
+2025-11-21T11:47:01.1599449Z Diff in /home/runner/work/arxis/arxis/avila-ml/examples/mnist_training.rs:107:
+2025-11-21T11:47:01.1599657Z          let current_lr = scheduler.step();
+2025-11-21T11:47:01.1599806Z  
+2025-11-21T11:47:01.1599993Z          if (epoch + 1) % 5 == 0 {
+2025-11-21T11:47:01.1600251Z -            println!("Epoch [{:3}/{}] - Loss: {:.6} - LR: {:.6}",
+2025-11-21T11:47:01.1600487Z -                     epoch + 1, epochs, avg_loss, current_lr);
+2025-11-21T11:47:01.1600654Z +            println!(
+2025-11-21T11:47:01.1600883Z +                "Epoch [{:3}/{}] - Loss: {:.6} - LR: {:.6}",
+2025-11-21T11:47:01.1601056Z +                epoch + 1,
+2025-11-21T11:47:01.1601223Z +                epochs,
+2025-11-21T11:47:01.1601388Z +                avg_loss,
+2025-11-21T11:47:01.1601553Z +                current_lr
+2025-11-21T11:47:01.1601701Z +            );
+2025-11-21T11:47:01.1601852Z          }
+2025-11-21T11:47:01.1601993Z  
+2025-11-21T11:47:01.1602394Z          // Early stopping check
+2025-11-21T11:47:01.1706409Z Diff in /home/runner/work/arxis/arxis/avila-ml/src/loss.rs:60:
+2025-11-21T11:47:01.1706691Z          let one = T::one();
+2025-11-21T11:47:01.1706841Z  
+2025-11-21T11:47:01.1707057Z          // Clamp predictions to avoid log(0)
+2025-11-21T11:47:01.1707307Z -        let pred_clamped = predictions.data.mapv(|x| {
+2025-11-21T11:47:01.1707505Z -            x.max(eps).min(one - eps)
+2025-11-21T11:47:01.1707652Z -        });
+2025-11-21T11:47:01.1707991Z +        let pred_clamped = predictions.data.mapv(|x| x.max(eps).min(one - eps));
+2025-11-21T11:47:01.1708131Z  
+2025-11-21T11:47:01.1708370Z          let log_pred = pred_clamped.mapv(|x| x.ln());
+2025-11-21T11:47:01.1708664Z          let log_one_minus_pred = pred_clamped.mapv(|x| (one - x).ln());
+2025-11-21T11:47:01.1708977Z Diff in /home/runner/work/arxis/arxis/avila-ml/src/loss.rs:71:
+2025-11-21T11:47:01.1709275Z          let term2 = targets.data.mapv(|x| one - x) * &log_one_minus_pred;
+2025-11-21T11:47:01.1709422Z  
+2025-11-21T11:47:01.1709622Z          let loss_data = -(term1 + term2);
+2025-11-21T11:47:01.1710181Z -        let loss_sum = Tensor::new(ndarray::ArrayD::from_elem(ndarray::IxDyn(&[]), loss_data.sum()));
+2025-11-21T11:47:01.1710444Z +        let loss_sum = Tensor::new(ndarray::ArrayD::from_elem(
+2025-11-21T11:47:01.1710634Z +            ndarray::IxDyn(&[]),
+2025-11-21T11:47:01.1710809Z +            loss_data.sum(),
+2025-11-21T11:47:01.1710959Z +        ));
+2025-11-21T11:47:01.1711103Z  
+2025-11-21T11:47:01.1711260Z          // Return mean
+2025-11-21T11:47:01.1711508Z          let size = T::from(predictions.size()).unwrap();
+2025-11-21T11:47:01.1711900Z Diff in /home/runner/work/arxis/arxis/avila-ml/src/loss.rs:102:
+2025-11-21T11:47:01.1712042Z      }
+2025-11-21T11:47:01.1712434Z  }
+2025-11-21T11:47:01.1712591Z  
+2025-11-21T11:47:01.1713058Z -impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Loss<T> for CrossEntropyLoss {
+2025-11-21T11:47:01.1713420Z +impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Loss<T>
+2025-11-21T11:47:01.1713603Z +    for CrossEntropyLoss
+2025-11-21T11:47:01.1713750Z +{
+2025-11-21T11:47:01.1714091Z      fn forward(&self, predictions: &Tensor<T>, targets: &Tensor<T>) -> Tensor<T> {
+2025-11-21T11:47:01.1714369Z          // CrossEntropy = -sum(targets * log(softmax(predictions)))
+2025-11-21T11:47:01.1714596Z          let eps = T::from(self.epsilon).unwrap();
+2025-11-21T11:47:01.1714881Z Diff in /home/runner/work/arxis/arxis/avila-ml/src/loss.rs:109:
+2025-11-21T11:47:01.1715022Z  
+2025-11-21T11:47:01.1715222Z          // Apply softmax to predictions
+2025-11-21T11:47:01.1715582Z -        let max_val = predictions.data.iter().cloned().fold(T::neg_infinity(), T::max);
+2025-11-21T11:47:01.1715774Z +        let max_val = predictions
+2025-11-21T11:47:01.1715925Z +            .data
+2025-11-21T11:47:01.1716080Z +            .iter()
+2025-11-21T11:47:01.1716237Z +            .cloned()
+2025-11-21T11:47:01.1716443Z +            .fold(T::neg_infinity(), T::max);
+2025-11-21T11:47:01.1716741Z          let exp_data = predictions.data.mapv(|x| (x - max_val).exp());
+2025-11-21T11:47:01.1716929Z          let sum = exp_data.sum();
+2025-11-21T11:47:01.1717175Z          let softmax = exp_data.mapv(|x| (x / sum).max(eps));
+2025-11-21T11:47:01.1717457Z Diff in /home/runner/work/arxis/arxis/avila-ml/src/loss.rs:135:
+2025-11-21T11:47:01.1717599Z      }
+2025-11-21T11:47:01.1717742Z  }
+2025-11-21T11:47:01.1717887Z  
+2025-11-21T11:47:01.1718320Z -impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Loss<T> for HuberLoss<T> {
+2025-11-21T11:47:01.1718665Z +impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Loss<T>
+2025-11-21T11:47:01.1718829Z +    for HuberLoss<T>
+2025-11-21T11:47:01.1718971Z +{
+2025-11-21T11:47:01.1719299Z      fn forward(&self, predictions: &Tensor<T>, targets: &Tensor<T>) -> Tensor<T> {
+2025-11-21T11:47:01.1719500Z          // Huber(a) = 0.5 * a^2 if |a| <= delta
+2025-11-21T11:47:01.1719727Z          //          = delta * (|a| - 0.5 * delta) otherwise
+2025-11-21T11:47:01.1720008Z Diff in /home/runner/work/arxis/arxis/avila-ml/src/loss.rs:190:
+2025-11-21T11:47:01.1720155Z      }
+2025-11-21T11:47:01.1720299Z  }
+2025-11-21T11:47:01.1720443Z  
+2025-11-21T11:47:01.1720879Z -impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Loss<T> for SmoothL1Loss<T> {
+2025-11-21T11:47:01.1721223Z +impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Loss<T>
+2025-11-21T11:47:01.1721395Z +    for SmoothL1Loss<T>
+2025-11-21T11:47:01.1721538Z +{
+2025-11-21T11:47:01.1721868Z      fn forward(&self, predictions: &Tensor<T>, targets: &Tensor<T>) -> Tensor<T> {
+2025-11-21T11:47:01.1722076Z          let diff = predictions.sub(targets);
+2025-11-21T11:47:01.1722379Z          let half = T::from(0.5).unwrap();
+2025-11-21T11:47:01.1808108Z Diff in /home/runner/work/arxis/arxis/avila-ml/src/utils.rs:5:
+2025-11-21T11:47:01.1808382Z  use num_traits::{Float, NumAssign};
+2025-11-21T11:47:01.1808561Z  
+2025-11-21T11:47:01.1808888Z  /// Initialize weights with Xavier/Glorot initialization
+2025-11-21T11:47:01.1809728Z -pub fn xavier_uniform<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static>(shape: &[usize]) -> Tensor<T> {
+2025-11-21T11:47:01.1810234Z +pub fn xavier_uniform<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static>(
+2025-11-21T11:47:01.1810436Z +    shape: &[usize],
+2025-11-21T11:47:01.1810627Z +) -> Tensor<T> {
+2025-11-21T11:47:01.1810993Z      let fan_in = if shape.len() > 1 { shape[1] } else { shape[0] };
+2025-11-21T11:47:01.1811225Z      let fan_out = shape[0];
+2025-11-21T11:47:01.1811728Z      let limit = T::from((6.0 / (fan_in + fan_out) as f64).sqrt()).unwrap();
+2025-11-21T11:47:01.1812087Z Diff in /home/runner/work/arxis/arxis/avila-ml/src/utils.rs:25:
+2025-11-21T11:47:01.1812552Z  }
+2025-11-21T11:47:01.1812735Z  
+2025-11-21T11:47:01.1813048Z  /// Initialize weights with Kaiming/He initialization
+2025-11-21T11:47:01.1813695Z -pub fn kaiming_uniform<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static>(shape: &[usize]) -> Tensor<T> {
+2025-11-21T11:47:01.1814197Z +pub fn kaiming_uniform<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static>(
+2025-11-21T11:47:01.1814405Z +    shape: &[usize],
+2025-11-21T11:47:01.1814597Z +) -> Tensor<T> {
+2025-11-21T11:47:01.1814944Z      let fan_in = if shape.len() > 1 { shape[1] } else { shape[0] };
+2025-11-21T11:47:01.1815277Z      let limit = T::from((3.0 / fan_in as f64).sqrt()).unwrap();
+2025-11-21T11:47:01.1815451Z  
+2025-11-21T11:47:01.1822754Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/benches/time_series_bench.rs:1:
+2025-11-21T11:47:01.1823173Z +use avila_telemetry::{AnomalyDetector, ExponentialSmoothing, Forecaster, TimeSeries};
+2025-11-21T11:47:01.1823492Z  use criterion::{black_box, criterion_group, criterion_main, Criterion};
+2025-11-21T11:47:01.1823887Z -use avila_telemetry::{TimeSeries, AnomalyDetector, Forecaster, ExponentialSmoothing};
+2025-11-21T11:47:01.1824052Z  
+2025-11-21T11:47:01.1824396Z  fn bench_moving_average(c: &mut Criterion) {
+2025-11-21T11:47:01.1824675Z      let data: Vec<f64> = (0..1000).map(|x| x as f64).collect();
+2025-11-21T11:47:01.1825067Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/benches/time_series_bench.rs:20:
+2025-11-21T11:47:01.1825208Z  }
+2025-11-21T11:47:01.1825350Z  
+2025-11-21T11:47:01.1825575Z  fn bench_anomaly_detection(c: &mut Criterion) {
+2025-11-21T11:47:01.1825909Z -    let data: Vec<f64> = (0..1000).map(|x| x as f64 + (x as f64 / 10.0).sin() * 5.0).collect();
+2025-11-21T11:47:01.1826088Z +    let data: Vec<f64> = (0..1000)
+2025-11-21T11:47:01.1826327Z +        .map(|x| x as f64 + (x as f64 / 10.0).sin() * 5.0)
+2025-11-21T11:47:01.1826482Z +        .collect();
+2025-11-21T11:47:01.1826681Z      let ts = TimeSeries::new(data);
+2025-11-21T11:47:01.1826909Z      let detector = AnomalyDetector::default();
+2025-11-21T11:47:01.1827050Z  
+2025-11-21T11:47:01.1827995Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/examples/anomaly_detection.rs:1:
+2025-11-21T11:47:01.1828297Z -use avila_telemetry::{TimeSeries, AnomalyDetector};
+2025-11-21T11:47:01.1828554Z +use avila_telemetry::{AnomalyDetector, TimeSeries};
+2025-11-21T11:47:01.1828695Z  
+2025-11-21T11:47:01.1828938Z  fn main() -> Result<(), Box<dyn std::error::Error>> {
+2025-11-21T11:47:01.1829180Z      println!("=== Anomaly Detection Example ===\n");
+2025-11-21T11:47:01.1829569Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/examples/anomaly_detection.rs:5:
+2025-11-21T11:47:01.1829711Z  
+2025-11-21T11:47:01.1829946Z      // Create a time series with an obvious anomaly
+2025-11-21T11:47:01.1830112Z      let data = vec![
+2025-11-21T11:47:01.1830310Z -        10.0, 12.0, 11.0, 13.0, 12.0, 11.0, 10.0,
+2025-11-21T11:47:01.1830485Z -        100.0,  // <- Anomaly
+2025-11-21T11:47:01.1830728Z +        10.0, 12.0, 11.0, 13.0, 12.0, 11.0, 10.0, 100.0, // <- Anomaly
+2025-11-21T11:47:01.1830910Z          11.0, 12.0, 10.0, 13.0, 11.0, 12.0,
+2025-11-21T11:47:01.1831054Z      ];
+2025-11-21T11:47:01.1831202Z  
+2025-11-21T11:47:01.1838138Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/examples/decomposition.rs:1:
+2025-11-21T11:47:01.1838637Z -use avila_telemetry::{TimeSeries, Decomposer, DecompositionType};
+2025-11-21T11:47:01.1838943Z +use avila_telemetry::{Decomposer, DecompositionType, TimeSeries};
+2025-11-21T11:47:01.1839088Z  
+2025-11-21T11:47:01.1839338Z  fn main() -> Result<(), Box<dyn std::error::Error>> {
+2025-11-21T11:47:01.1839602Z      println!("=== Time Series Decomposition Example ===\n");
+2025-11-21T11:47:01.1843813Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/examples/feature_engineering.rs:1:
+2025-11-21T11:47:01.1844239Z -use avila_telemetry::{TimeSeries, FeatureExtractor};
+2025-11-21T11:47:01.1844492Z +use avila_telemetry::{FeatureExtractor, TimeSeries};
+2025-11-21T11:47:01.1844647Z  
+2025-11-21T11:47:01.1844891Z  fn main() -> Result<(), Box<dyn std::error::Error>> {
+2025-11-21T11:47:01.1845125Z      println!("=== Feature Engineering Example ===\n");
+2025-11-21T11:47:01.1845529Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/examples/feature_engineering.rs:5:
+2025-11-21T11:47:01.1845678Z  
+2025-11-21T11:47:01.1845856Z      // Create a time series
+2025-11-21T11:47:01.1846188Z -    let data: Vec<f64> = (1..=20).map(|x| x as f64 + (x as f64 / 5.0).sin() * 3.0).collect();
+2025-11-21T11:47:01.1846390Z +    let data: Vec<f64> = (1..=20)
+2025-11-21T11:47:01.1846619Z +        .map(|x| x as f64 + (x as f64 / 5.0).sin() * 3.0)
+2025-11-21T11:47:01.1846775Z +        .collect();
+2025-11-21T11:47:01.1846989Z      let ts = TimeSeries::new(data.clone());
+2025-11-21T11:47:01.1847128Z  
+2025-11-21T11:47:01.1847419Z      println!("Original data (first 10): {:?}\n", &ts.values[..10]);
+2025-11-21T11:47:01.1849680Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/examples/forecasting.rs:1:
+2025-11-21T11:47:01.1850124Z -use avila_telemetry::{TimeSeries, Forecaster, ExponentialSmoothing, MovingAverageForecaster};
+2025-11-21T11:47:01.1850543Z +use avila_telemetry::{ExponentialSmoothing, Forecaster, MovingAverageForecaster, TimeSeries};
+2025-11-21T11:47:01.1850692Z  
+2025-11-21T11:47:01.1850938Z  fn main() -> Result<(), Box<dyn std::error::Error>> {
+2025-11-21T11:47:01.1851153Z      println!("=== Forecasting Example ===\n");
+2025-11-21T11:47:01.1851516Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/examples/forecasting.rs:5:
+2025-11-21T11:47:01.1851660Z  
+2025-11-21T11:47:01.1851904Z      // Create historical data (simulating monthly sales)
+2025-11-21T11:47:01.1852086Z      let historical_data = vec![
+2025-11-21T11:47:01.1852522Z -        100.0, 120.0, 115.0, 130.0, 125.0, 140.0,
+2025-11-21T11:47:01.1852730Z -        135.0, 150.0, 145.0, 160.0, 155.0, 170.0,
+2025-11-21T11:47:01.1853022Z +        100.0, 120.0, 115.0, 130.0, 125.0, 140.0, 135.0, 150.0, 145.0, 160.0, 155.0, 170.0,
+2025-11-21T11:47:01.1853176Z      ];
+2025-11-21T11:47:01.1853321Z  
+2025-11-21T11:47:01.1853635Z      let ts = TimeSeries::new(historical_data).with_name("monthly_sales");
+2025-11-21T11:47:01.1865589Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/examples/nasa_gcp_observability.rs:1:
+2025-11-21T11:47:01.1865897Z  //! Example demonstrating NASA and Google Cloud best practices
+2025-11-21T11:47:01.1866037Z  
+2025-11-21T11:47:01.1866227Z  use avila_telemetry::{
+2025-11-21T11:47:01.1866529Z -    TimeSeries, AnomalyDetector, Forecaster, ExponentialSmoothing,
+2025-11-21T11:47:01.1866851Z -    DataQuality, NASAQualityControl, GoldenSignals, PerformanceTracker,
+2025-11-21T11:47:01.1867157Z -    ServiceLevelObjective, ErrorBudget, StructuredLog, LogSeverity,
+2025-11-21T11:47:01.1867326Z -    AlertLevel, Alert,
+2025-11-21T11:47:01.1867754Z +    Alert, AlertLevel, AnomalyDetector, DataQuality, ErrorBudget, ExponentialSmoothing, Forecaster,
+2025-11-21T11:47:01.1868163Z +    GoldenSignals, LogSeverity, NASAQualityControl, PerformanceTracker, ServiceLevelObjective,
+2025-11-21T11:47:01.1868377Z +    StructuredLog, TimeSeries,
+2025-11-21T11:47:01.1868520Z  };
+2025-11-21T11:47:01.1868698Z  use std::time::Duration;
+2025-11-21T11:47:01.1868844Z  
+2025-11-21T11:47:01.1869253Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/examples/nasa_gcp_observability.rs:13:
+2025-11-21T11:47:01.1869549Z  
+2025-11-21T11:47:01.1869735Z      // Create telemetry data
+2025-11-21T11:47:01.1869892Z      let data = vec![
+2025-11-21T11:47:01.1870126Z -        100.0, 102.0, 101.0, 103.0, 102.0, 104.0, 103.0, 105.0,
+2025-11-21T11:47:01.1870356Z -        104.0, 106.0, 105.0, 107.0, 106.0, 108.0, 107.0, 109.0,
+2025-11-21T11:47:01.1870659Z +        100.0, 102.0, 101.0, 103.0, 102.0, 104.0, 103.0, 105.0, 104.0, 106.0, 105.0, 107.0, 106.0,
+2025-11-21T11:47:01.1870953Z +        108.0, 107.0, 109.0,
+2025-11-21T11:47:01.1871097Z      ];
+2025-11-21T11:47:01.1871433Z      let ts = TimeSeries::new(data.clone()).with_name("spacecraft_temperature");
+2025-11-21T11:47:01.1871576Z  
+2025-11-21T11:47:01.1871992Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/examples/nasa_gcp_observability.rs:52:
+2025-11-21T11:47:01.1872467Z      println!("--- Google SRE Service Level Objective ---");
+2025-11-21T11:47:01.1872680Z      let slo = ServiceLevelObjective {
+2025-11-21T11:47:01.1872933Z          name: "Telemetry Processing Latency".to_string(),
+2025-11-21T11:47:01.1873110Z -        target: 0.999, // 99.9%
+2025-11-21T11:47:01.1873343Z +        target: 0.999,                               // 99.9%
+2025-11-21T11:47:01.1873597Z          window: Duration::from_secs(30 * 24 * 3600), // 30 days
+2025-11-21T11:47:01.1873878Z -        error_budget: ErrorBudget::new(0.001), // 0.1% error budget
+2025-11-21T11:47:01.1874170Z +        error_budget: ErrorBudget::new(0.001),       // 0.1% error budget
+2025-11-21T11:47:01.1874318Z      };
+2025-11-21T11:47:01.1874555Z      println!("SLO Target: {:.1}%", slo.target * 100.0);
+2025-11-21T11:47:01.1874842Z      println!("Error Budget: {:.3}%", slo.error_budget.total * 100.0);
+2025-11-21T11:47:01.1875263Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/examples/nasa_gcp_observability.rs:144:
+2025-11-21T11:47:01.1875526Z      for (i, pred) in forecast.predictions.iter().enumerate() {
+2025-11-21T11:47:01.1875775Z          let lower = forecast.lower_bound.as_ref().unwrap()[i];
+2025-11-21T11:47:01.1876038Z          let upper = forecast.upper_bound.as_ref().unwrap()[i];
+2025-11-21T11:47:01.1876278Z -        println!("  Step {}: {:.2} (95% CI: [{:.2}, {:.2}])",
+2025-11-21T11:47:01.1876485Z -                 i + 1, pred, lower, upper);
+2025-11-21T11:47:01.1876643Z +        println!(
+2025-11-21T11:47:01.1876865Z +            "  Step {}: {:.2} (95% CI: [{:.2}, {:.2}])",
+2025-11-21T11:47:01.1877015Z +            i + 1,
+2025-11-21T11:47:01.1877167Z +            pred,
+2025-11-21T11:47:01.1877326Z +            lower,
+2025-11-21T11:47:01.1877474Z +            upper
+2025-11-21T11:47:01.1877615Z +        );
+2025-11-21T11:47:01.1877762Z      }
+2025-11-21T11:47:01.1877914Z      println!();
+2025-11-21T11:47:01.1878056Z  
+2025-11-21T11:47:01.1878470Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/examples/nasa_gcp_observability.rs:152:
+2025-11-21T11:47:01.1878663Z      // 8. Mission Report Summary
+2025-11-21T11:47:01.1878879Z      println!("=== Mission Report Summary ===");
+2025-11-21T11:47:01.1879301Z -    println!("✅ Data Quality: {:.1}% (NASA Standard)", dqa.overall_score * 100.0);
+2025-11-21T11:47:01.1879462Z +    println!(
+2025-11-21T11:47:01.1879704Z +        "✅ Data Quality: {:.1}% (NASA Standard)",
+2025-11-21T11:47:01.1879893Z +        dqa.overall_score * 100.0
+2025-11-21T11:47:01.1880040Z +    );
+2025-11-21T11:47:01.1880312Z      println!("✅ Control Limits: All within 6-Sigma");
+2025-11-21T11:47:01.1880619Z      println!("✅ SLO Target: {:.1}% achieved", slo.target * 100.0);
+2025-11-21T11:47:01.1880895Z      println!("✅ Latency P99: {:?}", latency.p99);
+2025-11-21T11:47:01.1920223Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/src/decomposition.rs:46:
+2025-11-21T11:47:01.1920483Z      /// Decompose a time series
+2025-11-21T11:47:01.1920894Z      pub fn decompose(&self, ts: &TimeSeries) -> Result<DecompositionResult> {
+2025-11-21T11:47:01.1921138Z          if ts.len() < 2 * self.period {
+2025-11-21T11:47:01.1921462Z -            return Err(TelemetryError::InsufficientData(
+2025-11-21T11:47:01.1922410Z -                format!("Need at least {} data points for period {}", 2 * self.period, self.period),
+2025-11-21T11:47:01.1922643Z -            ));
+2025-11-21T11:47:01.1922986Z +            return Err(TelemetryError::InsufficientData(format!(
+2025-11-21T11:47:01.1923285Z +                "Need at least {} data points for period {}",
+2025-11-21T11:47:01.1923512Z +                2 * self.period,
+2025-11-21T11:47:01.1923738Z +                self.period
+2025-11-21T11:47:01.1924085Z +            )));
+2025-11-21T11:47:01.1924338Z          }
+2025-11-21T11:47:01.1924521Z  
+2025-11-21T11:47:01.1924893Z          // Calculate trend using centered moving average
+2025-11-21T11:47:01.1925442Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/src/decomposition.rs:96:
+2025-11-21T11:47:01.1925631Z  
+2025-11-21T11:47:01.1925861Z      /// Remove trend from series
+2025-11-21T11:47:01.1926221Z      fn detrend(&self, values: &[f64], trend: &[f64]) -> Result<Vec<f64>> {
+2025-11-21T11:47:01.1926490Z -        let detrended: Vec<f64> = values.iter()
+2025-11-21T11:47:01.1926731Z +        let detrended: Vec<f64> = values
+2025-11-21T11:47:01.1926921Z +            .iter()
+2025-11-21T11:47:01.1927125Z              .zip(trend.iter())
+2025-11-21T11:47:01.1927302Z              .map(|(&v, &t)| {
+2025-11-21T11:47:01.1927475Z                  if t.is_nan() {
+2025-11-21T11:47:01.1927833Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/src/decomposition.rs:163:
+2025-11-21T11:47:01.1927980Z      }
+2025-11-21T11:47:01.1928125Z  
+2025-11-21T11:47:01.1928318Z      /// Calculate residual component
+2025-11-21T11:47:01.1928713Z -    fn calculate_residual(&self, values: &[f64], trend: &[f64], seasonal: &[f64]) -> Result<Vec<f64>> {
+2025-11-21T11:47:01.1928928Z -        let residual: Vec<f64> = values.iter()
+2025-11-21T11:47:01.1929104Z +    fn calculate_residual(
+2025-11-21T11:47:01.1929253Z +        &self,
+2025-11-21T11:47:01.1929413Z +        values: &[f64],
+2025-11-21T11:47:01.1929581Z +        trend: &[f64],
+2025-11-21T11:47:01.1929749Z +        seasonal: &[f64],
+2025-11-21T11:47:01.1929923Z +    ) -> Result<Vec<f64>> {
+2025-11-21T11:47:01.1930149Z +        let residual: Vec<f64> = values
+2025-11-21T11:47:01.1930410Z +            .iter()
+2025-11-21T11:47:01.1930711Z              .zip(trend.iter())
+2025-11-21T11:47:01.1931018Z              .zip(seasonal.iter())
+2025-11-21T11:47:01.1931210Z              .map(|((&v, &t), &s)| {
+2025-11-21T11:47:01.1931616Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/src/features.rs:59:
+2025-11-21T11:47:01.1931913Z              let mean = window_data.iter().sum::<f64>() / window as f64;
+2025-11-21T11:47:01.1932096Z              means.push(mean);
+2025-11-21T11:47:01.1932353Z  
+2025-11-21T11:47:01.1932561Z -            let variance = window_data.iter()
+2025-11-21T11:47:01.1932767Z -                .map(|x| (x - mean).powi(2))
+2025-11-21T11:47:01.1932972Z -                .sum::<f64>() / window as f64;
+2025-11-21T11:47:01.1933144Z +            let variance =
+2025-11-21T11:47:01.1933488Z +                window_data.iter().map(|x| (x - mean).powi(2)).sum::<f64>() / window as f64;
+2025-11-21T11:47:01.1933681Z              stds.push(variance.sqrt());
+2025-11-21T11:47:01.1933821Z  
+2025-11-21T11:47:01.1934020Z -            mins.push(*window_data.iter()
+2025-11-21T11:47:01.1934248Z -                .min_by(|a, b| a.partial_cmp(b).unwrap())
+2025-11-21T11:47:01.1934426Z -                .unwrap());
+2025-11-21T11:47:01.1934584Z +            mins.push(
+2025-11-21T11:47:01.1934757Z +                *window_data
+2025-11-21T11:47:01.1934927Z +                    .iter()
+2025-11-21T11:47:01.1935161Z +                    .min_by(|a, b| a.partial_cmp(b).unwrap())
+2025-11-21T11:47:01.1935335Z +                    .unwrap(),
+2025-11-21T11:47:01.1935479Z +            );
+2025-11-21T11:47:01.1935621Z  
+2025-11-21T11:47:01.1935820Z -            maxs.push(*window_data.iter()
+2025-11-21T11:47:01.1936054Z -                .max_by(|a, b| a.partial_cmp(b).unwrap())
+2025-11-21T11:47:01.1936374Z -                .unwrap());
+2025-11-21T11:47:01.1936536Z +            maxs.push(
+2025-11-21T11:47:01.1936715Z +                *window_data
+2025-11-21T11:47:01.1936884Z +                    .iter()
+2025-11-21T11:47:01.1937112Z +                    .max_by(|a, b| a.partial_cmp(b).unwrap())
+2025-11-21T11:47:01.1937287Z +                    .unwrap(),
+2025-11-21T11:47:01.1937438Z +            );
+2025-11-21T11:47:01.1937584Z          }
+2025-11-21T11:47:01.1937724Z  
+2025-11-21T11:47:01.1937899Z          Ok(RollingStats {
+2025-11-21T11:47:01.1945397Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/src/forecasting.rs:24:
+2025-11-21T11:47:01.1945789Z      fn forecast(&self, steps: usize) -> Result<ForecastResult>;
+2025-11-21T11:47:01.1945936Z  
+2025-11-21T11:47:01.1946146Z      /// Forecast with confidence intervals
+2025-11-21T11:47:01.1946572Z -    fn forecast_with_confidence(&self, steps: usize, confidence_level: f64) -> Result<ForecastResult>;
+2025-11-21T11:47:01.1946768Z +    fn forecast_with_confidence(
+2025-11-21T11:47:01.1946929Z +        &self,
+2025-11-21T11:47:01.1947089Z +        steps: usize,
+2025-11-21T11:47:01.1947265Z +        confidence_level: f64,
+2025-11-21T11:47:01.1947452Z +    ) -> Result<ForecastResult>;
+2025-11-21T11:47:01.1947601Z  }
+2025-11-21T11:47:01.1947745Z  
+2025-11-21T11:47:01.1948002Z  /// Simple exponential smoothing forecaster
+2025-11-21T11:47:01.1948352Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/src/forecasting.rs:88:
+2025-11-21T11:47:01.1948501Z          })
+2025-11-21T11:47:01.1948647Z      }
+2025-11-21T11:47:01.1948788Z  
+2025-11-21T11:47:01.1949210Z -    fn forecast_with_confidence(&self, steps: usize, confidence_level: f64) -> Result<ForecastResult> {
+2025-11-21T11:47:01.1949396Z +    fn forecast_with_confidence(
+2025-11-21T11:47:01.1949548Z +        &self,
+2025-11-21T11:47:01.1949707Z +        steps: usize,
+2025-11-21T11:47:01.1949889Z +        confidence_level: f64,
+2025-11-21T11:47:01.1950082Z +    ) -> Result<ForecastResult> {
+2025-11-21T11:47:01.1950311Z          let base_forecast = self.forecast(steps)?;
+2025-11-21T11:47:01.1950527Z          let last_value = self.last_value.unwrap();
+2025-11-21T11:47:01.1950670Z  
+2025-11-21T11:47:01.1951013Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/src/forecasting.rs:95:
+2025-11-21T11:47:01.1951271Z          // Simple confidence interval based on confidence level
+2025-11-21T11:47:01.1951533Z          let margin = last_value * (1.0 - confidence_level) * 0.5;
+2025-11-21T11:47:01.1951681Z  
+2025-11-21T11:47:01.1951932Z -        let lower_bound = base_forecast.predictions.iter()
+2025-11-21T11:47:01.1952299Z +        let lower_bound = base_forecast
+2025-11-21T11:47:01.1952507Z +            .predictions
+2025-11-21T11:47:01.1952669Z +            .iter()
+2025-11-21T11:47:01.1952856Z              .map(|&v| v - margin)
+2025-11-21T11:47:01.1953019Z              .collect();
+2025-11-21T11:47:01.1953166Z  
+2025-11-21T11:47:01.1953513Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/src/forecasting.rs:102:
+2025-11-21T11:47:01.1953774Z -        let upper_bound = base_forecast.predictions.iter()
+2025-11-21T11:47:01.1953964Z +        let upper_bound = base_forecast
+2025-11-21T11:47:01.1954134Z +            .predictions
+2025-11-21T11:47:01.1954298Z +            .iter()
+2025-11-21T11:47:01.1954475Z              .map(|&v| v + margin)
+2025-11-21T11:47:01.1954638Z              .collect();
+2025-11-21T11:47:01.1954779Z  
+2025-11-21T11:47:01.1955123Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/src/forecasting.rs:137:
+2025-11-21T11:47:01.1955355Z  impl Forecaster for MovingAverageForecaster {
+2025-11-21T11:47:01.1955587Z      fn fit(&mut self, ts: &TimeSeries) -> Result<()> {
+2025-11-21T11:47:01.1955777Z          if ts.len() < self.window {
+2025-11-21T11:47:01.1956034Z -            return Err(TelemetryError::InsufficientData(
+2025-11-21T11:47:01.1956297Z -                format!("Need at least {} data points", self.window),
+2025-11-21T11:47:01.1956450Z -            ));
+2025-11-21T11:47:01.1956720Z +            return Err(TelemetryError::InsufficientData(format!(
+2025-11-21T11:47:01.1957076Z +                "Need at least {} data points",
+2025-11-21T11:47:01.1957251Z +                self.window
+2025-11-21T11:47:01.1957405Z +            )));
+2025-11-21T11:47:01.1957548Z          }
+2025-11-21T11:47:01.1957688Z  
+2025-11-21T11:47:01.1957904Z          self.history = Some(ts.values.clone());
+2025-11-21T11:47:01.1958242Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/src/forecasting.rs:147:
+2025-11-21T11:47:01.1958383Z      }
+2025-11-21T11:47:01.1958630Z  
+2025-11-21T11:47:01.1958912Z      fn forecast(&self, steps: usize) -> Result<ForecastResult> {
+2025-11-21T11:47:01.1959260Z -        let history = self.history.as_ref()
+2025-11-21T11:47:01.1959659Z -            .ok_or_else(|| TelemetryError::ModelError(
+2025-11-21T11:47:01.1960074Z -                "Model must be fitted before forecasting".to_string()
+2025-11-21T11:47:01.1960233Z -            ))?;
+2025-11-21T11:47:01.1960478Z +        let history = self.history.as_ref().ok_or_else(|| {
+2025-11-21T11:47:01.1960860Z +            TelemetryError::ModelError("Model must be fitted before forecasting".to_string())
+2025-11-21T11:47:01.1961007Z +        })?;
+2025-11-21T11:47:01.1961148Z  
+2025-11-21T11:47:01.1961350Z          // Use last 'window' values to predict
+2025-11-21T11:47:01.1961618Z          let last_values = &history[history.len() - self.window..];
+2025-11-21T11:47:01.1961955Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/src/forecasting.rs:166:
+2025-11-21T11:47:01.1962265Z          })
+2025-11-21T11:47:01.1962469Z      }
+2025-11-21T11:47:01.1962616Z  
+2025-11-21T11:47:01.1963035Z -    fn forecast_with_confidence(&self, steps: usize, confidence_level: f64) -> Result<ForecastResult> {
+2025-11-21T11:47:01.1963222Z +    fn forecast_with_confidence(
+2025-11-21T11:47:01.1963375Z +        &self,
+2025-11-21T11:47:01.1963532Z +        steps: usize,
+2025-11-21T11:47:01.1963707Z +        confidence_level: f64,
+2025-11-21T11:47:01.1963894Z +    ) -> Result<ForecastResult> {
+2025-11-21T11:47:01.1964113Z          let base_forecast = self.forecast(steps)?;
+2025-11-21T11:47:01.1964340Z          let history = self.history.as_ref().unwrap();
+2025-11-21T11:47:01.1964483Z  
+2025-11-21T11:47:01.1964828Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/src/forecasting.rs:173:
+2025-11-21T11:47:01.1965037Z          // Calculate std dev of recent values
+2025-11-21T11:47:01.1965303Z          let last_values = &history[history.len() - self.window..];
+2025-11-21T11:47:01.1965607Z          let mean: f64 = last_values.iter().sum::<f64>() / self.window as f64;
+2025-11-21T11:47:01.1965818Z -        let variance: f64 = last_values.iter()
+2025-11-21T11:47:01.1966009Z -            .map(|x| (x - mean).powi(2))
+2025-11-21T11:47:01.1966218Z -            .sum::<f64>() / self.window as f64;
+2025-11-21T11:47:01.1966395Z +        let variance: f64 =
+2025-11-21T11:47:01.1966737Z +            last_values.iter().map(|x| (x - mean).powi(2)).sum::<f64>() / self.window as f64;
+2025-11-21T11:47:01.1966928Z          let std_dev = variance.sqrt();
+2025-11-21T11:47:01.1967074Z  
+2025-11-21T11:47:01.1967277Z          // Use std dev for confidence intervals
+2025-11-21T11:47:01.1967620Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/src/forecasting.rs:182:
+2025-11-21T11:47:01.1967903Z -        let z_score = if confidence_level >= 0.95 { 1.96 } else { 1.645 };
+2025-11-21T11:47:01.1968121Z +        let z_score = if confidence_level >= 0.95 {
+2025-11-21T11:47:01.1968270Z +            1.96
+2025-11-21T11:47:01.1968418Z +        } else {
+2025-11-21T11:47:01.1968576Z +            1.645
+2025-11-21T11:47:01.1968723Z +        };
+2025-11-21T11:47:01.1968909Z          let margin = z_score * std_dev;
+2025-11-21T11:47:01.1969056Z  
+2025-11-21T11:47:01.1969309Z -        let lower_bound = base_forecast.predictions.iter()
+2025-11-21T11:47:01.1969500Z +        let lower_bound = base_forecast
+2025-11-21T11:47:01.1969665Z +            .predictions
+2025-11-21T11:47:01.1969818Z +            .iter()
+2025-11-21T11:47:01.1970147Z              .map(|&v| v - margin)
+2025-11-21T11:47:01.1970309Z              .collect();
+2025-11-21T11:47:01.1970453Z  
+2025-11-21T11:47:01.1970791Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/src/forecasting.rs:189:
+2025-11-21T11:47:01.1971042Z -        let upper_bound = base_forecast.predictions.iter()
+2025-11-21T11:47:01.1971233Z +        let upper_bound = base_forecast
+2025-11-21T11:47:01.1971403Z +            .predictions
+2025-11-21T11:47:01.1971556Z +            .iter()
+2025-11-21T11:47:01.1971732Z              .map(|&v| v + margin)
+2025-11-21T11:47:01.1972007Z              .collect();
+2025-11-21T11:47:01.1972254Z  
+2025-11-21T11:47:01.1972641Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/src/models/arima.rs:1:
+2025-11-21T11:47:01.1972902Z  //! ARIMA (AutoRegressive Integrated Moving Average) model
+2025-11-21T11:47:01.1973046Z  
+2025-11-21T11:47:01.1973292Z +use crate::forecasting::{ForecastResult, Forecaster};
+2025-11-21T11:47:01.1973522Z  use crate::{Result, TelemetryError, TimeSeries};
+2025-11-21T11:47:01.1973775Z -use crate::forecasting::{Forecaster, ForecastResult};
+2025-11-21T11:47:01.1973918Z  
+2025-11-21T11:47:01.1974099Z  /// ARIMA model parameters
+2025-11-21T11:47:01.1974263Z  #[derive(Debug, Clone)]
+2025-11-21T11:47:01.1974607Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/src/models/arima.rs:40:
+2025-11-21T11:47:01.1974795Z          let mut result = data.to_vec();
+2025-11-21T11:47:01.1974937Z  
+2025-11-21T11:47:01.1975122Z          for _ in 0..self.params.d {
+2025-11-21T11:47:01.1975310Z -            result = result.windows(2)
+2025-11-21T11:47:01.1975499Z -                .map(|w| w[1] - w[0])
+2025-11-21T11:47:01.1975667Z -                .collect();
+2025-11-21T11:47:01.1975937Z +            result = result.windows(2).map(|w| w[1] - w[0]).collect();
+2025-11-21T11:47:01.1976081Z          }
+2025-11-21T11:47:01.1976225Z  
+2025-11-21T11:47:01.1976374Z          result
+2025-11-21T11:47:01.1976709Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/src/models/arima.rs:90:
+2025-11-21T11:47:01.1976946Z                  sum_x2 += data[j - lag] * data[j - lag];
+2025-11-21T11:47:01.1977096Z              }
+2025-11-21T11:47:01.1977235Z  
+2025-11-21T11:47:01.1977438Z -            self.ar_coeffs[i] = if sum_x2 != 0.0 {
+2025-11-21T11:47:01.1977624Z -                sum_xy / sum_x2
+2025-11-21T11:47:01.1977778Z -            } else {
+2025-11-21T11:47:01.1977928Z -                0.0
+2025-11-21T11:47:01.1978079Z -            };
+2025-11-21T11:47:01.1978370Z +            self.ar_coeffs[i] = if sum_x2 != 0.0 { sum_xy / sum_x2 } else { 0.0 };
+2025-11-21T11:47:01.1978520Z          }
+2025-11-21T11:47:01.1978662Z  
+2025-11-21T11:47:01.1978816Z          Ok(())
+2025-11-21T11:47:01.1979157Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/src/models/arima.rs:170:
+2025-11-21T11:47:01.1979303Z          })
+2025-11-21T11:47:01.1979450Z      }
+2025-11-21T11:47:01.1979590Z  
+2025-11-21T11:47:01.1980010Z -    fn forecast_with_confidence(&self, steps: usize, confidence_level: f64) -> Result<ForecastResult> {
+2025-11-21T11:47:01.1980206Z +    fn forecast_with_confidence(
+2025-11-21T11:47:01.1980360Z +        &self,
+2025-11-21T11:47:01.1980518Z +        steps: usize,
+2025-11-21T11:47:01.1980691Z +        confidence_level: f64,
+2025-11-21T11:47:01.1980887Z +    ) -> Result<ForecastResult> {
+2025-11-21T11:47:01.1981103Z          let base_forecast = self.forecast(steps)?;
+2025-11-21T11:47:01.1981239Z  
+2025-11-21T11:47:01.1981453Z          // Simple confidence interval calculation
+2025-11-21T11:47:01.1981797Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/src/models/arima.rs:177:
+2025-11-21T11:47:01.1982079Z          let std_dev = 1.0; // Simplified - should calculate from residuals
+2025-11-21T11:47:01.1982454Z -        let z_score = if confidence_level >= 0.95 { 1.96 } else { 1.645 };
+2025-11-21T11:47:01.1982674Z +        let z_score = if confidence_level >= 0.95 {
+2025-11-21T11:47:01.1982821Z +            1.96
+2025-11-21T11:47:01.1982970Z +        } else {
+2025-11-21T11:47:01.1983119Z +            1.645
+2025-11-21T11:47:01.1983379Z +        };
+2025-11-21T11:47:01.1983565Z          let margin = z_score * std_dev;
+2025-11-21T11:47:01.1983704Z  
+2025-11-21T11:47:01.1983959Z -        let lower_bound = base_forecast.predictions.iter()
+2025-11-21T11:47:01.1984143Z +        let lower_bound = base_forecast
+2025-11-21T11:47:01.1984310Z +            .predictions
+2025-11-21T11:47:01.1984463Z +            .iter()
+2025-11-21T11:47:01.1984645Z              .map(|&v| v - margin)
+2025-11-21T11:47:01.1984809Z              .collect();
+2025-11-21T11:47:01.1985055Z  
+2025-11-21T11:47:01.1985405Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/src/models/arima.rs:185:
+2025-11-21T11:47:01.1985656Z -        let upper_bound = base_forecast.predictions.iter()
+2025-11-21T11:47:01.1985844Z +        let upper_bound = base_forecast
+2025-11-21T11:47:01.1986009Z +            .predictions
+2025-11-21T11:47:01.1986154Z +            .iter()
+2025-11-21T11:47:01.1986332Z              .map(|&v| v + margin)
+2025-11-21T11:47:01.1986493Z              .collect();
+2025-11-21T11:47:01.1986633Z  
+2025-11-21T11:47:01.2000056Z Diff in /home/runner/work/arxis/arxis/avila-telemetry/tests/integration_test.rs:1:
+2025-11-21T11:47:01.2000280Z  //! Integration tests for avila-telemetry
+2025-11-21T11:47:01.2000456Z  
+2025-11-21T11:47:01.2000636Z  use avila_telemetry::{
+2025-11-21T11:47:01.2000938Z -    TimeSeries, AnomalyDetector, Forecaster, ExponentialSmoothing,
+2025-11-21T11:47:01.2001189Z -    FeatureExtractor, Decomposer, DecompositionType,
+2025-11-21T11:47:01.2001596Z +    AnomalyDetector, Decomposer, DecompositionType, ExponentialSmoothing, FeatureExtractor,
+2025-11-21T11:47:01.2001777Z +    Forecaster, TimeSeries,
+2025-11-21T11:47:01.2001919Z  };
+2025-11-21T11:47:01.2002062Z  
+2025-11-21T11:47:01.2002449Z  #[test]
+2025-11-21T11:47:01.2054477Z Diff in /home/runner/work/arxis/arxis/avx-cli/src/main.rs:135:
+2025-11-21T11:47:01.2054677Z      let mesh = &cfg.mesh;
+2025-11-21T11:47:01.2054821Z  
+2025-11-21T11:47:01.2054972Z      format!(
+2025-11-21T11:47:01.2055221Z -"# Generated by avx-cli - Avila Experience Fabric
+2025-11-21T11:47:01.2055475Z +        "# Generated by avx-cli - Avila Experience Fabric
+2025-11-21T11:47:01.2055712Z  # Stack: {stack} | Layer: {layer} | Cluster: {cluster}
+2025-11-21T11:47:01.2055853Z  ---
+2025-11-21T11:47:01.2056024Z  apiVersion: apps/v1
+2025-11-21T11:47:01.2145301Z Diff in /home/runner/work/arxis/arxis/avx-quantum-render/examples/basic_render.rs:2:
+2025-11-21T11:47:01.2145590Z  //!
+2025-11-21T11:47:01.2146074Z  //! Demonstra renderização usando path integral formulation
+2025-11-21T11:47:01.2146266Z  
+2025-11-21T11:47:01.2146659Z +use avx_quantum_render::scene::{Camera, Light, Material, Surface};
+2025-11-21T11:47:01.2147006Z  use avx_quantum_render::{QEDRenderer, RenderConfig, Scene};
+2025-11-21T11:47:01.2147384Z -use avx_quantum_render::scene::{Light, Surface, Material, Camera};
+2025-11-21T11:47:01.2147561Z  
+2025-11-21T11:47:01.2147958Z  fn main() {
+2025-11-21T11:47:01.2148572Z      println!("=== AVX Quantum Renderer - QED Path Integral Demo ===\n");
+2025-11-21T11:47:01.2149162Z Diff in /home/runner/work/arxis/arxis/avx-quantum-render/examples/basic_render.rs:90:
+2025-11-21T11:47:01.2149348Z  
+2025-11-21T11:47:01.2149631Z      // Configurar câmera
+2025-11-21T11:47:01.2149875Z      let camera = Camera::new(
+2025-11-21T11:47:01.2150162Z -        [0.0, 2.5, 8.0],   // Posição
+2025-11-21T11:47:01.2150402Z -        [0.0, 2.5, 0.0],   // Olhando para
+2025-11-21T11:47:01.2150699Z +        [0.0, 2.5, 8.0],             // Posição
+2025-11-21T11:47:01.2150972Z +        [0.0, 2.5, 0.0],             // Olhando para
+2025-11-21T11:47:01.2151230Z          std::f64::consts::FRAC_PI_3, // FOV
+2025-11-21T11:47:01.2151616Z -    ).with_resolution(80, 40); // Resolução baixa para ASCII
+2025-11-21T11:47:01.2151793Z +    )
+2025-11-21T11:47:01.2152437Z +    .with_resolution(80, 40); // Resolução baixa para ASCII
+2025-11-21T11:47:01.2152646Z  
+2025-11-21T11:47:01.2152876Z      scene.set_camera(camera);
+2025-11-21T11:47:01.2153056Z  
+2025-11-21T11:47:01.2153758Z Diff in /home/runner/work/arxis/arxis/avx-quantum-render/examples/basic_render.rs:149:
+2025-11-21T11:47:01.2154091Z  /// Demonstra cálculos quânticos individuais
+2025-11-21T11:47:01.2154337Z  fn demonstrate_quantum_calculations() {
+2025-11-21T11:47:01.2154758Z      use avx_quantum_render::amplitude::{ComplexAmplitude, PhaseAccumulator};
+2025-11-21T11:47:01.2155188Z -    use avx_quantum_render::feynman::{FeynmanVertex, compton_scattering_amplitude};
+2025-11-21T11:47:01.2155578Z -    use avx_quantum_render::photon::{PhotonPath, Vertex, InteractionType};
+2025-11-21T11:47:01.2156145Z +    use avx_quantum_render::feynman::{compton_scattering_amplitude, FeynmanVertex};
+2025-11-21T11:47:01.2156544Z +    use avx_quantum_render::photon::{InteractionType, PhotonPath, Vertex};
+2025-11-21T11:47:01.2156800Z      use avx_quantum_render::FINE_STRUCTURE;
+2025-11-21T11:47:01.2156980Z  
+2025-11-21T11:47:01.2157388Z      println!("\n\n🔬 === Demonstração de Cálculos Quânticos ===\n");
+2025-11-21T11:47:01.2157784Z Diff in /home/runner/work/arxis/arxis/avx-quantum-render/examples/basic_render.rs:160:
+2025-11-21T11:47:01.2158106Z      let amp1 = ComplexAmplitude::from_polar(2.0, std::f64::consts::PI / 4.0);
+2025-11-21T11:47:01.2158430Z      let amp2 = ComplexAmplitude::from_polar(1.5, std::f64::consts::PI / 3.0);
+2025-11-21T11:47:01.2158605Z      let sum = amp1 + amp2;
+2025-11-21T11:47:01.2158968Z -    println!("   |A₁| = {:.3}, φ₁ = {:.3}°", amp1.magnitude(), amp1.phase().to_degrees());
+2025-11-21T11:47:01.2159327Z -    println!("   |A₂| = {:.3}, φ₂ = {:.3}°", amp2.magnitude(), amp2.phase().to_degrees());
+2025-11-21T11:47:01.2159490Z +    println!(
+2025-11-21T11:47:01.2159704Z +        "   |A₁| = {:.3}, φ₁ = {:.3}°",
+2025-11-21T11:47:01.2159881Z +        amp1.magnitude(),
+2025-11-21T11:47:01.2160069Z +        amp1.phase().to_degrees()
+2025-11-21T11:47:01.2160211Z +    );
+2025-11-21T11:47:01.2160362Z +    println!(
+2025-11-21T11:47:01.2160577Z +        "   |A₂| = {:.3}, φ₂ = {:.3}°",
+2025-11-21T11:47:01.2160749Z +        amp2.magnitude(),
+2025-11-21T11:47:01.2160941Z +        amp2.phase().to_degrees()
+2025-11-21T11:47:01.2161082Z +    );
+2025-11-21T11:47:01.2161346Z      println!("   |A₁+A₂| = {:.3}", sum.magnitude());
+2025-11-21T11:47:01.2161647Z      println!("   P(A₁+A₂) = |A|² = {:.4}", sum.probability());
+2025-11-21T11:47:01.2161792Z  
+2025-11-21T11:47:01.2162289Z Diff in /home/runner/work/arxis/arxis/avx-quantum-render/examples/basic_render.rs:169:
+2025-11-21T11:47:01.2162561Z      println!("\n2. Acumulação de Fase Quântica:");
+2025-11-21T11:47:01.2162791Z      let mut phase = PhaseAccumulator::new();
+2025-11-21T11:47:01.2162990Z      let wavelength = 550e-9; // Verde (550nm)
+2025-11-21T11:47:01.2163236Z -    let distance = 1e-6;     // 1 micrômetro
+2025-11-21T11:47:01.2163460Z +    let distance = 1e-6; // 1 micrômetro
+2025-11-21T11:47:01.2163695Z      phase.add_propagation(distance, wavelength, 1.0);
+2025-11-21T11:47:01.2163952Z      println!("   λ = {:.0} nm", wavelength * 1e9);
+2025-11-21T11:47:01.2164198Z      println!("   d = {:.1} μm", distance * 1e6);
+2025-11-21T11:47:01.2164588Z Diff in /home/runner/work/arxis/arxis/avx-quantum-render/examples/basic_render.rs:176:
+2025-11-21T11:47:01.2165038Z -    println!("   Fase acumulada: {:.2} rad = {:.1}°", phase.total_phase, phase.total_phase.to_degrees());
+2025-11-21T11:47:01.2165192Z +    println!(
+2025-11-21T11:47:01.2165430Z +        "   Fase acumulada: {:.2} rad = {:.1}°",
+2025-11-21T11:47:01.2165609Z +        phase.total_phase,
+2025-11-21T11:47:01.2165799Z +        phase.total_phase.to_degrees()
+2025-11-21T11:47:01.2165948Z +    );
+2025-11-21T11:47:01.2166135Z      let amp = phase.to_amplitude();
+2025-11-21T11:47:01.2166577Z -    println!("   Amplitude resultante: {:.3}∠{:.1}°", amp.magnitude(), amp.phase().to_degrees());
+2025-11-21T11:47:01.2166731Z +    println!(
+2025-11-21T11:47:01.2166977Z +        "   Amplitude resultante: {:.3}∠{:.1}°",
+2025-11-21T11:47:01.2167147Z +        amp.magnitude(),
+2025-11-21T11:47:01.2167344Z +        amp.phase().to_degrees()
+2025-11-21T11:47:01.2167617Z +    );
+2025-11-21T11:47:01.2167752Z  
+2025-11-21T11:47:01.2167965Z      // 3. Vértice de Feynman
+2025-11-21T11:47:01.2168218Z      println!("\n3. Vértice de Feynman (QED):");
+2025-11-21T11:47:01.2168598Z Diff in /home/runner/work/arxis/arxis/avx-quantum-render/examples/basic_render.rs:182:
+2025-11-21T11:47:01.2168943Z      let mut vertex = FeynmanVertex::new([0.0, 0.0, 0.0], InteractionType::Emission);
+2025-11-21T11:47:01.2169130Z      vertex.compute_qed_amplitude();
+2025-11-21T11:47:01.2169454Z -    println!("   Constante de estrutura fina: α = {:.6} ≈ 1/{:.0}",
+2025-11-21T11:47:01.2169775Z -             FINE_STRUCTURE, 1.0/FINE_STRUCTURE);
+2025-11-21T11:47:01.2170064Z -    println!("   Coupling constant: e = √(4πα) = {:.6}",
+2025-11-21T11:47:01.2170315Z -             (4.0 * std::f64::consts::PI * FINE_STRUCTURE).sqrt());
+2025-11-21T11:47:01.2170697Z -    println!("   Amplitude do vértice: |V| = {:.6}", vertex.amplitude.magnitude());
+2025-11-21T11:47:01.2170858Z +    println!(
+2025-11-21T11:47:01.2171149Z +        "   Constante de estrutura fina: α = {:.6} ≈ 1/{:.0}",
+2025-11-21T11:47:01.2171312Z +        FINE_STRUCTURE,
+2025-11-21T11:47:01.2171490Z +        1.0 / FINE_STRUCTURE
+2025-11-21T11:47:01.2171634Z +    );
+2025-11-21T11:47:01.2171781Z +    println!(
+2025-11-21T11:47:01.2172034Z +        "   Coupling constant: e = √(4πα) = {:.6}",
+2025-11-21T11:47:01.2172390Z +        (4.0 * std::f64::consts::PI * FINE_STRUCTURE).sqrt()
+2025-11-21T11:47:01.2172537Z +    );
+2025-11-21T11:47:01.2172686Z +    println!(
+2025-11-21T11:47:01.2172941Z +        "   Amplitude do vértice: |V| = {:.6}",
+2025-11-21T11:47:01.2173136Z +        vertex.amplitude.magnitude()
+2025-11-21T11:47:01.2173278Z +    );
+2025-11-21T11:47:01.2173416Z  
+2025-11-21T11:47:01.2173597Z      // 4. Espalhamento Compton
+2025-11-21T11:47:01.2173903Z      println!("\n4. Espalhamento Compton (γ + e⁻ → γ + e⁻):");
+2025-11-21T11:47:01.2174277Z Diff in /home/runner/work/arxis/arxis/avx-quantum-render/examples/basic_render.rs:192:
+2025-11-21T11:47:01.2174475Z -    let photon_in = 1e-15;  // 1 keV
+2025-11-21T11:47:01.2174656Z +    let photon_in = 1e-15; // 1 keV
+2025-11-21T11:47:01.2174829Z      let photon_out = 0.9e-15;
+2025-11-21T11:47:01.2175055Z      let angle = std::f64::consts::FRAC_PI_4; // 45°
+2025-11-21T11:47:01.2175394Z      let compton_amp = compton_scattering_amplitude(photon_in, photon_out, angle);
+2025-11-21T11:47:01.2175766Z Diff in /home/runner/work/arxis/arxis/avx-quantum-render/examples/basic_render.rs:197:
+2025-11-21T11:47:01.2176032Z      println!("   E_out = {:.1} keV", photon_out * 1e18 / 1.602176634);
+2025-11-21T11:47:01.2176290Z      println!("   θ = {:.0}°", angle.to_degrees());
+2025-11-21T11:47:01.2176547Z      println!("   Amplitude: {:.6}", compton_amp.magnitude());
+2025-11-21T11:47:01.2176895Z -    println!("   Seção de choque ∝ |A|²: {:.3e}", compton_amp.probability());
+2025-11-21T11:47:01.2177052Z +    println!(
+2025-11-21T11:47:01.2177284Z +        "   Seção de choque ∝ |A|²: {:.3e}",
+2025-11-21T11:47:01.2177474Z +        compton_amp.probability()
+2025-11-21T11:47:01.2177626Z +    );
+2025-11-21T11:47:01.2177769Z  
+2025-11-21T11:47:01.2177966Z      // 5. Caminho de Fóton
+2025-11-21T11:47:01.2178221Z      println!("\n5. Caminho Quântico de Fóton:");
+2025-11-21T11:47:01.2178606Z Diff in /home/runner/work/arxis/arxis/avx-quantum-render/examples/basic_render.rs:204:
+2025-11-21T11:47:01.2178805Z      let mut path = PhotonPath::new();
+2025-11-21T11:47:01.2179085Z      let v1 = Vertex::emission([0.0, 0.0, 0.0], [1.0, 0.0, 0.0], 3e-19);
+2025-11-21T11:47:01.2179446Z -    let v2 = Vertex::new([1.0, 0.0, 0.0], 1e-9, InteractionType::Scattering, [0.0, 1.0, 0.0], 3e-19);
+2025-11-21T11:47:01.2179625Z +    let v2 = Vertex::new(
+2025-11-21T11:47:01.2179782Z +        [1.0, 0.0, 0.0],
+2025-11-21T11:47:01.2179932Z +        1e-9,
+2025-11-21T11:47:01.2180132Z +        InteractionType::Scattering,
+2025-11-21T11:47:01.2180289Z +        [0.0, 1.0, 0.0],
+2025-11-21T11:47:01.2180435Z +        3e-19,
+2025-11-21T11:47:01.2180578Z +    );
+2025-11-21T11:47:01.2180927Z      let v3 = Vertex::detection([1.0, 1.0, 0.0], 2e-9);
+2025-11-21T11:47:01.2181069Z  
+2025-11-21T11:47:01.2181242Z      path.add_vertex(v1);
+2025-11-21T11:47:01.2474814Z Diff in /home/runner/work/arxis/arxis/examples/geodesic_example.rs:13:
+2025-11-21T11:47:01.2475095Z      // 1. PROPRIEDADES ORBITAIS
+2025-11-21T11:47:01.2475397Z      // ===============================================================
+2025-11-21T11:47:01.2475914Z      println!("┌───────────────────────────────────────────────────────┐");
+2025-11-21T11:47:01.2476680Z -    println!("│ 1. PROPRIEDADES ORBITAIS (M = {:.1} M☉)              │", mass);
+2025-11-21T11:47:01.2476898Z +    println!(
+2025-11-21T11:47:01.2477324Z +        "│ 1. PROPRIEDADES ORBITAIS (M = {:.1} M☉)              │",
+2025-11-21T11:47:01.2477535Z +        mass
+2025-11-21T11:47:01.2477744Z +    );
+2025-11-21T11:47:01.2478125Z      println!("└───────────────────────────────────────────────────────┘");
+2025-11-21T11:47:01.2478298Z  
+2025-11-21T11:47:01.2478553Z      let calc = OrbitCalculator::new(mass);
+2025-11-21T11:47:01.2478917Z Diff in /home/runner/work/arxis/arxis/examples/geodesic_example.rs:20:
+2025-11-21T11:47:01.2479083Z  
+2025-11-21T11:47:01.2479328Z      println!("  Raios críticos:");
+2025-11-21T11:47:01.2479724Z      println!("    • Horizonte de eventos: r_s = {:.4}", 2.0 * mass);
+2025-11-21T11:47:01.2480153Z -    println!("    • Esfera de fótons:     r_ph = {:.4}", calc.photon_sphere_radius());
+2025-11-21T11:47:01.2480517Z -    println!("    • ISCO:                 r_isco = {:.4}", calc.isco_radius());
+2025-11-21T11:47:01.2480705Z +    println!(
+2025-11-21T11:47:01.2480984Z +        "    • Esfera de fótons:     r_ph = {:.4}",
+2025-11-21T11:47:01.2481193Z +        calc.photon_sphere_radius()
+2025-11-21T11:47:01.2481355Z +    );
+2025-11-21T11:47:01.2481525Z +    println!(
+2025-11-21T11:47:01.2481797Z +        "    • ISCO:                 r_isco = {:.4}",
+2025-11-21T11:47:01.2481990Z +        calc.isco_radius()
+2025-11-21T11:47:01.2482378Z +    );
+2025-11-21T11:47:01.2482570Z  
+2025-11-21T11:47:01.2482924Z      println!("\n  Órbitas circulares estáveis (r > ISCO):");
+2025-11-21T11:47:01.2483289Z      println!("  ┌─────────┬────────────┬────────────┬────────────┐");
+2025-11-21T11:47:01.2483652Z Diff in /home/runner/work/arxis/arxis/examples/geodesic_example.rs:31:
+2025-11-21T11:47:01.2483879Z      for r in [6.0, 8.0, 10.0, 15.0, 20.0].iter() {
+2025-11-21T11:47:01.2484141Z          let omega = calc.circular_angular_velocity(*r);
+2025-11-21T11:47:01.2484371Z          let period = calc.orbital_period(*r);
+2025-11-21T11:47:01.2484769Z -        let stable = if calc.is_stable_orbit(*r) { "Sim" } else { "Não" };
+2025-11-21T11:47:01.2485001Z +        let stable = if calc.is_stable_orbit(*r) {
+2025-11-21T11:47:01.2485169Z +            "Sim"
+2025-11-21T11:47:01.2485339Z +        } else {
+2025-11-21T11:47:01.2485540Z +            "Não"
+2025-11-21T11:47:01.2485704Z +        };
+2025-11-21T11:47:01.2485861Z  
+2025-11-21T11:47:01.2486036Z          println!(
+2025-11-21T11:47:01.2486513Z              "  │ {r:7.2} │ {omega:10.6} │ {period:10.4} │ {stable:10} │",
+2025-11-21T11:47:01.2486879Z Diff in /home/runner/work/arxis/arxis/examples/geodesic_example.rs:131:
+2025-11-21T11:47:01.2487071Z      let mercury_a = 57.9;
+2025-11-21T11:47:01.2487263Z      let mercury_e = 0.206;
+2025-11-21T11:47:01.2487645Z      let mercury_precession = calc.perihelion_precession(mercury_a, mercury_e);
+2025-11-21T11:47:01.2488068Z -    println!("    Precessão: {:.2} arcsec/órbita", mercury_precession * 206265.0);
+2025-11-21T11:47:01.2488344Z +    println!(
+2025-11-21T11:47:01.2488584Z +        "    Precessão: {:.2} arcsec/órbita",
+2025-11-21T11:47:01.2488771Z +        mercury_precession * 206265.0
+2025-11-21T11:47:01.2488917Z +    );
+2025-11-21T11:47:01.2489204Z      println!("    (Valor observado: ~43 arcsec/século)");
+2025-11-21T11:47:01.2489345Z  
+2025-11-21T11:47:01.2489554Z      // ===============================================================
+2025-11-21T11:47:01.2489877Z Diff in /home/runner/work/arxis/arxis/examples/geodesic_example.rs:244:
+2025-11-21T11:47:01.2490105Z      let final_state = trajectory.last().unwrap();
+2025-11-21T11:47:01.2490372Z      let r_variation = (final_state.position[1] - r_orbit).abs();
+2025-11-21T11:47:01.2490517Z  
+2025-11-21T11:47:01.2490884Z -    println!("\n  Após {} passos (λ = {:.2}):", trajectory.len(), final_state.lambda);
+2025-11-21T11:47:01.2491036Z +    println!(
+2025-11-21T11:47:01.2491260Z +        "\n  Após {} passos (λ = {:.2}):",
+2025-11-21T11:47:01.2491437Z +        trajectory.len(),
+2025-11-21T11:47:01.2491613Z +        final_state.lambda
+2025-11-21T11:47:01.2491752Z +    );
+2025-11-21T11:47:01.2492375Z      println!("    • r_final = {:.6}", final_state.position[1]);
+2025-11-21T11:47:01.2492759Z -    println!("    • Δr = {:.6} ({:.2}%)", r_variation, (r_variation / r_orbit) * 100.0);
+2025-11-21T11:47:01.2492913Z +    println!(
+2025-11-21T11:47:01.2493120Z +        "    • Δr = {:.6} ({:.2}%)",
+2025-11-21T11:47:01.2493274Z +        r_variation,
+2025-11-21T11:47:01.2493470Z +        (r_variation / r_orbit) * 100.0
+2025-11-21T11:47:01.2493611Z +    );
+2025-11-21T11:47:01.2493754Z  
+2025-11-21T11:47:01.2493936Z      if r_variation / r_orbit < 0.01 {
+2025-11-21T11:47:01.2494164Z          println!("    ✓ Órbita estável!");
+2025-11-21T11:47:01.2886646Z error: couldn't read `/home/runner/work/arxis/arxis/examples/../geometry4d.rs`: No such file or directory (os error 2)
+2025-11-21T11:47:01.2887061Z   --> /home/runner/work/arxis/arxis/examples/geometry4d_example.rs:12:1
+2025-11-21T11:47:01.2887186Z    |
+2025-11-21T11:47:01.2887302Z 12 | mod geometry4d;
+2025-11-21T11:47:01.2887422Z    | ^^^^^^^^^^^^^^^
+2025-11-21T11:47:01.2887432Z 
+2025-11-21T11:47:01.4268660Z Error writing files: failed to resolve mod `geometry4d`: /home/runner/work/arxis/arxis/examples/../geometry4d.rs does not exist
+2025-11-21T11:47:01.4334718Z Diff in /home/runner/work/arxis/arxis/examples/graph_analytics_distributed.rs:1:
+2025-11-21T11:47:01.4335757Z +use petgraph::algo::{astar, connected_components, dijkstra};
+2025-11-21T11:47:01.4336769Z  /// Análise avançada: Graph Analytics + Distributed Processing
+2025-11-21T11:47:01.4337573Z  /// Demonstra uso de petgraph e processamento paralelo massivo
+2025-11-21T11:47:01.4338368Z -
+2025-11-21T11:47:01.4338809Z  use petgraph::graph::{Graph, NodeIndex};
+2025-11-21T11:47:01.4339604Z -use petgraph::algo::{dijkstra, connected_components, astar};
+2025-11-21T11:47:01.4340278Z  use petgraph::Directed;
+2025-11-21T11:47:01.4340722Z  use rayon::prelude::*;
+2025-11-21T11:47:01.4341169Z  use std::collections::HashMap;
+2025-11-21T11:47:01.4341816Z Diff in /home/runner/work/arxis/arxis/examples/graph_analytics_distributed.rs:78:
+2025-11-21T11:47:01.4342672Z          let distances = dijkstra(&graph, start, Some(end), |e| *e.weight());
+2025-11-21T11:47:01.4343082Z  
+2025-11-21T11:47:01.4343327Z          if let Some(&distance) = distances.get(&end) {
+2025-11-21T11:47:01.4343911Z -            println!("  ✓ Caminho mais curto (evento 0 → evento {}):", nodes.len() - 1);
+2025-11-21T11:47:01.4344556Z +            println!(
+2025-11-21T11:47:01.4344904Z +                "  ✓ Caminho mais curto (evento 0 → evento {}):",
+2025-11-21T11:47:01.4345251Z +                nodes.len() - 1
+2025-11-21T11:47:01.4345505Z +            );
+2025-11-21T11:47:01.4345838Z              println!("    Distância total: {:.2}", distance);
+2025-11-21T11:47:01.4346163Z          } else {
+2025-11-21T11:47:01.4346577Z              println!("  ✓ Nenhum caminho encontrado entre eventos selecionados");
+2025-11-21T11:47:01.4347173Z Diff in /home/runner/work/arxis/arxis/examples/graph_analytics_distributed.rs:144:
+2025-11-21T11:47:01.4347831Z                  let current = nodes[idx];
+2025-11-21T11:47:01.4348111Z  
+2025-11-21T11:47:01.4348317Z                  // Conectar com vizinhos
+2025-11-21T11:47:01.4348619Z -                let neighbors = [
+2025-11-21T11:47:01.4348897Z -                    (x + 1, y, z),
+2025-11-21T11:47:01.4349170Z -                    (x, y + 1, z),
+2025-11-21T11:47:01.4349431Z -                    (x, y, z + 1),
+2025-11-21T11:47:01.4349697Z -                ];
+2025-11-21T11:47:01.4350007Z +                let neighbors = [(x + 1, y, z), (x, y + 1, z), (x, y, z + 1)];
+2025-11-21T11:47:01.4350364Z  
+2025-11-21T11:47:01.4350585Z                  for (nx, ny, nz) in neighbors {
+2025-11-21T11:47:01.4350962Z                      if nx < grid_size && ny < grid_size && nz < grid_size {
+2025-11-21T11:47:01.4351495Z Diff in /home/runner/work/arxis/arxis/examples/graph_analytics_distributed.rs:200:
+2025-11-21T11:47:01.4352035Z          let start_point = &graph[path_nodes[0]];
+2025-11-21T11:47:01.4352653Z          let end_point = &graph[*path_nodes.last().unwrap()];
+2025-11-21T11:47:01.4352967Z  
+2025-11-21T11:47:01.4353391Z -        println!("    Início: ({:.0}, {:.0}, {:.0})", start_point.x, start_point.y, start_point.z);
+2025-11-21T11:47:01.4353851Z -        println!("    Fim: ({:.0}, {:.0}, {:.0})", end_point.x, end_point.y, end_point.z);
+2025-11-21T11:47:01.4354171Z +        println!(
+2025-11-21T11:47:01.4354430Z +            "    Início: ({:.0}, {:.0}, {:.0})",
+2025-11-21T11:47:01.4354719Z +            start_point.x, start_point.y, start_point.z
+2025-11-21T11:47:01.4354983Z +        );
+2025-11-21T11:47:01.4355150Z +        println!(
+2025-11-21T11:47:01.4355360Z +            "    Fim: ({:.0}, {:.0}, {:.0})",
+2025-11-21T11:47:01.4355628Z +            end_point.x, end_point.y, end_point.z
+2025-11-21T11:47:01.4355876Z +        );
+2025-11-21T11:47:01.4356035Z      } else {
+2025-11-21T11:47:01.4356288Z          println!("  ✗ Nenhum caminho encontrado");
+2025-11-21T11:47:01.4356546Z      }
+2025-11-21T11:47:01.4356876Z Diff in /home/runner/work/arxis/arxis/examples/graph_analytics_distributed.rs:265:
+2025-11-21T11:47:01.4357277Z      let elapsed = start.elapsed();
+2025-11-21T11:47:01.4357497Z  
+2025-11-21T11:47:01.4357802Z      println!("  ✓ Cálculo completo em {:.2}s", elapsed.as_secs_f64());
+2025-11-21T11:47:01.4358253Z -    println!("    Taxa: {:.0} tensores/segundo", n_tensors as f64 / elapsed.as_secs_f64());
+2025-11-21T11:47:01.4358622Z +    println!(
+2025-11-21T11:47:01.4358818Z +        "    Taxa: {:.0} tensores/segundo",
+2025-11-21T11:47:01.4359090Z +        n_tensors as f64 / elapsed.as_secs_f64()
+2025-11-21T11:47:01.4359356Z +    );
+2025-11-21T11:47:01.4359514Z  
+2025-11-21T11:47:01.4359710Z      // 3. Estatísticas
+2025-11-21T11:47:01.4360047Z      let mean: f64 = determinants.par_iter().sum::<f64>() / n_tensors as f64;
+2025-11-21T11:47:01.4360543Z Diff in /home/runner/work/arxis/arxis/examples/graph_analytics_distributed.rs:299:
+2025-11-21T11:47:01.4360956Z          .map(|(i, &det)| (i, det))
+2025-11-21T11:47:01.4361193Z          .collect();
+2025-11-21T11:47:01.4361371Z  
+2025-11-21T11:47:01.4361633Z -    println!("  ✓ Tensores com |det| ≈ 1.0: {} ({:.2}%)",
+2025-11-21T11:47:01.4361905Z +    println!(
+2025-11-21T11:47:01.4362369Z +        "  ✓ Tensores com |det| ≈ 1.0: {} ({:.2}%)",
+2025-11-21T11:47:01.4362699Z          interesting.len(),
+2025-11-21T11:47:01.4362983Z          (interesting.len() as f64 / n_tensors as f64) * 100.0
+2025-11-21T11:47:01.4363420Z      );
+2025-11-21T11:47:01.4363740Z Diff in /home/runner/work/arxis/arxis/examples/graph_analytics_distributed.rs:313:
+2025-11-21T11:47:01.4364123Z          .enumerate()
+2025-11-21T11:47:01.4364326Z          .map(|(chunk_id, chunk)| {
+2025-11-21T11:47:01.4364573Z              // Map: processar chunk
+2025-11-21T11:47:01.4364815Z -            let det_sum: f64 = chunk
+2025-11-21T11:47:01.4365053Z -                .iter()
+2025-11-21T11:47:01.4365288Z -                .map(|t| calculate_determinant_4x4(t))
+2025-11-21T11:47:01.4365668Z -                .sum();
+2025-11-21T11:47:01.4365990Z +            let det_sum: f64 = chunk.iter().map(|t| calculate_determinant_4x4(t)).sum();
+2025-11-21T11:47:01.4366320Z  
+2025-11-21T11:47:01.4366491Z              ChunkResult {
+2025-11-21T11:47:01.4366699Z                  chunk_id,
+2025-11-21T11:47:01.4367061Z Diff in /home/runner/work/arxis/arxis/examples/graph_analytics_distributed.rs:333:
+2025-11-21T11:47:01.4367430Z  
+2025-11-21T11:47:01.4367681Z      println!("    Chunks processados: {}", chunk_results.len());
+2025-11-21T11:47:01.4368122Z      println!("    Média global (MapReduce): {:.6}", global_mean);
+2025-11-21T11:47:01.4368597Z -    println!("    Diferença da média direta: {:.2e}", (global_mean - mean).abs());
+2025-11-21T11:47:01.4368942Z +    println!(
+2025-11-21T11:47:01.4369192Z +        "    Diferença da média direta: {:.2e}",
+2025-11-21T11:47:01.4369466Z +        (global_mean - mean).abs()
+2025-11-21T11:47:01.4369683Z +    );
+2025-11-21T11:47:01.4369847Z  }
+2025-11-21T11:47:01.4369997Z  
+2025-11-21T11:47:01.4370166Z  #[derive(Debug)]
+2025-11-21T11:47:01.4404352Z Diff in /home/runner/work/arxis/arxis/examples/lensing_example.rs:16:
+2025-11-21T11:47:01.4405116Z  
+2025-11-21T11:47:01.4405635Z      // Galáxia massiva como lente
+2025-11-21T11:47:01.4406299Z      let galaxy_lens = GravitationalLens::point_mass(
+2025-11-21T11:47:01.4407054Z -        1e11,   // 100 bilhões de massas solares
+2025-11-21T11:47:01.4407621Z -        1e9,    // 1 Gpc do observador
+2025-11-21T11:47:01.4408166Z -        2e9,    // Fonte a 2 Gpc
+2025-11-21T11:47:01.4408772Z +        1e11, // 100 bilhões de massas solares
+2025-11-21T11:47:01.4409406Z +        1e9,  // 1 Gpc do observador
+2025-11-21T11:47:01.4409912Z +        2e9,  // Fonte a 2 Gpc
+2025-11-21T11:47:01.4410332Z      );
+2025-11-21T11:47:01.4410653Z  
+2025-11-21T11:47:01.4411093Z      let theta_e = galaxy_lens.einstein_radius_arcsec();
+2025-11-21T11:47:01.4411877Z Diff in /home/runner/work/arxis/arxis/examples/lensing_example.rs:26:
+2025-11-21T11:47:01.4412484Z      println!("    • Raio de Einstein: {:.3} arcsec", theta_e);
+2025-11-21T11:47:01.4412897Z      println!("    • D_L = {} Gpc", galaxy_lens.distance_lens / 1e9);
+2025-11-21T11:47:01.4413317Z      println!("    • D_S = {} Gpc", galaxy_lens.distance_source / 1e9);
+2025-11-21T11:47:01.4413763Z -    println!("    • D_LS = {:.1} Gpc\n", galaxy_lens.distance_lens_source() / 1e9);
+2025-11-21T11:47:01.4414089Z +    println!(
+2025-11-21T11:47:01.4414315Z +        "    • D_LS = {:.1} Gpc\n",
+2025-11-21T11:47:01.4414578Z +        galaxy_lens.distance_lens_source() / 1e9
+2025-11-21T11:47:01.4414824Z +    );
+2025-11-21T11:47:01.4414978Z  
+2025-11-21T11:47:01.4415253Z      // Posições de imagens para diferentes posições da fonte
+2025-11-21T11:47:01.4415635Z      println!("  Posições de Imagens Múltiplas:");
+2025-11-21T11:47:01.4416022Z Diff in /home/runner/work/arxis/arxis/examples/lensing_example.rs:109:
+2025-11-21T11:47:01.4416463Z      println!("  Ângulo de Deflexão α(θ) para θ = 2θ_E:");
+2025-11-21T11:47:01.4416811Z      let theta_test = point_lens.einstein_radius() * 2.0;
+2025-11-21T11:47:01.4417077Z  
+2025-11-21T11:47:01.4417438Z -    println!("    • Point Mass:  α = {:.4e} rad", point_lens.deflection_angle(theta_test));
+2025-11-21T11:47:01.4418004Z -    println!("    • SIS:         α = {:.4e} rad (constante)", sis_lens.deflection_angle(theta_test));
+2025-11-21T11:47:01.4418503Z -    println!("    • NFW:         α = {:.4e} rad\n", nfw_lens.deflection_angle(theta_test));
+2025-11-21T11:47:01.4419003Z +    println!(
+2025-11-21T11:47:01.4419243Z +        "    • Point Mass:  α = {:.4e} rad",
+2025-11-21T11:47:01.4419525Z +        point_lens.deflection_angle(theta_test)
+2025-11-21T11:47:01.4419768Z +    );
+2025-11-21T11:47:01.4419937Z +    println!(
+2025-11-21T11:47:01.4420182Z +        "    • SIS:         α = {:.4e} rad (constante)",
+2025-11-21T11:47:01.4420483Z +        sis_lens.deflection_angle(theta_test)
+2025-11-21T11:47:01.4420724Z +    );
+2025-11-21T11:47:01.4420891Z +    println!(
+2025-11-21T11:47:01.4421237Z +        "    • NFW:         α = {:.4e} rad\n",
+2025-11-21T11:47:01.4421518Z +        nfw_lens.deflection_angle(theta_test)
+2025-11-21T11:47:01.4421763Z +    );
+2025-11-21T11:47:01.4421915Z  
+2025-11-21T11:47:01.4422095Z      // ========== 3. WEAK LENSING ==========
+2025-11-21T11:47:01.4422713Z      println!("┌────────────────────────────────────────────────────────────┐");
+2025-11-21T11:47:01.4423155Z Diff in /home/runner/work/arxis/arxis/examples/lensing_example.rs:119:
+2025-11-21T11:47:01.4423666Z      println!("└────────────────────────────────────────────────────────────┘\n");
+2025-11-21T11:47:01.4423963Z  
+2025-11-21T11:47:01.4424155Z      let weak_lens = WeakLensing::new(
+2025-11-21T11:47:01.4424452Z -        0.08,   // κ (convergência)
+2025-11-21T11:47:01.4424730Z -        0.02,   // γ₁ (shear)
+2025-11-21T11:47:01.4424974Z -        0.03,   // γ₂ (shear)
+2025-11-21T11:47:01.4425225Z +        0.08, // κ (convergência)
+2025-11-21T11:47:01.4425477Z +        0.02, // γ₁ (shear)
+2025-11-21T11:47:01.4425728Z +        0.03, // γ₂ (shear)
+2025-11-21T11:47:01.4425920Z      );
+2025-11-21T11:47:01.4426074Z  
+2025-11-21T11:47:01.4426301Z      println!("  Parâmetros de Weak Lensing:");
+2025-11-21T11:47:01.4426674Z Diff in /home/runner/work/arxis/arxis/examples/lensing_example.rs:129:
+2025-11-21T11:47:01.4427099Z      println!("    • Shear γ₁ = {:.3}", weak_lens.shear_1);
+2025-11-21T11:47:01.4427456Z      println!("    • Shear γ₂ = {:.3}", weak_lens.shear_2);
+2025-11-21T11:47:01.4427865Z      println!("    • Shear total γ = {:.4}", weak_lens.total_shear());
+2025-11-21T11:47:01.4428320Z -    println!("    • Ângulo do shear = {:.2}°", weak_lens.shear_angle().to_degrees());
+2025-11-21T11:47:01.4428839Z -    println!("    • Elipticidade induzida = {:.4}", weak_lens.induced_ellipticity());
+2025-11-21T11:47:01.4429186Z +    println!(
+2025-11-21T11:47:01.4429417Z +        "    • Ângulo do shear = {:.2}°",
+2025-11-21T11:47:01.4429682Z +        weak_lens.shear_angle().to_degrees()
+2025-11-21T11:47:01.4429940Z +    );
+2025-11-21T11:47:01.4430101Z +    println!(
+2025-11-21T11:47:01.4430342Z +        "    • Elipticidade induzida = {:.4}",
+2025-11-21T11:47:01.4430621Z +        weak_lens.induced_ellipticity()
+2025-11-21T11:47:01.4430856Z +    );
+2025-11-21T11:47:01.4431169Z      println!("    • Magnificação = {:.4}\n", weak_lens.magnification());
+2025-11-21T11:47:01.4431476Z  
+2025-11-21T11:47:01.4431699Z      // Distorção de galáxias de fundo
+2025-11-21T11:47:01.4432054Z Diff in /home/runner/work/arxis/arxis/examples/lensing_example.rs:157:
+2025-11-21T11:47:01.4432703Z      println!("└────────────────────────────────────────────────────────────┘\n");
+2025-11-21T11:47:01.4432994Z  
+2025-11-21T11:47:01.4433209Z      let microlens_event = MicrolensingEvent::new(
+2025-11-21T11:47:01.4433547Z -        0.5,    // 0.5 M☉ (estrela típica)
+2025-11-21T11:47:01.4433866Z -        0.3,    // u₀ = 0.3 (parâmetro de impacto)
+2025-11-21T11:47:01.4434132Z -        25.0,   // t_E = 25 dias
+2025-11-21T11:47:01.4434405Z -        100.0,  // Pico em t₀ = 100 dias
+2025-11-21T11:47:01.4434712Z +        0.5,   // 0.5 M☉ (estrela típica)
+2025-11-21T11:47:01.4435013Z +        0.3,   // u₀ = 0.3 (parâmetro de impacto)
+2025-11-21T11:47:01.4435285Z +        25.0,  // t_E = 25 dias
+2025-11-21T11:47:01.4435550Z +        100.0, // Pico em t₀ = 100 dias
+2025-11-21T11:47:01.4435784Z      );
+2025-11-21T11:47:01.4435935Z  
+2025-11-21T11:47:01.4436120Z      println!("  Evento de Microlente:");
+2025-11-21T11:47:01.4436636Z Diff in /home/runner/work/arxis/arxis/examples/lensing_example.rs:167:
+2025-11-21T11:47:01.4437126Z      println!("    • Massa da lente: {:.1} M☉", microlens_event.lens_mass);
+2025-11-21T11:47:01.4437642Z -    println!("    • Parâmetro de impacto: u₀ = {:.2}", microlens_event.impact_parameter);
+2025-11-21T11:47:01.4438181Z -    println!("    • Tempo de Einstein: t_E = {:.1} dias", microlens_event.einstein_time);
+2025-11-21T11:47:01.4438691Z -    println!("    • Tempo do pico: t₀ = {:.1} dias", microlens_event.peak_time);
+2025-11-21T11:47:01.4439393Z -    println!("    • Magnificação no pico: A(t₀) = {:.2}", microlens_event.peak_magnification());
+2025-11-21T11:47:01.4440031Z -    println!("    • Duração (FWHM): {:.1} dias", microlens_event.event_duration());
+2025-11-21T11:47:01.4440520Z      println!(
+2025-11-21T11:47:01.4440933Z +        "    • Parâmetro de impacto: u₀ = {:.2}",
+2025-11-21T11:47:01.4441278Z +        microlens_event.impact_parameter
+2025-11-21T11:47:01.4441661Z +    );
+2025-11-21T11:47:01.4451116Z +    println!(
+2025-11-21T11:47:01.4451608Z +        "    • Tempo de Einstein: t_E = {:.1} dias",
+2025-11-21T11:47:01.4451939Z +        microlens_event.einstein_time
+2025-11-21T11:47:01.4452310Z +    );
+2025-11-21T11:47:01.4452496Z +    println!(
+2025-11-21T11:47:01.4452758Z +        "    • Tempo do pico: t₀ = {:.1} dias",
+2025-11-21T11:47:01.4453052Z +        microlens_event.peak_time
+2025-11-21T11:47:01.4453283Z +    );
+2025-11-21T11:47:01.4453453Z +    println!(
+2025-11-21T11:47:01.4453720Z +        "    • Magnificação no pico: A(t₀) = {:.2}",
+2025-11-21T11:47:01.4454052Z +        microlens_event.peak_magnification()
+2025-11-21T11:47:01.4454316Z +    );
+2025-11-21T11:47:01.4454481Z +    println!(
+2025-11-21T11:47:01.4454723Z +        "    • Duração (FWHM): {:.1} dias",
+2025-11-21T11:47:01.4454986Z +        microlens_event.event_duration()
+2025-11-21T11:47:01.4455226Z +    );
+2025-11-21T11:47:01.4455387Z +    println!(
+2025-11-21T11:47:01.4455615Z          "    • Detectável? {}",
+2025-11-21T11:47:01.4455888Z          if microlens_event.is_detectable(1.34) {
+2025-11-21T11:47:01.4456199Z              "✓ Sim (A > 1.34)"
+2025-11-21T11:47:01.4456592Z Diff in /home/runner/work/arxis/arxis/examples/lensing_example.rs:203:
+2025-11-21T11:47:01.4457114Z      println!("└────────────────────────────────────────────────────────────┘\n");
+2025-11-21T11:47:01.4457417Z  
+2025-11-21T11:47:01.4457663Z      // Profundidade óptica para bojo galáctico
+2025-11-21T11:47:01.4457971Z -    let n_stars = 1e9;  // densidade de estrelas
+2025-11-21T11:47:01.4458281Z -    let distance_bulge = 8000.0;  // pc
+2025-11-21T11:47:01.4458556Z -    let typical_theta_e = 1e-9;  // rad
+2025-11-21T11:47:01.4458829Z +    let n_stars = 1e9; // densidade de estrelas
+2025-11-21T11:47:01.4459108Z +    let distance_bulge = 8000.0; // pc
+2025-11-21T11:47:01.4459367Z +    let typical_theta_e = 1e-9; // rad
+2025-11-21T11:47:01.4459595Z  
+2025-11-21T11:47:01.4459949Z      let tau = LensingStatistics::optical_depth(n_stars, distance_bulge, typical_theta_e);
+2025-11-21T11:47:01.4460413Z      println!("  Profundidade Óptica:");
+2025-11-21T11:47:01.4623794Z Diff in /home/runner/work/arxis/arxis/examples/ml_example.rs:1:
+2025-11-21T11:47:01.4624704Z -use arxis_quaternions::tensor::{Vector, Matrix};
+2025-11-21T11:47:01.4625379Z -use arxis_quaternions::tensor4d::{Tensor4D, image_ops};
+2025-11-21T11:47:01.4625962Z +use arxis_quaternions::tensor::{Matrix, Vector};
+2025-11-21T11:47:01.4626558Z +use arxis_quaternions::tensor4d::{image_ops, Tensor4D};
+2025-11-21T11:47:01.4627026Z  
+2025-11-21T11:47:01.4627333Z  fn main() {
+2025-11-21T11:47:01.4627797Z      println!("=== Exemplos de Machine Learning com Tensores ===\n");
+2025-11-21T11:47:01.4628547Z Diff in /home/runner/work/arxis/arxis/examples/ml_example.rs:6:
+2025-11-21T11:47:01.4629089Z  
+2025-11-21T11:47:01.4629398Z      // ========== BATCH DE DADOS ==========
+2025-11-21T11:47:01.4629896Z      println!("--- Processamento em Batch ---");
+2025-11-21T11:47:01.4630340Z -    
+2025-11-21T11:47:01.4630603Z +
+2025-11-21T11:47:01.4631282Z      // Simula batch de imagens: (batch=8, canais=3, altura=32, largura=32)
+2025-11-21T11:47:01.4631878Z      let batch_size = 8;
+2025-11-21T11:47:01.4632433Z      let channels = 3;
+2025-11-21T11:47:01.4632951Z Diff in /home/runner/work/arxis/arxis/examples/ml_example.rs:13:
+2025-11-21T11:47:01.4633516Z      let height = 32;
+2025-11-21T11:47:01.4633858Z      let width = 32;
+2025-11-21T11:47:01.4634168Z -    
+2025-11-21T11:47:01.4634440Z +
+2025-11-21T11:47:01.4634959Z      let mut batch = Tensor4D::from_images(batch_size, channels, height, width);
+2025-11-21T11:47:01.4635768Z -    
+2025-11-21T11:47:01.4636044Z +
+2025-11-21T11:47:01.4636501Z      // Preenche com dados simulados (normalmente viriamos de dataset)
+2025-11-21T11:47:01.4637090Z      for b in 0..batch_size {
+2025-11-21T11:47:01.4637485Z          for c in 0..channels {
+2025-11-21T11:47:01.4638037Z Diff in /home/runner/work/arxis/arxis/examples/ml_example.rs:32:
+2025-11-21T11:47:01.4638621Z  
+2025-11-21T11:47:01.4639084Z      // ========== NORMALIZAÇÃO ==========
+2025-11-21T11:47:01.4639711Z      println!("\n--- Normalização de Dados ---");
+2025-11-21T11:47:01.4640163Z -    
+2025-11-21T11:47:01.4640434Z +
+2025-11-21T11:47:01.4640894Z      println!("Estatísticas antes da normalização:");
+2025-11-21T11:47:01.4641517Z      println!("  Média: {:.6}", batch.mean());
+2025-11-21T11:47:01.4642382Z -    println!("  Min: {:.6}", batch.data.iter().cloned().fold(f64::INFINITY, f64::min));
+2025-11-21T11:47:01.4643278Z -    println!("  Max: {:.6}", batch.data.iter().cloned().fold(f64::NEG_INFINITY, f64::max));
+2025-11-21T11:47:01.4643922Z +    println!(
+2025-11-21T11:47:01.4644254Z +        "  Min: {:.6}",
+2025-11-21T11:47:01.4644740Z +        batch.data.iter().cloned().fold(f64::INFINITY, f64::min)
+2025-11-21T11:47:01.4645251Z +    );
+2025-11-21T11:47:01.4645530Z +    println!(
+2025-11-21T11:47:01.4645840Z +        "  Max: {:.6}",
+2025-11-21T11:47:01.4646379Z +        batch.data.iter().cloned().fold(f64::NEG_INFINITY, f64::max)
+2025-11-21T11:47:01.4646902Z +    );
+2025-11-21T11:47:01.4647170Z  
+2025-11-21T11:47:01.4647525Z      let normalized = batch.batch_normalize(1e-5);
+2025-11-21T11:47:01.4647984Z -    
+2025-11-21T11:47:01.4648246Z +
+2025-11-21T11:47:01.4648765Z      println!("\nEstatísticas após batch normalization:");
+2025-11-21T11:47:01.4649430Z      println!("  Média: {:.6}", normalized.mean());
+2025-11-21T11:47:01.4650025Z      println!("  Norma: {:.6}", normalized.frobenius_norm());
+2025-11-21T11:47:01.4650696Z Diff in /home/runner/work/arxis/arxis/examples/ml_example.rs:46:
+2025-11-21T11:47:01.4651243Z  
+2025-11-21T11:47:01.4651662Z      // ========== FUNÇÕES DE ATIVAÇÃO ==========
+2025-11-21T11:47:01.4652422Z      println!("\n--- Funções de Ativação ---");
+2025-11-21T11:47:01.4652870Z -    
+2025-11-21T11:47:01.4653218Z -    let test_values = Tensor4D::from_data(
+2025-11-21T11:47:01.4653655Z -        [1, 1, 2, 3],
+2025-11-21T11:47:01.4654027Z -        vec![-2.0, -1.0, 0.0, 1.0, 2.0, 3.0],
+2025-11-21T11:47:01.4654453Z -    ).unwrap();
+2025-11-21T11:47:01.4654770Z -    
+2025-11-21T11:47:01.4655025Z +
+2025-11-21T11:47:01.4655318Z +    let test_values =
+2025-11-21T11:47:01.4655877Z +        Tensor4D::from_data([1, 1, 2, 3], vec![-2.0, -1.0, 0.0, 1.0, 2.0, 3.0]).unwrap();
+2025-11-21T11:47:01.4656435Z +
+2025-11-21T11:47:01.4656736Z      println!("Valores de entrada:");
+2025-11-21T11:47:01.4657152Z      for i in 0..2 {
+2025-11-21T11:47:01.4657481Z          print!("  [");
+2025-11-21T11:47:01.4657987Z Diff in /home/runner/work/arxis/arxis/examples/ml_example.rs:96:
+2025-11-21T11:47:01.4658526Z  
+2025-11-21T11:47:01.4658936Z      // ========== CONVOLUÇÃO 2D ==========
+2025-11-21T11:47:01.4659565Z      println!("\n--- Convolução 2D (Camada Convolucional) ---");
+2025-11-21T11:47:01.4660058Z -    
+2025-11-21T11:47:01.4660313Z +
+2025-11-21T11:47:01.4660671Z      // Entrada: (batch=1, in_channels=1, height=5, width=5)
+2025-11-21T11:47:01.4661221Z      let mut input = Tensor4D::new(1, 1, 5, 5);
+2025-11-21T11:47:01.4661648Z      for i in 0..5 {
+2025-11-21T11:47:01.4662566Z Diff in /home/runner/work/arxis/arxis/examples/ml_example.rs:108:
+2025-11-21T11:47:01.4663270Z      // Kernel: (out_channels=1, in_channels=1, kernel_h=3, kernel_w=3)
+2025-11-21T11:47:01.4663826Z      // Detector de bordas (Sobel)
+2025-11-21T11:47:01.4664300Z      let mut kernel = Tensor4D::new(1, 1, 3, 3);
+2025-11-21T11:47:01.4664771Z -    let sobel_values = vec![
+2025-11-21T11:47:01.4665164Z -        -1.0, 0.0, 1.0,
+2025-11-21T11:47:01.4665515Z -        -2.0, 0.0, 2.0,
+2025-11-21T11:47:01.4665865Z -        -1.0, 0.0, 1.0,
+2025-11-21T11:47:01.4666386Z -    ];
+2025-11-21T11:47:01.4666850Z +    let sobel_values = vec![-1.0, 0.0, 1.0, -2.0, 0.0, 2.0, -1.0, 0.0, 1.0];
+2025-11-21T11:47:01.4667409Z      for i in 0..3 {
+2025-11-21T11:47:01.4667752Z          for j in 0..3 {
+2025-11-21T11:47:01.4668229Z              kernel.set([0, 0, i, j], sobel_values[i * 3 + j]).unwrap();
+2025-11-21T11:47:01.4668946Z Diff in /home/runner/work/arxis/arxis/examples/ml_example.rs:149:
+2025-11-21T11:47:01.4669510Z  
+2025-11-21T11:47:01.4669834Z      // ========== POOLING ==========
+2025-11-21T11:47:01.4670453Z      println!("\n--- Operações de Pooling ---");
+2025-11-21T11:47:01.4670908Z -    
+2025-11-21T11:47:01.4671188Z +
+2025-11-21T11:47:01.4671563Z      let mut pool_input = Tensor4D::new(1, 1, 4, 4);
+2025-11-21T11:47:01.4672040Z      for i in 0..4 {
+2025-11-21T11:47:01.4672588Z          for j in 0..4 {
+2025-11-21T11:47:01.4673134Z Diff in /home/runner/work/arxis/arxis/examples/ml_example.rs:190:
+2025-11-21T11:47:01.4673686Z  
+2025-11-21T11:47:01.4674132Z      // ========== FULLY CONNECTED LAYER ==========
+2025-11-21T11:47:01.4674723Z      println!("\n--- Camada Totalmente Conectada (Dense) ---");
+2025-11-21T11:47:01.4675231Z -    
+2025-11-21T11:47:01.4675498Z +
+2025-11-21T11:47:01.4675966Z      // Simula features extraídas: vetor de entrada
+2025-11-21T11:47:01.4676592Z      let input_features = Vector::from_slice(&[0.5, 0.8, 0.3, 0.9]);
+2025-11-21T11:47:01.4677278Z      println!("Features de entrada: {:?}", input_features.data);
+2025-11-21T11:47:01.4678004Z Diff in /home/runner/work/arxis/arxis/examples/ml_example.rs:197:
+2025-11-21T11:47:01.4678562Z  
+2025-11-21T11:47:01.4679123Z      // Pesos da camada (matriz 3×4): 3 neurônios de saída, 4 entradas
+2025-11-21T11:47:01.4679767Z -    let weights = Matrix::from_data([3, 4], vec![
+2025-11-21T11:47:01.4680249Z -        0.1, 0.2, 0.3, 0.4,
+2025-11-21T11:47:01.4680618Z -        0.5, 0.6, 0.7, 0.8,
+2025-11-21T11:47:01.4680985Z -        0.9, 0.1, 0.2, 0.3,
+2025-11-21T11:47:01.4681344Z -    ]).unwrap();
+2025-11-21T11:47:01.4681767Z +    let weights = Matrix::from_data(
+2025-11-21T11:47:01.4682339Z +        [3, 4],
+2025-11-21T11:47:01.4682778Z +        vec![0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.1, 0.2, 0.3],
+2025-11-21T11:47:01.4683250Z +    )
+2025-11-21T11:47:01.4683535Z +    .unwrap();
+2025-11-21T11:47:01.4683839Z  
+2025-11-21T11:47:01.4684106Z      // Bias
+2025-11-21T11:47:01.4684502Z      let bias = Vector::from_slice(&[0.1, 0.2, 0.3]);
+2025-11-21T11:47:01.4685144Z Diff in /home/runner/work/arxis/arxis/examples/ml_example.rs:209:
+2025-11-21T11:47:01.4685848Z      let output = weights.matvec(&input_features).unwrap();
+2025-11-21T11:47:01.4686510Z      let output_with_bias = output.add_elementwise(&bias).unwrap();
+2025-11-21T11:47:01.4687041Z  
+2025-11-21T11:47:01.4687691Z -    println!("\nSaída da camada (antes da ativação): {:?}", output_with_bias.data);
+2025-11-21T11:47:01.4688324Z +    println!(
+2025-11-21T11:47:01.4688807Z +        "\nSaída da camada (antes da ativação): {:?}",
+2025-11-21T11:47:01.4689321Z +        output_with_bias.data
+2025-11-21T11:47:01.4689694Z +    );
+2025-11-21T11:47:01.4689961Z  
+2025-11-21T11:47:01.4690243Z      // Aplica ReLU
+2025-11-21T11:47:01.4690666Z      let activated = output_with_bias.map(|x| x.max(0.0));
+2025-11-21T11:47:01.4691316Z Diff in /home/runner/work/arxis/arxis/examples/ml_example.rs:217:
+2025-11-21T11:47:01.4691830Z  
+2025-11-21T11:47:01.4692432Z      // ========== SOFTMAX PARA CLASSIFICAÇÃO ==========
+2025-11-21T11:47:01.4693067Z      println!("\n--- Softmax (Classificação) ---");
+2025-11-21T11:47:01.4693765Z -    
+2025-11-21T11:47:01.4694026Z +
+2025-11-21T11:47:01.4694422Z      let logits = Vector::from_slice(&[2.0, 1.0, 0.1]);
+2025-11-21T11:47:01.4694925Z      println!("Logits: {:?}", logits.data);
+2025-11-21T11:47:01.4695337Z  
+2025-11-21T11:47:01.4695800Z Diff in /home/runner/work/arxis/arxis/examples/ml_example.rs:224:
+2025-11-21T11:47:01.4696402Z      // Softmax: exp(x_i) / sum(exp(x_j))
+2025-11-21T11:47:01.4697075Z -    let max_logit = logits.data.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
+2025-11-21T11:47:01.4697908Z +    let max_logit = logits
+2025-11-21T11:47:01.4698285Z +        .data
+2025-11-21T11:47:01.4698582Z +        .iter()
+2025-11-21T11:47:01.4698894Z +        .cloned()
+2025-11-21T11:47:01.4699262Z +        .fold(f64::NEG_INFINITY, f64::max);
+2025-11-21T11:47:01.4699916Z      let exp_sum: f64 = logits.data.iter().map(|&x| (x - max_logit).exp()).sum();
+2025-11-21T11:47:01.4700623Z -    let probabilities: Vec<f64> = logits.data.iter()
+2025-11-21T11:47:01.4701165Z +    let probabilities: Vec<f64> = logits
+2025-11-21T11:47:01.4701598Z +        .data
+2025-11-21T11:47:01.4701896Z +        .iter()
+2025-11-21T11:47:01.4702468Z          .map(|&x| (x - max_logit).exp() / exp_sum)
+2025-11-21T11:47:01.4702947Z          .collect();
+2025-11-21T11:47:01.4703271Z  
+2025-11-21T11:47:01.4703736Z Diff in /home/runner/work/arxis/arxis/examples/ml_example.rs:232:
+2025-11-21T11:47:01.4704413Z      for (i, &p) in probabilities.iter().enumerate() {
+2025-11-21T11:47:01.4705022Z          println!("  Classe {}: {:.4} ({:.1}%)", i, p, p * 100.0);
+2025-11-21T11:47:01.4705512Z      }
+2025-11-21T11:47:01.4706072Z -    println!("Soma das probabilidades: {:.6}", probabilities.iter().sum::<f64>());
+2025-11-21T11:47:01.4706713Z +    println!(
+2025-11-21T11:47:01.4707078Z +        "Soma das probabilidades: {:.6}",
+2025-11-21T11:47:01.4707565Z +        probabilities.iter().sum::<f64>()
+2025-11-21T11:47:01.4707990Z +    );
+2025-11-21T11:47:01.4708254Z  
+2025-11-21T11:47:01.4708615Z      // ========== GRADIENT DESCENT SIMULATION ==========
+2025-11-21T11:47:01.4709316Z      println!("\n--- Simulação de Gradient Descent ---");
+2025-11-21T11:47:01.4709973Z Diff in /home/runner/work/arxis/arxis/examples/ml_example.rs:239:
+2025-11-21T11:47:01.4710527Z -    
+2025-11-21T11:47:01.4710806Z +
+2025-11-21T11:47:01.4711227Z      // Função objetivo: f(x) = x² - 4x + 5
+2025-11-21T11:47:01.4711689Z      // Derivada: f'(x) = 2x - 4
+2025-11-21T11:47:01.4712072Z -    
+2025-11-21T11:47:01.4712524Z +
+2025-11-21T11:47:01.4712818Z      let mut x = 0.0;
+2025-11-21T11:47:01.4713174Z      let learning_rate = 0.1;
+2025-11-21T11:47:01.4713560Z      let iterations = 10;
+2025-11-21T11:47:01.4714102Z Diff in /home/runner/work/arxis/arxis/examples/ml_example.rs:246:
+2025-11-21T11:47:01.4714645Z  
+2025-11-21T11:47:01.4715091Z      println!("Minimizando f(x) = x² - 4x + 5");
+2025-11-21T11:47:01.4715663Z      println!("Taxa de aprendizado: {}", learning_rate);
+2025-11-21T11:47:01.4716125Z -    
+2025-11-21T11:47:01.4716414Z +
+2025-11-21T11:47:01.4716709Z      for i in 0..iterations {
+2025-11-21T11:47:01.4717120Z          let f_x = x * x - 4.0 * x + 5.0;
+2025-11-21T11:47:01.4717566Z          let gradient = 2.0 * x - 4.0;
+2025-11-21T11:47:01.4718156Z Diff in /home/runner/work/arxis/arxis/examples/ml_example.rs:253:
+2025-11-21T11:47:01.4718701Z -        
+2025-11-21T11:47:01.4719333Z -        println!("Iteração {}: x = {:.4}, f(x) = {:.4}, ∇f = {:.4}", i, x, f_x, gradient);
+2025-11-21T11:47:01.4719887Z -        
+2025-11-21T11:47:01.4720155Z +
+2025-11-21T11:47:01.4720450Z +        println!(
+2025-11-21T11:47:01.4720926Z +            "Iteração {}: x = {:.4}, f(x) = {:.4}, ∇f = {:.4}",
+2025-11-21T11:47:01.4721415Z +            i, x, f_x, gradient
+2025-11-21T11:47:01.4721763Z +        );
+2025-11-21T11:47:01.4722045Z +
+2025-11-21T11:47:01.4722533Z          x = x - learning_rate * gradient;
+2025-11-21T11:47:01.4722936Z      }
+2025-11-21T11:47:01.4723197Z -    
+2025-11-21T11:47:01.4723482Z +
+2025-11-21T11:47:01.4724166Z      println!("\nMínimo encontrado em x ≈ {:.4}", x);
+2025-11-21T11:47:01.4724788Z      println!("Mínimo teórico em x = 2.0");
+2025-11-21T11:47:01.4725206Z  
+2025-11-21T11:47:01.4725657Z Diff in /home/runner/work/arxis/arxis/examples/ml_example.rs:262:
+2025-11-21T11:47:01.4726437Z      // ========== OPERAÇÕES MATRICIAIS PARA BACKPROP ==========
+2025-11-21T11:47:01.4727150Z      println!("\n--- Operações para Backpropagation ---");
+2025-11-21T11:47:01.4727662Z -    
+2025-11-21T11:47:01.4727934Z +
+2025-11-21T11:47:01.4728529Z      // Gradiente da camada
+2025-11-21T11:47:01.4729043Z      let grad_output = Vector::from_slice(&[0.1, 0.2, 0.3]);
+2025-11-21T11:47:01.4729792Z      println!("Gradiente da saída: {:?}", grad_output.data);
+2025-11-21T11:47:01.4730490Z Diff in /home/runner/work/arxis/arxis/examples/ml_example.rs:284:
+2025-11-21T11:47:01.4731056Z  
+2025-11-21T11:47:01.4731390Z      // ========== DATA AUGMENTATION ==========
+2025-11-21T11:47:01.4731989Z      println!("\n--- Data Augmentation (Redimensionamento) ---");
+2025-11-21T11:47:01.4732745Z -    
+2025-11-21T11:47:01.4733029Z +
+2025-11-21T11:47:01.4733450Z      let mut small_image = Tensor4D::new(1, 3, 4, 4);
+2025-11-21T11:47:01.4733926Z      for c in 0..3 {
+2025-11-21T11:47:01.4734277Z          for i in 0..4 {
+2025-11-21T11:47:01.4734801Z Diff in /home/runner/work/arxis/arxis/examples/ml_example.rs:291:
+2025-11-21T11:47:01.4735390Z              for j in 0..4 {
+2025-11-21T11:47:01.4735930Z -                small_image.set([0, c, i, j], (c as f64 + i as f64) / 10.0).unwrap();
+2025-11-21T11:47:01.4736522Z +                small_image
+2025-11-21T11:47:01.4736969Z +                    .set([0, c, i, j], (c as f64 + i as f64) / 10.0)
+2025-11-21T11:47:01.4737454Z +                    .unwrap();
+2025-11-21T11:47:01.4737826Z              }
+2025-11-21T11:47:01.4738121Z          }
+2025-11-21T11:47:01.4738404Z      }
+2025-11-21T11:47:01.4738862Z Diff in /home/runner/work/arxis/arxis/examples/ml_example.rs:296:
+2025-11-21T11:47:01.4739408Z  
+2025-11-21T11:47:01.4739799Z      println!("Imagem original: {:?}", small_image.shape());
+2025-11-21T11:47:01.4740299Z -    
+2025-11-21T11:47:01.4740573Z +
+2025-11-21T11:47:01.4740885Z      // Extrai primeira imagem do batch
+2025-11-21T11:47:01.4741388Z      let img = small_image.get_image(0).unwrap();
+2025-11-21T11:47:01.4741835Z -    
+2025-11-21T11:47:01.4742296Z +
+2025-11-21T11:47:01.4742605Z      // Redimensiona
+2025-11-21T11:47:01.4743077Z      let resized = image_ops::resize_nearest(&img, 8, 8);
+2025-11-21T11:47:01.4743716Z      println!("Imagem redimensionada: {:?}", resized.shape());
+2025-11-21T11:47:01.4744448Z Diff in /home/runner/work/arxis/arxis/examples/ml_example.rs:305:
+2025-11-21T11:47:01.4744998Z  
+2025-11-21T11:47:01.4745458Z      // ========== MÉTRICAS DE AVALIAÇÃO ==========
+2025-11-21T11:47:01.4746075Z      println!("\n--- Métricas de Avaliação ---");
+2025-11-21T11:47:01.4746526Z -    
+2025-11-21T11:47:01.4746789Z +
+2025-11-21T11:47:01.4747220Z      let predictions = Vector::from_slice(&[0.9, 0.1, 0.8, 0.3, 0.7]);
+2025-11-21T11:47:01.4747906Z      let targets = Vector::from_slice(&[1.0, 0.0, 1.0, 0.0, 1.0]);
+2025-11-21T11:47:01.4748392Z -    
+2025-11-21T11:47:01.4748653Z +
+2025-11-21T11:47:01.4748949Z      // MSE (Mean Squared Error)
+2025-11-21T11:47:01.4749348Z      let mut mse = 0.0;
+2025-11-21T11:47:01.4749695Z      for i in 0..5 {
+2025-11-21T11:47:01.4750192Z Diff in /home/runner/work/arxis/arxis/examples/ml_example.rs:316:
+2025-11-21T11:47:01.4750791Z          mse += diff * diff;
+2025-11-21T11:47:01.4751143Z      }
+2025-11-21T11:47:01.4751448Z      mse /= 5.0;
+2025-11-21T11:47:01.4751755Z -    
+2025-11-21T11:47:01.4751876Z +
+2025-11-21T11:47:01.4752425Z      println!("Predições: {:?}", predictions.data);
+2025-11-21T11:47:01.4752623Z      println!("Alvos: {:?}", targets.data);
+2025-11-21T11:47:01.4752842Z      println!("MSE (Mean Squared Error): {:.4}", mse);
+2025-11-21T11:47:01.4753164Z Diff in /home/runner/work/arxis/arxis/examples/ml_example.rs:325:
+2025-11-21T11:47:01.4753407Z      // Acurácia (threshold 0.5)
+2025-11-21T11:47:01.4753767Z      let mut correct = 0;
+2025-11-21T11:47:01.4753908Z      for i in 0..5 {
+2025-11-21T11:47:01.4754271Z -        let pred_class = if predictions.get([i]).unwrap() > 0.5 { 1.0 } else { 0.0 };
+2025-11-21T11:47:01.4754538Z +        let pred_class = if predictions.get([i]).unwrap() > 0.5 {
+2025-11-21T11:47:01.4754671Z +            1.0
+2025-11-21T11:47:01.4754799Z +        } else {
+2025-11-21T11:47:01.4754920Z +            0.0
+2025-11-21T11:47:01.4755037Z +        };
+2025-11-21T11:47:01.4755254Z          if pred_class == targets.get([i]).unwrap() {
+2025-11-21T11:47:01.4755575Z              correct += 1;
+2025-11-21T11:47:01.4755697Z          }
+2025-11-21T11:47:01.4765904Z Diff in /home/runner/work/arxis/arxis/landing-page-leptos/src/components/architecture.rs:1:
+2025-11-21T11:47:01.4766113Z -use leptos::*;
+2025-11-21T11:47:01.4766281Z  use crate::{Language, Theme};
+2025-11-21T11:47:01.4766417Z +use leptos::*;
+2025-11-21T11:47:01.4766534Z  
+2025-11-21T11:47:01.4766658Z  #[component]
+2025-11-21T11:47:01.4766822Z -pub fn Architecture(
+2025-11-21T11:47:01.4766991Z -    lang: ReadSignal<Language>,
+2025-11-21T11:47:01.4767145Z -    theme: ReadSignal<Theme>,
+2025-11-21T11:47:01.4767297Z -) -> impl IntoView {
+2025-11-21T11:47:01.4767773Z +pub fn Architecture(lang: ReadSignal<Language>, theme: ReadSignal<Theme>) -> impl IntoView {
+2025-11-21T11:47:01.4767908Z      view! {
+2025-11-21T11:47:01.4768137Z          <section id="architecture" class="architecture">
+2025-11-21T11:47:01.4768290Z              <div class="container">
+2025-11-21T11:47:01.4770445Z Diff in /home/runner/work/arxis/arxis/landing-page-leptos/src/components/code_examples.rs:1:
+2025-11-21T11:47:01.4770771Z -use leptos::*;
+2025-11-21T11:47:01.4770997Z  use crate::{Language, Theme};
+2025-11-21T11:47:01.4771152Z +use leptos::*;
+2025-11-21T11:47:01.4771272Z  
+2025-11-21T11:47:01.4771409Z  #[component]
+2025-11-21T11:47:01.4771576Z -pub fn CodeExamples(
+2025-11-21T11:47:01.4771752Z -    lang: ReadSignal<Language>,
+2025-11-21T11:47:01.4771935Z -    theme: ReadSignal<Theme>,
+2025-11-21T11:47:01.4772087Z -) -> impl IntoView {
+2025-11-21T11:47:01.4772989Z +pub fn CodeExamples(lang: ReadSignal<Language>, theme: ReadSignal<Theme>) -> impl IntoView {
+2025-11-21T11:47:01.4773240Z      view! {
+2025-11-21T11:47:01.4773485Z          <section id="docs" class="code-examples">
+2025-11-21T11:47:01.4773725Z              <div class="container">
+2025-11-21T11:47:01.4774251Z Diff in /home/runner/work/arxis/arxis/landing-page-leptos/src/components/contact.rs:1:
+2025-11-21T11:47:01.4774457Z +use crate::{i18n::T, Language, Theme};
+2025-11-21T11:47:01.4774617Z  use leptos::*;
+2025-11-21T11:47:01.4774805Z -use crate::{Language, Theme, i18n::T};
+2025-11-21T11:47:01.4774931Z  
+2025-11-21T11:47:01.4775076Z  #[component]
+2025-11-21T11:47:01.4775216Z -pub fn Contact(
+2025-11-21T11:47:01.4775381Z -    lang: ReadSignal<Language>,
+2025-11-21T11:47:01.4775546Z -    theme: ReadSignal<Theme>,
+2025-11-21T11:47:01.4775701Z -) -> impl IntoView {
+2025-11-21T11:47:01.4776158Z +pub fn Contact(lang: ReadSignal<Language>, theme: ReadSignal<Theme>) -> impl IntoView {
+2025-11-21T11:47:01.4776290Z      view! {
+2025-11-21T11:47:01.4776490Z          <section id="contact" class="contact">
+2025-11-21T11:47:01.4776662Z              <div class="container">
+2025-11-21T11:47:01.4777390Z Diff in /home/runner/work/arxis/arxis/landing-page-leptos/src/components/features.rs:1:
+2025-11-21T11:47:01.4777786Z +use crate::{i18n::T, Language, Theme};
+2025-11-21T11:47:01.4778274Z  use leptos::*;
+2025-11-21T11:47:01.4778502Z -use crate::{Language, Theme, i18n::T};
+2025-11-21T11:47:01.4778631Z  
+2025-11-21T11:47:01.4778777Z  #[component]
+2025-11-21T11:47:01.4778944Z -pub fn Features(
+2025-11-21T11:47:01.4779123Z -    lang: ReadSignal<Language>,
+2025-11-21T11:47:01.4779293Z -    theme: ReadSignal<Theme>,
+2025-11-21T11:47:01.4779458Z -) -> impl IntoView {
+2025-11-21T11:47:01.4779935Z +pub fn Features(lang: ReadSignal<Language>, theme: ReadSignal<Theme>) -> impl IntoView {
+2025-11-21T11:47:01.4780072Z      view! {
+2025-11-21T11:47:01.4780526Z          <section id="features" class="features">
+2025-11-21T11:47:01.4780709Z              <div class="container">
+2025-11-21T11:47:01.4781236Z Diff in /home/runner/work/arxis/arxis/landing-page-leptos/src/components/footer.rs:1:
+2025-11-21T11:47:01.4781441Z +use crate::{i18n::T, Language, Theme};
+2025-11-21T11:47:01.4781705Z  use leptos::*;
+2025-11-21T11:47:01.4781890Z -use crate::{Language, Theme, i18n::T};
+2025-11-21T11:47:01.4782012Z  
+2025-11-21T11:47:01.4782372Z  #[component]
+2025-11-21T11:47:01.4782755Z -pub fn Footer(
+2025-11-21T11:47:01.4782935Z -    lang: ReadSignal<Language>,
+2025-11-21T11:47:01.4783108Z -    theme: ReadSignal<Theme>,
+2025-11-21T11:47:01.4783255Z -) -> impl IntoView {
+2025-11-21T11:47:01.4783701Z +pub fn Footer(lang: ReadSignal<Language>, theme: ReadSignal<Theme>) -> impl IntoView {
+2025-11-21T11:47:01.4783839Z      view! {
+2025-11-21T11:47:01.4784015Z          <footer class="footer">
+2025-11-21T11:47:01.4784229Z              <div class="container footer-content">
+2025-11-21T11:47:01.4784706Z Diff in /home/runner/work/arxis/arxis/landing-page-leptos/src/components/hero.rs:1:
+2025-11-21T11:47:01.4784924Z +use crate::{i18n::T, Language, Theme};
+2025-11-21T11:47:01.4785082Z  use leptos::*;
+2025-11-21T11:47:01.4785273Z -use crate::{Language, Theme, i18n::T};
+2025-11-21T11:47:01.4785400Z  
+2025-11-21T11:47:01.4785548Z  #[component]
+2025-11-21T11:47:01.4785684Z -pub fn Hero(
+2025-11-21T11:47:01.4785850Z -    lang: ReadSignal<Language>,
+2025-11-21T11:47:01.4786024Z -    theme: ReadSignal<Theme>,
+2025-11-21T11:47:01.4786187Z -) -> impl IntoView {
+2025-11-21T11:47:01.4786613Z +pub fn Hero(lang: ReadSignal<Language>, theme: ReadSignal<Theme>) -> impl IntoView {
+2025-11-21T11:47:01.4786747Z      view! {
+2025-11-21T11:47:01.4786921Z          <section class="hero">
+2025-11-21T11:47:01.4787122Z              <div class="hero-content container">
+2025-11-21T11:47:01.4787575Z Diff in /home/runner/work/arxis/arxis/landing-page-leptos/src/components/mod.rs:1:
+2025-11-21T11:47:01.4787734Z -mod navbar;
+2025-11-21T11:47:01.4787868Z -mod hero;
+2025-11-21T11:47:01.4788007Z -mod features;
+2025-11-21T11:47:01.4788162Z  mod architecture;
+2025-11-21T11:47:01.4788327Z  mod code_examples;
+2025-11-21T11:47:01.4788467Z -mod stats;
+2025-11-21T11:47:01.4788606Z  mod contact;
+2025-11-21T11:47:01.4788754Z +mod features;
+2025-11-21T11:47:01.4788893Z  mod footer;
+2025-11-21T11:47:01.4789027Z +mod hero;
+2025-11-21T11:47:01.4789165Z +mod navbar;
+2025-11-21T11:47:01.4789309Z +mod stats;
+2025-11-21T11:47:01.4789440Z  
+2025-11-21T11:47:01.4789606Z -pub use navbar::*;
+2025-11-21T11:47:01.4789763Z -pub use hero::*;
+2025-11-21T11:47:01.4789919Z -pub use features::*;
+2025-11-21T11:47:01.4790092Z  pub use architecture::*;
+2025-11-21T11:47:01.4790266Z  pub use code_examples::*;
+2025-11-21T11:47:01.4790422Z -pub use stats::*;
+2025-11-21T11:47:01.4790570Z  pub use contact::*;
+2025-11-21T11:47:01.4790726Z +pub use features::*;
+2025-11-21T11:47:01.4790887Z  pub use footer::*;
+2025-11-21T11:47:01.4791042Z +pub use hero::*;
+2025-11-21T11:47:01.4791192Z +pub use navbar::*;
+2025-11-21T11:47:01.4791339Z +pub use stats::*;
+2025-11-21T11:47:01.4791467Z  
+2025-11-21T11:47:01.4792001Z Diff in /home/runner/work/arxis/arxis/landing-page-leptos/src/components/navbar.rs:1:
+2025-11-21T11:47:01.4792530Z +use crate::{Language, Theme};
+2025-11-21T11:47:01.4792717Z  use leptos::*;
+2025-11-21T11:47:01.4792901Z -use crate::{Theme, Language};
+2025-11-21T11:47:01.4793033Z  
+2025-11-21T11:47:01.4793185Z  #[component]
+2025-11-21T11:47:01.4793328Z  pub fn Navbar(
+2025-11-21T11:47:01.4793819Z Diff in /home/runner/work/arxis/arxis/landing-page-leptos/src/components/stats.rs:1:
+2025-11-21T11:47:01.4793981Z -use leptos::*;
+2025-11-21T11:47:01.4794166Z  use crate::{Language, Theme};
+2025-11-21T11:47:01.4794314Z +use leptos::*;
+2025-11-21T11:47:01.4794443Z  
+2025-11-21T11:47:01.4794594Z  #[component]
+2025-11-21T11:47:01.4794740Z -pub fn Stats(
+2025-11-21T11:47:01.4794918Z -    lang: ReadSignal<Language>,
+2025-11-21T11:47:01.4795092Z -    theme: ReadSignal<Theme>,
+2025-11-21T11:47:01.4795511Z -) -> impl IntoView {
+2025-11-21T11:47:01.4795954Z +pub fn Stats(lang: ReadSignal<Language>, theme: ReadSignal<Theme>) -> impl IntoView {
+2025-11-21T11:47:01.4796099Z      view! {
+2025-11-21T11:47:01.4796275Z          <section class="stats">
+2025-11-21T11:47:01.4796448Z              <div class="container">
+2025-11-21T11:47:01.4796893Z Diff in /home/runner/work/arxis/arxis/landing-page-leptos/src/i18n.rs:141:
+2025-11-21T11:47:01.4797018Z  
+2025-11-21T11:47:01.4797261Z      pub fn gr_desc(lang: Language) -> &'static str {
+2025-11-21T11:47:01.4797601Z          match lang {
+2025-11-21T11:47:01.4798293Z -            Language::PtBR => "Kit completo de RG com métricas, geodésicas e tensores de curvatura.",
+2025-11-21T11:47:01.4798790Z -            Language::En => "Comprehensive GR toolkit with metrics, geodesics, and curvature tensors.",
+2025-11-21T11:47:01.4798970Z +            Language::PtBR => {
+2025-11-21T11:47:01.4799440Z +                "Kit completo de RG com métricas, geodésicas e tensores de curvatura."
+2025-11-21T11:47:01.4799585Z +            }
+2025-11-21T11:47:01.4799755Z +            Language::En => {
+2025-11-21T11:47:01.4800155Z +                "Comprehensive GR toolkit with metrics, geodesics, and curvature tensors."
+2025-11-21T11:47:01.4800284Z +            }
+2025-11-21T11:47:01.4800408Z          }
+2025-11-21T11:47:01.4800533Z      }
+2025-11-21T11:47:01.4800647Z  
+2025-11-21T11:47:01.4801059Z Diff in /home/runner/work/arxis/arxis/landing-page-leptos/src/lib.rs:1:
+2025-11-21T11:47:01.4801283Z +use gloo_storage::{LocalStorage, Storage};
+2025-11-21T11:47:01.4801440Z  use leptos::*;
+2025-11-21T11:47:01.4801593Z  use leptos_meta::*;
+2025-11-21T11:47:01.4801750Z  use leptos_router::*;
+2025-11-21T11:47:01.4802350Z Diff in /home/runner/work/arxis/arxis/landing-page-leptos/src/lib.rs:4:
+2025-11-21T11:47:01.4802587Z -use gloo_storage::{LocalStorage, Storage};
+2025-11-21T11:47:01.4802721Z  
+2025-11-21T11:47:01.4802878Z  mod components;
+2025-11-21T11:47:01.4803031Z  mod i18n;
+2025-11-21T11:47:01.4923636Z Diff in /home/runner/work/arxis/arxis/src/lib.rs:41:
+2025-11-21T11:47:01.4924124Z      pub use crate::geometry::{DualQuat, Quat3D, SO4Rotation};
+2025-11-21T11:47:01.4924582Z      pub use crate::physics::{
+2025-11-21T11:47:01.4924997Z          BlackHoleProperties, ChristoffelSymbols, CompactBinary, CosmicStructure,
+2025-11-21T11:47:01.4925407Z -        CosmologicalObservables, CosmologicalParameters, Detector, EinsteinTensor,
+2025-11-21T11:47:01.4925783Z -        FLRWUniverse, GeodesicIntegrator, GravitationalEffects, GravitationalLens,
+2025-11-21T11:47:01.4926218Z -        GravitationalWave, LensingStatistics, LensType, LorentzTransform, MetricTensor,
+2025-11-21T11:47:01.4926617Z -        MicrolensingEvent, MinkowskiMetric, OrbitCalculator, OrbitType, ParticleState,
+2025-11-21T11:47:01.4926829Z -        Polarization, WaveformAnalysis, WeakLensing,
+2025-11-21T11:47:01.4927313Z +        CosmologicalObservables, CosmologicalParameters, Detector, EinsteinTensor, FLRWUniverse,
+2025-11-21T11:47:01.4927812Z +        GeodesicIntegrator, GravitationalEffects, GravitationalLens, GravitationalWave, LensType,
+2025-11-21T11:47:01.4928268Z +        LensingStatistics, LorentzTransform, MetricTensor, MicrolensingEvent, MinkowskiMetric,
+2025-11-21T11:47:01.4928726Z +        OrbitCalculator, OrbitType, ParticleState, Polarization, WaveformAnalysis, WeakLensing,
+2025-11-21T11:47:01.4928887Z      };
+2025-11-21T11:47:01.4929247Z      pub use crate::tensor::{Matrix, Scalar, Tensor, Tensor3D, Tensor4D, Vector};
+2025-11-21T11:47:01.4929386Z  }
+2025-11-21T11:47:01.5215874Z Diff in /home/runner/work/arxis/arxis/src/physics/lisa_inference.rs:37:
+2025-11-21T11:47:01.5216108Z  /// - Veitch et al., Phys. Rev. D 91, 042003 (2015)
+2025-11-21T11:47:01.5216284Z  /// - LIGO Algorithm Library: LALInference
+2025-11-21T11:47:01.5216471Z  /// - Thrane & Talbot, PASA 36, e010 (2019)
+2025-11-21T11:47:01.5216588Z -
+2025-11-21T11:47:01.5216750Z -use crate::physics::{
+2025-11-21T11:47:01.5217096Z -    lisa_data::StrainTimeSeries, lisa_processing::PowerSpectralDensity,
+2025-11-21T11:47:01.5217509Z -};
+2025-11-21T11:47:01.5217944Z +use crate::physics::{lisa_data::StrainTimeSeries, lisa_processing::PowerSpectralDensity};
+2025-11-21T11:47:01.5218084Z  use rand::Rng;
+2025-11-21T11:47:01.5218295Z  use rand_distr::{Distribution, Normal, Uniform};
+2025-11-21T11:47:01.5218435Z  use std::f64::consts::PI;
+2025-11-21T11:47:01.5218832Z Diff in /home/runner/work/arxis/arxis/src/physics/lisa_inference.rs:153:
+2025-11-21T11:47:01.5219047Z          for (i, name) in self.param_names.iter().enumerate() {
+2025-11-21T11:47:01.5219378Z              println!(
+2025-11-21T11:47:01.5219534Z                  "{:<20} {:>12.4e} {:>12.4e} {:>12.4e} {:>8.0}",
+2025-11-21T11:47:01.5219945Z -                name, self.medians[i], self.credible_intervals[i].0, self.credible_intervals[i].1, self.ess[i]
+2025-11-21T11:47:01.5220079Z +                name,
+2025-11-21T11:47:01.5220244Z +                self.medians[i],
+2025-11-21T11:47:01.5220429Z +                self.credible_intervals[i].0,
+2025-11-21T11:47:01.5220609Z +                self.credible_intervals[i].1,
+2025-11-21T11:47:01.5220758Z +                self.ess[i]
+2025-11-21T11:47:01.5220885Z              );
+2025-11-21T11:47:01.5221017Z          }
+2025-11-21T11:47:01.5221142Z  
+2025-11-21T11:47:01.5221470Z Diff in /home/runner/work/arxis/arxis/src/physics/lisa_inference.rs:333:
+2025-11-21T11:47:01.5221585Z          println!();
+2025-11-21T11:47:01.5221694Z  
+2025-11-21T11:47:01.5221833Z          // Initialize chain from prior
+2025-11-21T11:47:01.5222401Z -        let mut current: Vec<f64> = self.priors.iter().map(|p| p.sample(&mut self.rng)).collect();
+2025-11-21T11:47:01.5222576Z +        let mut current: Vec<f64> = self
+2025-11-21T11:47:01.5222710Z +            .priors
+2025-11-21T11:47:01.5222837Z +            .iter()
+2025-11-21T11:47:01.5223004Z +            .map(|p| p.sample(&mut self.rng))
+2025-11-21T11:47:01.5223148Z +            .collect();
+2025-11-21T11:47:01.5223383Z          let mut current_log_post = self.log_posterior(&current);
+2025-11-21T11:47:01.5223499Z  
+2025-11-21T11:47:01.5223662Z          let mut samples = Vec::new();
+2025-11-21T11:47:01.5223987Z Diff in /home/runner/work/arxis/arxis/src/physics/lisa_inference.rs:388:
+2025-11-21T11:47:01.5224325Z          let acceptance_rate = n_accepted as f64 / total_iterations as f64;
+2025-11-21T11:47:01.5224453Z          println!();
+2025-11-21T11:47:01.5224750Z          println!("✓ MCMC completed!");
+2025-11-21T11:47:01.5225164Z -        println!("   └─ Final acceptance rate: {:.1}%", acceptance_rate * 100.0);
+2025-11-21T11:47:01.5225305Z +        println!(
+2025-11-21T11:47:01.5225538Z +            "   └─ Final acceptance rate: {:.1}%",
+2025-11-21T11:47:01.5225666Z +            acceptance_rate * 100.0
+2025-11-21T11:47:01.5225786Z +        );
+2025-11-21T11:47:01.5225903Z          println!();
+2025-11-21T11:47:01.5226015Z  
+2025-11-21T11:47:01.5226186Z          let mut result = ParameterEstimation {
+2025-11-21T11:47:01.5226564Z Diff in /home/runner/work/arxis/arxis/src/physics/lisa_inference.rs:442:
+2025-11-21T11:47:01.5226709Z  
+2025-11-21T11:47:01.5226841Z      #[test]
+2025-11-21T11:47:01.5227012Z      fn test_prior_uniform() {
+2025-11-21T11:47:01.5227237Z -        let prior = Prior::Uniform { min: 0.0, max: 10.0 };
+2025-11-21T11:47:01.5227373Z +        let prior = Prior::Uniform {
+2025-11-21T11:47:01.5227483Z +            min: 0.0,
+2025-11-21T11:47:01.5227603Z +            max: 10.0,
+2025-11-21T11:47:01.5227706Z +        };
+2025-11-21T11:47:01.5227807Z  
+2025-11-21T11:47:01.5227954Z          // Test log_prob
+2025-11-21T11:47:01.5228208Z          assert!((prior.log_prob(5.0) - (-10.0_f64.ln())).abs() < 1e-10);
+2025-11-21T11:47:01.5228545Z Diff in /home/runner/work/arxis/arxis/src/physics/lisa_inference.rs:459:
+2025-11-21T11:47:01.5228664Z  
+2025-11-21T11:47:01.5228799Z      #[test]
+2025-11-21T11:47:01.5228956Z      fn test_prior_log_uniform() {
+2025-11-21T11:47:01.5229194Z -        let prior = Prior::LogUniform { min: 1.0, max: 100.0 };
+2025-11-21T11:47:01.5229618Z +        let prior = Prior::LogUniform {
+2025-11-21T11:47:01.5229745Z +            min: 1.0,
+2025-11-21T11:47:01.5229882Z +            max: 100.0,
+2025-11-21T11:47:01.5230009Z +        };
+2025-11-21T11:47:01.5230132Z  
+2025-11-21T11:47:01.5230307Z          let log_p = prior.log_prob(10.0);
+2025-11-21T11:47:01.5230460Z          assert!(log_p.is_finite());
+2025-11-21T11:47:01.5230831Z Diff in /home/runner/work/arxis/arxis/src/physics/lisa_inference.rs:529:
+2025-11-21T11:47:01.5230961Z  
+2025-11-21T11:47:01.5231100Z          // Set up priors
+2025-11-21T11:47:01.5231442Z          let priors = vec![
+2025-11-21T11:47:01.5231607Z -            Prior::Uniform {
+2025-11-21T11:47:01.5231744Z -                min: 1e5,
+2025-11-21T11:47:01.5231881Z -                max: 1e7,
+2025-11-21T11:47:01.5232020Z -            }, // m1
+2025-11-21T11:47:01.5232380Z -            Prior::Uniform {
+2025-11-21T11:47:01.5232520Z -                min: 1e5,
+2025-11-21T11:47:01.5232657Z -                max: 1e7,
+2025-11-21T11:47:01.5232793Z -            }, // m2
+2025-11-21T11:47:01.5232980Z +            Prior::Uniform { min: 1e5, max: 1e7 }, // m1
+2025-11-21T11:47:01.5233153Z +            Prior::Uniform { min: 1e5, max: 1e7 }, // m2
+2025-11-21T11:47:01.5233315Z              Prior::LogUniform {
+2025-11-21T11:47:01.5233455Z                  min: 1e24,
+2025-11-21T11:47:01.5233587Z                  max: 1e26,
+2025-11-21T11:47:01.5233949Z Diff in /home/runner/work/arxis/arxis/src/physics/lisa_inference.rs:571:
+2025-11-21T11:47:01.5234051Z  
+2025-11-21T11:47:01.5234177Z          // Set up priors
+2025-11-21T11:47:01.5234297Z          let priors = vec![
+2025-11-21T11:47:01.5234431Z -            Prior::Uniform {
+2025-11-21T11:47:01.5234553Z -                min: 1e5,
+2025-11-21T11:47:01.5234665Z -                max: 1e7,
+2025-11-21T11:47:01.5234775Z -            },
+2025-11-21T11:47:01.5234904Z -            Prior::Uniform {
+2025-11-21T11:47:01.5235027Z -                min: 1e5,
+2025-11-21T11:47:01.5235153Z -                max: 1e7,
+2025-11-21T11:47:01.5235288Z -            },
+2025-11-21T11:47:01.5235468Z +            Prior::Uniform { min: 1e5, max: 1e7 },
+2025-11-21T11:47:01.5235635Z +            Prior::Uniform { min: 1e5, max: 1e7 },
+2025-11-21T11:47:01.5235795Z              Prior::LogUniform {
+2025-11-21T11:47:01.5235924Z                  min: 1e24,
+2025-11-21T11:47:01.5236051Z                  max: 1e26,
+2025-11-21T11:47:01.5267282Z Diff in /home/runner/work/arxis/arxis/src/physics/lisa_telemetry.rs:1:
+2025-11-21T11:47:01.5267517Z  //! LISA Telemetry - Time Series Analysis (Simplified)
+2025-11-21T11:47:01.5267637Z  
+2025-11-21T11:47:01.5267809Z -pub use avila_telemetry::TimeSeries;
+2025-11-21T11:47:01.5268037Z -pub use avila_telemetry::anomaly::{AnomalyDetector, Anomaly};
+2025-11-21T11:47:01.5268200Z +pub use avila_telemetry::anomaly::{Anomaly, AnomalyDetector};
+2025-11-21T11:47:01.5268367Z  pub use avila_telemetry::observability::DataQualityAssessment;
+2025-11-21T11:47:01.5268474Z +pub use avila_telemetry::TimeSeries;
+2025-11-21T11:47:01.5268543Z  
+2025-11-21T11:47:01.5268629Z  // Re-export for easy access
+2025-11-21T11:47:01.5268768Z  pub type LISATelemetry = avila_telemetry::TimeSeries;
+2025-11-21T11:47:01.5268965Z Diff in /home/runner/work/arxis/arxis/src/physics/lisa_telemetry.rs:9:
+2025-11-21T11:47:01.5269030Z -
+2025-11-21T11:47:01.5269092Z  
+2025-11-21T11:47:01.5371265Z ##[error]Process completed with exit code 1.

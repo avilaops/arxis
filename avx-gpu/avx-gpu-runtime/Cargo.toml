@@ -1,0 +1,15 @@
+[package]
+name = "avx-gpu-runtime"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "Runtime and scheduling for AVX-GPU"
+
+[dependencies]
+avx-gpu-core = { path = "../avx-gpu-core" }
+thiserror.workspace = true
+tracing.workspace = true
+parking_lot.workspace = true
+dashmap.workspace = true

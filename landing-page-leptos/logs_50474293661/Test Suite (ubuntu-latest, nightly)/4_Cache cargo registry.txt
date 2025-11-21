@@ -1,0 +1,21 @@
+﻿2025-11-21T11:47:12.5868926Z ##[group]Run actions/cache@v3
+2025-11-21T11:47:12.5869224Z with:
+2025-11-21T11:47:12.5869415Z   path: ~/.cargo/registry
+2025-11-21T11:47:12.5869880Z   key: Linux-cargo-registry-
+2025-11-21T11:47:12.5870122Z   enableCrossOsArchive: false
+2025-11-21T11:47:12.5870346Z   fail-on-cache-miss: false
+2025-11-21T11:47:12.5870565Z   lookup-only: false
+2025-11-21T11:47:12.5870759Z env:
+2025-11-21T11:47:12.5870938Z   CARGO_TERM_COLOR: always
+2025-11-21T11:47:12.5871142Z   RUST_BACKTRACE: 1
+2025-11-21T11:47:12.5871345Z   CARGO_HOME: /home/runner/.cargo
+2025-11-21T11:47:12.5871575Z   CARGO_INCREMENTAL: 0
+2025-11-21T11:47:12.5871772Z ##[endgroup]
+2025-11-21T11:47:12.9437368Z Cache hit for: Linux-cargo-registry-
+2025-11-21T11:47:14.1462318Z Received 41943040 of 170839959 (24.6%), 40.0 MBs/sec
+2025-11-21T11:47:15.1477328Z Received 138412032 of 170839959 (81.0%), 65.9 MBs/sec
+2025-11-21T11:47:15.3724905Z Received 170839959 of 170839959 (100.0%), 73.2 MBs/sec
+2025-11-21T11:47:15.3728290Z Cache Size: ~163 MB (170839959 B)
+2025-11-21T11:47:15.3771072Z [command]/usr/bin/tar -xf /home/runner/work/_temp/a701bb0c-f4ec-43c0-8aae-16155092deda/cache.tzst -P -C /home/runner/work/arxis/arxis --use-compress-program unzstd
+2025-11-21T11:47:17.6127145Z Cache restored successfully
+2025-11-21T11:47:17.6536662Z Cache restored from key: Linux-cargo-registry-

@@ -1,0 +1,12 @@
+[package]
+name = "avx-gpu-std"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "Standard library for AVX-GPU (common GPU operations)"
+
+[dependencies]
+avx-gpu-core = { path = "../avx-gpu-core" }
+bytemuck.workspace = true

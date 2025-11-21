@@ -1,0 +1,74 @@
+﻿2025-11-21T11:47:01.2621889Z ##[group]Run actions/checkout@v4
+2025-11-21T11:47:01.2623305Z with:
+2025-11-21T11:47:01.2624037Z   repository: avilaops/arxis
+2025-11-21T11:47:01.2625167Z   token: ***
+2025-11-21T11:47:01.2625893Z   ssh-strict: true
+2025-11-21T11:47:01.2626662Z   ssh-user: git
+2025-11-21T11:47:01.2627458Z   persist-credentials: true
+2025-11-21T11:47:01.2628344Z   clean: true
+2025-11-21T11:47:01.2629141Z   sparse-checkout-cone-mode: true
+2025-11-21T11:47:01.2630097Z   fetch-depth: 1
+2025-11-21T11:47:01.2630844Z   fetch-tags: false
+2025-11-21T11:47:01.2631899Z   show-progress: true
+2025-11-21T11:47:01.2632726Z   lfs: false
+2025-11-21T11:47:01.2633469Z   submodules: false
+2025-11-21T11:47:01.2634268Z   set-safe-directory: true
+2025-11-21T11:47:01.2635339Z env:
+2025-11-21T11:47:01.2636054Z   CARGO_TERM_COLOR: always
+2025-11-21T11:47:01.2636881Z   RUST_BACKTRACE: 1
+2025-11-21T11:47:01.2637631Z ##[endgroup]
+2025-11-21T11:47:01.3727242Z Syncing repository: avilaops/arxis
+2025-11-21T11:47:01.3731193Z ##[group]Getting Git version info
+2025-11-21T11:47:01.3733540Z Working directory is '/home/runner/work/arxis/arxis'
+2025-11-21T11:47:01.3736440Z [command]/usr/bin/git version
+2025-11-21T11:47:01.3889790Z git version 2.51.2
+2025-11-21T11:47:01.3917319Z ##[endgroup]
+2025-11-21T11:47:01.3932721Z Temporarily overriding HOME='/home/runner/work/_temp/07b70d01-a7ca-44c2-9d90-114e38b8e372' before making global git config changes
+2025-11-21T11:47:01.3935425Z Adding repository directory to the temporary git global config as a safe directory
+2025-11-21T11:47:01.3945521Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/arxis/arxis
+2025-11-21T11:47:01.3985346Z Deleting the contents of '/home/runner/work/arxis/arxis'
+2025-11-21T11:47:01.3989104Z ##[group]Initializing the repository
+2025-11-21T11:47:01.3993051Z [command]/usr/bin/git init /home/runner/work/arxis/arxis
+2025-11-21T11:47:01.4120618Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-11-21T11:47:01.4123900Z hint: is subject to change. To configure the initial branch name to use in all
+2025-11-21T11:47:01.4127174Z hint: of your new repositories, which will suppress this warning, call:
+2025-11-21T11:47:01.4128534Z hint:
+2025-11-21T11:47:01.4129455Z hint: 	git config --global init.defaultBranch <name>
+2025-11-21T11:47:01.4130661Z hint:
+2025-11-21T11:47:01.4132312Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-11-21T11:47:01.4134092Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-11-21T11:47:01.4135440Z hint:
+2025-11-21T11:47:01.4136418Z hint: 	git branch -m <name>
+2025-11-21T11:47:01.4137461Z hint:
+2025-11-21T11:47:01.4138605Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2025-11-21T11:47:01.4140816Z Initialized empty Git repository in /home/runner/work/arxis/arxis/.git/
+2025-11-21T11:47:01.4145541Z [command]/usr/bin/git remote add origin https://github.com/avilaops/arxis
+2025-11-21T11:47:01.4179200Z ##[endgroup]
+2025-11-21T11:47:01.4180654Z ##[group]Disabling automatic garbage collection
+2025-11-21T11:47:01.4184313Z [command]/usr/bin/git config --local gc.auto 0
+2025-11-21T11:47:01.4218187Z ##[endgroup]
+2025-11-21T11:47:01.4220199Z ##[group]Setting up auth
+2025-11-21T11:47:01.4225679Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-11-21T11:47:01.4259987Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-11-21T11:47:01.4643305Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-11-21T11:47:01.4675643Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-11-21T11:47:01.4910104Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2025-11-21T11:47:01.4943864Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2025-11-21T11:47:01.5203245Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-11-21T11:47:01.5238155Z ##[endgroup]
+2025-11-21T11:47:01.5240570Z ##[group]Fetching the repository
+2025-11-21T11:47:01.5249801Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +e65e4a0f85718bd61c7a88bc718253fa99eaf13d:refs/remotes/origin/main
+2025-11-21T11:47:02.0186878Z From https://github.com/avilaops/arxis
+2025-11-21T11:47:02.0190963Z  * [new ref]         e65e4a0f85718bd61c7a88bc718253fa99eaf13d -> origin/main
+2025-11-21T11:47:02.0223303Z ##[endgroup]
+2025-11-21T11:47:02.0225591Z ##[group]Determining the checkout info
+2025-11-21T11:47:02.0228116Z ##[endgroup]
+2025-11-21T11:47:02.0231279Z [command]/usr/bin/git sparse-checkout disable
+2025-11-21T11:47:02.0273295Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2025-11-21T11:47:02.0298354Z ##[group]Checking out the ref
+2025-11-21T11:47:02.0303381Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2025-11-21T11:47:02.0853748Z Switched to a new branch 'main'
+2025-11-21T11:47:02.0855630Z branch 'main' set up to track 'origin/main'.
+2025-11-21T11:47:02.0865891Z ##[endgroup]
+2025-11-21T11:47:02.0905057Z [command]/usr/bin/git log -1 --format=%H
+2025-11-21T11:47:02.0926903Z e65e4a0f85718bd61c7a88bc718253fa99eaf13d

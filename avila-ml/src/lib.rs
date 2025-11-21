@@ -51,6 +51,5 @@ mod tests {
     #[test]
     fn test_basic_import() {
         // Smoke test to ensure library compiles
-        assert!(true);
     }
 }

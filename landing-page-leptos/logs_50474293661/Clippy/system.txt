@@ -1,0 +1,5 @@
+2025-11-21T11:46:56.9990000Z Requested labels: ubuntu-latest
+2025-11-21T11:46:56.9990000Z Job defined at: avilaops/arxis/.github/workflows/ci.yml@refs/heads/main
+2025-11-21T11:46:56.9990000Z Waiting for a runner to pick up this job...
+2025-11-21T11:46:57.0050000Z Job is about to start running on the hosted runner: GitHub Actions 1000001748
+2025-11-21T11:46:57.0050000Z Job is waiting for a hosted runner to come online.

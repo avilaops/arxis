@@ -101,7 +101,7 @@ impl<const N: usize> InPlace for Tensor<N> {
 
     fn div_scalar_inplace(&mut self, scalar: f64) {
         assert!(scalar != 0.0, "Cannot divide by zero");
-        
+
         for x in &mut self.data {
             *x /= scalar;
         }
@@ -137,7 +137,7 @@ impl<const N: usize> InPlace for Tensor<N> {
 
     fn clamp_inplace(&mut self, min: f64, max: f64) {
         assert!(min <= max, "min must be <= max");
-        
+
         for x in &mut self.data {
             *x = x.clamp(min, max);
         }
@@ -243,9 +243,9 @@ mod tests {
     fn test_add_inplace() {
         let mut a = Tensor::<2>::filled([2, 2], 1.0);
         let b = Tensor::<2>::filled([2, 2], 2.0);
-        
+
         a.add_inplace(&b);
-        
+
         assert_eq!(a.data, vec![3.0, 3.0, 3.0, 3.0]);
     }
 
@@ -253,9 +253,9 @@ mod tests {
     fn test_sub_inplace() {
         let mut a = Tensor::<2>::filled([2, 2], 5.0);
         let b = Tensor::<2>::filled([2, 2], 2.0);
-        
+
         a.sub_inplace(&b);
-        
+
         assert_eq!(a.data, vec![3.0, 3.0, 3.0, 3.0]);
     }
 
@@ -263,54 +263,54 @@ mod tests {
     fn test_mul_elementwise_inplace() {
         let mut a = Tensor::<2>::filled([2, 2], 3.0);
         let b = Tensor::<2>::filled([2, 2], 2.0);
-        
+
         a.mul_elementwise_inplace(&b);
-        
+
         assert_eq!(a.data, vec![6.0, 6.0, 6.0, 6.0]);
     }
 
     #[test]
     fn test_mul_scalar_inplace() {
         let mut tensor = Tensor::<2>::filled([2, 2], 2.0);
-        
+
         tensor.mul_scalar_inplace(3.0);
-        
+
         assert_eq!(tensor.data, vec![6.0, 6.0, 6.0, 6.0]);
     }
 
     #[test]
     fn test_div_scalar_inplace() {
         let mut tensor = Tensor::<2>::filled([2, 2], 10.0);
-        
+
         tensor.div_scalar_inplace(2.0);
-        
+
         assert_eq!(tensor.data, vec![5.0, 5.0, 5.0, 5.0]);
     }
 
     #[test]
     fn test_relu_inplace() {
         let mut tensor = Tensor::<2>::from_data([2, 2], vec![-1.0, 2.0, -3.0, 4.0]).unwrap();
-        
+
         tensor.relu_inplace();
-        
+
         assert_eq!(tensor.data, vec![0.0, 2.0, 0.0, 4.0]);
     }
 
     #[test]
     fn test_leaky_relu_inplace() {
         let mut tensor = Tensor::<2>::from_data([2, 2], vec![-2.0, 2.0, -4.0, 4.0]).unwrap();
-        
+
         tensor.leaky_relu_inplace(0.1);
-        
+
         assert_eq!(tensor.data, vec![-0.2, 2.0, -0.4, 4.0]);
     }
 
     #[test]
     fn test_sigmoid_inplace() {
         let mut tensor = Tensor::<2>::from_data([1, 2], vec![0.0, 1.0]).unwrap();
-        
+
         tensor.sigmoid_inplace();
-        
+
         assert!((tensor.data[0] - 0.5).abs() < 1e-6);
         assert!((tensor.data[1] - 0.7310585786).abs() < 1e-6);
     }
@@ -318,9 +318,9 @@ mod tests {
     #[test]
     fn test_tanh_inplace() {
         let mut tensor = Tensor::<2>::from_data([1, 2], vec![0.0, 1.0]).unwrap();
-        
+
         tensor.tanh_inplace();
-        
+
         assert_eq!(tensor.data[0], 0.0);
         assert!((tensor.data[1] - 0.7615941559).abs() < 1e-6);
     }
@@ -328,43 +328,43 @@ mod tests {
     #[test]
     fn test_clamp_inplace() {
         let mut tensor = Tensor::<2>::from_data([2, 2], vec![-5.0, 0.0, 5.0, 10.0]).unwrap();
-        
+
         tensor.clamp_inplace(-2.0, 7.0);
-        
+
         assert_eq!(tensor.data, vec![-2.0, 0.0, 5.0, 7.0]);
     }
 
     #[test]
     fn test_zero_inplace() {
         let mut tensor = Tensor::<2>::filled([2, 2], 42.0);
-        
+
         tensor.zero_inplace();
-        
+
         assert_eq!(tensor.data, vec![0.0, 0.0, 0.0, 0.0]);
     }
 
     #[test]
     fn test_fill_inplace() {
         let mut tensor = Tensor::<2>::zeros([2, 2]);
-        
+
         tensor.fill_inplace(7.5);
-        
+
         assert_eq!(tensor.data, vec![7.5, 7.5, 7.5, 7.5]);
     }
 
     #[test]
     fn test_vec_inplace() {
         let mut vec = vec![1.0, -2.0, 3.0, -4.0];
-        
+
         vec.mul_scalar_inplace(2.0);
         assert_eq!(vec, vec![2.0, -4.0, 6.0, -8.0]);
-        
+
         vec.relu_inplace();
         assert_eq!(vec, vec![2.0, 0.0, 6.0, 0.0]);
-        
+
         vec.add_inplace(&[1.0, 2.0, 3.0, 4.0]);
         assert_eq!(vec, vec![3.0, 2.0, 9.0, 4.0]);
-        
+
         vec.zero_inplace();
         assert_eq!(vec, vec![0.0, 0.0, 0.0, 0.0]);
     }
@@ -373,13 +373,13 @@ mod tests {
     fn test_inplace_batch() {
         let mut t1 = Tensor::<2>::filled([2, 2], 2.0);
         let mut t2 = Tensor::<2>::filled([2, 2], 3.0);
-        
+
         let mut batch = InPlaceBatch::new();
         batch.add(&mut t1);
         batch.add(&mut t2);
-        
+
         batch.mul_scalar_all(0.5);
-        
+
         assert_eq!(t1.data, vec![1.0, 1.0, 1.0, 1.0]);
         assert_eq!(t2.data, vec![1.5, 1.5, 1.5, 1.5]);
     }
@@ -387,12 +387,12 @@ mod tests {
     #[test]
     fn test_chained_inplace_ops() {
         let mut tensor = Tensor::<2>::filled([2, 2], 10.0);
-        
+
         tensor.mul_scalar_inplace(2.0); // 20.0
         tensor.add_inplace(&Tensor::<2>::filled([2, 2], -5.0)); // 15.0
         tensor.div_scalar_inplace(3.0); // 5.0
         tensor.clamp_inplace(0.0, 4.0); // 4.0
-        
+
         assert_eq!(tensor.data, vec![4.0, 4.0, 4.0, 4.0]);
     }
 }

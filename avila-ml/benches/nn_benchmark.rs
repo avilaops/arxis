@@ -16,7 +16,7 @@ fn bench_linear_layer(c: &mut Criterion) {
 
 fn bench_activation(c: &mut Criterion) {
     let relu = ReLU::new();
-    let input = Tensor::randn(&[32, 128]);
+    let input = Tensor::<f32>::randn(&[32, 128]);
 
     c.bench_function("relu_forward_32x128", |b| {
         b.iter(|| {

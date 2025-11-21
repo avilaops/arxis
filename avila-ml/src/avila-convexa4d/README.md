@@ -11,7 +11,7 @@ Biblioteca 100% Rust para processamento de dados tetradimensionais: tensores esp
 
 ### 🎯 Tensores 4D
 - **Tensor4D**: Estrutura para dados 4D (tempo × profundidade × altura × largura × canais)
-- **TensorOps**: 
+- **TensorOps**:
   - Média e desvio padrão espaço-temporais
   - Colapso temporal (média no tempo)
   - Colapso espacial (média no espaço)

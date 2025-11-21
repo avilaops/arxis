@@ -1,0 +1,31 @@
+﻿2025-11-21T11:46:59.2423500Z Current runner version: '2.329.0'
+2025-11-21T11:46:59.2441380Z ##[group]Runner Image Provisioner
+2025-11-21T11:46:59.2441880Z Hosted Compute Agent
+2025-11-21T11:46:59.2442210Z Version: 20251117.445
+2025-11-21T11:46:59.2442580Z Commit: 17780a5d4025a96787933ab442dc95c406773466
+2025-11-21T11:46:59.2443000Z Build Date: 2025-11-17T20:36:01Z
+2025-11-21T11:46:59.2443390Z ##[endgroup]
+2025-11-21T11:46:59.2443710Z ##[group]Operating System
+2025-11-21T11:46:59.2444050Z macOS
+2025-11-21T11:46:59.2444330Z 15.7.1
+2025-11-21T11:46:59.2444610Z 24G231
+2025-11-21T11:46:59.2444870Z ##[endgroup]
+2025-11-21T11:46:59.2445160Z ##[group]Runner Image
+2025-11-21T11:46:59.2445480Z Image: macos-15-arm64
+2025-11-21T11:46:59.2445800Z Version: 20251104.0104
+2025-11-21T11:46:59.2446440Z Included Software: https://github.com/actions/runner-images/blob/macos-15-arm64/20251104.0104/images/macos/macos-15-arm64-Readme.md
+2025-11-21T11:46:59.2447340Z Image Release: https://github.com/actions/runner-images/releases/tag/macos-15-arm64%2F20251104.0104
+2025-11-21T11:46:59.2447980Z ##[endgroup]
+2025-11-21T11:46:59.2448620Z ##[group]GITHUB_TOKEN Permissions
+2025-11-21T11:46:59.2449540Z Contents: read
+2025-11-21T11:46:59.2449840Z Metadata: read
+2025-11-21T11:46:59.2450130Z Packages: read
+2025-11-21T11:46:59.2450420Z ##[endgroup]
+2025-11-21T11:46:59.2451600Z Secret source: Actions
+2025-11-21T11:46:59.2451970Z Prepare workflow directory
+2025-11-21T11:46:59.2694720Z Prepare all required actions
+2025-11-21T11:46:59.2720870Z Getting action download info
+2025-11-21T11:46:59.7435130Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2025-11-21T11:47:01.1433850Z Download action repository 'dtolnay/rust-toolchain@master' (SHA:0b1efabc08b657293548b77fb76cc02d26091c7e)
+2025-11-21T11:47:01.9144930Z Download action repository 'actions/cache@v3' (SHA:6f8efc29b200d32929f49075959781ed54ec270c)
+2025-11-21T11:47:02.2143920Z Complete job name: Test Suite (macos-latest, stable)

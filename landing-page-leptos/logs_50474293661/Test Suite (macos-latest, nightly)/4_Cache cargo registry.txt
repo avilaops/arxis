@@ -1,0 +1,14 @@
+﻿2025-11-21T11:47:14.9761420Z ##[group]Run actions/cache@v3
+2025-11-21T11:47:14.9761860Z with:
+2025-11-21T11:47:14.9762060Z   path: ~/.cargo/registry
+2025-11-21T11:47:14.9762330Z   key: macOS-cargo-registry-
+2025-11-21T11:47:14.9762700Z   enableCrossOsArchive: false
+2025-11-21T11:47:14.9762940Z   fail-on-cache-miss: false
+2025-11-21T11:47:14.9763150Z   lookup-only: false
+2025-11-21T11:47:14.9763390Z env:
+2025-11-21T11:47:14.9763620Z   CARGO_TERM_COLOR: always
+2025-11-21T11:47:14.9763830Z   RUST_BACKTRACE: 1
+2025-11-21T11:47:14.9764000Z   CARGO_HOME: /Users/runner/.cargo
+2025-11-21T11:47:14.9764250Z   CARGO_INCREMENTAL: 0
+2025-11-21T11:47:14.9764390Z ##[endgroup]
+2025-11-21T11:47:15.2866800Z Cache not found for input keys: macOS-cargo-registry-

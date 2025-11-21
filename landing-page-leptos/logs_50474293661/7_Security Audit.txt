@@ -1,0 +1,1551 @@
+﻿2025-11-21T11:46:58.3792956Z Current runner version: '2.329.0'
+2025-11-21T11:46:58.3815208Z ##[group]Runner Image Provisioner
+2025-11-21T11:46:58.3815908Z Hosted Compute Agent
+2025-11-21T11:46:58.3816440Z Version: 20251016.436
+2025-11-21T11:46:58.3817010Z Commit: 8ab8ac8bfd662a3739dab9fe09456aba92132568
+2025-11-21T11:46:58.3817607Z Build Date: 2025-10-15T20:44:12Z
+2025-11-21T11:46:58.3818188Z ##[endgroup]
+2025-11-21T11:46:58.3818663Z ##[group]Operating System
+2025-11-21T11:46:58.3819168Z Ubuntu
+2025-11-21T11:46:58.3819619Z 24.04.3
+2025-11-21T11:46:58.3820056Z LTS
+2025-11-21T11:46:58.3820440Z ##[endgroup]
+2025-11-21T11:46:58.3821048Z ##[group]Runner Image
+2025-11-21T11:46:58.3821562Z Image: ubuntu-24.04
+2025-11-21T11:46:58.3822005Z Version: 20251112.124.1
+2025-11-21T11:46:58.3822947Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20251112.124/images/ubuntu/Ubuntu2404-Readme.md
+2025-11-21T11:46:58.3824330Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20251112.124
+2025-11-21T11:46:58.3825499Z ##[endgroup]
+2025-11-21T11:46:58.3826574Z ##[group]GITHUB_TOKEN Permissions
+2025-11-21T11:46:58.3828713Z Contents: read
+2025-11-21T11:46:58.3829197Z Metadata: read
+2025-11-21T11:46:58.3829628Z Packages: read
+2025-11-21T11:46:58.3830173Z ##[endgroup]
+2025-11-21T11:46:58.3832346Z Secret source: Actions
+2025-11-21T11:46:58.3833290Z Prepare workflow directory
+2025-11-21T11:46:58.4266509Z Prepare all required actions
+2025-11-21T11:46:58.4322297Z Getting action download info
+2025-11-21T11:46:59.1009666Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2025-11-21T11:46:59.5782190Z Download action repository 'dtolnay/rust-toolchain@stable' (SHA:6d9817901c499d6b02debbb57edb38d33daa680b)
+2025-11-21T11:46:59.9412019Z Complete job name: Security Audit
+2025-11-21T11:47:00.0087615Z ##[group]Run actions/checkout@v4
+2025-11-21T11:47:00.0088860Z with:
+2025-11-21T11:47:00.0089634Z   repository: avilaops/arxis
+2025-11-21T11:47:00.0091248Z   token: ***
+2025-11-21T11:47:00.0092003Z   ssh-strict: true
+2025-11-21T11:47:00.0092804Z   ssh-user: git
+2025-11-21T11:47:00.0093579Z   persist-credentials: true
+2025-11-21T11:47:00.0094469Z   clean: true
+2025-11-21T11:47:00.0095220Z   sparse-checkout-cone-mode: true
+2025-11-21T11:47:00.0096161Z   fetch-depth: 1
+2025-11-21T11:47:00.0096896Z   fetch-tags: false
+2025-11-21T11:47:00.0097699Z   show-progress: true
+2025-11-21T11:47:00.0098547Z   lfs: false
+2025-11-21T11:47:00.0099254Z   submodules: false
+2025-11-21T11:47:00.0100063Z   set-safe-directory: true
+2025-11-21T11:47:00.0101316Z env:
+2025-11-21T11:47:00.0102090Z   CARGO_TERM_COLOR: always
+2025-11-21T11:47:00.0102921Z   RUST_BACKTRACE: 1
+2025-11-21T11:47:00.0103705Z ##[endgroup]
+2025-11-21T11:47:00.1133229Z Syncing repository: avilaops/arxis
+2025-11-21T11:47:00.1135708Z ##[group]Getting Git version info
+2025-11-21T11:47:00.1136959Z Working directory is '/home/runner/work/arxis/arxis'
+2025-11-21T11:47:00.1138629Z [command]/usr/bin/git version
+2025-11-21T11:47:00.1192649Z git version 2.51.2
+2025-11-21T11:47:00.1214885Z ##[endgroup]
+2025-11-21T11:47:00.1235680Z Temporarily overriding HOME='/home/runner/work/_temp/4ea2c976-97fc-4645-83a3-37875268f302' before making global git config changes
+2025-11-21T11:47:00.1238155Z Adding repository directory to the temporary git global config as a safe directory
+2025-11-21T11:47:00.1240555Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/arxis/arxis
+2025-11-21T11:47:00.1269771Z Deleting the contents of '/home/runner/work/arxis/arxis'
+2025-11-21T11:47:00.1273146Z ##[group]Initializing the repository
+2025-11-21T11:47:00.1276833Z [command]/usr/bin/git init /home/runner/work/arxis/arxis
+2025-11-21T11:47:00.1388402Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-11-21T11:47:00.1391600Z hint: is subject to change. To configure the initial branch name to use in all
+2025-11-21T11:47:00.1393254Z hint: of your new repositories, which will suppress this warning, call:
+2025-11-21T11:47:00.1394789Z hint:
+2025-11-21T11:47:00.1395939Z hint: 	git config --global init.defaultBranch <name>
+2025-11-21T11:47:00.1397131Z hint:
+2025-11-21T11:47:00.1398174Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-11-21T11:47:00.1399787Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-11-21T11:47:00.1401237Z hint:
+2025-11-21T11:47:00.1402169Z hint: 	git branch -m <name>
+2025-11-21T11:47:00.1403162Z hint:
+2025-11-21T11:47:00.1404239Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2025-11-21T11:47:00.1405933Z Initialized empty Git repository in /home/runner/work/arxis/arxis/.git/
+2025-11-21T11:47:00.1408815Z [command]/usr/bin/git remote add origin https://github.com/avilaops/arxis
+2025-11-21T11:47:00.1434854Z ##[endgroup]
+2025-11-21T11:47:00.1436163Z ##[group]Disabling automatic garbage collection
+2025-11-21T11:47:00.1438210Z [command]/usr/bin/git config --local gc.auto 0
+2025-11-21T11:47:00.1463216Z ##[endgroup]
+2025-11-21T11:47:00.1464480Z ##[group]Setting up auth
+2025-11-21T11:47:00.1468844Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-11-21T11:47:00.1494177Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-11-21T11:47:00.1785758Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-11-21T11:47:00.1810703Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-11-21T11:47:00.1981622Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2025-11-21T11:47:00.2012692Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2025-11-21T11:47:00.2186372Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-11-21T11:47:00.2214239Z ##[endgroup]
+2025-11-21T11:47:00.2216573Z ##[group]Fetching the repository
+2025-11-21T11:47:00.2225126Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +e65e4a0f85718bd61c7a88bc718253fa99eaf13d:refs/remotes/origin/main
+2025-11-21T11:47:00.6848126Z From https://github.com/avilaops/arxis
+2025-11-21T11:47:00.6849919Z  * [new ref]         e65e4a0f85718bd61c7a88bc718253fa99eaf13d -> origin/main
+2025-11-21T11:47:00.6880118Z ##[endgroup]
+2025-11-21T11:47:00.6882015Z ##[group]Determining the checkout info
+2025-11-21T11:47:00.6883378Z ##[endgroup]
+2025-11-21T11:47:00.6885587Z [command]/usr/bin/git sparse-checkout disable
+2025-11-21T11:47:00.6920101Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2025-11-21T11:47:00.6941609Z ##[group]Checking out the ref
+2025-11-21T11:47:00.6944321Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2025-11-21T11:47:00.7372608Z Switched to a new branch 'main'
+2025-11-21T11:47:00.7374329Z branch 'main' set up to track 'origin/main'.
+2025-11-21T11:47:00.7381941Z ##[endgroup]
+2025-11-21T11:47:00.7410730Z [command]/usr/bin/git log -1 --format=%H
+2025-11-21T11:47:00.7428040Z e65e4a0f85718bd61c7a88bc718253fa99eaf13d
+2025-11-21T11:47:00.7801652Z ##[group]Run dtolnay/rust-toolchain@stable
+2025-11-21T11:47:00.7802643Z with:
+2025-11-21T11:47:00.7803321Z   toolchain: stable
+2025-11-21T11:47:00.7804056Z env:
+2025-11-21T11:47:00.7804743Z   CARGO_TERM_COLOR: always
+2025-11-21T11:47:00.7805554Z   RUST_BACKTRACE: 1
+2025-11-21T11:47:00.7806291Z ##[endgroup]
+2025-11-21T11:47:00.7937031Z ##[group]Run : parse toolchain version
+2025-11-21T11:47:00.7938183Z [36;1m: parse toolchain version[0m
+2025-11-21T11:47:00.7939191Z [36;1mif [[ -z $toolchain ]]; then[0m
+2025-11-21T11:47:00.7940999Z [36;1m  # GitHub does not enforce `required: true` inputs itself. https://github.com/actions/runner/issues/1070[0m
+2025-11-21T11:47:00.7942905Z [36;1m  echo "'toolchain' is a required input" >&2[0m
+2025-11-21T11:47:00.7943911Z [36;1m  exit 1[0m
+2025-11-21T11:47:00.7944970Z [36;1melif [[ $toolchain =~ ^stable' '[0-9]+' '(year|month|week|day)s?' 'ago$ ]]; then[0m
+2025-11-21T11:47:00.7946261Z [36;1m  if [[ Linux == macOS ]]; then[0m
+2025-11-21T11:47:00.7947841Z [36;1m    echo "toolchain=1.$((($(date -v-$(sed 's/stable \([0-9]*\) \(.\).*/\1\2/' <<< $toolchain) +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT[0m
+2025-11-21T11:47:00.7949352Z [36;1m  else[0m
+2025-11-21T11:47:00.7950587Z [36;1m    echo "toolchain=1.$((($(date --date "${toolchain#stable }" +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT[0m
+2025-11-21T11:47:00.7952097Z [36;1m  fi[0m
+2025-11-21T11:47:00.7953072Z [36;1melif [[ $toolchain =~ ^stable' 'minus' '[0-9]+' 'releases?$ ]]; then[0m
+2025-11-21T11:47:00.7954705Z [36;1m  echo "toolchain=1.$((($(date +%s)/60/60/24-16569)/7/6-${toolchain//[^0-9]/}))" >> $GITHUB_OUTPUT[0m
+2025-11-21T11:47:00.7956147Z [36;1melif [[ $toolchain =~ ^1\.[0-9]+$ ]]; then[0m
+2025-11-21T11:47:00.7957738Z [36;1m  echo "toolchain=1.$((i=${toolchain#1.}, c=($(date +%s)/60/60/24-16569)/7/6, i+9*i*(10*i<=c)+90*i*(100*i<=c)))" >> $GITHUB_OUTPUT[0m
+2025-11-21T11:47:00.7959230Z [36;1melse[0m
+2025-11-21T11:47:00.7960079Z [36;1m  echo "toolchain=$toolchain" >> $GITHUB_OUTPUT[0m
+2025-11-21T11:47:00.7961136Z [36;1mfi[0m
+2025-11-21T11:47:00.7985527Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2025-11-21T11:47:00.7986619Z env:
+2025-11-21T11:47:00.7987295Z   CARGO_TERM_COLOR: always
+2025-11-21T11:47:00.7988087Z   RUST_BACKTRACE: 1
+2025-11-21T11:47:00.7988810Z   toolchain: stable
+2025-11-21T11:47:00.7989510Z ##[endgroup]
+2025-11-21T11:47:00.8134118Z ##[group]Run : construct rustup command line
+2025-11-21T11:47:00.8135148Z [36;1m: construct rustup command line[0m
+2025-11-21T11:47:00.8136501Z [36;1mecho "targets=$(for t in ${targets//,/ }; do echo -n ' --target' $t; done)" >> $GITHUB_OUTPUT[0m
+2025-11-21T11:47:00.8138376Z [36;1mecho "components=$(for c in ${components//,/ }; do echo -n ' --component' $c; done)" >> $GITHUB_OUTPUT[0m
+2025-11-21T11:47:00.8139856Z [36;1mecho "downgrade=" >> $GITHUB_OUTPUT[0m
+2025-11-21T11:47:00.8159051Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2025-11-21T11:47:00.8160102Z env:
+2025-11-21T11:47:00.8160936Z   CARGO_TERM_COLOR: always
+2025-11-21T11:47:00.8161720Z   RUST_BACKTRACE: 1
+2025-11-21T11:47:00.8162417Z   targets: 
+2025-11-21T11:47:00.8163063Z   components: 
+2025-11-21T11:47:00.8163732Z ##[endgroup]
+2025-11-21T11:47:00.8249557Z ##[group]Run : set $CARGO_HOME
+2025-11-21T11:47:00.8250399Z [36;1m: set $CARGO_HOME[0m
+2025-11-21T11:47:00.8251561Z [36;1mecho CARGO_HOME=${CARGO_HOME:-"$HOME/.cargo"} >> $GITHUB_ENV[0m
+2025-11-21T11:47:00.8269965Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2025-11-21T11:47:00.8271175Z env:
+2025-11-21T11:47:00.8271830Z   CARGO_TERM_COLOR: always
+2025-11-21T11:47:00.8272620Z   RUST_BACKTRACE: 1
+2025-11-21T11:47:00.8273374Z ##[endgroup]
+2025-11-21T11:47:00.8358436Z ##[group]Run : install rustup if needed
+2025-11-21T11:47:00.8359386Z [36;1m: install rustup if needed[0m
+2025-11-21T11:47:00.8360347Z [36;1mif ! command -v rustup &>/dev/null; then[0m
+2025-11-21T11:47:00.8362734Z [36;1m  curl --proto '=https' --tlsv1.2 --retry 10 --retry-connrefused --location --silent --show-error --fail https://sh.rustup.rs | sh -s -- --default-toolchain none -y[0m
+2025-11-21T11:47:00.8364852Z [36;1m  echo "$CARGO_HOME/bin" >> $GITHUB_PATH[0m
+2025-11-21T11:47:00.8365763Z [36;1mfi[0m
+2025-11-21T11:47:00.8383118Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2025-11-21T11:47:00.8384165Z env:
+2025-11-21T11:47:00.8384801Z   CARGO_TERM_COLOR: always
+2025-11-21T11:47:00.8385562Z   RUST_BACKTRACE: 1
+2025-11-21T11:47:00.8386288Z   CARGO_HOME: /home/runner/.cargo
+2025-11-21T11:47:00.8387102Z ##[endgroup]
+2025-11-21T11:47:00.8473702Z ##[group]Run rustup toolchain install stable --profile minimal --no-self-update
+2025-11-21T11:47:00.8475448Z [36;1mrustup toolchain install stable --profile minimal --no-self-update[0m
+2025-11-21T11:47:00.8493439Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2025-11-21T11:47:00.8494480Z env:
+2025-11-21T11:47:00.8495116Z   CARGO_TERM_COLOR: always
+2025-11-21T11:47:00.8495890Z   RUST_BACKTRACE: 1
+2025-11-21T11:47:00.8496633Z   CARGO_HOME: /home/runner/.cargo
+2025-11-21T11:47:00.8497457Z ##[endgroup]
+2025-11-21T11:47:02.2879157Z info: syncing channel updates for 'stable-x86_64-unknown-linux-gnu'
+2025-11-21T11:47:02.4593007Z 
+2025-11-21T11:47:02.4679324Z   stable-x86_64-unknown-linux-gnu unchanged - rustc 1.91.1 (ed61e7d7e 2025-11-07)
+2025-11-21T11:47:02.4680042Z 
+2025-11-21T11:47:02.4725482Z ##[group]Run rustup default stable
+2025-11-21T11:47:02.4725809Z [36;1mrustup default stable[0m
+2025-11-21T11:47:02.4747533Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2025-11-21T11:47:02.4747887Z env:
+2025-11-21T11:47:02.4748099Z   CARGO_TERM_COLOR: always
+2025-11-21T11:47:02.4748359Z   RUST_BACKTRACE: 1
+2025-11-21T11:47:02.4748592Z   CARGO_HOME: /home/runner/.cargo
+2025-11-21T11:47:02.4748840Z ##[endgroup]
+2025-11-21T11:47:02.4838218Z info: using existing install for 'stable-x86_64-unknown-linux-gnu'
+2025-11-21T11:47:02.5175281Z info: default toolchain set to 'stable-x86_64-unknown-linux-gnu'
+2025-11-21T11:47:02.5175952Z 
+2025-11-21T11:47:02.5259458Z   stable-x86_64-unknown-linux-gnu unchanged - rustc 1.91.1 (ed61e7d7e 2025-11-07)
+2025-11-21T11:47:02.5259891Z 
+2025-11-21T11:47:02.5295788Z ##[group]Run : create cachekey
+2025-11-21T11:47:02.5296093Z [36;1m: create cachekey[0m
+2025-11-21T11:47:02.5296560Z [36;1mDATE=$(rustc +stable --version --verbose | sed -ne 's/^commit-date: \(20[0-9][0-9]\)-\([01][0-9]\)-\([0-3][0-9]\)$/\1\2\3/p')[0m
+2025-11-21T11:47:02.5297133Z [36;1mHASH=$(rustc +stable --version --verbose | sed -ne 's/^commit-hash: //p')[0m
+2025-11-21T11:47:02.5297594Z [36;1mecho "cachekey=$(echo $DATE$HASH | head -c12)" >> $GITHUB_OUTPUT[0m
+2025-11-21T11:47:02.5319079Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2025-11-21T11:47:02.5319421Z env:
+2025-11-21T11:47:02.5319649Z   CARGO_TERM_COLOR: always
+2025-11-21T11:47:02.5319893Z   RUST_BACKTRACE: 1
+2025-11-21T11:47:02.5320128Z   CARGO_HOME: /home/runner/.cargo
+2025-11-21T11:47:02.5320377Z ##[endgroup]
+2025-11-21T11:47:02.6973668Z ##[group]Run : disable incremental compilation
+2025-11-21T11:47:02.6974067Z [36;1m: disable incremental compilation[0m
+2025-11-21T11:47:02.6974368Z [36;1mif [ -z "${CARGO_INCREMENTAL+set}" ]; then[0m
+2025-11-21T11:47:02.6974672Z [36;1m  echo CARGO_INCREMENTAL=0 >> $GITHUB_ENV[0m
+2025-11-21T11:47:02.6974932Z [36;1mfi[0m
+2025-11-21T11:47:02.6995943Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2025-11-21T11:47:02.6996282Z env:
+2025-11-21T11:47:02.6996463Z   CARGO_TERM_COLOR: always
+2025-11-21T11:47:02.6996687Z   RUST_BACKTRACE: 1
+2025-11-21T11:47:02.6996892Z   CARGO_HOME: /home/runner/.cargo
+2025-11-21T11:47:02.6997138Z ##[endgroup]
+2025-11-21T11:47:02.7058035Z ##[group]Run : enable colors in Cargo output
+2025-11-21T11:47:02.7058411Z [36;1m: enable colors in Cargo output[0m
+2025-11-21T11:47:02.7058748Z [36;1mif [ -z "${CARGO_TERM_COLOR+set}" ]; then[0m
+2025-11-21T11:47:02.7059123Z [36;1m  echo CARGO_TERM_COLOR=always >> $GITHUB_ENV[0m
+2025-11-21T11:47:02.7059430Z [36;1mfi[0m
+2025-11-21T11:47:02.7080873Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2025-11-21T11:47:02.7081200Z env:
+2025-11-21T11:47:02.7081381Z   CARGO_TERM_COLOR: always
+2025-11-21T11:47:02.7081597Z   RUST_BACKTRACE: 1
+2025-11-21T11:47:02.7081795Z   CARGO_HOME: /home/runner/.cargo
+2025-11-21T11:47:02.7082025Z   CARGO_INCREMENTAL: 0
+2025-11-21T11:47:02.7082213Z ##[endgroup]
+2025-11-21T11:47:02.7143635Z ##[group]Run : enable Cargo sparse registry
+2025-11-21T11:47:02.7143941Z [36;1m: enable Cargo sparse registry[0m
+2025-11-21T11:47:02.7144260Z [36;1m# implemented in 1.66, stabilized in 1.68, made default in 1.70[0m
+2025-11-21T11:47:02.7144990Z [36;1mif [ -z "${CARGO_REGISTRIES_CRATES_IO_PROTOCOL+set}" -o -f "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol ]; then[0m
+2025-11-21T11:47:02.7145588Z [36;1m  if rustc +stable --version --verbose | grep -q '^release: 1\.6[89]\.'; then[0m
+2025-11-21T11:47:02.7146071Z [36;1m    touch "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol || true[0m
+2025-11-21T11:47:02.7146530Z [36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse >> $GITHUB_ENV[0m
+2025-11-21T11:47:02.7146955Z [36;1m  elif rustc +stable --version --verbose | grep -q '^release: 1\.6[67]\.'; then[0m
+2025-11-21T11:47:02.7147427Z [36;1m    touch "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol || true[0m
+2025-11-21T11:47:02.7147866Z [36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=git >> $GITHUB_ENV[0m
+2025-11-21T11:47:02.7148157Z [36;1m  fi[0m
+2025-11-21T11:47:02.7148340Z [36;1mfi[0m
+2025-11-21T11:47:02.7168468Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2025-11-21T11:47:02.7168775Z env:
+2025-11-21T11:47:02.7168964Z   CARGO_TERM_COLOR: always
+2025-11-21T11:47:02.7169177Z   RUST_BACKTRACE: 1
+2025-11-21T11:47:02.7169382Z   CARGO_HOME: /home/runner/.cargo
+2025-11-21T11:47:02.7169608Z   CARGO_INCREMENTAL: 0
+2025-11-21T11:47:02.7169803Z ##[endgroup]
+2025-11-21T11:47:02.7498652Z ##[group]Run : work around spurious network errors in curl 8.0
+2025-11-21T11:47:02.7499064Z [36;1m: work around spurious network errors in curl 8.0[0m
+2025-11-21T11:47:02.7499556Z [36;1m# https://rust-lang.zulipchat.com/#narrow/stream/246057-t-cargo/topic/timeout.20investigation[0m
+2025-11-21T11:47:02.7500093Z [36;1mif rustc +stable --version --verbose | grep -q '^release: 1\.7[01]\.'; then[0m
+2025-11-21T11:47:02.7500480Z [36;1m  echo CARGO_HTTP_MULTIPLEXING=false >> $GITHUB_ENV[0m
+2025-11-21T11:47:02.7501020Z [36;1mfi[0m
+2025-11-21T11:47:02.7523871Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2025-11-21T11:47:02.7524185Z env:
+2025-11-21T11:47:02.7524395Z   CARGO_TERM_COLOR: always
+2025-11-21T11:47:02.7524610Z   RUST_BACKTRACE: 1
+2025-11-21T11:47:02.7524817Z   CARGO_HOME: /home/runner/.cargo
+2025-11-21T11:47:02.7525058Z   CARGO_INCREMENTAL: 0
+2025-11-21T11:47:02.7525246Z ##[endgroup]
+2025-11-21T11:47:02.7719740Z ##[group]Run rustc +stable --version --verbose
+2025-11-21T11:47:02.7720082Z [36;1mrustc +stable --version --verbose[0m
+2025-11-21T11:47:02.7742484Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2025-11-21T11:47:02.7742794Z env:
+2025-11-21T11:47:02.7742984Z   CARGO_TERM_COLOR: always
+2025-11-21T11:47:02.7743194Z   RUST_BACKTRACE: 1
+2025-11-21T11:47:02.7743408Z   CARGO_HOME: /home/runner/.cargo
+2025-11-21T11:47:02.7743636Z   CARGO_INCREMENTAL: 0
+2025-11-21T11:47:02.7743844Z ##[endgroup]
+2025-11-21T11:47:02.7902519Z rustc 1.91.1 (ed61e7d7e 2025-11-07)
+2025-11-21T11:47:02.7903671Z binary: rustc
+2025-11-21T11:47:02.7904159Z commit-hash: ed61e7d7e242494fb7057f2657300d9e77bb4fcb
+2025-11-21T11:47:02.7904694Z commit-date: 2025-11-07
+2025-11-21T11:47:02.7905189Z host: x86_64-unknown-linux-gnu
+2025-11-21T11:47:02.7905606Z release: 1.91.1
+2025-11-21T11:47:02.7905998Z LLVM version: 21.1.2
+2025-11-21T11:47:02.7973073Z ##[group]Run cargo install cargo-audit
+2025-11-21T11:47:02.7973380Z [36;1mcargo install cargo-audit[0m
+2025-11-21T11:47:02.7995947Z shell: /usr/bin/bash -e {0}
+2025-11-21T11:47:02.7996187Z env:
+2025-11-21T11:47:02.7996383Z   CARGO_TERM_COLOR: always
+2025-11-21T11:47:02.7996599Z   RUST_BACKTRACE: 1
+2025-11-21T11:47:02.7996810Z   CARGO_HOME: /home/runner/.cargo
+2025-11-21T11:47:02.7997050Z   CARGO_INCREMENTAL: 0
+2025-11-21T11:47:02.7997248Z ##[endgroup]
+2025-11-21T11:47:04.2231130Z [1m[92m    Updating[0m crates.io index
+2025-11-21T11:47:04.3469484Z [1m[92m Downloading[0m crates ...
+2025-11-21T11:47:04.5238967Z [1m[92m  Downloaded[0m cargo-audit v0.22.0
+2025-11-21T11:47:04.7517462Z [1m[92m  Installing[0m cargo-audit v0.22.0
+2025-11-21T11:47:05.2770117Z [1m[92m    Updating[0m crates.io index
+2025-11-21T11:47:06.1251346Z [1m[92m     Locking[0m 377 packages to latest compatible versions
+2025-11-21T11:47:06.1254216Z [1m[92m      Adding[0m abscissa_core v0.8.2 [1m[33m(available: v0.9.0)[0m
+2025-11-21T11:47:06.1341494Z [1m[92m      Adding[0m generic-array v0.14.7 [1m[33m(available: v0.14.9)[0m
+2025-11-21T11:47:06.1787959Z [1m[92m Downloading[0m crates ...
+2025-11-21T11:47:06.2237773Z [1m[92m  Downloaded[0m crc32fast v1.5.0
+2025-11-21T11:47:06.2261447Z [1m[92m  Downloaded[0m anstream v0.6.21
+2025-11-21T11:47:06.2339626Z [1m[92m  Downloaded[0m gix-lock v19.0.0
+2025-11-21T11:47:06.2358819Z [1m[92m  Downloaded[0m gix-path v0.10.21
+2025-11-21T11:47:06.2382564Z [1m[92m  Downloaded[0m fs-err v2.11.0
+2025-11-21T11:47:06.2402119Z [1m[92m  Downloaded[0m gix-packetline-blocking v0.19.3
+2025-11-21T11:47:06.2425457Z [1m[92m  Downloaded[0m clap_lex v0.7.6
+2025-11-21T11:47:06.2445416Z [1m[92m  Downloaded[0m gix-pack v0.61.1
+2025-11-21T11:47:06.2493827Z [1m[92m  Downloaded[0m find-msvc-tools v0.1.5
+2025-11-21T11:47:06.2512670Z [1m[92m  Downloaded[0m gix-odb v0.71.1
+2025-11-21T11:47:06.2540765Z [1m[92m  Downloaded[0m gix-validate v0.10.1
+2025-11-21T11:47:06.2555751Z [1m[92m  Downloaded[0m abscissa_core v0.8.2
+2025-11-21T11:47:06.2587960Z [1m[92m  Downloaded[0m gix-actor v0.35.6
+2025-11-21T11:47:06.2605990Z [1m[92m  Downloaded[0m gix-worktree v0.43.1
+2025-11-21T11:47:06.2626254Z [1m[92m  Downloaded[0m faster-hex v0.10.0
+2025-11-21T11:47:06.2643360Z [1m[92m  Downloaded[0m cvss v2.2.0
+2025-11-21T11:47:06.2681642Z [1m[92m  Downloaded[0m gimli v0.32.3
+2025-11-21T11:47:06.2809547Z [1m[92m  Downloaded[0m nu-ansi-term v0.50.3
+2025-11-21T11:47:06.2850472Z [1m[92m  Downloaded[0m pin-utils v0.1.0
+2025-11-21T11:47:06.2871923Z [1m[92m  Downloaded[0m parking_lot v0.12.5
+2025-11-21T11:47:06.2899971Z [1m[92m  Downloaded[0m proc-macro2 v1.0.103
+2025-11-21T11:47:06.2923772Z [1m[92m  Downloaded[0m quitters v0.1.0
+2025-11-21T11:47:06.2936926Z [1m[92m  Downloaded[0m crossbeam-epoch v0.9.18
+2025-11-21T11:47:06.2966362Z [1m[92m  Downloaded[0m rand_chacha v0.9.0
+2025-11-21T11:47:06.2984610Z [1m[92m  Downloaded[0m rustc-hash v2.1.1
+2025-11-21T11:47:06.3004135Z [1m[92m  Downloaded[0m rustc-demangle v0.1.26
+2025-11-21T11:47:06.3030955Z [1m[92m  Downloaded[0m rayon-core v1.13.0
+2025-11-21T11:47:06.3066730Z [1m[92m  Downloaded[0m regex v1.12.2
+2025-11-21T11:47:06.3126485Z [1m[92m  Downloaded[0m scopeguard v1.2.0
+2025-11-21T11:47:06.3149726Z [1m[92m  Downloaded[0m serde_spanned v1.0.3
+2025-11-21T11:47:06.3177293Z [1m[92m  Downloaded[0m static_assertions v1.1.0
+2025-11-21T11:47:06.3206903Z [1m[92m  Downloaded[0m subtle v2.6.1
+2025-11-21T11:47:06.3236467Z [1m[92m  Downloaded[0m synstructure v0.13.2
+2025-11-21T11:47:06.3258751Z [1m[92m  Downloaded[0m syn v1.0.109
+2025-11-21T11:47:06.3331203Z [1m[92m  Downloaded[0m zerofrom v0.1.6
+2025-11-21T11:47:06.3344289Z [1m[92m  Downloaded[0m zerovec-derive v0.11.2
+2025-11-21T11:47:06.3357885Z [1m[92m  Downloaded[0m want v0.3.1
+2025-11-21T11:47:06.3366307Z [1m[92m  Downloaded[0m yoke v0.8.1
+2025-11-21T11:47:06.3379120Z [1m[92m  Downloaded[0m zerotrie v0.2.3
+2025-11-21T11:47:06.3401498Z [1m[92m  Downloaded[0m unicode-normalization v0.1.25
+2025-11-21T11:47:06.3426820Z [1m[92m  Downloaded[0m url v2.5.7
+2025-11-21T11:47:06.3448384Z [1m[92m  Downloaded[0m tower-http v0.6.6
+2025-11-21T11:47:06.3497020Z [1m[92m  Downloaded[0m zerovec v0.11.5
+2025-11-21T11:47:06.3529898Z [1m[92m  Downloaded[0m typenum v1.19.0
+2025-11-21T11:47:06.3550525Z [1m[92m  Downloaded[0m zlib-rs v0.5.2
+2025-11-21T11:47:06.3582873Z [1m[92m  Downloaded[0m tracing v0.1.41
+2025-11-21T11:47:06.3608238Z [1m[92m  Downloaded[0m tracing-subscriber v0.3.20
+2025-11-21T11:47:06.3658768Z [1m[92m  Downloaded[0m tokio-util v0.7.17
+2025-11-21T11:47:06.3722807Z [1m[92m  Downloaded[0m sha1-checked v0.10.0
+2025-11-21T11:47:06.3770809Z [1m[92m  Downloaded[0m tower v0.5.2
+2025-11-21T11:47:06.3823863Z [1m[92m  Downloaded[0m toml_edit v0.22.27
+2025-11-21T11:47:06.3854153Z [1m[92m  Downloaded[0m time v0.3.44
+2025-11-21T11:47:06.3905066Z [1m[92m  Downloaded[0m walkdir v2.5.0
+2025-11-21T11:47:06.3916695Z [1m[92m  Downloaded[0m wait-timeout v0.2.1
+2025-11-21T11:47:06.3925940Z [1m[92m  Downloaded[0m version_check v0.9.5
+2025-11-21T11:47:06.3933586Z [1m[92m  Downloaded[0m tokio v1.48.0
+2025-11-21T11:47:06.4164799Z [1m[92m  Downloaded[0m zerocopy v0.8.28
+2025-11-21T11:47:06.4291519Z [1m[92m  Downloaded[0m utf8parse v0.2.2
+2025-11-21T11:47:06.4296395Z [1m[92m  Downloaded[0m utf8_iter v1.0.4
+2025-11-21T11:47:06.4302727Z [1m[92m  Downloaded[0m winnow v0.7.13
+2025-11-21T11:47:06.4355497Z [1m[92m  Downloaded[0m unicode-ident v1.0.22
+2025-11-21T11:47:06.4372356Z [1m[92m  Downloaded[0m twox-hash v2.1.2
+2025-11-21T11:47:06.4387201Z [1m[92m  Downloaded[0m tracing-core v0.1.34
+2025-11-21T11:47:06.4406175Z [1m[92m  Downloaded[0m tracing-attributes v0.1.30
+2025-11-21T11:47:06.4422737Z [1m[92m  Downloaded[0m toml v0.9.8
+2025-11-21T11:47:06.4447545Z [1m[92m  Downloaded[0m zeroize v1.8.2
+2025-11-21T11:47:06.4456279Z [1m[92m  Downloaded[0m zerofrom-derive v0.1.6
+2025-11-21T11:47:06.4462774Z [1m[92m  Downloaded[0m wasmparser v0.207.0
+2025-11-21T11:47:06.4501999Z [1m[92m  Downloaded[0m yoke-derive v0.8.1
+2025-11-21T11:47:06.4507792Z [1m[92m  Downloaded[0m writeable v0.6.2
+2025-11-21T11:47:06.4520985Z [1m[92m  Downloaded[0m untrusted v0.9.0
+2025-11-21T11:47:06.4528374Z [1m[92m  Downloaded[0m unicode-xid v0.2.6
+2025-11-21T11:47:06.4536317Z [1m[92m  Downloaded[0m unicode-bom v2.0.3
+2025-11-21T11:47:06.4543616Z [1m[92m  Downloaded[0m uluru v3.1.0
+2025-11-21T11:47:06.4549205Z [1m[92m  Downloaded[0m try-lock v0.2.5
+2025-11-21T11:47:06.4554477Z [1m[92m  Downloaded[0m tracing-log v0.2.0
+2025-11-21T11:47:06.4562849Z [1m[92m  Downloaded[0m tower-service v0.3.3
+2025-11-21T11:47:06.4567813Z [1m[92m  Downloaded[0m tower-layer v0.3.3
+2025-11-21T11:47:06.4573487Z [1m[92m  Downloaded[0m topological-sort v0.2.2
+2025-11-21T11:47:06.4579885Z [1m[92m  Downloaded[0m toml_writer v1.0.4
+2025-11-21T11:47:06.4588955Z [1m[92m  Downloaded[0m toml_datetime v0.7.3
+2025-11-21T11:47:06.4597566Z [1m[92m  Downloaded[0m toml_datetime v0.6.11
+2025-11-21T11:47:06.4605207Z [1m[92m  Downloaded[0m toml-span v0.6.0
+2025-11-21T11:47:06.4615958Z [1m[92m  Downloaded[0m toml v0.8.23
+2025-11-21T11:47:06.4630893Z [1m[92m  Downloaded[0m tokio-rustls v0.26.4
+2025-11-21T11:47:06.4644401Z [1m[92m  Downloaded[0m rustls v0.23.35
+2025-11-21T11:47:06.4717897Z [1m[92m  Downloaded[0m rustix v1.1.2
+2025-11-21T11:47:06.4861340Z [1m[92m  Downloaded[0m toml_write v0.1.2
+2025-11-21T11:47:06.4869042Z [1m[92m  Downloaded[0m toml_parser v1.0.4
+2025-11-21T11:47:06.4884051Z [1m[92m  Downloaded[0m tinyvec_macros v0.1.1
+2025-11-21T11:47:06.4888908Z [1m[92m  Downloaded[0m tinyvec v1.10.0
+2025-11-21T11:47:06.4905854Z [1m[92m  Downloaded[0m tinystr v0.8.2
+2025-11-21T11:47:06.4918117Z [1m[92m  Downloaded[0m time-macros v0.2.24
+2025-11-21T11:47:06.4931919Z [1m[92m  Downloaded[0m time-core v0.1.6
+2025-11-21T11:47:06.4939090Z [1m[92m  Downloaded[0m thread_local v1.1.9
+2025-11-21T11:47:06.4948571Z [1m[92m  Downloaded[0m thiserror-impl v2.0.17
+2025-11-21T11:47:06.4957348Z [1m[92m  Downloaded[0m thiserror v2.0.17
+2025-11-21T11:47:06.4988059Z [1m[92m  Downloaded[0m termcolor v1.4.1
+2025-11-21T11:47:06.4995966Z [1m[92m  Downloaded[0m tempfile v3.23.0
+2025-11-21T11:47:06.5012456Z [1m[92m  Downloaded[0m tame-index v0.24.1
+2025-11-21T11:47:06.5051480Z [1m[92m  Downloaded[0m syn v2.0.110
+2025-11-21T11:47:06.5121623Z [1m[92m  Downloaded[0m strsim v0.11.1
+2025-11-21T11:47:06.5129557Z [1m[92m  Downloaded[0m ring v0.17.14
+2025-11-21T11:47:06.5391771Z [1m[92m  Downloaded[0m linux-raw-sys v0.11.0
+2025-11-21T11:47:06.5764446Z [1m[92m  Downloaded[0m regex-syntax v0.8.8
+2025-11-21T11:47:06.5814836Z [1m[92m  Downloaded[0m synstructure v0.12.6
+2025-11-21T11:47:06.5821460Z [1m[92m  Downloaded[0m sync_wrapper v1.0.2
+2025-11-21T11:47:06.5826941Z [1m[92m  Downloaded[0m sha1 v0.10.6
+2025-11-21T11:47:06.5836786Z [1m[92m  Downloaded[0m reqwest v0.12.24
+2025-11-21T11:47:06.5875336Z [1m[92m  Downloaded[0m encoding_rs v0.8.35
+2025-11-21T11:47:06.6025191Z [1m[92m  Downloaded[0m stable_deref_trait v1.2.1
+2025-11-21T11:47:06.6028600Z [1m[92m  Downloaded[0m socket2 v0.6.1
+2025-11-21T11:47:06.6044057Z [1m[92m  Downloaded[0m smol_str v0.3.4
+2025-11-21T11:47:06.6055741Z [1m[92m  Downloaded[0m smallvec v1.15.1
+2025-11-21T11:47:06.6068806Z [1m[92m  Downloaded[0m shell-words v1.1.0
+2025-11-21T11:47:06.6074304Z [1m[92m  Downloaded[0m serde_json v1.0.145
+2025-11-21T11:47:06.6117411Z [1m[92m  Downloaded[0m serde v1.0.228
+2025-11-21T11:47:06.6143522Z [1m[92m  Downloaded[0m rayon v1.11.0
+2025-11-21T11:47:06.6195909Z [1m[92m  Downloaded[0m slab v0.4.11
+2025-11-21T11:47:06.6203790Z [1m[92m  Downloaded[0m simd-adler32 v0.3.7
+2025-11-21T11:47:06.6298414Z [1m[92m  Downloaded[0m shlex v1.3.0
+2025-11-21T11:47:06.6299048Z [1m[92m  Downloaded[0m sharded-slab v0.1.7
+2025-11-21T11:47:06.6299629Z [1m[92m  Downloaded[0m serde_urlencoded v0.7.1
+2025-11-21T11:47:06.6300233Z [1m[92m  Downloaded[0m serde_derive v1.0.228
+2025-11-21T11:47:06.6300979Z [1m[92m  Downloaded[0m serde_core v1.0.228
+2025-11-21T11:47:06.6317102Z [1m[92m  Downloaded[0m secrecy v0.10.3
+2025-11-21T11:47:06.6322236Z [1m[92m  Downloaded[0m rustsec v0.31.0
+2025-11-21T11:47:06.6349779Z [1m[92m  Downloaded[0m rustls-native-certs v0.8.2
+2025-11-21T11:47:06.6363645Z [1m[92m  Downloaded[0m rustc-stable-hash v0.1.2
+2025-11-21T11:47:06.6372334Z [1m[92m  Downloaded[0m regex-automata v0.4.13
+2025-11-21T11:47:06.6469630Z [1m[92m  Downloaded[0m libc v0.2.177
+2025-11-21T11:47:06.6628530Z [1m[92m  Downloaded[0m jiff v0.2.16
+2025-11-21T11:47:06.6733937Z [1m[92m  Downloaded[0m serde_spanned v0.6.9
+2025-11-21T11:47:06.6740891Z [1m[92m  Downloaded[0m semver v1.0.27
+2025-11-21T11:47:06.6753431Z [1m[92m  Downloaded[0m ryu v1.0.20
+2025-11-21T11:47:06.6770311Z [1m[92m  Downloaded[0m rustls-webpki v0.103.8
+2025-11-21T11:47:06.6789443Z [1m[92m  Downloaded[0m same-file v1.0.6
+2025-11-21T11:47:06.6796930Z [1m[92m  Downloaded[0m rustls-pki-types v1.13.0
+2025-11-21T11:47:06.6821331Z [1m[92m  Downloaded[0m rand_core v0.9.3
+2025-11-21T11:47:06.6829080Z [1m[92m  Downloaded[0m quinn-proto v0.11.13
+2025-11-21T11:47:06.6871596Z [1m[92m  Downloaded[0m object v0.37.3
+2025-11-21T11:47:06.6937825Z [1m[92m  Downloaded[0m hyper v1.8.1
+2025-11-21T11:47:06.6976192Z [1m[92m  Downloaded[0m quinn v0.11.9
+2025-11-21T11:47:06.6996326Z [1m[92m  Downloaded[0m prodash v30.0.1
+2025-11-21T11:47:06.7019671Z [1m[92m  Downloaded[0m petgraph v0.8.3
+2025-11-21T11:47:06.7152238Z [1m[92m  Downloaded[0m gix v0.74.1
+2025-11-21T11:47:06.7237944Z [1m[92m  Downloaded[0m bstr v1.12.1
+2025-11-21T11:47:06.7290163Z [1m[92m  Downloaded[0m memmap2 v0.9.9
+2025-11-21T11:47:06.7300381Z [1m[92m  Downloaded[0m memchr v2.7.6
+2025-11-21T11:47:06.7329983Z [1m[92m  Downloaded[0m maybe-async v0.2.10
+2025-11-21T11:47:06.7344519Z [1m[92m  Downloaded[0m libz-rs-sys v0.5.2
+2025-11-21T11:47:06.7353908Z [1m[92m  Downloaded[0m jiff-static v0.2.16
+2025-11-21T11:47:06.7368599Z [1m[92m  Downloaded[0m hyper-rustls v0.27.7
+2025-11-21T11:47:06.7382076Z [1m[92m  Downloaded[0m http v1.3.1
+2025-11-21T11:47:06.7404822Z [1m[92m  Downloaded[0m heapless v0.8.0
+2025-11-21T11:47:06.7426407Z [1m[92m  Downloaded[0m gix-revision v0.36.1
+2025-11-21T11:47:06.7437068Z [1m[92m  Downloaded[0m gix-protocol v0.52.1
+2025-11-21T11:47:06.7455811Z [1m[92m  Downloaded[0m rand v0.9.2
+2025-11-21T11:47:06.7478604Z [1m[92m  Downloaded[0m quinn-udp v0.5.14
+2025-11-21T11:47:06.7489214Z [1m[92m  Downloaded[0m potential_utf v0.1.4
+2025-11-21T11:47:06.7495172Z [1m[92m  Downloaded[0m pin-project-lite v0.2.16
+2025-11-21T11:47:06.7523560Z [1m[92m  Downloaded[0m percent-encoding v2.3.2
+2025-11-21T11:47:06.7528602Z [1m[92m  Downloaded[0m parking_lot_core v0.9.12
+2025-11-21T11:47:06.7540316Z [1m[92m  Downloaded[0m owo-colors v4.2.3
+2025-11-21T11:47:06.7556580Z [1m[92m  Downloaded[0m lock_api v0.4.14
+2025-11-21T11:47:06.7564622Z [1m[92m  Downloaded[0m httparse v1.10.1
+2025-11-21T11:47:06.7578651Z [1m[92m  Downloaded[0m home v0.5.12
+2025-11-21T11:47:06.7584162Z [1m[92m  Downloaded[0m gix-trace v0.1.15
+2025-11-21T11:47:06.7591480Z [1m[92m  Downloaded[0m gix-submodule v0.21.0
+2025-11-21T11:47:06.7599120Z [1m[92m  Downloaded[0m gix-revwalk v0.22.0
+2025-11-21T11:47:06.7606844Z [1m[92m  Downloaded[0m gix-refspec v0.32.0
+2025-11-21T11:47:06.7617378Z [1m[92m  Downloaded[0m gix-prompt v0.11.2
+2025-11-21T11:47:06.7624869Z [1m[92m  Downloaded[0m ppv-lite86 v0.2.21
+2025-11-21T11:47:06.7633180Z [1m[92m  Downloaded[0m lru-slab v0.1.2
+2025-11-21T11:47:06.7638145Z [1m[92m  Downloaded[0m log v0.4.28
+2025-11-21T11:47:06.7654585Z [1m[92m  Downloaded[0m lazy_static v1.5.0
+2025-11-21T11:47:06.7664684Z [1m[92m  Downloaded[0m http-body-util v0.1.3
+2025-11-21T11:47:06.7675223Z [1m[92m  Downloaded[0m heck v0.5.0
+2025-11-21T11:47:06.7682403Z [1m[92m  Downloaded[0m gix-worktree-state v0.21.0
+2025-11-21T11:47:06.7691778Z [1m[92m  Downloaded[0m gix-tempfile v19.0.1
+2025-11-21T11:47:06.7700296Z [1m[92m  Downloaded[0m gix-shallow v0.6.0
+2025-11-21T11:47:06.7707140Z [1m[92m  Downloaded[0m gix-quote v0.6.1
+2025-11-21T11:47:06.7713791Z [1m[92m  Downloaded[0m gix-pathspec v0.13.0
+2025-11-21T11:47:06.7723659Z [1m[92m  Downloaded[0m crossbeam-channel v0.5.15
+2025-11-21T11:47:06.7751530Z [1m[92m  Downloaded[0m cc v1.2.47
+2025-11-21T11:47:06.7771501Z [1m[92m  Downloaded[0m bytes v1.11.0
+2025-11-21T11:47:06.7796516Z [1m[92m  Downloaded[0m borsh v1.5.7
+2025-11-21T11:47:06.7833720Z [1m[92m  Downloaded[0m backtrace v0.3.76
+2025-11-21T11:47:06.7863397Z [1m[92m  Downloaded[0m quote v1.0.42
+2025-11-21T11:47:06.7878935Z [1m[92m  Downloaded[0m platforms v3.7.0
+2025-11-21T11:47:06.7890523Z [1m[92m  Downloaded[0m litemap v0.8.1
+2025-11-21T11:47:06.7905070Z [1m[92m  Downloaded[0m kstring v2.0.2
+2025-11-21T11:47:06.7915128Z [1m[92m  Downloaded[0m itoa v1.0.15
+2025-11-21T11:47:06.7923009Z [1m[92m  Downloaded[0m gix-diff v0.54.1
+2025-11-21T11:47:06.7940810Z [1m[92m  Downloaded[0m flate2 v1.1.5
+2025-11-21T11:47:06.7966894Z [1m[92m  Downloaded[0m eyre v0.6.12
+2025-11-21T11:47:06.7985715Z [1m[92m  Downloaded[0m bitflags v2.10.0
+2025-11-21T11:47:06.8008638Z [1m[92m  Downloaded[0m arc-swap v1.7.1
+2025-11-21T11:47:06.8030319Z [1m[92m  Downloaded[0m num-conv v0.1.0
+2025-11-21T11:47:06.8035491Z [1m[92m  Downloaded[0m idna_adapter v1.2.1
+2025-11-21T11:47:06.8041204Z [1m[92m  Downloaded[0m gix-ref v0.54.1
+2025-11-21T11:47:06.8065295Z [1m[92m  Downloaded[0m getrandom v0.3.4
+2025-11-21T11:47:06.8085204Z [1m[92m  Downloaded[0m clap_derive v4.5.49
+2025-11-21T11:47:06.8098492Z [1m[92m  Downloaded[0m powerfmt v0.2.0
+2025-11-21T11:47:06.8105364Z [1m[92m  Downloaded[0m once_cell v1.21.3
+2025-11-21T11:47:06.8121200Z [1m[92m  Downloaded[0m mio v1.1.0
+2025-11-21T11:47:06.8154635Z [1m[92m  Downloaded[0m mime v0.3.17
+2025-11-21T11:47:06.8162651Z [1m[92m  Downloaded[0m matchers v0.2.0
+2025-11-21T11:47:06.8168786Z [1m[92m  Downloaded[0m http-body v1.0.1
+2025-11-21T11:47:06.8174501Z [1m[92m  Downloaded[0m hashbrown v0.16.1
+2025-11-21T11:47:06.8207030Z [1m[92m  Downloaded[0m gix-hash v0.20.1
+2025-11-21T11:47:06.8216553Z [1m[92m  Downloaded[0m gix-glob v0.22.1
+2025-11-21T11:47:06.8224822Z [1m[92m  Downloaded[0m gix-filter v0.21.0
+2025-11-21T11:47:06.8240399Z [1m[92m  Downloaded[0m gix-features v0.44.1
+2025-11-21T11:47:06.8256092Z [1m[92m  Downloaded[0m gix-credentials v0.31.1
+2025-11-21T11:47:06.8267514Z [1m[92m  Downloaded[0m gix-config v0.47.1
+2025-11-21T11:47:06.8293935Z [1m[92m  Downloaded[0m gix-attributes v0.28.1
+2025-11-21T11:47:06.8304350Z [1m[92m  Downloaded[0m getrandom v0.2.16
+2025-11-21T11:47:06.8322202Z [1m[92m  Downloaded[0m futures-task v0.3.31
+2025-11-21T11:47:06.8329000Z [1m[92m  Downloaded[0m futures-channel v0.3.31
+2025-11-21T11:47:06.8341312Z [1m[92m  Downloaded[0m fs-err v3.2.0
+2025-11-21T11:47:06.8353198Z [1m[92m  Downloaded[0m fixedbitset v0.5.7
+2025-11-21T11:47:06.8364852Z [1m[92m  Downloaded[0m display-error-chain v0.2.2
+2025-11-21T11:47:06.8371612Z [1m[92m  Downloaded[0m colorchoice v1.0.4
+2025-11-21T11:47:06.8378371Z [1m[92m  Downloaded[0m autocfg v1.5.0
+2025-11-21T11:47:06.8389229Z [1m[92m  Downloaded[0m miniz_oxide v0.8.9
+2025-11-21T11:47:06.8405233Z [1m[92m  Downloaded[0m is_terminal_polyfill v1.70.2
+2025-11-21T11:47:06.8411298Z [1m[92m  Downloaded[0m iri-string v0.7.9
+2025-11-21T11:47:06.8451736Z [1m[92m  Downloaded[0m indenter v0.3.4
+2025-11-21T11:47:06.8459272Z [1m[92m  Downloaded[0m idna v1.1.0
+2025-11-21T11:47:06.8485037Z [1m[92m  Downloaded[0m icu_properties_data v2.1.1
+2025-11-21T11:47:06.8540776Z [1m[92m  Downloaded[0m icu_normalizer v2.1.1
+2025-11-21T11:47:06.8561549Z [1m[92m  Downloaded[0m icu_locale_core v2.1.1
+2025-11-21T11:47:06.8596382Z [1m[92m  Downloaded[0m icu_collections v2.1.1
+2025-11-21T11:47:06.8630801Z [1m[92m  Downloaded[0m hyper-util v0.1.18
+2025-11-21T11:47:06.8668043Z [1m[92m  Downloaded[0m hashbrown v0.15.5
+2025-11-21T11:47:06.8699143Z [1m[92m  Downloaded[0m h2 v0.4.12
+2025-11-21T11:47:06.8737574Z [1m[92m  Downloaded[0m gix-url v0.33.1
+2025-11-21T11:47:06.8746091Z [1m[92m  Downloaded[0m gix-fs v0.17.0
+2025-11-21T11:47:06.8755503Z [1m[92m  Downloaded[0m gix-chunk v0.4.12
+2025-11-21T11:47:06.8762706Z [1m[92m  Downloaded[0m generic-array v0.14.7
+2025-11-21T11:47:06.8771379Z [1m[92m  Downloaded[0m futures-sink v0.3.31
+2025-11-21T11:47:06.8776368Z [1m[92m  Downloaded[0m futures-core v0.3.31
+2025-11-21T11:47:06.8784259Z [1m[92m  Downloaded[0m foldhash v0.2.0
+2025-11-21T11:47:06.8792486Z [1m[92m  Downloaded[0m fnv v1.0.7
+2025-11-21T11:47:06.8797851Z [1m[92m  Downloaded[0m openssl-probe v0.1.6
+2025-11-21T11:47:06.8804226Z [1m[92m  Downloaded[0m ipnet v2.11.0
+2025-11-21T11:47:06.8814000Z [1m[92m  Downloaded[0m io-close v0.3.7
+2025-11-21T11:47:06.8820050Z [1m[92m  Downloaded[0m icu_properties v2.1.1
+2025-11-21T11:47:06.8835269Z [1m[92m  Downloaded[0m icu_normalizer_data v2.1.1
+2025-11-21T11:47:06.8850745Z [1m[92m  Downloaded[0m hash32 v0.3.1
+2025-11-21T11:47:06.8858655Z [1m[92m  Downloaded[0m gix-utils v0.3.1
+2025-11-21T11:47:06.8866127Z [1m[92m  Downloaded[0m gix-traverse v0.48.0
+2025-11-21T11:47:06.8877613Z [1m[92m  Downloaded[0m gix-transport v0.49.1
+2025-11-21T11:47:06.8901286Z [1m[92m  Downloaded[0m gix-hashtable v0.10.0
+2025-11-21T11:47:06.8907111Z [1m[92m  Downloaded[0m gix-discover v0.42.0
+2025-11-21T11:47:06.8917583Z [1m[92m  Downloaded[0m gix-date v0.10.7
+2025-11-21T11:47:06.8926534Z [1m[92m  Downloaded[0m futures-util v0.3.31
+2025-11-21T11:47:06.8994149Z [1m[92m  Downloaded[0m futures-io v0.3.31
+2025-11-21T11:47:06.8999632Z [1m[92m  Downloaded[0m compression-core v0.4.30
+2025-11-21T11:47:06.9004764Z [1m[92m  Downloaded[0m camino v1.2.1
+2025-11-21T11:47:06.9016549Z [1m[92m  Downloaded[0m block-buffer v0.10.4
+2025-11-21T11:47:06.9022973Z [1m[92m  Downloaded[0m binfarce v0.2.1
+2025-11-21T11:47:06.9032420Z [1m[92m  Downloaded[0m atomic-waker v1.1.2
+2025-11-21T11:47:06.9039904Z [1m[92m  Downloaded[0m indexmap v2.12.1
+2025-11-21T11:47:06.9066481Z [1m[92m  Downloaded[0m ident_case v1.0.1
+2025-11-21T11:47:06.9071418Z [1m[92m  Downloaded[0m icu_provider v2.1.1
+2025-11-21T11:47:06.9087782Z [1m[92m  Downloaded[0m gix-sec v0.12.2
+2025-11-21T11:47:06.9095669Z [1m[92m  Downloaded[0m gix-config-value v0.15.3
+2025-11-21T11:47:06.9104226Z [1m[92m  Downloaded[0m gix-commitgraph v0.30.1
+2025-11-21T11:47:06.9113948Z [1m[92m  Downloaded[0m gix-command v0.6.3
+2025-11-21T11:47:06.9120283Z [1m[92m  Downloaded[0m crossbeam-utils v0.8.21
+2025-11-21T11:47:06.9135664Z [1m[92m  Downloaded[0m crossbeam-deque v0.8.6
+2025-11-21T11:47:06.9144413Z [1m[92m  Downloaded[0m canonical-path v2.0.2
+2025-11-21T11:47:06.9149059Z [1m[92m  Downloaded[0m auditable-serde v0.9.0
+2025-11-21T11:47:06.9154449Z [1m[92m  Downloaded[0m auditable-extract v0.3.5
+2025-11-21T11:47:06.9159282Z [1m[92m  Downloaded[0m arrayvec v0.7.6
+2025-11-21T11:47:06.9171834Z [1m[92m  Downloaded[0m anstyle v1.0.13
+2025-11-21T11:47:06.9180829Z [1m[92m  Downloaded[0m allocator-api2 v0.2.21
+2025-11-21T11:47:06.9196218Z [1m[92m  Downloaded[0m errno v0.3.14
+2025-11-21T11:47:06.9205141Z [1m[92m  Downloaded[0m base64 v0.22.1
+2025-11-21T11:47:06.9227522Z [1m[92m  Downloaded[0m async-compression v0.4.33
+2025-11-21T11:47:06.9264933Z [1m[92m  Downloaded[0m auditable-info v0.10.0
+2025-11-21T11:47:06.9270376Z [1m[92m  Downloaded[0m form_urlencoded v1.2.2
+2025-11-21T11:47:06.9275613Z [1m[92m  Downloaded[0m filetime v0.2.26
+2025-11-21T11:47:06.9285242Z [1m[92m  Downloaded[0m crypto-common v0.1.7
+2025-11-21T11:47:06.9291072Z [1m[92m  Downloaded[0m anstyle-query v1.1.5
+2025-11-21T11:47:06.9298248Z [1m[92m  Downloaded[0m adler2 v2.0.1
+2025-11-21T11:47:06.9306189Z [1m[92m  Downloaded[0m foldhash v0.1.5
+2025-11-21T11:47:06.9313945Z [1m[92m  Downloaded[0m equivalent v1.0.2
+2025-11-21T11:47:06.9319600Z [1m[92m  Downloaded[0m digest v0.10.7
+2025-11-21T11:47:06.9330302Z [1m[92m  Downloaded[0m color-eyre v0.6.5
+2025-11-21T11:47:06.9384788Z [1m[92m  Downloaded[0m fastrand v2.3.0
+2025-11-21T11:47:06.9392981Z [1m[92m  Downloaded[0m displaydoc v0.2.5
+2025-11-21T11:47:06.9408536Z [1m[92m  Downloaded[0m deranged v0.5.5
+2025-11-21T11:47:06.9418382Z [1m[92m  Downloaded[0m clap_builder v4.5.53
+2025-11-21T11:47:06.9457495Z [1m[92m  Downloaded[0m cfg-if v1.0.4
+2025-11-21T11:47:06.9465020Z [1m[92m  Downloaded[0m byteorder v1.5.0
+2025-11-21T11:47:06.9474668Z [1m[92m  Downloaded[0m gix-bitmap v0.2.15
+2025-11-21T11:47:06.9480458Z [1m[92m  Downloaded[0m either v1.15.0
+2025-11-21T11:47:06.9489134Z [1m[92m  Downloaded[0m cpufeatures v0.2.17
+2025-11-21T11:47:06.9497229Z [1m[92m  Downloaded[0m cargo-lock v11.0.0
+2025-11-21T11:47:06.9515936Z [1m[92m  Downloaded[0m cfg_aliases v0.2.1
+2025-11-21T11:47:06.9521684Z [1m[92m  Downloaded[0m gix-packetline v0.19.3
+2025-11-21T11:47:06.9534674Z [1m[92m  Downloaded[0m gix-object v0.51.1
+2025-11-21T11:47:06.9553737Z [1m[92m  Downloaded[0m gix-index v0.42.1
+2025-11-21T11:47:06.9574670Z [1m[92m  Downloaded[0m compression-codecs v0.4.32
+2025-11-21T11:47:06.9594102Z [1m[92m  Downloaded[0m clru v0.6.2
+2025-11-21T11:47:06.9601446Z [1m[92m  Downloaded[0m gix-negotiate v0.22.0
+2025-11-21T11:47:06.9608942Z [1m[92m  Downloaded[0m anstyle-parse v0.2.7
+2025-11-21T11:47:06.9619419Z [1m[92m  Downloaded[0m aho-corasick v1.1.4
+2025-11-21T11:47:06.9654134Z [1m[92m  Downloaded[0m abscissa_derive v0.8.2
+2025-11-21T11:47:06.9659314Z [1m[92m  Downloaded[0m gix-ignore v0.17.1
+2025-11-21T11:47:06.9666296Z [1m[92m  Downloaded[0m clap v4.5.53
+2025-11-21T11:47:06.9715607Z [1m[92m  Downloaded[0m addr2line v0.25.1
+2025-11-21T11:47:07.0828286Z [1m[92m   Compiling[0m proc-macro2 v1.0.103
+2025-11-21T11:47:07.0829046Z [1m[92m   Compiling[0m unicode-ident v1.0.22
+2025-11-21T11:47:07.0829649Z [1m[92m   Compiling[0m quote v1.0.42
+2025-11-21T11:47:07.0830307Z [1m[92m   Compiling[0m memchr v2.7.6
+2025-11-21T11:47:10.0648059Z [1m[92m   Compiling[0m libc v0.2.177
+2025-11-21T11:47:11.1746403Z [1m[92m   Compiling[0m cfg-if v1.0.4
+2025-11-21T11:47:11.1961082Z [1m[92m   Compiling[0m smallvec v1.15.1
+2025-11-21T11:47:11.5346523Z [1m[92m   Compiling[0m aho-corasick v1.1.4
+2025-11-21T11:47:12.2565240Z [1m[92m   Compiling[0m regex-syntax v0.8.8
+2025-11-21T11:47:13.4967714Z [1m[92m   Compiling[0m syn v2.0.110
+2025-11-21T11:47:13.5261871Z [1m[92m   Compiling[0m once_cell v1.21.3
+2025-11-21T11:47:13.7572446Z [1m[92m   Compiling[0m bytes v1.11.0
+2025-11-21T11:47:14.7146831Z [1m[92m   Compiling[0m regex-automata v0.4.13
+2025-11-21T11:47:18.2951466Z [1m[92m   Compiling[0m thiserror v2.0.17
+2025-11-21T11:47:18.5231348Z [1m[92m   Compiling[0m thiserror-impl v2.0.17
+2025-11-21T11:47:18.5241532Z [1m[92m   Compiling[0m stable_deref_trait v1.2.1
+2025-11-21T11:47:18.5554888Z [1m[92m   Compiling[0m bstr v1.12.1
+2025-11-21T11:47:19.8438726Z [1m[92m   Compiling[0m crossbeam-utils v0.8.21
+2025-11-21T11:47:19.9784182Z [1m[92m   Compiling[0m tinyvec_macros v0.1.1
+2025-11-21T11:47:20.0095636Z [1m[92m   Compiling[0m tinyvec v1.10.0
+2025-11-21T11:47:20.2042645Z [1m[92m   Compiling[0m gix-trace v0.1.15
+2025-11-21T11:47:20.2579315Z [1m[92m   Compiling[0m fastrand v2.3.0
+2025-11-21T11:47:20.4503648Z [1m[92m   Compiling[0m crc32fast v1.5.0
+2025-11-21T11:47:20.4953486Z [1m[92m   Compiling[0m unicode-normalization v0.1.25
+2025-11-21T11:47:20.5865990Z [1m[92m   Compiling[0m parking_lot_core v0.9.12
+2025-11-21T11:47:20.9146917Z [1m[92m   Compiling[0m gix-utils v0.3.1
+2025-11-21T11:47:21.0022490Z [1m[92m   Compiling[0m gix-validate v0.10.1
+2025-11-21T11:47:21.1644671Z [1m[92m   Compiling[0m scopeguard v1.2.0
+2025-11-21T11:47:21.2076986Z [1m[92m   Compiling[0m home v0.5.12
+2025-11-21T11:47:21.3022431Z [1m[92m   Compiling[0m gix-path v0.10.21
+2025-11-21T11:47:21.6272387Z [1m[92m   Compiling[0m lock_api v0.4.14
+2025-11-21T11:47:22.0161895Z [1m[92m   Compiling[0m itoa v1.0.15
+2025-11-21T11:47:22.0303612Z [1m[92m   Compiling[0m parking_lot v0.12.5
+2025-11-21T11:47:22.0927921Z [1m[92m   Compiling[0m bitflags v2.10.0
+2025-11-21T11:47:22.2868419Z [1m[92m   Compiling[0m zlib-rs v0.5.2
+2025-11-21T11:47:22.4215232Z [1m[92m   Compiling[0m same-file v1.0.6
+2025-11-21T11:47:22.5517224Z [1m[92m   Compiling[0m walkdir v2.5.0
+2025-11-21T11:47:23.0708138Z [1m[92m   Compiling[0m prodash v30.0.1
+2025-11-21T11:47:23.3320322Z [1m[92m   Compiling[0m crossbeam-channel v0.5.15
+2025-11-21T11:47:24.0154714Z [1m[92m   Compiling[0m equivalent v1.0.2
+2025-11-21T11:47:24.0504533Z [1m[92m   Compiling[0m allocator-api2 v0.2.21
+2025-11-21T11:47:24.4128173Z [1m[92m   Compiling[0m foldhash v0.2.0
+2025-11-21T11:47:24.5949710Z [1m[92m   Compiling[0m hashbrown v0.16.1
+2025-11-21T11:47:25.2859556Z [1m[92m   Compiling[0m libz-rs-sys v0.5.2
+2025-11-21T11:47:25.2894261Z [1m[92m   Compiling[0m serde_core v1.0.228
+2025-11-21T11:47:25.4343384Z [1m[92m   Compiling[0m gix-features v0.44.1
+2025-11-21T11:47:25.4843070Z [1m[92m   Compiling[0m typenum v1.19.0
+2025-11-21T11:47:25.6583981Z [1m[92m   Compiling[0m version_check v0.9.5
+2025-11-21T11:47:25.8740395Z [1m[92m   Compiling[0m generic-array v0.14.7
+2025-11-21T11:47:27.4576119Z [1m[92m   Compiling[0m byteorder v1.5.0
+2025-11-21T11:47:27.6093829Z [1m[92m   Compiling[0m heapless v0.8.0
+2025-11-21T11:47:27.8648950Z [1m[92m   Compiling[0m hash32 v0.3.1
+2025-11-21T11:47:28.2880320Z [1m[92m   Compiling[0m winnow v0.7.13
+2025-11-21T11:47:28.4060149Z [1m[92m   Compiling[0m crypto-common v0.1.7
+2025-11-21T11:47:28.4695191Z [1m[92m   Compiling[0m block-buffer v0.10.4
+2025-11-21T11:47:28.5521222Z [1m[92m   Compiling[0m digest v0.10.7
+2025-11-21T11:47:28.6316913Z [1m[92m   Compiling[0m faster-hex v0.10.0
+2025-11-21T11:47:28.6842991Z [1m[92m   Compiling[0m cpufeatures v0.2.17
+2025-11-21T11:47:28.7152987Z [1m[92m   Compiling[0m sha1 v0.10.6
+2025-11-21T11:47:29.0572102Z [1m[92m   Compiling[0m synstructure v0.13.2
+2025-11-21T11:47:29.1285751Z [1m[92m   Compiling[0m sha1-checked v0.10.0
+2025-11-21T11:47:29.5234858Z [1m[92m   Compiling[0m serde v1.0.228
+2025-11-21T11:47:29.6662883Z [1m[92m   Compiling[0m jiff v0.2.16
+2025-11-21T11:47:29.9370785Z [1m[92m   Compiling[0m zerofrom-derive v0.1.6
+2025-11-21T11:47:30.3603760Z [1m[92m   Compiling[0m gix-hash v0.20.1
+2025-11-21T11:47:30.9447944Z [1m[92m   Compiling[0m serde_derive v1.0.228
+2025-11-21T11:47:30.9508252Z [1m[92m   Compiling[0m zerofrom v0.1.6
+2025-11-21T11:47:31.0262241Z [1m[92m   Compiling[0m yoke-derive v0.8.1
+2025-11-21T11:47:31.8164136Z [1m[92m   Compiling[0m yoke v0.8.1
+2025-11-21T11:47:31.9572181Z [1m[92m   Compiling[0m rustix v1.1.2
+2025-11-21T11:47:32.2530933Z [1m[92m   Compiling[0m gix-hashtable v0.10.0
+2025-11-21T11:47:32.3292526Z [1m[92m   Compiling[0m zerovec-derive v0.11.2
+2025-11-21T11:47:33.0695417Z [1m[92m   Compiling[0m pin-project-lite v0.2.16
+2025-11-21T11:47:33.1113119Z [1m[92m   Compiling[0m linux-raw-sys v0.11.0
+2025-11-21T11:47:33.2441535Z [1m[92m   Compiling[0m zerovec v0.11.5
+2025-11-21T11:47:33.8708184Z [1m[92m   Compiling[0m displaydoc v0.2.5
+2025-11-21T11:47:34.3012645Z [1m[92m   Compiling[0m gix-date v0.10.7
+2025-11-21T11:47:34.3230778Z [1m[92m   Compiling[0m memmap2 v0.9.9
+2025-11-21T11:47:34.5612551Z [1m[92m   Compiling[0m gix-actor v0.35.6
+2025-11-21T11:47:34.8441256Z [1m[92m   Compiling[0m gix-object v0.51.1
+2025-11-21T11:47:36.9391062Z [1m[92m   Compiling[0m getrandom v0.3.4
+2025-11-21T11:47:37.0246947Z [1m[92m   Compiling[0m futures-core v0.3.31
+2025-11-21T11:47:37.1107757Z [1m[92m   Compiling[0m tinystr v0.8.2
+2025-11-21T11:47:37.2452729Z [1m[92m   Compiling[0m writeable v0.6.2
+2025-11-21T11:47:37.2862547Z [1m[92m   Compiling[0m litemap v0.8.1
+2025-11-21T11:47:37.4041236Z [1m[92m   Compiling[0m fnv v1.0.7
+2025-11-21T11:47:37.4417107Z [1m[92m   Compiling[0m icu_locale_core v2.1.1
+2025-11-21T11:47:37.4463288Z [1m[92m   Compiling[0m tempfile v3.23.0
+2025-11-21T11:47:38.4261427Z [1m[92m   Compiling[0m zerotrie v0.2.3
+2025-11-21T11:47:38.7539631Z [1m[92m   Compiling[0m potential_utf v0.1.4
+2025-11-21T11:47:38.8330786Z [1m[92m   Compiling[0m gix-fs v0.17.0
+2025-11-21T11:47:38.8555935Z [1m[92m   Compiling[0m gix-chunk v0.4.12
+2025-11-21T11:47:39.0510085Z [1m[92m   Compiling[0m socket2 v0.6.1
+2025-11-21T11:47:39.6153843Z [1m[92m   Compiling[0m mio v1.1.0
+2025-11-21T11:47:40.0388241Z [1m[92m   Compiling[0m icu_properties_data v2.1.1
+2025-11-21T11:47:40.1170477Z [1m[92m   Compiling[0m icu_normalizer_data v2.1.1
+2025-11-21T11:47:40.2006816Z [1m[92m   Compiling[0m tokio v1.48.0
+2025-11-21T11:47:40.3111211Z [1m[92m   Compiling[0m gix-tempfile v19.0.1
+2025-11-21T11:47:40.3206852Z [1m[92m   Compiling[0m icu_collections v2.1.1
+2025-11-21T11:47:41.0030436Z [1m[92m   Compiling[0m icu_provider v2.1.1
+2025-11-21T11:47:41.0914844Z [1m[92m   Compiling[0m indexmap v2.12.1
+2025-11-21T11:47:41.3432719Z [1m[92m   Compiling[0m gix-quote v0.6.1
+2025-11-21T11:47:41.6530014Z [1m[92m   Compiling[0m percent-encoding v2.3.2
+2025-11-21T11:47:41.8431958Z [1m[92m   Compiling[0m futures-sink v0.3.31
+2025-11-21T11:47:41.8941079Z [1m[92m   Compiling[0m find-msvc-tools v0.1.5
+2025-11-21T11:47:41.8967548Z [1m[92m   Compiling[0m shlex v1.3.0
+2025-11-21T11:47:42.0085527Z [1m[92m   Compiling[0m cc v1.2.47
+2025-11-21T11:47:42.1749719Z [1m[92m   Compiling[0m tracing-core v0.1.34
+2025-11-21T11:47:43.1985396Z [1m[92m   Compiling[0m zeroize v1.8.2
+2025-11-21T11:47:43.2667026Z [1m[92m   Compiling[0m simd-adler32 v0.3.7
+2025-11-21T11:47:43.3229899Z [1m[92m   Compiling[0m adler2 v2.0.1
+2025-11-21T11:47:43.4176679Z [1m[92m   Compiling[0m miniz_oxide v0.8.9
+2025-11-21T11:47:44.2078274Z [1m[92m   Compiling[0m ring v0.17.14
+2025-11-21T11:47:44.5295590Z [1m[92m   Compiling[0m icu_normalizer v2.1.1
+2025-11-21T11:47:44.6613821Z [1m[92m   Compiling[0m icu_properties v2.1.1
+2025-11-21T11:47:45.1076831Z [1m[92m   Compiling[0m gix-commitgraph v0.30.1
+2025-11-21T11:47:45.8986549Z [1m[92m   Compiling[0m http v1.3.1
+2025-11-21T11:47:45.9834600Z [1m[92m   Compiling[0m tracing-attributes v0.1.30
+2025-11-21T11:47:46.3779464Z [1m[92m   Compiling[0m slab v0.4.11
+2025-11-21T11:47:46.5279298Z [1m[92m   Compiling[0m idna_adapter v1.2.1
+2025-11-21T11:47:46.6000522Z [1m[92m   Compiling[0m gix-revwalk v0.22.0
+2025-11-21T11:47:46.9452158Z [1m[92m   Compiling[0m tracing v0.1.41
+2025-11-21T11:47:47.2430084Z [1m[92m   Compiling[0m form_urlencoded v1.2.2
+2025-11-21T11:47:47.4011837Z [1m[92m   Compiling[0m gix-lock v19.0.0
+2025-11-21T11:47:47.7686246Z [1m[92m   Compiling[0m pin-utils v0.1.0
+2025-11-21T11:47:47.8003522Z [1m[92m   Compiling[0m utf8_iter v1.0.4
+2025-11-21T11:47:47.8992271Z [1m[92m   Compiling[0m idna v1.1.0
+2025-11-21T11:47:47.9882401Z [1m[92m   Compiling[0m http-body v1.0.1
+2025-11-21T11:47:48.0702314Z [1m[92m   Compiling[0m rustls-pki-types v1.13.0
+2025-11-21T11:47:48.9621136Z [1m[92m   Compiling[0m gix-glob v0.22.1
+2025-11-21T11:47:49.7680873Z [1m[92m   Compiling[0m getrandom v0.2.16
+2025-11-21T11:47:49.9441144Z [1m[92m   Compiling[0m httparse v1.10.1
+2025-11-21T11:47:50.1159746Z [1m[92m   Compiling[0m futures-task v0.3.31
+2025-11-21T11:47:50.2215311Z [1m[92m   Compiling[0m futures-io v0.3.31
+2025-11-21T11:47:50.2650222Z [1m[92m   Compiling[0m untrusted v0.9.0
+2025-11-21T11:47:50.3321296Z [1m[92m   Compiling[0m unicode-bom v2.0.3
+2025-11-21T11:47:50.3455383Z [1m[92m   Compiling[0m futures-util v0.3.31
+2025-11-21T11:47:50.3721681Z [1m[92m   Compiling[0m url v2.5.7
+2025-11-21T11:47:50.4694768Z [1m[92m   Compiling[0m tokio-util v0.7.17
+2025-11-21T11:47:51.8009394Z [1m[92m   Compiling[0m gix-config-value v0.15.3
+2025-11-21T11:47:52.6040302Z [1m[92m   Compiling[0m shell-words v1.1.0
+2025-11-21T11:47:52.7879578Z [1m[92m   Compiling[0m static_assertions v1.1.0
+2025-11-21T11:47:52.8213210Z [1m[92m   Compiling[0m ryu v1.0.20
+2025-11-21T11:47:53.0343870Z [1m[92m   Compiling[0m tower-service v0.3.3
+2025-11-21T11:47:53.0768599Z [1m[92m   Compiling[0m try-lock v0.2.5
+2025-11-21T11:47:53.0849634Z [1m[92m   Compiling[0m atomic-waker v1.1.2
+2025-11-21T11:47:53.1293095Z [1m[92m   Compiling[0m rustls v0.23.35
+2025-11-21T11:47:53.1388251Z [1m[92m   Compiling[0m h2 v0.4.12
+2025-11-21T11:47:53.1455729Z [1m[92m   Compiling[0m want v0.3.1
+2025-11-21T11:47:53.1993455Z [1m[92m   Compiling[0m kstring v2.0.2
+2025-11-21T11:47:53.2461199Z [1m[92m   Compiling[0m gix-command v0.6.3
+2025-11-21T11:47:53.8433471Z [1m[92m   Compiling[0m futures-channel v0.3.31
+2025-11-21T11:47:53.8514334Z [1m[92m   Compiling[0m gix-sec v0.12.2
+2025-11-21T11:47:54.0244952Z [1m[92m   Compiling[0m subtle v2.6.1
+2025-11-21T11:47:54.1275996Z [1m[92m   Compiling[0m log v0.4.28
+2025-11-21T11:47:54.1415476Z [1m[92m   Compiling[0m gix-attributes v0.28.1
+2025-11-21T11:47:54.3231825Z [1m[92m   Compiling[0m flate2 v1.1.5
+2025-11-21T11:47:54.8327898Z [1m[92m   Compiling[0m sync_wrapper v1.0.2
+2025-11-21T11:47:54.8824468Z [1m[92m   Compiling[0m encoding_rs v0.8.35
+2025-11-21T11:47:56.5973999Z [1m[92m   Compiling[0m hyper v1.8.1
+2025-11-21T11:48:00.1517224Z [1m[92m   Compiling[0m rustls-webpki v0.103.8
+2025-11-21T11:48:00.4021897Z [1m[92m   Compiling[0m ipnet v2.11.0
+2025-11-21T11:48:01.7791897Z [1m[92m   Compiling[0m base64 v0.22.1
+2025-11-21T11:48:02.0495147Z [1m[92m   Compiling[0m openssl-probe v0.1.6
+2025-11-21T11:48:02.2465292Z [1m[92m   Compiling[0m compression-core v0.4.30
+2025-11-21T11:48:02.2626995Z [1m[92m   Compiling[0m tower-layer v0.3.3
+2025-11-21T11:48:02.3261925Z [1m[92m   Compiling[0m autocfg v1.5.0
+2025-11-21T11:48:02.4624428Z [1m[92m   Compiling[0m tower v0.5.2
+2025-11-21T11:48:02.6261700Z [1m[92m   Compiling[0m compression-codecs v0.4.32
+2025-11-21T11:48:02.9777988Z [1m[92m   Compiling[0m rustls-native-certs v0.8.2
+2025-11-21T11:48:03.0401654Z [1m[92m   Compiling[0m hyper-util v0.1.18
+2025-11-21T11:48:03.1152972Z [1m[92m   Compiling[0m gix-url v0.33.1
+2025-11-21T11:48:03.8618968Z [1m[92m   Compiling[0m gix-ref v0.54.1
+2025-11-21T11:48:04.2245280Z [1m[92m   Compiling[0m semver v1.0.27
+2025-11-21T11:48:04.8600157Z [1m[92m   Compiling[0m tokio-rustls v0.26.4
+2025-11-21T11:48:05.0872861Z [1m[92m   Compiling[0m iri-string v0.7.9
+2025-11-21T11:48:06.0312217Z [1m[92m   Compiling[0m hyper-rustls v0.27.7
+2025-11-21T11:48:06.7943033Z [1m[92m   Compiling[0m tower-http v0.6.6
+2025-11-21T11:48:07.8287849Z [1m[92m   Compiling[0m async-compression v0.4.33
+2025-11-21T11:48:07.9604174Z [1m[92m   Compiling[0m gix-prompt v0.11.2
+2025-11-21T11:48:08.2355875Z [1m[92m   Compiling[0m serde_urlencoded v0.7.1
+2025-11-21T11:48:08.4542871Z [1m[92m   Compiling[0m http-body-util v0.1.3
+2025-11-21T11:48:08.4575119Z [1m[92m   Compiling[0m gix-revision v0.36.1
+2025-11-21T11:48:08.6792667Z [1m[92m   Compiling[0m gix-traverse v0.48.0
+2025-11-21T11:48:09.6373349Z [1m[92m   Compiling[0m gix-bitmap v0.2.15
+2025-11-21T11:48:09.7549050Z [1m[92m   Compiling[0m filetime v0.2.26
+2025-11-21T11:48:09.9235489Z [1m[92m   Compiling[0m arrayvec v0.7.6
+2025-11-21T11:48:10.1034856Z [1m[92m   Compiling[0m serde_json v1.0.145
+2025-11-21T11:48:10.1595277Z [1m[92m   Compiling[0m mime v0.3.17
+2025-11-21T11:48:10.1883109Z [1m[92m   Compiling[0m uluru v3.1.0
+2025-11-21T11:48:10.2499250Z [1m[92m   Compiling[0m gix-index v0.42.1
+2025-11-21T11:48:10.6278266Z [1m[92m   Compiling[0m reqwest v0.12.24
+2025-11-21T11:48:11.0019716Z [1m[92m   Compiling[0m gix-refspec v0.32.0
+2025-11-21T11:48:12.8435616Z [1m[92m   Compiling[0m gix-credentials v0.31.1
+2025-11-21T11:48:14.2329590Z [1m[92m   Compiling[0m gix-ignore v0.17.1
+2025-11-21T11:48:14.6606288Z [1m[92m   Compiling[0m gix-packetline-blocking v0.19.3
+2025-11-21T11:48:15.0347342Z [1m[92m   Compiling[0m gix-packetline v0.19.3
+2025-11-21T11:48:15.4038278Z [1m[92m   Compiling[0m crossbeam-epoch v0.9.18
+2025-11-21T11:48:15.7703863Z [1m[92m   Compiling[0m arc-swap v1.7.1
+2025-11-21T11:48:15.8216803Z [1m[92m   Compiling[0m syn v1.0.109
+2025-11-21T11:48:15.9623163Z [1m[92m   Compiling[0m rayon-core v1.13.0
+2025-11-21T11:48:15.9961851Z [1m[92m   Compiling[0m clru v0.6.2
+2025-11-21T11:48:16.0317876Z [1m[92m   Compiling[0m utf8parse v0.2.2
+2025-11-21T11:48:16.0826552Z [1m[92m   Compiling[0m object v0.37.3
+2025-11-21T11:48:16.1935775Z [1m[92m   Compiling[0m gix-pack v0.61.1
+2025-11-21T11:48:16.2162100Z [1m[92m   Compiling[0m anstyle-parse v0.2.7
+2025-11-21T11:48:16.3930870Z [1m[92m   Compiling[0m crossbeam-deque v0.8.6
+2025-11-21T11:48:16.5475094Z [1m[92m   Compiling[0m gix-transport v0.49.1
+2025-11-21T11:48:22.9184059Z [1m[92m   Compiling[0m gix-filter v0.21.0
+2025-11-21T11:48:23.4181277Z [1m[92m   Compiling[0m gix-worktree v0.43.1
+2025-11-21T11:48:26.2244693Z [1m[92m   Compiling[0m gix-config v0.47.1
+2025-11-21T11:48:26.8148482Z [1m[92m   Compiling[0m gix-pathspec v0.13.0
+2025-11-21T11:48:27.5990506Z [1m[92m   Compiling[0m gix-shallow v0.6.0
+2025-11-21T11:48:28.2052240Z [1m[92m   Compiling[0m gix-negotiate v0.22.0
+2025-11-21T11:48:28.8675424Z [1m[92m   Compiling[0m maybe-async v0.2.10
+2025-11-21T11:48:29.2850900Z [1m[92m   Compiling[0m io-close v0.3.7
+2025-11-21T11:48:29.3422639Z [1m[92m   Compiling[0m eyre v0.6.12
+2025-11-21T11:48:29.4032773Z [1m[92m   Compiling[0m gimli v0.32.3
+2025-11-21T11:48:29.4827496Z [1m[92m   Compiling[0m is_terminal_polyfill v1.70.2
+2025-11-21T11:48:29.5231808Z [1m[92m   Compiling[0m owo-colors v4.2.3
+2025-11-21T11:48:29.6732224Z [1m[92m   Compiling[0m colorchoice v1.0.4
+2025-11-21T11:48:29.7300044Z [1m[92m   Compiling[0m camino v1.2.1
+2025-11-21T11:48:29.8841865Z [1m[92m   Compiling[0m foldhash v0.1.5
+2025-11-21T11:48:30.0409534Z [1m[92m   Compiling[0m anstyle v1.0.13
+2025-11-21T11:48:30.2445948Z [1m[92m   Compiling[0m anstyle-query v1.1.5
+2025-11-21T11:48:30.2912401Z [1m[92m   Compiling[0m anstream v0.6.21
+2025-11-21T11:48:30.7438526Z [1m[92m   Compiling[0m hashbrown v0.15.5
+2025-11-21T11:48:31.6301804Z [1m[92m   Compiling[0m addr2line v0.25.1
+2025-11-21T11:48:32.0428677Z [1m[92m   Compiling[0m gix-worktree-state v0.21.0
+2025-11-21T11:48:32.5923031Z [1m[92m   Compiling[0m gix-protocol v0.52.1
+2025-11-21T11:48:32.7570806Z [1m[92m   Compiling[0m gix-submodule v0.21.0
+2025-11-21T11:48:32.9632345Z [1m[92m   Compiling[0m gix-odb v0.71.1
+2025-11-21T11:48:36.1969997Z [1m[92m   Compiling[0m gix-discover v0.42.0
+2025-11-21T11:48:37.5191405Z [1m[92m   Compiling[0m fs-err v3.2.0
+2025-11-21T11:48:37.5957961Z [1m[92m   Compiling[0m fs-err v2.11.0
+2025-11-21T11:48:37.6689023Z [1m[92m   Compiling[0m gix-diff v0.54.1
+2025-11-21T11:48:37.7029464Z [1m[92m   Compiling[0m toml_datetime v0.6.11
+2025-11-21T11:48:37.9326329Z [1m[92m   Compiling[0m serde_spanned v0.6.9
+2025-11-21T11:48:38.0121534Z [1m[92m   Compiling[0m toml_parser v1.0.4
+2025-11-21T11:48:38.0221262Z [1m[92m   Compiling[0m toml_datetime v0.7.3
+2025-11-21T11:48:38.3749818Z [1m[92m   Compiling[0m serde_spanned v1.0.3
+2025-11-21T11:48:38.4571916Z [1m[92m   Compiling[0m wasmparser v0.207.0
+2025-11-21T11:48:39.4496256Z [1m[92m   Compiling[0m regex v1.12.2
+2025-11-21T11:48:39.5625680Z [1m[92m   Compiling[0m either v1.15.0
+2025-11-21T11:48:39.7058083Z [1m[92m   Compiling[0m powerfmt v0.2.0
+2025-11-21T11:48:39.7977321Z [1m[92m   Compiling[0m toml_write v0.1.2
+2025-11-21T11:48:39.8900539Z [1m[92m   Compiling[0m rustc-demangle v0.1.26
+2025-11-21T11:48:39.9871390Z [1m[92m   Compiling[0m binfarce v0.2.1
+2025-11-21T11:48:40.9646753Z [1m[92m   Compiling[0m strsim v0.11.1
+2025-11-21T11:48:40.9709610Z [1m[92m   Compiling[0m indenter v0.3.4
+2025-11-21T11:48:41.0299139Z [1m[92m   Compiling[0m lazy_static v1.5.0
+2025-11-21T11:48:41.0723619Z [1m[92m   Compiling[0m heck v0.5.0
+2025-11-21T11:48:41.2284399Z [1m[92m   Compiling[0m fixedbitset v0.5.7
+2025-11-21T11:48:41.7433100Z [1m[92m   Compiling[0m unicode-xid v0.2.6
+2025-11-21T11:48:41.8023988Z [1m[92m   Compiling[0m clap_lex v0.7.6
+2025-11-21T11:48:41.8135769Z [1m[92m   Compiling[0m toml_writer v1.0.4
+2025-11-21T11:48:42.0080028Z [1m[92m   Compiling[0m topological-sort v0.2.2
+2025-11-21T11:48:42.1039507Z [1m[92m   Compiling[0m auditable-serde v0.9.0
+2025-11-21T11:48:42.1088874Z [1m[92m   Compiling[0m toml v0.9.8
+2025-11-21T11:48:42.2281047Z [1m[92m   Compiling[0m clap_builder v4.5.53
+2025-11-21T11:48:43.5297993Z [1m[92m   Compiling[0m synstructure v0.12.6
+2025-11-21T11:48:43.9376839Z [1m[92m   Compiling[0m petgraph v0.8.3
+2025-11-21T11:48:44.5626546Z [1m[92m   Compiling[0m clap_derive v4.5.49
+2025-11-21T11:48:46.1513748Z [1m[92m   Compiling[0m sharded-slab v0.1.7
+2025-11-21T11:48:46.7930122Z [1m[92m   Compiling[0m auditable-extract v0.3.5
+2025-11-21T11:48:46.9516592Z [1m[92m   Compiling[0m backtrace v0.3.76
+2025-11-21T11:48:47.1556606Z [1m[92m   Compiling[0m toml_edit v0.22.27
+2025-11-21T11:48:47.3331336Z [1m[92m   Compiling[0m deranged v0.5.5
+2025-11-21T11:48:48.7109156Z [1m[92m   Compiling[0m rayon v1.11.0
+2025-11-21T11:48:51.1988804Z [1m[92m   Compiling[0m gix v0.74.1
+2025-11-21T11:48:54.5684063Z [1m[92m   Compiling[0m tracing-log v0.2.0
+2025-11-21T11:48:54.8902375Z [1m[92m   Compiling[0m smol_str v0.3.4
+2025-11-21T11:48:55.1562209Z [1m[92m   Compiling[0m matchers v0.2.0
+2025-11-21T11:48:55.2371606Z [1m[92m   Compiling[0m toml-span v0.6.0
+2025-11-21T11:48:55.3907932Z [1m[92m   Compiling[0m thread_local v1.1.9
+2025-11-21T11:48:55.6475949Z [1m[92m   Compiling[0m twox-hash v2.1.2
+2025-11-21T11:48:55.7333990Z [1m[92m   Compiling[0m rustc-stable-hash v0.1.2
+2025-11-21T11:48:55.8704057Z [1m[92m   Compiling[0m ident_case v1.0.1
+2025-11-21T11:48:55.9262535Z [1m[92m   Compiling[0m time-core v0.1.6
+2025-11-21T11:48:56.0299961Z [1m[92m   Compiling[0m num-conv v0.1.0
+2025-11-21T11:48:56.1245133Z [1m[92m   Compiling[0m nu-ansi-term v0.50.3
+2025-11-21T11:48:56.6497811Z [1m[92m   Compiling[0m tracing-subscriber v0.3.20
+2025-11-21T11:48:58.1699942Z [1m[92m   Compiling[0m time v0.3.44
+2025-11-21T11:48:59.1652100Z [1m[92m   Compiling[0m abscissa_derive v0.8.2
+2025-11-21T11:48:59.4259847Z [1m[92m   Compiling[0m tame-index v0.24.1
+2025-11-21T11:49:01.8871103Z [1m[92m   Compiling[0m color-eyre v0.6.5
+2025-11-21T11:49:03.7511675Z [1m[92m   Compiling[0m toml v0.8.23
+2025-11-21T11:49:03.7600527Z [1m[92m   Compiling[0m auditable-info v0.10.0
+2025-11-21T11:49:04.8605345Z [1m[92m   Compiling[0m cargo-lock v11.0.0
+2025-11-21T11:49:07.0112493Z [1m[92m   Compiling[0m clap v4.5.53
+2025-11-21T11:49:07.0469034Z [1m[92m   Compiling[0m quitters v0.1.0
+2025-11-21T11:49:07.8902745Z [1m[92m   Compiling[0m secrecy v0.10.3
+2025-11-21T11:49:07.9846296Z [1m[92m   Compiling[0m cvss v2.2.0
+2025-11-21T11:49:10.4680158Z [1m[92m   Compiling[0m platforms v3.7.0
+2025-11-21T11:49:10.9012991Z [1m[92m   Compiling[0m wait-timeout v0.2.1
+2025-11-21T11:49:11.3335182Z [1m[92m   Compiling[0m canonical-path v2.0.2
+2025-11-21T11:49:11.4545073Z [1m[92m   Compiling[0m termcolor v1.4.1
+2025-11-21T11:49:11.5089007Z [1m[92m   Compiling[0m rustsec v0.31.0
+2025-11-21T11:49:11.8931623Z [1m[92m   Compiling[0m abscissa_core v0.8.2
+2025-11-21T11:49:14.9762282Z [1m[92m   Compiling[0m display-error-chain v0.2.2
+2025-11-21T11:49:15.0487039Z [1m[92m   Compiling[0m cargo-audit v0.22.0
+2025-11-21T11:49:33.9518425Z [1m[92m    Finished[0m `release` profile [optimized] target(s) in 2m 30s
+2025-11-21T11:49:34.0175987Z [1m[92m  Installing[0m /home/runner/.cargo/bin/cargo-audit
+2025-11-21T11:49:34.0176748Z [1m[92m   Installed[0m package `cargo-audit v0.22.0` (executable `cargo-audit`)
+2025-11-21T11:49:34.1369086Z ##[group]Run cargo audit
+2025-11-21T11:49:34.1369324Z [36;1mcargo audit[0m
+2025-11-21T11:49:34.1387425Z shell: /usr/bin/bash -e {0}
+2025-11-21T11:49:34.1387686Z env:
+2025-11-21T11:49:34.1387863Z   CARGO_TERM_COLOR: always
+2025-11-21T11:49:34.1388075Z   RUST_BACKTRACE: 1
+2025-11-21T11:49:34.1388265Z   CARGO_HOME: /home/runner/.cargo
+2025-11-21T11:49:34.1388488Z   CARGO_INCREMENTAL: 0
+2025-11-21T11:49:34.1388672Z ##[endgroup]
+2025-11-21T11:49:34.2662294Z [1m[92m    Updating[0m crates.io index
+2025-11-21T11:49:36.1495600Z [1m[92m     Locking[0m 904 packages to latest compatible versions
+2025-11-21T11:49:36.1534613Z [1m[92m      Adding[0m arrow v53.4.1 [1m[33m(available: v57.0.0)[0m
+2025-11-21T11:49:36.1583515Z [1m[92m      Adding[0m async-compression v0.4.19 [1m[33m(available: v0.4.33)[0m
+2025-11-21T11:49:36.1606293Z [1m[92m      Adding[0m axum v0.7.9 [1m[33m(available: v0.8.7)[0m
+2025-11-21T11:49:36.1622181Z [1m[92m      Adding[0m bincode v1.3.3 [1m[33m(available: v2.0.1)[0m
+2025-11-21T11:49:36.1658238Z [1m[92m      Adding[0m chrono v0.4.39 [1m[33m(available: v0.4.42)[0m
+2025-11-21T11:49:36.1820032Z [1m[92m      Adding[0m colored_json v4.1.0 [1m[33m(available: v5.0.0)[0m
+2025-11-21T11:49:36.1824882Z [1m[92m      Adding[0m config v0.14.1 [1m[33m(available: v0.15.19)[0m
+2025-11-21T11:49:36.1827012Z [1m[92m      Adding[0m console v0.15.11 [1m[33m(available: v0.16.1)[0m
+2025-11-21T11:49:36.1835448Z [1m[92m      Adding[0m criterion v0.5.1 [1m[33m(available: v0.7.0)[0m
+2025-11-21T11:49:36.1856284Z [1m[92m      Adding[0m cudarc v0.9.15 [1m[33m(available: v0.18.1)[0m
+2025-11-21T11:49:36.1878479Z [1m[92m      Adding[0m datafusion v43.0.0 [1m[33m(available: v51.0.0)[0m
+2025-11-21T11:49:36.1913443Z [1m[92m      Adding[0m dialoguer v0.11.0 [1m[33m(available: v0.12.0)[0m
+2025-11-21T11:49:36.1956457Z [1m[92m      Adding[0m generic-array v0.14.7 [1m[33m(available: v0.14.9)[0m
+2025-11-21T11:49:36.2010176Z [1m[92m      Adding[0m hf-hub v0.3.2 [1m[33m(available: v0.4.3)[0m
+2025-11-21T11:49:36.2150863Z [1m[92m      Adding[0m image v0.24.9 [1m[33m(available: v0.25.9)[0m
+2025-11-21T11:49:36.2160791Z [1m[92m      Adding[0m indicatif v0.17.11 [1m[33m(available: v0.18.3)[0m
+2025-11-21T11:49:36.2184748Z [1m[92m      Adding[0m kiddo v4.2.1 [1m[33m(available: v5.2.2)[0m
+2025-11-21T11:49:36.2192385Z [1m[92m      Adding[0m leptos v0.6.15 [1m[33m(available: v0.8.12)[0m
+2025-11-21T11:49:36.2214802Z [1m[92m      Adding[0m leptos_meta v0.6.15 [1m[33m(available: v0.8.5)[0m
+2025-11-21T11:49:36.2225425Z [1m[92m      Adding[0m leptos_router v0.6.15 [1m[33m(available: v0.8.9)[0m
+2025-11-21T11:49:36.2238531Z [1m[92m      Adding[0m linfa v0.7.1 [1m[33m(available: v0.8.0)[0m
+2025-11-21T11:49:36.2239337Z [1m[92m      Adding[0m linfa-clustering v0.7.1 [1m[33m(available: v0.8.0)[0m
+2025-11-21T11:49:36.2240400Z [1m[92m      Adding[0m linfa-reduction v0.7.1 [1m[33m(available: v0.8.0)[0m
+2025-11-21T11:49:36.2304294Z [1m[92m      Adding[0m nalgebra v0.32.6 [1m[33m(available: v0.34.1)[0m
+2025-11-21T11:49:36.2308736Z [1m[92m      Adding[0m nalgebra v0.33.2 [1m[33m(available: v0.34.1)[0m
+2025-11-21T11:49:36.2316606Z [1m[92m      Adding[0m ndarray v0.15.6 [1m[33m(available: v0.17.1)[0m
+2025-11-21T11:49:36.2318573Z [1m[92m      Adding[0m ndarray v0.16.1 [1m[33m(available: v0.17.1)[0m
+2025-11-21T11:49:36.2320157Z [1m[92m      Adding[0m ndarray-linalg v0.16.0 [1m[33m(available: v0.18.0)[0m
+2025-11-21T11:49:36.2321025Z [1m[92m      Adding[0m ndarray-rand v0.14.0 [1m[33m(available: v0.16.0)[0m
+2025-11-21T11:49:36.2321692Z [1m[92m      Adding[0m ndarray-stats v0.5.1 [1m[33m(available: v0.6.0)[0m
+2025-11-21T11:49:36.2406280Z [1m[92m      Adding[0m parquet v53.4.1 [1m[33m(available: v57.0.0)[0m
+2025-11-21T11:49:36.2430138Z [1m[92m      Adding[0m petgraph v0.6.5 [1m[33m(available: v0.8.3)[0m
+2025-11-21T11:49:36.2448337Z [1m[92m      Adding[0m polars v0.44.2 [1m[33m(available: v0.52.0)[0m
+2025-11-21T11:49:36.2524834Z [1m[92m      Adding[0m prophet v0.1.1 [1m[33m(available: v0.4.2)[0m
+2025-11-21T11:49:36.2587880Z [1m[92m      Adding[0m rand v0.8.5 [1m[33m(available: v0.9.2)[0m
+2025-11-21T11:49:36.2593561Z [1m[92m      Adding[0m rand_distr v0.4.3 [1m[33m(available: v0.5.1)[0m
+2025-11-21T11:49:36.2594067Z [1m[92m      Adding[0m rand_xoshiro v0.6.0 [1m[33m(available: v0.7.0)[0m
+2025-11-21T11:49:36.3042995Z [1m[92m      Adding[0m smartcore v0.3.2 [1m[33m(available: v0.4.6)[0m
+2025-11-21T11:49:36.3049359Z [1m[92m      Adding[0m sprs v0.11.1 [1m[33m(available: v0.11.4)[0m
+2025-11-21T11:49:36.3054115Z [1m[92m      Adding[0m statrs v0.16.1 [1m[33m(available: v0.18.0)[0m
+2025-11-21T11:49:36.3054613Z [1m[92m      Adding[0m statrs v0.17.1 [1m[33m(available: v0.18.0)[0m
+2025-11-21T11:49:36.3117662Z [1m[92m      Adding[0m tabled v0.15.0 [1m[33m(available: v0.20.0)[0m
+2025-11-21T11:49:36.3128382Z [1m[92m      Adding[0m thiserror v1.0.69 [1m[33m(available: v2.0.17)[0m
+2025-11-21T11:49:36.3137177Z [1m[92m      Adding[0m tiktoken-rs v0.5.9 [1m[33m(available: v0.9.1)[0m
+2025-11-21T11:49:36.3145309Z [1m[92m      Adding[0m tokenizers v0.20.4 [1m[33m(available: v0.22.1)[0m
+2025-11-21T11:49:36.3372561Z [1m[92m      Adding[0m wgpu v22.1.0 [1m[33m(available: v27.0.1)[0m
+2025-11-21T11:49:36.3592331Z [1m[92m      Adding[0m zstd-safe v7.2.1 [1m[33m(available: v7.2.4)[0m
+2025-11-21T11:49:36.3593244Z [1m[92m      Adding[0m zstd-sys v2.0.13+zstd.1.5.6 [1m[33m(available: v2.0.16+zstd.1.5.7)[0m
+2025-11-21T11:49:36.4403951Z [0m[0m[1m[32m    Fetching[0m advisory database from `https://github.com/RustSec/advisory-db.git`
+2025-11-21T11:49:38.3531514Z [0m[0m[1m[32m      Loaded[0m 873 security advisories (from /home/runner/.cargo/advisory-db)
+2025-11-21T11:49:38.3532262Z [0m[0m[1m[32m    Updating[0m crates.io index
+2025-11-21T11:49:38.3717549Z [0m[0m[1m[32m    Scanning[0m Cargo.lock for vulnerabilities (918 crate dependencies)
+2025-11-21T11:49:39.0208864Z [0m[0m[1m[31mCrate:    [0m fast-float
+2025-11-21T11:49:39.0209472Z [0m[0m[1m[31mVersion:  [0m 0.2.0
+2025-11-21T11:49:39.0210102Z [0m[0m[1m[31mTitle:    [0m Segmentation fault due to lack of bound check
+2025-11-21T11:49:39.0210805Z [0m[0m[1m[31mDate:     [0m 2025-01-13
+2025-11-21T11:49:39.0211302Z [0m[0m[1m[31mID:       [0m RUSTSEC-2025-0003
+2025-11-21T11:49:39.0211978Z [0m[0m[1m[31mURL:      [0m https://rustsec.org/advisories/RUSTSEC-2025-0003
+2025-11-21T11:49:39.0212640Z [0m[0m[1m[31mSolution: [0m No fixed upgrade is available!
+2025-11-21T11:49:39.0212960Z [0m[0m[1m[31mDependency tree:
+2025-11-21T11:49:39.0213205Z [0mfast-float 0.2.0
+2025-11-21T11:49:39.0213445Z ├── polars-io 0.44.2
+2025-11-21T11:49:39.0213676Z │   ├── polars-stream 0.44.2
+2025-11-21T11:49:39.0213938Z │   │   └── polars-lazy 0.44.2
+2025-11-21T11:49:39.0214264Z │   │       ├── polars-sql 0.44.2
+2025-11-21T11:49:39.0214765Z │   │       │   └── polars 0.44.2
+2025-11-21T11:49:39.0215241Z │   │       │       ├── avila-ml 0.1.0
+2025-11-21T11:49:39.0215731Z │   │       │       └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0216634Z │   │       └── polars 0.44.2
+2025-11-21T11:49:39.0217045Z │   ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0217383Z │   │   ├── polars-stream 0.44.2
+2025-11-21T11:49:39.0217631Z │   │   ├── polars-sql 0.44.2
+2025-11-21T11:49:39.0217881Z │   │   ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0218133Z │   │   │   └── polars-lazy 0.44.2
+2025-11-21T11:49:39.0218451Z │   │   ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0218774Z │   │   │   ├── polars-stream 0.44.2
+2025-11-21T11:49:39.0219073Z │   │   │   └── polars-lazy 0.44.2
+2025-11-21T11:49:39.0219370Z │   │   ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0219656Z │   │   └── polars-expr 0.44.2
+2025-11-21T11:49:39.0219949Z │   │       ├── polars-stream 0.44.2
+2025-11-21T11:49:39.0220247Z │   │       ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0220992Z │   │       ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0221332Z │   │       └── polars-lazy 0.44.2
+2025-11-21T11:49:39.0221639Z │   ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0221930Z │   ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0222238Z │   ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0222518Z │   ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0222782Z │   └── polars 0.44.2
+2025-11-21T11:49:39.0223049Z └── polars-arrow 0.44.2
+2025-11-21T11:49:39.0223315Z     ├── polars-time 0.44.2
+2025-11-21T11:49:39.0223598Z     │   ├── polars-sql 0.44.2
+2025-11-21T11:49:39.0223881Z     │   ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0224180Z     │   ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0224485Z     │   ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0224772Z     │   ├── polars-io 0.44.2
+2025-11-21T11:49:39.0225053Z     │   ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0225334Z     │   └── polars 0.44.2
+2025-11-21T11:49:39.0225603Z     ├── polars-sql 0.44.2
+2025-11-21T11:49:39.0225865Z     ├── polars-row 0.44.2
+2025-11-21T11:49:39.0226158Z     │   ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0226439Z     │   ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0226725Z     │   └── polars-core 0.44.2
+2025-11-21T11:49:39.0227007Z     │       ├── polars-time 0.44.2
+2025-11-21T11:49:39.0227329Z     │       ├── polars-stream 0.44.2
+2025-11-21T11:49:39.0227636Z     │       ├── polars-sql 0.44.2
+2025-11-21T11:49:39.0227933Z     │       ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0228224Z     │       ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0228522Z     │       ├── polars-ops 0.44.2
+2025-11-21T11:49:39.0228828Z     │       │   ├── polars-time 0.44.2
+2025-11-21T11:49:39.0229137Z     │       │   ├── polars-sql 0.44.2
+2025-11-21T11:49:39.0229454Z     │       │   ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0229763Z     │       │   ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0230089Z     │       │   ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0230405Z     │       │   ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0231251Z     │       │   ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0231651Z     │       │   └── polars 0.44.2
+2025-11-21T11:49:39.0232039Z     │       ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0232462Z     │       ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0232777Z     │       ├── polars-io 0.44.2
+2025-11-21T11:49:39.0233072Z     │       ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0233362Z     │       └── polars 0.44.2
+2025-11-21T11:49:39.0233652Z     ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0233922Z     ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0234204Z     ├── polars-parquet 0.44.2
+2025-11-21T11:49:39.0234490Z     │   ├── polars-stream 0.44.2
+2025-11-21T11:49:39.0234783Z     │   ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0235059Z     │   ├── polars-io 0.44.2
+2025-11-21T11:49:39.0235335Z     │   └── polars 0.44.2
+2025-11-21T11:49:39.0235605Z     ├── polars-ops 0.44.2
+2025-11-21T11:49:39.0235865Z     ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0236113Z     ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0236343Z     ├── polars-json 0.44.2
+2025-11-21T11:49:39.0236596Z     │   ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0236835Z     │   ├── polars-ops 0.44.2
+2025-11-21T11:49:39.0237115Z     │   ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0237601Z     │   ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0237846Z     │   └── polars-io 0.44.2
+2025-11-21T11:49:39.0238081Z     ├── polars-io 0.44.2
+2025-11-21T11:49:39.0238323Z     ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0238572Z     ├── polars-core 0.44.2
+2025-11-21T11:49:39.0238815Z     ├── polars-compute 0.44.2
+2025-11-21T11:49:39.0239070Z     │   ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0239326Z     │   ├── polars-parquet 0.44.2
+2025-11-21T11:49:39.0239601Z     │   ├── polars-ops 0.44.2
+2025-11-21T11:49:39.0239841Z     │   ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0240093Z     │   └── polars-core 0.44.2
+2025-11-21T11:49:39.0240323Z     └── polars 0.44.2
+2025-11-21T11:49:39.0240451Z 
+2025-11-21T11:49:39.0240578Z [0m[0m[1m[31mCrate:    [0m pyo3
+2025-11-21T11:49:39.0241182Z [0m[0m[1m[31mVersion:  [0m 0.21.2
+2025-11-21T11:49:39.0245436Z [0m[0m[1m[31mTitle:    [0m Risk of buffer overflow in `PyString::from_object`
+2025-11-21T11:49:39.0245825Z [0m[0m[1m[31mDate:     [0m 2025-04-01
+2025-11-21T11:49:39.0246146Z [0m[0m[1m[31mID:       [0m RUSTSEC-2025-0020
+2025-11-21T11:49:39.0246547Z [0m[0m[1m[31mURL:      [0m https://rustsec.org/advisories/RUSTSEC-2025-0020
+2025-11-21T11:49:39.0246908Z [0m[0m[1m[31mSolution: [0m Upgrade to >=0.24.1
+2025-11-21T11:49:39.0247196Z [0m[0m[1m[31mDependency tree:
+2025-11-21T11:49:39.0247429Z [0mpyo3 0.21.2
+2025-11-21T11:49:39.0247647Z ├── polars-utils 0.44.2
+2025-11-21T11:49:39.0247876Z │   ├── polars-time 0.44.2
+2025-11-21T11:49:39.0248117Z │   │   ├── polars-sql 0.44.2
+2025-11-21T11:49:39.0248356Z │   │   │   └── polars 0.44.2
+2025-11-21T11:49:39.0248597Z │   │   │       ├── avila-ml 0.1.0
+2025-11-21T11:49:39.0248868Z │   │   │       └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0249132Z │   │   ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0249416Z │   │   │   ├── polars-stream 0.44.2
+2025-11-21T11:49:39.0249679Z │   │   │   │   └── polars-lazy 0.44.2
+2025-11-21T11:49:39.0249955Z │   │   │   │       ├── polars-sql 0.44.2
+2025-11-21T11:49:39.0250236Z │   │   │   │       └── polars 0.44.2
+2025-11-21T11:49:39.0250497Z │   │   │   ├── polars-sql 0.44.2
+2025-11-21T11:49:39.0251021Z │   │   │   ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0251287Z │   │   │   │   └── polars-lazy 0.44.2
+2025-11-21T11:49:39.0251566Z │   │   │   ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0251846Z │   │   │   │   ├── polars-stream 0.44.2
+2025-11-21T11:49:39.0252123Z │   │   │   │   └── polars-lazy 0.44.2
+2025-11-21T11:49:39.0252388Z │   │   │   ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0252644Z │   │   │   └── polars-expr 0.44.2
+2025-11-21T11:49:39.0252902Z │   │   │       ├── polars-stream 0.44.2
+2025-11-21T11:49:39.0253181Z │   │   │       ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0253460Z │   │   │       ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0253764Z │   │   │       └── polars-lazy 0.44.2
+2025-11-21T11:49:39.0254039Z │   │   ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0254296Z │   │   ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0254653Z │   │   ├── polars-io 0.44.2
+2025-11-21T11:49:39.0254955Z │   │   │   ├── polars-stream 0.44.2
+2025-11-21T11:49:39.0255212Z │   │   │   ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0255477Z │   │   │   ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0255740Z │   │   │   ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0256010Z │   │   │   ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0256261Z │   │   │   ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0256520Z │   │   │   └── polars 0.44.2
+2025-11-21T11:49:39.0256780Z │   │   ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0257021Z │   │   └── polars 0.44.2
+2025-11-21T11:49:39.0257277Z │   ├── polars-stream 0.44.2
+2025-11-21T11:49:39.0257513Z │   ├── polars-sql 0.44.2
+2025-11-21T11:49:39.0257757Z │   ├── polars-schema 0.44.2
+2025-11-21T11:49:39.0257997Z │   │   ├── polars-ops 0.44.2
+2025-11-21T11:49:39.0258437Z │   │   │   ├── polars-time 0.44.2
+2025-11-21T11:49:39.0258702Z │   │   │   ├── polars-sql 0.44.2
+2025-11-21T11:49:39.0258962Z │   │   │   ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0259319Z │   │   │   ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0259585Z │   │   │   ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0259855Z │   │   │   ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0260104Z │   │   │   ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0260356Z │   │   │   └── polars 0.44.2
+2025-11-21T11:49:39.0260592Z │   │   ├── polars-io 0.44.2
+2025-11-21T11:49:39.0261044Z │   │   ├── polars-core 0.44.2
+2025-11-21T11:49:39.0261451Z [0m[0m[1m[31merror:[0m 3 vulnerabilities found!
+2025-11-21T11:49:39.0261782Z [0m[0m[1m[33mwarning:[0m 7 allowed warnings found
+2025-11-21T11:49:39.0262068Z │   │   │   ├── polars-time 0.44.2
+2025-11-21T11:49:39.0262323Z │   │   │   ├── polars-stream 0.44.2
+2025-11-21T11:49:39.0262590Z │   │   │   ├── polars-sql 0.44.2
+2025-11-21T11:49:39.0262858Z │   │   │   ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0263120Z │   │   │   ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0263372Z │   │   │   ├── polars-ops 0.44.2
+2025-11-21T11:49:39.0263644Z │   │   │   ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0263925Z │   │   │   ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0264178Z │   │   │   ├── polars-io 0.44.2
+2025-11-21T11:49:39.0264428Z │   │   │   ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0264677Z │   │   │   └── polars 0.44.2
+2025-11-21T11:49:39.0264919Z │   │   └── polars-arrow 0.44.2
+2025-11-21T11:49:39.0265190Z │   │       ├── polars-time 0.44.2
+2025-11-21T11:49:39.0265439Z │   │       ├── polars-sql 0.44.2
+2025-11-21T11:49:39.0265696Z │   │       ├── polars-row 0.44.2
+2025-11-21T11:49:39.0265950Z │   │       │   ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0266224Z │   │       │   ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0266493Z │   │       │   └── polars-core 0.44.2
+2025-11-21T11:49:39.0266748Z │   │       ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0267025Z │   │       ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0267282Z │   │       ├── polars-parquet 0.44.2
+2025-11-21T11:49:39.0267562Z │   │       │   ├── polars-stream 0.44.2
+2025-11-21T11:49:39.0267829Z │   │       │   ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0268107Z │   │       │   ├── polars-io 0.44.2
+2025-11-21T11:49:39.0268357Z │   │       │   └── polars 0.44.2
+2025-11-21T11:49:39.0268606Z │   │       ├── polars-ops 0.44.2
+2025-11-21T11:49:39.0268872Z │   │       ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0269139Z │   │       ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0269389Z │   │       ├── polars-json 0.44.2
+2025-11-21T11:49:39.0269641Z │   │       │   ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0269909Z │   │       │   ├── polars-ops 0.44.2
+2025-11-21T11:49:39.0270180Z │   │       │   ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0270462Z │   │       │   ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0270864Z │   │       │   └── polars-io 0.44.2
+2025-11-21T11:49:39.0271129Z │   │       ├── polars-io 0.44.2
+2025-11-21T11:49:39.0271401Z │   │       ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0271658Z │   │       ├── polars-core 0.44.2
+2025-11-21T11:49:39.0271926Z │   │       ├── polars-compute 0.44.2
+2025-11-21T11:49:39.0272317Z │   │       │   ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0272590Z │   │       │   ├── polars-parquet 0.44.2
+2025-11-21T11:49:39.0272860Z │   │       │   ├── polars-ops 0.44.2
+2025-11-21T11:49:39.0273128Z │   │       │   ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0273390Z │   │       │   └── polars-core 0.44.2
+2025-11-21T11:49:39.0273651Z │   │       └── polars 0.44.2
+2025-11-21T11:49:39.0273888Z │   ├── polars-row 0.44.2
+2025-11-21T11:49:39.0274127Z │   ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0274371Z │   ├── polars-pipe 0.44.2
+2025-11-21T11:49:39.0274607Z │   ├── polars-parquet 0.44.2
+2025-11-21T11:49:39.0274856Z │   ├── polars-ops 0.44.2
+2025-11-21T11:49:39.0275099Z │   ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0275352Z │   ├── polars-lazy 0.44.2
+2025-11-21T11:49:39.0275657Z │   ├── polars-json 0.44.2
+2025-11-21T11:49:39.0275893Z │   ├── polars-io 0.44.2
+2025-11-21T11:49:39.0276125Z │   ├── polars-expr 0.44.2
+2025-11-21T11:49:39.0276365Z │   ├── polars-core 0.44.2
+2025-11-21T11:49:39.0276612Z │   ├── polars-compute 0.44.2
+2025-11-21T11:49:39.0276866Z │   ├── polars-arrow 0.44.2
+2025-11-21T11:49:39.0277093Z │   └── polars 0.44.2
+2025-11-21T11:49:39.0277317Z ├── polars-plan 0.44.2
+2025-11-21T11:49:39.0277556Z ├── polars-mem-engine 0.44.2
+2025-11-21T11:49:39.0277788Z └── polars-io 0.44.2
+2025-11-21T11:49:39.0277903Z 
+2025-11-21T11:49:39.0278057Z [0m[0m[1m[31mCrate:    [0m rustc-serialize
+2025-11-21T11:49:39.0278343Z [0m[0m[1m[31mVersion:  [0m 0.3.25
+2025-11-21T11:49:39.0278764Z [0m[0m[1m[31mTitle:    [0m Stack overflow in rustc_serialize when parsing deeply nested JSON
+2025-11-21T11:49:39.0279157Z [0m[0m[1m[31mDate:     [0m 2022-01-01
+2025-11-21T11:49:39.0279451Z [0m[0m[1m[31mID:       [0m RUSTSEC-2022-0004
+2025-11-21T11:49:39.0279853Z [0m[0m[1m[31mURL:      [0m https://rustsec.org/advisories/RUSTSEC-2022-0004
+2025-11-21T11:49:39.0280248Z [0m[0m[1m[31mSolution: [0m No fixed upgrade is available!
+2025-11-21T11:49:39.0280562Z [0m[0m[1m[31mDependency tree:
+2025-11-21T11:49:39.0281051Z [0mrustc-serialize 0.3.25
+2025-11-21T11:49:39.0281291Z ├── num-rational 0.1.43
+2025-11-21T11:49:39.0281509Z │   └── num 0.1.43
+2025-11-21T11:49:39.0281734Z │       └── prophet 0.1.1
+2025-11-21T11:49:39.0281984Z │           └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0282248Z ├── num-complex 0.1.44
+2025-11-21T11:49:39.0282462Z │   ├── num 0.1.43
+2025-11-21T11:49:39.0282678Z │   └── ndarray 0.8.4
+2025-11-21T11:49:39.0282900Z │       ├── prophet 0.1.1
+2025-11-21T11:49:39.0283132Z │       └── ndarray-rand 0.4.0
+2025-11-21T11:49:39.0283376Z │           └── prophet 0.1.1
+2025-11-21T11:49:39.0283599Z └── num-bigint 0.1.45
+2025-11-21T11:49:39.0283831Z     ├── num-rational 0.1.43
+2025-11-21T11:49:39.0284051Z     └── num 0.1.43
+2025-11-21T11:49:39.0284161Z 
+2025-11-21T11:49:39.0284297Z [0m[0m[1m[33mCrate:    [0m instant
+2025-11-21T11:49:39.0284556Z [0m[0m[1m[33mVersion:  [0m 0.1.13
+2025-11-21T11:49:39.0284835Z [0m[0m[1m[33mWarning:  [0m unmaintained
+2025-11-21T11:49:39.0285148Z [0m[0m[1m[33mTitle:    [0m `instant` is unmaintained
+2025-11-21T11:49:39.0285451Z [0m[0m[1m[33mDate:     [0m 2024-09-01
+2025-11-21T11:49:39.0285740Z [0m[0m[1m[33mID:       [0m RUSTSEC-2024-0384
+2025-11-21T11:49:39.0286109Z [0m[0m[1m[33mURL:      [0m https://rustsec.org/advisories/RUSTSEC-2024-0384
+2025-11-21T11:49:39.0286445Z [0m[0m[1m[33mDependency tree:
+2025-11-21T11:49:39.0286686Z [0minstant 0.1.13
+2025-11-21T11:49:39.0286914Z └── datafusion-common 43.0.0
+2025-11-21T11:49:39.0287161Z     ├── datafusion-sql 43.0.0
+2025-11-21T11:49:39.0287406Z     │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0287655Z     │       └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0287949Z     ├── datafusion-physical-plan 43.0.0
+2025-11-21T11:49:39.0288275Z     │   ├── datafusion-physical-optimizer 43.0.0
+2025-11-21T11:49:39.0288563Z     │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0288831Z     │   ├── datafusion-catalog 43.0.0
+2025-11-21T11:49:39.0289093Z     │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0289467Z     │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0289737Z     ├── datafusion-physical-optimizer 43.0.0
+2025-11-21T11:49:39.0290059Z     ├── datafusion-physical-expr-common 43.0.0
+2025-11-21T11:49:39.0290371Z     │   ├── datafusion-physical-plan 43.0.0
+2025-11-21T11:49:39.0290794Z     │   ├── datafusion-physical-expr 43.0.0
+2025-11-21T11:49:39.0291109Z     │   │   ├── datafusion-physical-plan 43.0.0
+2025-11-21T11:49:39.0291433Z     │   │   ├── datafusion-physical-optimizer 43.0.0
+2025-11-21T11:49:39.0291749Z     │   │   ├── datafusion-optimizer 43.0.0
+2025-11-21T11:49:39.0292025Z     │   │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0292326Z     │   │   ├── datafusion-functions-window 43.0.0
+2025-11-21T11:49:39.0292618Z     │   │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0293014Z     │   │   ├── datafusion-functions-aggregate 43.0.0
+2025-11-21T11:49:39.0293341Z     │   │   │   ├── datafusion-functions-nested 43.0.0
+2025-11-21T11:49:39.0293642Z     │   │   │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0293930Z     │   │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0294184Z     │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0294484Z     │   ├── datafusion-functions-window-common 43.0.0
+2025-11-21T11:49:39.0294801Z     │   │   ├── datafusion-physical-plan 43.0.0
+2025-11-21T11:49:39.0295119Z     │   │   ├── datafusion-functions-window 43.0.0
+2025-11-21T11:49:39.0295416Z     │   │   └── datafusion-expr 43.0.0
+2025-11-21T11:49:39.0295696Z     │   │       ├── datafusion-sql 43.0.0
+2025-11-21T11:49:39.0295992Z     │   │       ├── datafusion-physical-plan 43.0.0
+2025-11-21T11:49:39.0296305Z     │   │       ├── datafusion-physical-expr 43.0.0
+2025-11-21T11:49:39.0296612Z     │   │       ├── datafusion-optimizer 43.0.0
+2025-11-21T11:49:39.0296935Z     │   │       ├── datafusion-functions-window 43.0.0
+2025-11-21T11:49:39.0297259Z     │   │       ├── datafusion-functions-nested 43.0.0
+2025-11-21T11:49:39.0297582Z     │   │       ├── datafusion-functions-aggregate 43.0.0
+2025-11-21T11:49:39.0297918Z     │   │       ├── datafusion-functions 43.0.0
+2025-11-21T11:49:39.0298227Z     │   │       │   ├── datafusion-functions-nested 43.0.0
+2025-11-21T11:49:39.0298526Z     │   │       │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0298805Z     │   │       ├── datafusion-execution 43.0.0
+2025-11-21T11:49:39.0299122Z     │   │       │   ├── datafusion-physical-plan 43.0.0
+2025-11-21T11:49:39.0299457Z     │   │       │   ├── datafusion-physical-optimizer 43.0.0
+2025-11-21T11:49:39.0299790Z     │   │       │   ├── datafusion-functions-nested 43.0.0
+2025-11-21T11:49:39.0300127Z     │   │       │   ├── datafusion-functions-aggregate 43.0.0
+2025-11-21T11:49:39.0300443Z     │   │       │   ├── datafusion-functions 43.0.0
+2025-11-21T11:49:39.0300911Z     │   │       │   ├── datafusion-catalog 43.0.0
+2025-11-21T11:49:39.0301197Z     │   │       │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0301485Z     │   │       ├── datafusion-catalog 43.0.0
+2025-11-21T11:49:39.0301764Z     │   │       └── datafusion 43.0.0
+2025-11-21T11:49:39.0302149Z     │   ├── datafusion-functions-window 43.0.0
+2025-11-21T11:49:39.0302463Z     │   ├── datafusion-functions-nested 43.0.0
+2025-11-21T11:49:39.0302798Z     │   ├── datafusion-functions-aggregate-common 43.0.0
+2025-11-21T11:49:39.0303143Z     │   │   ├── datafusion-physical-plan 43.0.0
+2025-11-21T11:49:39.0303449Z     │   │   ├── datafusion-physical-expr 43.0.0
+2025-11-21T11:49:39.0303773Z     │   │   ├── datafusion-functions-aggregate 43.0.0
+2025-11-21T11:49:39.0304078Z     │   │   └── datafusion-expr 43.0.0
+2025-11-21T11:49:39.0304387Z     │   ├── datafusion-functions-aggregate 43.0.0
+2025-11-21T11:49:39.0304692Z     │   ├── datafusion-expr 43.0.0
+2025-11-21T11:49:39.0304954Z     │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0305302Z     ├── datafusion-physical-expr 43.0.0
+2025-11-21T11:49:39.0305587Z     ├── datafusion-optimizer 43.0.0
+2025-11-21T11:49:39.0305903Z     ├── datafusion-functions-window-common 43.0.0
+2025-11-21T11:49:39.0306219Z     ├── datafusion-functions-window 43.0.0
+2025-11-21T11:49:39.0306537Z     ├── datafusion-functions-nested 43.0.0
+2025-11-21T11:49:39.0307072Z     ├── datafusion-functions-aggregate-common 43.0.0
+2025-11-21T11:49:39.0307598Z     ├── datafusion-functions-aggregate 43.0.0
+2025-11-21T11:49:39.0308006Z     ├── datafusion-functions 43.0.0
+2025-11-21T11:49:39.0308473Z     ├── datafusion-expr-common 43.0.0
+2025-11-21T11:49:39.0308869Z     │   ├── datafusion-physical-optimizer 43.0.0
+2025-11-21T11:49:39.0309202Z     │   ├── datafusion-physical-expr-common 43.0.0
+2025-11-21T11:49:39.0309508Z     │   ├── datafusion-physical-expr 43.0.0
+2025-11-21T11:49:39.0309852Z     │   ├── datafusion-functions-aggregate-common 43.0.0
+2025-11-21T11:49:39.0310158Z     │   └── datafusion-expr 43.0.0
+2025-11-21T11:49:39.0310444Z     ├── datafusion-expr 43.0.0
+2025-11-21T11:49:39.0310836Z     ├── datafusion-execution 43.0.0
+2025-11-21T11:49:39.0311120Z     ├── datafusion-catalog 43.0.0
+2025-11-21T11:49:39.0311374Z     └── datafusion 43.0.0
+2025-11-21T11:49:39.0311523Z 
+2025-11-21T11:49:39.0311643Z [0m[0m[1m[33mCrate:    [0m json5
+2025-11-21T11:49:39.0311913Z [0m[0m[1m[33mVersion:  [0m 0.4.1
+2025-11-21T11:49:39.0312186Z [0m[0m[1m[33mWarning:  [0m unmaintained
+2025-11-21T11:49:39.0312514Z [0m[0m[1m[33mTitle:    [0m json5 crate is unmaintained
+2025-11-21T11:49:39.0312823Z [0m[0m[1m[33mDate:     [0m 2025-11-16
+2025-11-21T11:49:39.0313122Z [0m[0m[1m[33mID:       [0m RUSTSEC-2025-0120
+2025-11-21T11:49:39.0313576Z [0m[0m[1m[33mURL:      [0m https://rustsec.org/advisories/RUSTSEC-2025-0120
+2025-11-21T11:49:39.0313920Z [0m[0m[1m[33mDependency tree:
+2025-11-21T11:49:39.0314155Z [0mjson5 0.4.1
+2025-11-21T11:49:39.0314357Z └── config 0.14.1
+2025-11-21T11:49:39.0314575Z     ├── leptos_config 0.6.15
+2025-11-21T11:49:39.0314821Z     │   └── leptos 0.6.15
+2025-11-21T11:49:39.0315065Z     │       ├── leptos_router 0.6.15
+2025-11-21T11:49:39.0315327Z     │       │   └── arxis_landing 0.1.0
+2025-11-21T11:49:39.0315596Z     │       ├── leptos_meta 0.6.15
+2025-11-21T11:49:39.0315858Z     │       │   └── arxis_landing 0.1.0
+2025-11-21T11:49:39.0316118Z     │       └── arxis_landing 0.1.0
+2025-11-21T11:49:39.0316359Z     └── avx-config 0.1.0
+2025-11-21T11:49:39.0316606Z         ├── avx-quantum-render 0.1.0
+2025-11-21T11:49:39.0316869Z         ├── avx-gateway 0.1.0
+2025-11-21T11:49:39.0317106Z         ├── avx-events 0.1.0
+2025-11-21T11:49:39.0317345Z         │   └── avx-cli 0.1.0
+2025-11-21T11:49:39.0317572Z         ├── avx-cli 0.1.0
+2025-11-21T11:49:39.0317810Z         └── avx-api-core 0.1.0
+2025-11-21T11:49:39.0317942Z 
+2025-11-21T11:49:39.0318073Z [0m[0m[1m[33mCrate:    [0m number_prefix
+2025-11-21T11:49:39.0318350Z [0m[0m[1m[33mVersion:  [0m 0.4.0
+2025-11-21T11:49:39.0318617Z [0m[0m[1m[33mWarning:  [0m unmaintained
+2025-11-21T11:49:39.0318971Z [0m[0m[1m[33mTitle:    [0m number_prefix crate is unmaintained
+2025-11-21T11:49:39.0319295Z [0m[0m[1m[33mDate:     [0m 2025-11-17
+2025-11-21T11:49:39.0319579Z [0m[0m[1m[33mID:       [0m RUSTSEC-2025-0119
+2025-11-21T11:49:39.0320089Z [0m[0m[1m[33mURL:      [0m https://rustsec.org/advisories/RUSTSEC-2025-0119
+2025-11-21T11:49:39.0320420Z [0m[0m[1m[33mDependency tree:
+2025-11-21T11:49:39.0320816Z [0mnumber_prefix 0.4.0
+2025-11-21T11:49:39.0321042Z └── indicatif 0.17.11
+2025-11-21T11:49:39.0321268Z     ├── tokenizers 0.20.4
+2025-11-21T11:49:39.0321513Z     │   └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0321770Z     ├── hf-hub 0.3.2
+2025-11-21T11:49:39.0321998Z     │   └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0322249Z     └── avx-cli 0.1.0
+2025-11-21T11:49:39.0322361Z 
+2025-11-21T11:49:39.0322488Z [0m[0m[1m[33mCrate:    [0m paste
+2025-11-21T11:49:39.0322752Z [0m[0m[1m[33mVersion:  [0m 1.0.15
+2025-11-21T11:49:39.0323114Z [0m[0m[1m[33mWarning:  [0m unmaintained
+2025-11-21T11:49:39.0323449Z [0m[0m[1m[33mTitle:    [0m paste - no longer maintained
+2025-11-21T11:49:39.0342656Z [0m[0m[1m[33mDate:     [0m 2024-10-07
+2025-11-21T11:49:39.0343028Z [0m[0m[1m[33mID:       [0m RUSTSEC-2024-0436
+2025-11-21T11:49:39.0343457Z [0m[0m[1m[33mURL:      [0m https://rustsec.org/advisories/RUSTSEC-2024-0436
+2025-11-21T11:49:39.0343801Z [0m[0m[1m[33mDependency tree:
+2025-11-21T11:49:39.0344048Z [0mpaste 1.0.15
+2025-11-21T11:49:39.0344264Z ├── tokenizers 0.20.4
+2025-11-21T11:49:39.0344506Z │   └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0344733Z ├── simba 0.9.1
+2025-11-21T11:49:39.0344945Z │   └── nalgebra 0.33.2
+2025-11-21T11:49:39.0345187Z │       └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0345428Z ├── simba 0.8.1
+2025-11-21T11:49:39.0345636Z │   └── nalgebra 0.32.6
+2025-11-21T11:49:39.0345853Z │       ├── statrs 0.17.1
+2025-11-21T11:49:39.0346106Z │       │   └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0346381Z │       ├── imageproc 0.25.0
+2025-11-21T11:49:39.0346635Z │       │   └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0346899Z │       └── avila-clustering 0.1.0
+2025-11-21T11:49:39.0347141Z ├── simba 0.6.0
+2025-11-21T11:49:39.0347434Z │   └── nalgebra 0.29.0
+2025-11-21T11:49:39.0347655Z │       └── statrs 0.16.1
+2025-11-21T11:49:39.0347906Z │           └── avila-telemetry 0.1.0
+2025-11-21T11:49:39.0348173Z │               ├── avx-telemetry 0.1.0
+2025-11-21T11:49:39.0348453Z │               │   ├── avx-gateway 0.1.0
+2025-11-21T11:49:39.0348723Z │               │   ├── avx-events 0.1.0
+2025-11-21T11:49:39.0348995Z │               │   │   └── avx-cli 0.1.0
+2025-11-21T11:49:39.0349256Z │               │   ├── avx-cli 0.1.0
+2025-11-21T11:49:39.0349528Z │               │   └── avx-api-core 0.1.0
+2025-11-21T11:49:39.0349804Z │               └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0350059Z ├── rav1e 0.8.1
+2025-11-21T11:49:39.0350265Z │   └── ravif 0.12.0
+2025-11-21T11:49:39.0350477Z │       └── image 0.25.9
+2025-11-21T11:49:39.0350860Z │           ├── imageproc 0.25.0
+2025-11-21T11:49:39.0351122Z │           └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0351381Z ├── parquet 53.4.1
+2025-11-21T11:49:39.0351607Z │   ├── datafusion-common 43.0.0
+2025-11-21T11:49:39.0352095Z │   │   ├── datafusion-sql 43.0.0
+2025-11-21T11:49:39.0352349Z │   │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0352622Z │   │   │       └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0352911Z │   │   ├── datafusion-physical-plan 43.0.0
+2025-11-21T11:49:39.0353239Z │   │   │   ├── datafusion-physical-optimizer 43.0.0
+2025-11-21T11:49:39.0353546Z │   │   │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0353819Z │   │   │   ├── datafusion-catalog 43.0.0
+2025-11-21T11:49:39.0354099Z │   │   │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0354353Z │   │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0354646Z │   │   ├── datafusion-physical-optimizer 43.0.0
+2025-11-21T11:49:39.0354971Z │   │   ├── datafusion-physical-expr-common 43.0.0
+2025-11-21T11:49:39.0355388Z │   │   │   ├── datafusion-physical-plan 43.0.0
+2025-11-21T11:49:39.0355694Z │   │   │   ├── datafusion-physical-expr 43.0.0
+2025-11-21T11:49:39.0356007Z │   │   │   │   ├── datafusion-physical-plan 43.0.0
+2025-11-21T11:49:39.0356357Z │   │   │   │   ├── datafusion-physical-optimizer 43.0.0
+2025-11-21T11:49:39.0356667Z │   │   │   │   ├── datafusion-optimizer 43.0.0
+2025-11-21T11:49:39.0356953Z │   │   │   │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0357251Z │   │   │   │   ├── datafusion-functions-window 43.0.0
+2025-11-21T11:49:39.0357548Z │   │   │   │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0357852Z │   │   │   │   ├── datafusion-functions-aggregate 43.0.0
+2025-11-21T11:49:39.0358188Z │   │   │   │   │   ├── datafusion-functions-nested 43.0.0
+2025-11-21T11:49:39.0358491Z │   │   │   │   │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0358771Z │   │   │   │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0359044Z │   │   │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0359363Z │   │   │   ├── datafusion-functions-window-common 43.0.0
+2025-11-21T11:49:39.0359695Z │   │   │   │   ├── datafusion-physical-plan 43.0.0
+2025-11-21T11:49:39.0360012Z │   │   │   │   ├── datafusion-functions-window 43.0.0
+2025-11-21T11:49:39.0360335Z │   │   │   │   └── datafusion-expr 43.0.0
+2025-11-21T11:49:39.0360695Z │   │   │   │       ├── datafusion-sql 43.0.0
+2025-11-21T11:49:39.0361090Z │   │   │   │       ├── datafusion-physical-plan 43.0.0
+2025-11-21T11:49:39.0361482Z │   │   │   │       ├── datafusion-physical-expr 43.0.0
+2025-11-21T11:49:39.0361801Z │   │   │   │       ├── datafusion-optimizer 43.0.0
+2025-11-21T11:49:39.0362131Z │   │   │   │       ├── datafusion-functions-window 43.0.0
+2025-11-21T11:49:39.0362457Z │   │   │   │       ├── datafusion-functions-nested 43.0.0
+2025-11-21T11:49:39.0362798Z │   │   │   │       ├── datafusion-functions-aggregate 43.0.0
+2025-11-21T11:49:39.0363113Z │   │   │   │       ├── datafusion-functions 43.0.0
+2025-11-21T11:49:39.0363467Z │   │   │   │       │   ├── datafusion-functions-nested 43.0.0
+2025-11-21T11:49:39.0363774Z │   │   │   │       │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0364070Z │   │   │   │       ├── datafusion-execution 43.0.0
+2025-11-21T11:49:39.0364409Z │   │   │   │       │   ├── datafusion-physical-plan 43.0.0
+2025-11-21T11:49:39.0364745Z │   │   │   │       │   ├── datafusion-physical-optimizer 43.0.0
+2025-11-21T11:49:39.0365098Z │   │   │   │       │   ├── datafusion-functions-nested 43.0.0
+2025-11-21T11:49:39.0365439Z │   │   │   │       │   ├── datafusion-functions-aggregate 43.0.0
+2025-11-21T11:49:39.0365772Z │   │   │   │       │   ├── datafusion-functions 43.0.0
+2025-11-21T11:49:39.0366077Z │   │   │   │       │   ├── datafusion-catalog 43.0.0
+2025-11-21T11:49:39.0366371Z │   │   │   │       │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0366660Z │   │   │   │       ├── datafusion-catalog 43.0.0
+2025-11-21T11:49:39.0366947Z │   │   │   │       └── datafusion 43.0.0
+2025-11-21T11:49:39.0367254Z │   │   │   ├── datafusion-functions-window 43.0.0
+2025-11-21T11:49:39.0367590Z │   │   │   ├── datafusion-functions-nested 43.0.0
+2025-11-21T11:49:39.0367947Z │   │   │   ├── datafusion-functions-aggregate-common 43.0.0
+2025-11-21T11:49:39.0368387Z │   │   │   │   ├── datafusion-physical-plan 43.0.0
+2025-11-21T11:49:39.0368705Z │   │   │   │   ├── datafusion-physical-expr 43.0.0
+2025-11-21T11:49:39.0369033Z │   │   │   │   ├── datafusion-functions-aggregate 43.0.0
+2025-11-21T11:49:39.0369345Z │   │   │   │   └── datafusion-expr 43.0.0
+2025-11-21T11:49:39.0369658Z │   │   │   ├── datafusion-functions-aggregate 43.0.0
+2025-11-21T11:49:39.0369962Z │   │   │   ├── datafusion-expr 43.0.0
+2025-11-21T11:49:39.0370243Z │   │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0370520Z │   │   ├── datafusion-physical-expr 43.0.0
+2025-11-21T11:49:39.0371053Z │   │   ├── datafusion-optimizer 43.0.0
+2025-11-21T11:49:39.0371390Z │   │   ├── datafusion-functions-window-common 43.0.0
+2025-11-21T11:49:39.0371729Z │   │   ├── datafusion-functions-window 43.0.0
+2025-11-21T11:49:39.0372130Z │   │   ├── datafusion-functions-nested 43.0.0
+2025-11-21T11:49:39.0372473Z │   │   ├── datafusion-functions-aggregate-common 43.0.0
+2025-11-21T11:49:39.0372816Z │   │   ├── datafusion-functions-aggregate 43.0.0
+2025-11-21T11:49:39.0373128Z │   │   ├── datafusion-functions 43.0.0
+2025-11-21T11:49:39.0373413Z │   │   ├── datafusion-expr-common 43.0.0
+2025-11-21T11:49:39.0373718Z │   │   │   ├── datafusion-physical-optimizer 43.0.0
+2025-11-21T11:49:39.0374052Z │   │   │   ├── datafusion-physical-expr-common 43.0.0
+2025-11-21T11:49:39.0374374Z │   │   │   ├── datafusion-physical-expr 43.0.0
+2025-11-21T11:49:39.0374723Z │   │   │   ├── datafusion-functions-aggregate-common 43.0.0
+2025-11-21T11:49:39.0375035Z │   │   │   └── datafusion-expr 43.0.0
+2025-11-21T11:49:39.0375310Z │   │   ├── datafusion-expr 43.0.0
+2025-11-21T11:49:39.0375583Z │   │   ├── datafusion-execution 43.0.0
+2025-11-21T11:49:39.0375860Z │   │   ├── datafusion-catalog 43.0.0
+2025-11-21T11:49:39.0376128Z │   │   └── datafusion 43.0.0
+2025-11-21T11:49:39.0376384Z │   ├── datafusion 43.0.0
+2025-11-21T11:49:39.0376628Z │   └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0376858Z ├── metal 0.29.0
+2025-11-21T11:49:39.0377086Z │   └── wgpu-hal 22.0.0
+2025-11-21T11:49:39.0377311Z │       ├── wgpu-core 22.1.0
+2025-11-21T11:49:39.0377549Z │       │   └── wgpu 22.1.0
+2025-11-21T11:49:39.0377802Z │       │       └── avila-clustering 0.1.0
+2025-11-21T11:49:39.0378059Z │       └── wgpu 22.1.0
+2025-11-21T11:49:39.0378290Z ├── macro_rules_attribute 0.2.2
+2025-11-21T11:49:39.0378528Z │   └── tokenizers 0.20.4
+2025-11-21T11:49:39.0378755Z ├── llm-chain 0.13.0
+2025-11-21T11:49:39.0378977Z │   └── arxis_quaternions 0.2.0
+2025-11-21T11:49:39.0379227Z ├── leptos_reactive 0.6.15
+2025-11-21T11:49:39.0379463Z │   ├── leptos_server 0.6.15
+2025-11-21T11:49:39.0379703Z │   │   └── leptos 0.6.15
+2025-11-21T11:49:39.0379939Z │   │       ├── leptos_router 0.6.15
+2025-11-21T11:49:39.0380216Z │   │       │   └── arxis_landing 0.1.0
+2025-11-21T11:49:39.0380493Z │   │       ├── leptos_meta 0.6.15
+2025-11-21T11:49:39.0380838Z │   │       │   └── arxis_landing 0.1.0
+2025-11-21T11:49:39.0381103Z │   │       └── arxis_landing 0.1.0
+2025-11-21T11:49:39.0381351Z │   ├── leptos_dom 0.6.15
+2025-11-21T11:49:39.0381672Z │   │   └── leptos 0.6.15
+2025-11-21T11:49:39.0381887Z │   └── leptos 0.6.15
+2025-11-21T11:49:39.0382107Z ├── leptos_dom 0.6.15
+2025-11-21T11:49:39.0382343Z ├── datafusion-physical-expr 43.0.0
+2025-11-21T11:49:39.0382622Z ├── datafusion-optimizer 43.0.0
+2025-11-21T11:49:39.0382890Z ├── datafusion-functions-window 43.0.0
+2025-11-21T11:49:39.0383189Z ├── datafusion-functions-nested 43.0.0
+2025-11-21T11:49:39.0383483Z ├── datafusion-functions-aggregate 43.0.0
+2025-11-21T11:49:39.0383783Z ├── datafusion-expr-common 43.0.0
+2025-11-21T11:49:39.0384056Z ├── datafusion-expr 43.0.0
+2025-11-21T11:49:39.0384307Z ├── datafusion-common 43.0.0
+2025-11-21T11:49:39.0384554Z └── datafusion 43.0.0
+2025-11-21T11:49:39.0384672Z 
+2025-11-21T11:49:39.0384902Z [0m[0m[1m[33mCrate:    [0m proc-macro-error
+2025-11-21T11:49:39.0385205Z [0m[0m[1m[33mVersion:  [0m 1.0.4
+2025-11-21T11:49:39.0385478Z [0m[0m[1m[33mWarning:  [0m unmaintained
+2025-11-21T11:49:39.0385813Z [0m[0m[1m[33mTitle:    [0m proc-macro-error is unmaintained
+2025-11-21T11:49:39.0386141Z [0m[0m[1m[33mDate:     [0m 2024-09-01
+2025-11-21T11:49:39.0386438Z [0m[0m[1m[33mID:       [0m RUSTSEC-2024-0370
+2025-11-21T11:49:39.0386825Z [0m[0m[1m[33mURL:      [0m https://rustsec.org/advisories/RUSTSEC-2024-0370
+2025-11-21T11:49:39.0387164Z [0m[0m[1m[33mDependency tree:
+2025-11-21T11:49:39.0387429Z [0mproc-macro-error 1.0.4
+2025-11-21T11:49:39.0387657Z ├── tabled_derive 0.7.0
+2025-11-21T11:49:39.0387884Z │   └── tabled 0.15.0
+2025-11-21T11:49:39.0388096Z │       └── avx-cli 0.1.0
+2025-11-21T11:49:39.0388319Z └── syn_derive 0.1.8
+2025-11-21T11:49:39.0388526Z     └── rstml 0.11.2
+2025-11-21T11:49:39.0388759Z         ├── leptos_macro 0.6.15
+2025-11-21T11:49:39.0389003Z         │   ├── leptos_server 0.6.15
+2025-11-21T11:49:39.0389274Z         │   │   └── leptos 0.6.15
+2025-11-21T11:49:39.0389549Z         │   │       ├── leptos_router 0.6.15
+2025-11-21T11:49:39.0389836Z         │   │       │   └── arxis_landing 0.1.0
+2025-11-21T11:49:39.0390131Z         │   │       ├── leptos_meta 0.6.15
+2025-11-21T11:49:39.0390407Z         │   │       │   └── arxis_landing 0.1.0
+2025-11-21T11:49:39.0390837Z         │   │       └── arxis_landing 0.1.0
+2025-11-21T11:49:39.0391153Z         │   └── leptos 0.6.15
+2025-11-21T11:49:39.0391408Z         └── leptos_hot_reload 0.6.15
+2025-11-21T11:49:39.0391671Z             └── leptos_macro 0.6.15
+2025-11-21T11:49:39.0391834Z 
+2025-11-21T11:49:39.0391970Z [0m[0m[1m[33mCrate:    [0m rustc-serialize
+2025-11-21T11:49:39.0392260Z [0m[0m[1m[33mVersion:  [0m 0.3.25
+2025-11-21T11:49:39.0392533Z [0m[0m[1m[33mWarning:  [0m unmaintained
+2025-11-21T11:49:39.0392867Z [0m[0m[1m[33mTitle:    [0m rustc-serialize is unmaintained
+2025-11-21T11:49:39.0393202Z [0m[0m[1m[33mDate:     [0m 2025-04-28
+2025-11-21T11:49:39.0393497Z [0m[0m[1m[33mID:       [0m RUSTSEC-2025-0025
+2025-11-21T11:49:39.0393870Z [0m[0m[1m[33mURL:      [0m https://rustsec.org/advisories/RUSTSEC-2025-0025
+2025-11-21T11:49:39.0394112Z 
+2025-11-21T11:49:39.0394233Z [0m[0m[1m[33mCrate:    [0m fast-float
+2025-11-21T11:49:39.0394506Z [0m[0m[1m[33mVersion:  [0m 0.2.0
+2025-11-21T11:49:39.0394764Z [0m[0m[1m[33mWarning:  [0m unsound
+2025-11-21T11:49:39.0395073Z [0m[0m[1m[33mTitle:    [0m Multiple soundness issues
+2025-11-21T11:49:39.0395373Z [0m[0m[1m[33mDate:     [0m 2024-10-31
+2025-11-21T11:49:39.0395666Z [0m[0m[1m[33mID:       [0m RUSTSEC-2024-0379
+2025-11-21T11:49:39.0396026Z [0m[0m[1m[33mURL:      [0m https://rustsec.org/advisories/RUSTSEC-2024-0379
+2025-11-21T11:49:39.0396251Z 
+2025-11-21T11:49:39.0406306Z ##[error]Process completed with exit code 1.
+2025-11-21T11:49:39.0489819Z Post job cleanup.
+2025-11-21T11:49:39.1364438Z [command]/usr/bin/git version
+2025-11-21T11:49:39.1401499Z git version 2.51.2
+2025-11-21T11:49:39.1438568Z Temporarily overriding HOME='/home/runner/work/_temp/e6674fe5-4c42-4bce-9da9-f1807a87ba56' before making global git config changes
+2025-11-21T11:49:39.1439486Z Adding repository directory to the temporary git global config as a safe directory
+2025-11-21T11:49:39.1443685Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/arxis/arxis
+2025-11-21T11:49:39.1476008Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-11-21T11:49:39.1503348Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-11-21T11:49:39.1687287Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-11-21T11:49:39.1705333Z http.https://github.com/.extraheader
+2025-11-21T11:49:39.1715505Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2025-11-21T11:49:39.1741657Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-11-21T11:49:39.1914798Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2025-11-21T11:49:39.1941507Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2025-11-21T11:49:39.2207145Z Cleaning up orphan processes
