@@ -23,6 +23,8 @@ rustfft = "6.2"     # FFT para análise espectral
 num-complex = "0.4" # Números complexos para FFT
 serde = { version = "1.0", features = ["derive"], optional = true }
 nalgebra = "0.33"   # Álgebra linear (SVD, eigenvalues)
+pyo3 = { version = "0.21", features = ["extension-module"], optional = true }
+numpy = { version = "0.21", optional = true }
 
 [dev-dependencies]
 criterion = { version = "0.5", features = ["html_reports"] }
@@ -31,7 +33,7 @@ approx = "0.5"      # Comparações com tolerância
 [features]
 default = []
 serde = ["dep:serde"]
-python = []         # Feature flag para PyO3 (futuro)
+python = ["dep:pyo3", "dep:numpy", "serde"]
 
 [profile.release]
 opt-level = 3

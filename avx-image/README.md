@@ -168,7 +168,7 @@ MIT License - see [LICENSE](LICENSE) for details
 
 - **AVL Platform**: https://avilaops.com
 - **GitHub**: https://github.com/avilaops/arxis
-- **Documentation**: https://docs.avilaops.com/avx-image
+- **Documentation**: https://docs.rs/avx-image (when published)
 
 ---
 

@@ -1,22 +1,18 @@
 [package]
-name = "avx-gpu-backend-wgpu"
+name = "avx-gpu-backend-vulkan"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 repository.workspace = true
 authors.workspace = true
-description = "WebGPU/wgpu backend for AVX-GPU"
+description = "Vulkan backend for AVX-GPU - Pure Rust, cross-vendor GPU computing"
 
 [dependencies]
 avx-gpu-core = { path = "../../avx-gpu-core" }
-wgpu.workspace = true
-pollster.workspace = true
-naga.workspace = true
+ash.workspace = true
+gpu-allocator.workspace = true
 bytemuck.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
 parking_lot.workspace = true
 anyhow.workspace = true
-
-[dev-dependencies]
-env_logger = "0.11"

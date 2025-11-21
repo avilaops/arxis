@@ -30,16 +30,25 @@ pub struct WgpuBackend {
 
 impl WgpuBackend {
     pub fn new() -> Result<Self> {
-        Self::new_async().map_err(|e| Error::BackendInitFailed(e.to_string()))
+        println!("[DEBUG] Entering WgpuBackend::new()");
+        let result = Self::new_async().map_err(|e| {
+            println!("[DEBUG] new_async failed: {}", e);
+            Error::BackendInitFailed(e.to_string())
+        });
+        println!("[DEBUG] Exiting WgpuBackend::new()");
+        result
     }
 
     fn new_async() -> anyhow::Result<Self> {
+        println!("[DEBUG] Entering new_async");
         pollster::block_on(async {
+            println!("[DEBUG] Creating instance");
             let instance = wgpu::Instance::new(wgpu::InstanceDescriptor {
                 backends: wgpu::Backends::all(),
                 ..Default::default()
             });
 
+            println!("[DEBUG] Requesting adapter");
             let adapter = instance
                 .request_adapter(&wgpu::RequestAdapterOptions {
                     power_preference: wgpu::PowerPreference::HighPerformance,
@@ -49,6 +58,9 @@ impl WgpuBackend {
                 .await
                 .ok_or_else(|| anyhow::anyhow!("No suitable GPU adapter found"))?;
 
+            println!("[DEBUG] Adapter found: {:?}", adapter.get_info());
+
+            println!("[DEBUG] Requesting device");
             let (device, queue) = adapter
                 .request_device(
                     &wgpu::DeviceDescriptor {
@@ -60,6 +72,8 @@ impl WgpuBackend {
                     None,
                 )
                 .await?;
+
+            println!("[DEBUG] Device created successfully");
 
             Ok(Self {
                 device: Arc::new(device),
@@ -193,30 +207,31 @@ impl Backend for WgpuBackend {
         encoder.copy_buffer_to_buffer(&buffer, 0, &staging_buffer, 0, data.len() as u64);
         self.queue.submit(Some(encoder.finish()));
 
-        // Map and read
-        let result = pollster::block_on(async {
-            let buffer_slice = staging_buffer.slice(..);
-            let (tx, rx) = futures_intrusive::channel::shared::oneshot_channel();
-            buffer_slice.map_async(wgpu::MapMode::Read, move |result| {
-                tx.send(result).ok();
-            });
-            self.device.poll(wgpu::Maintain::Wait);
-            rx.receive().await
+        // Map and read - simplified approach
+        let buffer_slice = staging_buffer.slice(..);
+
+        // Request mapping
+        let (tx, rx) = std::sync::mpsc::channel();
+        buffer_slice.map_async(wgpu::MapMode::Read, move |result| {
+            tx.send(result).ok();
         });
 
-        result
-            .ok_or_else(|| Error::MemoryCopyFailed("Channel closed".into()))?
-            .map_err(|e| Error::MemoryCopyFailed(format!("Buffer mapping failed: {:?}", e)))?;
+        // Poll device until mapping is done
+        self.device.poll(wgpu::Maintain::Wait);
 
-        let mapped = staging_buffer.slice(..).get_mapped_range();
+        // Wait for mapping result
+        rx.recv()
+            .map_err(|e| Error::MemoryCopyFailed(format!("Channel error: {}", e)))?
+            .map_err(|e| Error::MemoryCopyFailed(format!("Mapping error: {:?}", e)))?;
+
+        // Copy data
+        let mapped = buffer_slice.get_mapped_range();
         data.copy_from_slice(&mapped);
         drop(mapped);
         staging_buffer.unmap();
 
         Ok(())
-    }
-
-    fn copy_buffer(&mut self, src: BufferHandle, dst: BufferHandle, size: usize) -> Result<()> {
+    }    fn copy_buffer(&mut self, src: BufferHandle, dst: BufferHandle, size: usize) -> Result<()> {
         let src_buffer = self.get_buffer(src)?;
         let dst_buffer = self.get_buffer(dst)?;
 

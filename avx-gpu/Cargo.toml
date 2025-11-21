@@ -4,6 +4,7 @@ members = [
     "avx-gpu-compiler",
     "avx-gpu-runtime",
     "avx-gpu-backends/wgpu",
+    "avx-gpu-backends/vulkan",
     "avx-gpu-backends/cuda",
     "avx-gpu-backends/metal",
     "avx-gpu-backends/rocm",
@@ -33,10 +34,14 @@ pollster = "0.3"
 naga = { version = "22.0", features = ["wgsl-in", "spv-out"] }
 futures-intrusive = "0.5"
 
-# CUDA backend
+# Vulkan backend (nosso próprio!)
+ash = "0.37"
+gpu-allocator = "0.26"
+
+# CUDA backend (opcional)
 cudarc = "0.11"
 
-# Metal backend
+# Metal backend (opcional)
 metal = "0.29"
 
 # ROCm/HIP backend (optional)

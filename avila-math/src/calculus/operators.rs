@@ -179,14 +179,14 @@ mod tests {
 
     #[test]
     fn test_laplacian_harmonic() {
-        // Função harmônica: f(x,y,z,w) = x² - y² - z² - w²
-        // deve ter Laplaciano = 0 em certas configurações
+        // Função "quase" harmônica: f(x,y,z,w) = x² - y² - z² - w²
+        // Laplaciano = 2 - 2 - 2 - 2 = -4 (não é zero, mas é constante)
         let f = |p: &[f64]| p[0] * p[0] - p[1] * p[1] - p[2] * p[2] - p[3] * p[3];
 
         let lap = laplacian_4d(&f, &[1.0, 1.0, 1.0, 1.0], 1e-5);
 
-        // Laplaciano deve ser pequeno
-        assert!(lap.abs() < 1e-2);
+        // Laplaciano deve ser aproximadamente -4
+        assert!((lap + 4.0).abs() < 0.1);
     }
 
     #[test]

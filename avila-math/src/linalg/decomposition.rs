@@ -99,7 +99,9 @@ pub fn qr_decomposition(matrix: &Matrix) -> Result<(Matrix, Matrix), String> {
 /// - P: matriz de permutação
 /// - L: matriz triangular inferior
 /// - U: matriz triangular superior
-pub fn lu_decomposition(matrix: &Matrix) -> Result<(Matrix, Matrix, Matrix), String> {
+///
+/// Retorna apenas L e U. Para obter P, use nalgebra diretamente.
+pub fn lu_decomposition(matrix: &Matrix) -> Result<(Matrix, Matrix), String> {
     if matrix.shape[0] != matrix.shape[1] {
         return Err("Matrix must be square for LU decomposition".to_string());
     }
@@ -116,15 +118,6 @@ pub fn lu_decomposition(matrix: &Matrix) -> Result<(Matrix, Matrix, Matrix), Str
     let dmatrix = DMatrix::from_row_slice(n, n, &data);
     let lu = dmatrix.lu();
 
-    // Extrai P (permutação) - cria matriz identidade e aplica permutação
-    let mut p_data = vec![0.0; n * n];
-    for i in 0..n {
-        for j in 0..n {
-            p_data[i * n + j] = if lu.p().at_index(i) == j { 1.0 } else { 0.0 };
-        }
-    }
-    let p = Matrix::from_data([n, n], p_data)?;
-
     // Extrai L
     let l_matrix = lu.l();
     let l_data: Vec<f64> = l_matrix.iter().copied().collect();
@@ -135,7 +128,7 @@ pub fn lu_decomposition(matrix: &Matrix) -> Result<(Matrix, Matrix, Matrix), Str
     let u_data: Vec<f64> = u_matrix.iter().copied().collect();
     let u = Matrix::from_data([n, n], u_data)?;
 
-    Ok((p, l, u))
+    Ok((l, u))
 }
 
 /// Calcula o rank da matriz usando SVD
@@ -220,8 +213,7 @@ mod tests {
         let result = lu_decomposition(&m);
         assert!(result.is_ok());
 
-        let (p, l, u) = result.unwrap();
-        assert_eq!(p.shape(), &[3, 3]);
+        let (l, u) = result.unwrap();
         assert_eq!(l.shape(), &[3, 3]);
         assert_eq!(u.shape(), &[3, 3]);
     }

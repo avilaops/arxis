@@ -55,6 +55,22 @@ pub mod calculus;
 /// Curvas de Bézier, splines cúbicas, interpolação linear/bilinear/trilinear.
 pub mod interpolation;
 
+/// Módulo de Diferenciação Automática
+///
+/// Sistema tape-based para backpropagation e treino de redes neurais.
+pub mod autograd;
+
+/// Módulo de Filtros Adaptativos
+///
+/// Filtro de Kalman, Wiener e Transformada Z para sistemas discretos.
+pub mod filters;
+
+/// Bindings Python (PyO3)
+#[cfg(feature = "python")]
+pub mod python;
+
 // Re-export commonly used types
 pub use geometry::{DualQuat, Matrix4, Quat3D, SO4Rotation, Vector2, Vector3, Vector4, AABB};
 pub use tensor::{Tensor, Tensor4D};
+pub use autograd::{Tape, Variable};
+pub use filters::{KalmanFilter, WienerFilter};

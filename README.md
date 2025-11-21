@@ -140,7 +140,7 @@ Como a cidadela protege a cidade, Arxis protege seus cálculos:
 *Diferente de AWS, Azure ou GCP, a AVL é construída sobre as fundações sólidas do Arxis - otimizada especificamente para cargas de trabalho científicas e de engenharia.*
 
 > **Status**: Arxis está em **active development**. O projeto é open-source (MIT/Apache-2.0) para uso científico e educacional.
-> 
+>
 > **Links**: [Website](https://arxis.avilaops.com) | [Organization](https://avilaops.com) | [Contact](https://avila.inc)
 
 ---

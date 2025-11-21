@@ -172,7 +172,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## 📚 Documentation
 
-- [API Documentation](https://docs.avilaops.com/avx-gpu)
+- [API Documentation](https://docs.rs/avx-gpu) (when published)
 - [User Guide](docs/guide.md)
 - [CUDA Migration Guide](docs/cuda-migration.md)
 - [Performance Tuning](docs/performance.md)
