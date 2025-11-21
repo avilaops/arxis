@@ -71,89 +71,96 @@ para que você possa comandar o cosmos."
 
 ## 🎨 Paleta de Cores
 
-### Tema: **Cosmic Deep Space** 🌌
+### Tema: **Solar Energy** ☀️
 
 Inspirado em:
-- Profundidade do espaço sideral
-- Ondas gravitacionais (invisíveis mas detectáveis)
-- Espectro eletromagnético do cosmos
-- Elegância matemática
+- Energia do sol e estrelas
+- Fusão nuclear e plasma estelar
+- Ondas eletromagnéticas e radiação
+- Calor, luz e transformação
 
 ### Cores Principais
 
-#### 1. **Arxis Deep Blue** (Primária)
+#### 1. **Pure White** (Base)
 ```
-HEX: #0A1628
-RGB: (10, 22, 40)
-HSL: (214°, 60%, 10%)
+HEX: #FFFFFF
+RGB: (255, 255, 255)
+HSL: (0°, 0%, 100%)
 ```
-**Uso**: Background principal, títulos grandes, logotipo
-**Significado**: Profundidade do espaço, estabilidade matemática
+**Uso**: Background principal, cards, áreas de destaque
+**Significado**: Clareza, precisão científica, pureza matemática
 
-#### 2. **Gravitational Wave Cyan** (Acento)
+#### 2. **Solar Yellow** (Primária)
 ```
-HEX: #00D4FF
-RGB: (0, 212, 255)
-HSL: (190°, 100%, 50%)
+HEX: #FFD700
+RGB: (255, 215, 0)
+HSL: (50°, 100%, 50%)
 ```
-**Uso**: Highlights, links, elementos interativos, ondas
-**Significado**: Detecção de ondas gravitacionais, energia, descoberta
-**Nota**: Esta é a cor da AVL Cloud Platform (integração visual)
+**Uso**: Elementos principais, CTAs, highlights, badges
+**Significado**: Energia solar, radiação estelar, descoberta
+**Nota**: Cor vibrante e energética para elementos de ação
 
-#### 3. **Quantum Gold** (Destaque)
+#### 3. **Stellar Orange** (Acento)
 ```
-HEX: #FFB800
-RGB: (255, 184, 0)
-HSL: (43°, 100%, 50%)
+HEX: #FF8C00
+RGB: (255, 140, 0)
+HSL: (33°, 100%, 50%)
+```
+**Uso**: Acentos, hovers, links, elementos interativos
+**Significado**: Fusão nuclear, plasma, transformação energética
+
+#### 4. **Deep Space** (Contraste)
+```
+HEX: #1A1A1A
+RGB: (26, 26, 26)
+HSL: (0°, 0%, 10%)
+```
+**Uso**: Texto principal, títulos, elementos de contraste
+**Significado**: Contraste forte, legibilidade, profundidade
+
+#### 5. **Warm Amber** (Secundário)
+```
+HEX: #FFA500
+RGB: (255, 165, 0)
+HSL: (39°, 100%, 50%)
 ```
 **Uso**: Badges, warnings, elementos importantes
-**Significado**: Energia do universo, luz das estrelas, precisão
-
-#### 4. **Neutron White** (Texto)
-```
-HEX: #E8F1F5
-RGB: (232, 241, 245)
-HSL: (198°, 40%, 93%)
-```
-**Uso**: Texto principal, documentação
-**Significado**: Clareza, precisão, código legível
-
-#### 5. **Event Horizon Purple** (Secundário)
-```
-HEX: #8B4FE8
-RGB: (139, 79, 232)
-HSL: (263°, 77%, 61%)
-```
-**Uso**: Gráficos, visualizações, elementos científicos
-**Significado**: Mistério, ciência avançada, relatividade
+**Significado**: Energia em transição, radiação térmica
 
 ### Cores de Suporte
 
-#### Rust Orange (Linguagem)
+#### Light Gray (Superfícies)
 ```
-HEX: #CE422B
-RGB: (206, 66, 43)
+HEX: #F5F5F5
+RGB: (245, 245, 245)
 ```
-**Uso**: Badge "Built with Rust", elementos de linguagem
+**Uso**: Backgrounds secundários, cards, separadores
+
+#### Medium Gray (Bordas)
+```
+HEX: #E0E0E0
+RGB: (224, 224, 224)
+```
+**Uso**: Bordas, divisores, sombras suaves
+
+#### Text Gray (Texto secundário)
+```
+HEX: #666666
+RGB: (102, 102, 102)
+```
+**Uso**: Texto secundário, legendas, descrições
 
 #### Success Green
 ```
-HEX: #00C853
-RGB: (0, 200, 83)
+HEX: #4CAF50
+RGB: (76, 175, 80)
 ```
 **Uso**: ✅ Tests passing, status positivo
 
-#### Warning Amber
-```
-HEX: #FFA000
-RGB: (255, 160, 0)
-```
-**Uso**: Avisos, elementos de atenção
-
 #### Error Red
 ```
-HEX: #D32F2F
-RGB: (211, 47, 47)
+HEX: #F44336
+RGB: (244, 67, 54)
 ```
 **Uso**: Erros, elementos críticos
 
@@ -185,9 +192,11 @@ Representação visual de um quaternion (4D) projetado em 2D, formando uma espir
 ```
 
 **Variações**:
-- **Full color**: Gradiente Cyan-Purple
-- **Monochrome**: Deep Blue (#0A1628)
+- **Full color**: Gradiente Yellow→Orange (#FFD700 → #FF8C00)
+- **Monochrome**: Deep Space (#1A1A1A)
 - **Icon**: Versão simplificada 32×32px
+- **Light mode**: Texto escuro sobre fundo branco
+- **Dark mode**: Yellow/Orange sobre fundo escuro
 
 **Arquivo**: `arxis-logo-quaternion.svg`
 
@@ -367,22 +376,23 @@ Versão ultra-simplificada:
 ```
 
 **Cores**:
-- Background: `#0A1628` (Deep Blue)
-- Logo: Gradiente Cyan→Purple
-- Texto principal: `#E8F1F5` (White)
-- Badges: Cyan accent
+- Background: `#FFFFFF` (Pure White)
+- Logo: Gradiente Yellow→Orange (#FFD700 → #FF8C00)
+- Texto principal: `#1A1A1A` (Deep Space)
+- Badges: Orange accent (#FF8C00)
 
 ### 3. Documentation Theme
 
 **docs.rs Custom Theme**:
 ```css
 :root {
-  --main-background-color: #0A1628;
-  --main-color: #E8F1F5;
-  --link-color: #00D4FF;
-  --code-background: #152238;
-  --inline-code-color: #FFB800;
-  --heading-color: #00D4FF;
+  --main-background-color: #FFFFFF;
+  --main-color: #1A1A1A;
+  --link-color: #FF8C00;
+  --code-background: #F5F5F5;
+  --inline-code-color: #FFD700;
+  --heading-color: #FF8C00;
+  --border-color: #E0E0E0;
 }
 ```
 
@@ -397,7 +407,7 @@ Versão ultra-simplificada:
 │  Phase 1-6 ✅       │
 └─────────────────────┘
 ```
-**Cores**: Gold text on Deep Blue
+**Cores**: Orange text (#FF8C00) on White background
 
 #### AVL Platform Badge
 ```
@@ -407,7 +417,7 @@ Versão ultra-simplificada:
 │  Native Integration │
 └─────────────────────┘
 ```
-**Cores**: Cyan on Deep Blue
+**Cores**: Yellow (#FFD700) on White background
 
 #### Tests Badge
 ```
@@ -416,7 +426,7 @@ Versão ultra-simplificada:
 │     PASSING         │
 └─────────────────────┘
 ```
-**Cores**: Green on Deep Blue
+**Cores**: Green (#4CAF50) on White background
 
 ### 5. Apresentações e Slides
 
@@ -435,10 +445,11 @@ Versão ultra-simplificada:
 ```
 
 **Esquema de cores**:
-- Background: Deep Blue (#0A1628)
-- Títulos: Cyan (#00D4FF)
-- Texto: White (#E8F1F5)
-- Código: Gold highlights (#FFB800)
+- Background: Pure White (#FFFFFF)
+- Títulos: Stellar Orange (#FF8C00)
+- Texto: Deep Space (#1A1A1A)
+- Código: Yellow highlights (#FFD700)
+- Acentos: Solar Yellow (#FFD700)
 
 ### 6. Stickers e Merchandise
 

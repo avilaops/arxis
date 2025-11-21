@@ -7,19 +7,22 @@
    CSS Variables & Theme
    =================================== */
 :root {
-    /* Cosmic Deep Space Color Palette */
-    --color-deep-blue: #0A1628;
-    --color-cyan: #00D4FF;
-    --color-gold: #FFB800;
-    --color-white: #E8F1F5;
-    --color-purple: #8B4FE8;
-    --color-rust: #CE422B;
-    --color-green: #00C853;
+    /* Solar Energy Color Palette */
+    --color-white: #FFFFFF;
+    --color-solar-yellow: #FFD700;
+    --color-stellar-orange: #FF8C00;
+    --color-warm-amber: #FFA500;
+    --color-deep-space: #1A1A1A;
+    --color-light-gray: #F5F5F5;
+    --color-medium-gray: #E0E0E0;
+    --color-text-gray: #666666;
+    --color-green: #4CAF50;
+    --color-red: #F44336;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, var(--color-cyan), var(--color-purple));
-    --gradient-secondary: linear-gradient(135deg, var(--color-purple), var(--color-cyan));
-    --gradient-gold: linear-gradient(135deg, #FFB800, #FFA000);
+    --gradient-primary: linear-gradient(135deg, var(--color-solar-yellow), var(--color-stellar-orange));
+    --gradient-secondary: linear-gradient(135deg, var(--color-warm-amber), var(--color-stellar-orange));
+    --gradient-gold: linear-gradient(135deg, #FFD700, #FFA500);
 
     /* Spacing */
     --spacing-xs: 0.5rem;
@@ -38,10 +41,10 @@
     --transition-slow: 0.5s ease;
 
     /* Shadows */
-    --shadow-sm: 0 2px 8px rgba(0, 212, 255, 0.1);
-    --shadow-md: 0 4px 16px rgba(0, 212, 255, 0.15);
-    --shadow-lg: 0 8px 32px rgba(0, 212, 255, 0.2);
-    --shadow-glow: 0 0 40px rgba(0, 212, 255, 0.3);
+    --shadow-sm: 0 2px 8px rgba(255, 140, 0, 0.1);
+    --shadow-md: 0 4px 16px rgba(255, 140, 0, 0.15);
+    --shadow-lg: 0 8px 32px rgba(255, 140, 0, 0.2);
+    --shadow-glow: 0 0 40px rgba(255, 215, 0, 0.4);
 }
 
 /* ===================================
@@ -59,20 +62,20 @@ html {
 
 body {
     font-family: var(--font-body);
-    background-color: var(--color-deep-blue);
-    color: var(--color-white);
+    background-color: var(--color-white);
+    color: var(--color-deep-space);
     line-height: 1.6;
     overflow-x: hidden;
 }
 
 a {
-    color: var(--color-cyan);
+    color: var(--color-stellar-orange);
     text-decoration: none;
     transition: all var(--transition-fast);
 }
 
 a:hover {
-    color: var(--color-purple);
+    color: var(--color-solar-yellow);
 }
 
 .container {
@@ -99,9 +102,10 @@ a:hover {
     top: 0;
     left: 0;
     right: 0;
-    background: rgba(10, 22, 40, 0.95);
+    background: rgba(255, 255, 255, 0.98);
     backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+    border-bottom: 2px solid var(--color-medium-gray);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     z-index: 1000;
     padding: var(--spacing-sm) 0;
 }
