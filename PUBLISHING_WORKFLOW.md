@@ -6,6 +6,17 @@
 
 Este repositório tem **automação completa** para publicação. Você **NÃO** deve rodar `cargo publish` manualmente.
 
+### 🚨 APENAS ADMINS PODEM PUBLICAR
+
+**Você NÃO tem permissão para criar tags de release.**
+
+Apenas **Nicolas Ávila** e administradores autorizados podem:
+- Criar tags (`git tag v0.1.0`)
+- Fazer push de tags (`git push origin v0.1.0`)
+- Publicar no crates.io
+
+Se você tentar publicar manualmente, o CI vai **falhar** (token inexistente).
+
 ---
 
 ## 📋 Checklist Pré-Publicação
