@@ -155,7 +155,7 @@ mod tests {
         let r1 = Rect::new(0, 0, 10, 10);
         let r2 = Rect::new(5, 5, 10, 10);
         let r3 = Rect::new(20, 20, 10, 10);
-        
+
         assert!(r1.intersects(&r2));
         assert!(!r1.intersects(&r3));
     }

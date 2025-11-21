@@ -1,0 +1,26 @@
+# .gitignore para projeto Rust
+
+# Arquivos gerados pelo Cargo
+/target/
+**/*.rs.bk
+*.pdb
+Cargo.lock
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Logs e temporários
+*.log
+*.tmp
+
+# Arquivos de teste
+test_images/
+output/
