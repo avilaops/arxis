@@ -1,0 +1,78 @@
+[package]
+name = "avila-ml"
+version = "0.1.0"
+edition = "2021"
+authors = [
+    "Nícolas Ávila <nicolas@avila.inc>",
+    "Avila Development Team <dev@avila.inc>",
+]
+license = "MIT OR Apache-2.0"
+description = "Avila ML - High-performance Machine Learning library for scientific computing, with autograd, neural networks, and 4D convolutions for astrophysical data"
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://arxis.avilaops.com"
+documentation = "https://docs.rs/avila-ml"
+readme = "README.md"
+keywords = [
+    "machine-learning",
+    "deep-learning",
+    "autograd",
+    "neural-networks",
+    "scientific-computing",
+]
+categories = ["science", "mathematics", "algorithms"]
+
+[lib]
+name = "avila_ml"
+path = "src/lib.rs"
+
+[[example]]
+name = "mnist_training"
+path = "examples/mnist_training.rs"
+
+[[example]]
+name = "linear_regression"
+path = "examples/linear_regression.rs"
+
+[[example]]
+name = "conv4d_astrophysics"
+path = "examples/conv4d_astrophysics.rs"
+
+[dependencies]
+# Core numerical computing
+ndarray = { version = "0.16", features = ["rayon", "serde"] }
+num-traits = "0.2"
+rand = "0.8"
+rand_distr = "0.4"
+
+# Parallel processing
+rayon = "1.10"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Data loading
+polars = { version = "0.44", features = ["lazy", "csv"], optional = true }
+
+# FFT for scientific computing
+rustfft = "6.2"
+
+# Complex numbers for scientific applications
+num-complex = "0.4"
+
+[dev-dependencies]
+criterion = "0.5"
+approx = "0.5"
+
+[features]
+default = []
+data-loading = ["polars"]
+gpu = []                  # Placeholder for future CUDA/ROCm support
+
+[[bench]]
+name = "autograd_benchmark"
+harness = false
+
+[[bench]]
+name = "nn_benchmark"
+harness = false

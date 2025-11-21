@@ -1,4 +1,4 @@
-# Arquivos de build do Rust
+# Rust Build Artifacts
 /target/
 **/target/
 **/*.rs.bk
@@ -6,51 +6,83 @@
 *.rlib
 *.rmeta
 *.d
-*.dll
-*.lib
-*.exp
-*.exe
 
-# Arquivos do Cargo
+# Cargo
 Cargo.lock
 
-# Arquivos do IDE
+# IDEs
 .vscode/
 .idea/
+.vs/
 *.swp
 *.swo
 *~
+*.code-workspace
 
-# Arquivos do sistema
+# System Files
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# Arquivos temporários
+# Temporary Files
 *.tmp
 *.bak
-*.ini
-Untitled-*
+*~
+.#*
+\#*\#
 
-# Logs e outputs
-logs/
+# Logs
 *.log
-*_output.txt
-Log - Second Agent/
+logs/
 
-# Dados de teste (mover para tests/fixtures/)
-lisa_catalog.csv
-lisa_catalog.json
-lisa_output.txt
-
-# Pastas vazias/temporárias
-Avila-Engine/
-
-# Arquivos de lista gerados
-file_list.txt
-
-# Variáveis de ambiente e secrets
+# Environment Variables
 .env
 .env.local
-**/.env
-**/.env.local
-*.env
+.env.*.local
+
+# Generated Files
+file_list.txt
+file_structure.txt
+tree_output.txt
+modules_structure.txt
+
+# Build Outputs
+*.exe
+*.dll
+*.so
+*.dylib
+*.a
+*.lib
+*.exp
+
+# Test Artifacts
+*.profraw
+*.profdata
+*.gcda
+*.gcno
+
+# Documentation Build
+/docs/_build/
+/book/
+
+# Package Manager
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Compressed Files (temporary)
+*.7z
+*.zip
+*.tar.gz
+*.rar
+
+# Python (if any scripts)
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Misc
+*.orig
+.AppleDouble
+.LSOverride

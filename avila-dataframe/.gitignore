@@ -1,0 +1,35 @@
+# Rust
+/target/
+**/*.rs.bk
+*.pdb
+Cargo.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Benchmarks
+/benches/results/
+*.html
+
+# Data files
+*.parquet
+*.csv
+*.h5
+*.fits
+*.arrow
+*.nc
+/data/
+
+# Python (for comparisons)
+__pycache__/
+*.py[cod]
+.venv/
+venv/

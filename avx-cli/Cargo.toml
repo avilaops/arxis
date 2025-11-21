@@ -2,11 +2,14 @@
 name = "avx-cli"
 version = "0.1.0"
 edition = "2021"
-authors = ["Nicolas Ávila <nicolas@avila.inc>"]
+authors = [
+    "Nícolas Ávila <nicolas@avila.inc>",
+    "Avila Development Team <dev@avila.inc>",
+]
 license = "MIT OR Apache-2.0"
 description = "Command-line tools for Avila Experience Fabric - Project management, deployment, monitoring"
 repository = "https://github.com/avilaops/arxis"
-homepage = "https://avila.cloud"
+homepage = "https://arxis.avilaops.com"
 documentation = "https://docs.rs/avx-cli"
 readme = "README.md"
 keywords = ["cli", "command-line", "tools", "deployment", "devops"]
@@ -14,6 +17,34 @@ categories = ["command-line-utilities", "development-tools"]
 exclude = ["target/", "*.swp", ".git*"]
 
 [dependencies]
-clap = { version = "4", features = ["derive"] }
+# CLI Framework
+clap = { version = "4", features = ["derive", "color", "suggestions"] }
+clap_complete = "4"
 anyhow = "1"
+
+# Output formatting
+tabled = "0.15"
+colored_json = "4"
+console = "0.15"
+indicatif = "0.17"
+dialoguer = "0.11"
+
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+async-trait = "0.1"
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# AVX Ecosystem
 avx-config = { path = "../avx-config" }
+avx-telemetry = { path = "../avx-telemetry" }
+avx-events = { path = "../avx-events" }
+
+# AvilaDB (when available)
+# aviladb = "0.1"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }

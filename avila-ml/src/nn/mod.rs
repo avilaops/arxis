@@ -1,0 +1,326 @@
+//! Neural network modules
+//!
+//! This module provides building blocks for neural networks including
+//! layers, activations, and containers.
+
+pub mod activation;
+pub mod attention;
+pub mod normalization;
+
+use crate::tensor::Tensor;
+use num_traits::{Float, NumAssign};
+
+/// Base trait for all neural network modules
+pub trait Module<T = f32>: Send + Sync
+where
+    T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static,
+{
+    /// Forward pass through the module
+    fn forward(&self, input: &Tensor<T>) -> Tensor<T>;
+
+    /// Get trainable parameters
+    fn parameters(&self) -> Vec<&Tensor<T>> {
+        vec![]
+    }
+
+    /// Get mutable trainable parameters
+    fn parameters_mut(&mut self) -> Vec<&mut Tensor<T>> {
+        vec![]
+    }
+
+    /// Zero out all gradients
+    fn zero_grad(&mut self) {
+        for param in self.parameters_mut() {
+            param.zero_grad();
+        }
+    }
+}
+
+/// Linear (fully connected) layer: y = xW^T + b
+pub struct Linear<T = f32> {
+    pub weight: Tensor<T>,
+    pub bias: Option<Tensor<T>>,
+    in_features: usize,
+    out_features: usize,
+}
+
+impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Linear<T> {
+    /// Create a new linear layer
+    pub fn new(in_features: usize, out_features: usize) -> Self {
+        // Xavier initialization
+        let k = T::from(1.0 / (in_features as f64).sqrt()).unwrap();
+        let mut weight = Tensor::randn(&[out_features, in_features]);
+
+        // Scale by k
+        weight.data_mut().mapv_inplace(|x| x * k);
+        weight = weight.requires_grad_();
+
+        let bias = Some(Tensor::zeros(&[out_features]).requires_grad_());
+
+        Self {
+            weight,
+            bias,
+            in_features,
+            out_features,
+        }
+    }
+
+    /// Create a linear layer without bias
+    pub fn new_no_bias(in_features: usize, out_features: usize) -> Self {
+        let k = T::from(1.0 / (in_features as f64).sqrt()).unwrap();
+        let mut weight = Tensor::randn(&[out_features, in_features]);
+        weight.data_mut().mapv_inplace(|x| x * k);
+        weight = weight.requires_grad_();
+
+        Self {
+            weight,
+            bias: None,
+            in_features,
+            out_features,
+        }
+    }
+}
+
+impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Module<T>
+    for Linear<T>
+{
+    fn forward(&self, input: &Tensor<T>) -> Tensor<T> {
+        use crate::tensor::TensorLike;
+
+        // y = xW^T + b
+        let output = input.matmul(&self.weight.reshape(&[self.in_features, self.out_features]));
+
+        if let Some(ref bias) = self.bias {
+            output.add(bias)
+        } else {
+            output
+        }
+    }
+
+    fn parameters(&self) -> Vec<&Tensor<T>> {
+        let mut params = vec![&self.weight];
+        if let Some(ref bias) = self.bias {
+            params.push(bias);
+        }
+        params
+    }
+
+    fn parameters_mut(&mut self) -> Vec<&mut Tensor<T>> {
+        let mut params = vec![&mut self.weight];
+        if let Some(ref mut bias) = self.bias {
+            params.push(bias);
+        }
+        params
+    }
+}
+
+/// 2D Convolutional layer
+pub struct Conv2d<T = f32> {
+    pub weight: Tensor<T>,
+    pub bias: Option<Tensor<T>>,
+    _in_channels: usize,
+    _out_channels: usize,
+    _kernel_size: (usize, usize),
+    stride: (usize, usize),
+    padding: (usize, usize),
+}
+
+impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Conv2d<T> {
+    pub fn new(in_channels: usize, out_channels: usize, kernel_size: (usize, usize)) -> Self {
+        let k = T::from(
+            1.0 / (in_channels as f64 * kernel_size.0 as f64 * kernel_size.1 as f64).sqrt(),
+        )
+        .unwrap();
+
+        let mut weight = Tensor::randn(&[out_channels, in_channels, kernel_size.0, kernel_size.1]);
+        weight.data_mut().mapv_inplace(|x| x * k);
+        weight = weight.requires_grad_();
+
+        let bias = Some(Tensor::zeros(&[out_channels]).requires_grad_());
+
+        Self {
+            weight,
+            bias,
+            _in_channels: in_channels,
+            _out_channels: out_channels,
+            _kernel_size: kernel_size,
+            stride: (1, 1),
+            padding: (0, 0),
+        }
+    }
+
+    pub fn with_stride(mut self, stride: (usize, usize)) -> Self {
+        self.stride = stride;
+        self
+    }
+
+    pub fn with_padding(mut self, padding: (usize, usize)) -> Self {
+        self.padding = padding;
+        self
+    }
+}
+
+impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Module<T>
+    for Conv2d<T>
+{
+    fn forward(&self, input: &Tensor<T>) -> Tensor<T> {
+        // Simplified conv2d - full implementation would use im2col or FFT
+        // For now, return input (placeholder)
+        // TODO: Implement proper 2D convolution
+        input.clone()
+    }
+
+    fn parameters(&self) -> Vec<&Tensor<T>> {
+        let mut params = vec![&self.weight];
+        if let Some(ref bias) = self.bias {
+            params.push(bias);
+        }
+        params
+    }
+
+    fn parameters_mut(&mut self) -> Vec<&mut Tensor<T>> {
+        let mut params = vec![&mut self.weight];
+        if let Some(ref mut bias) = self.bias {
+            params.push(bias);
+        }
+        params
+    }
+}
+
+/// 4D Convolutional layer for spatio-temporal data (e.g., astrophysical data)
+pub struct Conv4d<T = f32> {
+    pub weight: Tensor<T>,
+    pub bias: Option<Tensor<T>>,
+    _in_channels: usize,
+    _out_channels: usize,
+    _kernel_size: (usize, usize, usize, usize),
+}
+
+impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Conv4d<T> {
+    pub fn new(
+        in_channels: usize,
+        out_channels: usize,
+        kernel_size: (usize, usize, usize, usize),
+    ) -> Self {
+        let kernel_vol = (kernel_size.0 * kernel_size.1 * kernel_size.2 * kernel_size.3) as f64;
+        let k = T::from(1.0 / (in_channels as f64 * kernel_vol).sqrt()).unwrap();
+
+        let mut weight = Tensor::randn(&[
+            out_channels,
+            in_channels,
+            kernel_size.0,
+            kernel_size.1,
+            kernel_size.2,
+            kernel_size.3,
+        ]);
+        weight.data_mut().mapv_inplace(|x| x * k);
+        weight = weight.requires_grad_();
+
+        let bias = Some(Tensor::zeros(&[out_channels]).requires_grad_());
+
+        Self {
+            weight,
+            bias,
+            _in_channels: in_channels,
+            _out_channels: out_channels,
+            _kernel_size: kernel_size,
+        }
+    }
+}
+
+impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Module<T>
+    for Conv4d<T>
+{
+    fn forward(&self, input: &Tensor<T>) -> Tensor<T> {
+        // 4D convolution for scientific data (LISA, gravitational waves)
+        // TODO: Implement proper 4D convolution
+        input.clone()
+    }
+
+    fn parameters(&self) -> Vec<&Tensor<T>> {
+        let mut params = vec![&self.weight];
+        if let Some(ref bias) = self.bias {
+            params.push(bias);
+        }
+        params
+    }
+
+    fn parameters_mut(&mut self) -> Vec<&mut Tensor<T>> {
+        let mut params = vec![&mut self.weight];
+        if let Some(ref mut bias) = self.bias {
+            params.push(bias);
+        }
+        params
+    }
+}
+
+/// Sequential container for stacking modules
+pub struct Sequential<T = f32> {
+    modules: Vec<Box<dyn Module<T>>>,
+}
+
+impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Sequential<T> {
+    pub fn new(modules: Vec<Box<dyn Module<T>>>) -> Self {
+        Self { modules }
+    }
+}
+
+impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Module<T>
+    for Sequential<T>
+{
+    fn forward(&self, input: &Tensor<T>) -> Tensor<T> {
+        let mut output = input.clone();
+        for module in &self.modules {
+            output = module.forward(&output);
+        }
+        output
+    }
+
+    fn parameters(&self) -> Vec<&Tensor<T>> {
+        self.modules.iter().flat_map(|m| m.parameters()).collect()
+    }
+
+    fn parameters_mut(&mut self) -> Vec<&mut Tensor<T>> {
+        self.modules
+            .iter_mut()
+            .flat_map(|m| m.parameters_mut())
+            .collect()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_linear_layer() {
+        let layer = Linear::<f32>::new(10, 5);
+        let input = Tensor::randn(&[32, 10]); // batch_size=32
+
+        let output = layer.forward(&input);
+        assert_eq!(output.shape(), &[32, 5]);
+    }
+
+    #[test]
+    fn test_linear_parameters() {
+        let mut layer = Linear::<f32>::new(10, 5);
+        let params = layer.parameters();
+
+        assert_eq!(params.len(), 2); // weight + bias
+
+        layer.zero_grad();
+    }
+
+    #[test]
+    fn test_sequential() {
+        let model = Sequential::new(vec![
+            Box::new(Linear::<f32>::new(10, 20)),
+            Box::new(Linear::<f32>::new(20, 5)),
+        ]);
+
+        let input = Tensor::randn(&[32, 10]);
+        let output = model.forward(&input);
+
+        assert_eq!(output.shape(), &[32, 5]);
+    }
+}

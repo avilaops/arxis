@@ -2,11 +2,14 @@
 name = "avila-telemetry"
 version = "0.1.0"
 edition = "2021"
-authors = ["Nicolas Ávila <nicolas@avila.inc>"]
+authors = [
+    "Nícolas Ávila <nicolas@avila.inc>",
+    "Avila Development Team <dev@avila.inc>",
+]
 license = "MIT OR Apache-2.0"
 description = "Arxis Observatory: Monitoring the AXIS (engine) - Time series, ARIMA, anomaly detection, forecasting, NASA-grade data quality"
 repository = "https://github.com/avilaops/arxis"
-homepage = "https://avila.cloud"
+homepage = "https://arxis.avilaops.com"
 documentation = "https://docs.rs/avila-telemetry"
 readme = "README.md"
 keywords = ["arxis", "time-series", "forecasting", "anomaly", "nasa-quality"]

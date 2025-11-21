@@ -2,11 +2,14 @@
 name = "avx-gateway"
 version = "0.1.0"
 edition = "2021"
-authors = ["Nicolas Ávila <nicolas@avila.inc>"]
+authors = [
+    "Nícolas Ávila <nicolas@avila.inc>",
+    "Avila Development Team <dev@avila.inc>",
+]
 license = "MIT OR Apache-2.0"
 description = "High-performance API gateway for Avila Experience Fabric - Routing, auth, rate limiting, load balancing"
 repository = "https://github.com/avilaops/arxis"
-homepage = "https://avila.cloud"
+homepage = "https://arxis.avilaops.com"
 documentation = "https://docs.rs/avx-gateway"
 readme = "README.md"
 keywords = ["gateway", "api", "proxy", "microservices", "router"]

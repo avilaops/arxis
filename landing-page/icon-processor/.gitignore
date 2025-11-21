@@ -1,0 +1,29 @@
+# Build artifacts
+/target/
+**/*.rs.bk
+*.pdb
+
+# Cargo lock (for libraries, uncommitted; for binaries, committed)
+# Cargo.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Input/Output test directories
+/input/
+/output/
+/test_images/
+
+# Logs
+*.log
+
+# Benchmarks
+/benches/results/

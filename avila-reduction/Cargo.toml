@@ -1,0 +1,76 @@
+[package]
+name = "avila-reduction"
+version = "0.1.0"
+edition = "2021"
+authors = [
+    "Nícolas Ávila <nicolas@avila.inc>",
+    "Avila Development Team <dev@avila.inc>",
+]
+description = "State-of-the-art dimensionality reduction algorithms for Rust - surpassing scikit-learn, UMAP, and OpenTSNE"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/avilacloud/avila-reduction"
+keywords = [
+    "dimensionality-reduction",
+    "machine-learning",
+    "pca",
+    "tsne",
+    "umap",
+]
+categories = ["algorithms", "science"]
+
+[dependencies]
+ndarray = { version = "0.15", features = ["rayon", "serde"] }
+ndarray-linalg = { version = "0.16", features = ["openblas-static"] }
+ndarray-stats = "0.5"
+ndarray-rand = "0.14"
+rayon = "1.8"
+num-traits = "0.2"
+serde = { version = "1.0", features = ["derive"] }
+thiserror = "1.0"
+rand = "0.8"
+rand_xoshiro = "0.6"
+
+# Scientific computing
+nalgebra = "0.32"
+sprs = "0.11"     # Sparse matrices
+
+# Neural networks (for autoencoders)
+tch = { version = "0.14", optional = true } # PyTorch bindings
+
+# KD-tree for neighbor search
+kiddo = "4.0"
+
+# Optimization
+argmin = "0.9"
+
+# Optional GPU support
+[dependencies.cudarc]
+version = "0.9"
+optional = true
+
+[dependencies.wgpu]
+version = "0.18"
+optional = true
+
+[dev-dependencies]
+criterion = "0.5"
+proptest = "1.4"
+
+[features]
+default = []
+neural = ["tch"]
+gpu = ["cudarc"]
+gpu-wgpu = ["wgpu"]
+full = ["neural", "gpu", "gpu-wgpu"]
+
+[[bench]]
+name = "pca"
+harness = false
+
+[[bench]]
+name = "tsne"
+harness = false
+
+[[bench]]
+name = "umap"
+harness = false

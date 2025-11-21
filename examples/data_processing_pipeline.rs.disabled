@@ -2,12 +2,18 @@
 /// Demonstra integração entre Polars, Linfa, e análise científica
 
 use polars::prelude::*;
-use ndarray::Array2;
+use ndarray::{Array2, Axis};
 use linfa::prelude::*;
 use linfa_clustering::KMeans;
 use linfa_reduction::Pca;
 use rayon::prelude::*;
 use std::error::Error;
+use rand::Rng;
+
+// Helper function for random numbers
+fn random_f64() -> f64 {
+    rand::thread_rng().gen()
+}
 
 fn main() -> Result<(), Box<dyn Error>> {
     println!("🚀 Pipeline de Processamento de Dados 3D/4D - Arxis\n");
@@ -45,7 +51,7 @@ fn gravitational_wave_pipeline() -> Result<(), Box<dyn Error>> {
             let chirp_rate = 10.0;
             let f = f0 + chirp_rate * t;
             let signal = (2.0 * std::f64::consts::PI * f * t).sin() * 1e-21;
-            let noise = (rand::random::<f64>() - 0.5) * 1e-23;
+            let noise = (rand::thread_rng().gen::<f64>() - 0.5) * 1e-23;
             signal + noise
         })
         .collect();
@@ -115,26 +121,26 @@ fn astrophysical_clustering() -> Result<(), Box<dyn Error>> {
         let (m1, m2, distance, freq) = match cluster_type {
             0 => {
                 // Buracos negros: 20-50 M☉
-                let m1 = 20.0 + rand::random::<f64>() * 30.0;
-                let m2 = 20.0 + rand::random::<f64>() * 30.0;
-                let distance = 500.0 + rand::random::<f64>() * 500.0; // Mpc
-                let freq = 50.0 + rand::random::<f64>() * 50.0; // Hz
+                let m1 = 20.0 + random_f64() * 30.0;
+                let m2 = 20.0 + random_f64() * 30.0;
+                let distance = 500.0 + random_f64() * 500.0; // Mpc
+                let freq = 50.0 + random_f64() * 50.0; // Hz
                 (m1, m2, distance, freq)
             }
             1 => {
                 // Estrelas de nêutrons: 1-3 M☉
-                let m1 = 1.0 + rand::random::<f64>() * 2.0;
-                let m2 = 1.0 + rand::random::<f64>() * 2.0;
-                let distance = 100.0 + rand::random::<f64>() * 200.0;
-                let freq = 500.0 + rand::random::<f64>() * 500.0;
+                let m1 = 1.0 + random_f64() * 2.0;
+                let m2 = 1.0 + random_f64() * 2.0;
+                let distance = 100.0 + random_f64() * 200.0;
+                let freq = 500.0 + random_f64() * 500.0;
                 (m1, m2, distance, freq)
             }
             _ => {
                 // Intermediários: buraco negro + estrela de nêutrons
-                let m1 = 5.0 + rand::random::<f64>() * 10.0;
-                let m2 = 1.5 + rand::random::<f64>() * 2.0;
-                let distance = 200.0 + rand::random::<f64>() * 300.0;
-                let freq = 150.0 + rand::random::<f64>() * 150.0;
+                let m1 = 5.0 + random_f64() * 10.0;
+                let m2 = 1.5 + random_f64() * 2.0;
+                let distance = 200.0 + random_f64() * 300.0;
+                let freq = 150.0 + random_f64() * 150.0;
                 (m1, m2, distance, freq)
             }
         };
@@ -157,7 +163,9 @@ fn astrophysical_clustering() -> Result<(), Box<dyn Error>> {
 
     // 4. K-Means clustering (3 clusters)
     let n_clusters = 3;
-    let dataset = DatasetBase::from(normalized.clone());
+    // linfa 0.7 requires (records, targets) tuple
+    let targets = Array2::zeros((n_events, 0)); // Empty targets for unsupervised
+    let dataset = DatasetBase::new(normalized.clone(), targets);
 
     println!("  ✓ Executando K-Means com {} clusters...", n_clusters);
     let model = KMeans::params(n_clusters)
@@ -204,10 +212,10 @@ fn dimensional_reduction_4d() -> Result<(), Box<dyn Error>> {
     let mut data_4d = Vec::new();
 
     for _ in 0..n_points {
-        let x = rand::random::<f64>() * 10.0;
-        let y = rand::random::<f64>() * 10.0;
-        let z = rand::random::<f64>() * 10.0;
-        let t = rand::random::<f64>() * 10.0;
+        let x = random_f64() * 10.0;
+        let y = random_f64() * 10.0;
+        let z = random_f64() * 10.0;
+        let t = random_f64() * 10.0;
 
         // Adicionar correlação (simular trajetória em espaço-tempo)
         data_4d.push(vec![x, y, z, t + 0.1 * (x + y)]);
@@ -219,12 +227,13 @@ fn dimensional_reduction_4d() -> Result<(), Box<dyn Error>> {
     println!("  ✓ Dados 4D: {:?}", data_matrix.dim());
 
     // 2. PCA para reduzir a 3D
-    let dataset = DatasetBase::from(data_matrix.clone());
+    let targets = Array2::zeros((n_points, 0)); // Empty targets for unsupervised
+    let dataset = DatasetBase::new(data_matrix.clone(), targets);
 
     println!("  ✓ Aplicando PCA (4D → 3D)...");
     let pca = Pca::params(3).fit(&dataset)?;
 
-    let reduced = pca.transform(&dataset);
+    let reduced = pca.transform(dataset);
     println!("  ✓ Dados 3D: {:?}", reduced.targets().dim());
 
     // 3. Calcular variância explicada
@@ -275,7 +284,7 @@ fn time_series_pipeline() -> Result<(), Box<dyn Error>> {
         let value = if i % 100 == 0 && i > 0 {
             signal + 15.0 // Spike anômalo
         } else {
-            signal + (rand::random::<f64>() - 0.5) * 0.5 // Ruído normal
+            signal + (random_f64() - 0.5) * 0.5 // Ruído normal
         };
 
         data.push(value);
@@ -310,17 +319,8 @@ fn time_series_pipeline() -> Result<(), Box<dyn Error>> {
         }
     }
 
-    // 4. Forecast com ARIMA
-    use avila_telemetry::models::ARIMA;
-
-    let mut arima = ARIMA::new(1, 1, 1); // p=1, d=1, q=1
-    arima.fit(&ts)?;
-
-    let forecast_result = arima.forecast(10)?;
-    println!("  ✓ Forecast (próximos 10 pontos):");
-    for (i, pred) in forecast_result.predictions.iter().enumerate() {
-        println!("    t+{}: {:.2}", i + 1, pred);
-    }
+    // Note: ARIMA forecasting would go here with a proper time series library
+    // linfa doesn't have ARIMA yet - consider using avila-ml when available
 
     Ok(())
 }

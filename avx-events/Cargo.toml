@@ -2,11 +2,14 @@
 name = "avx-events"
 version = "0.1.0"
 edition = "2021"
-authors = ["Nicolas Ávila <nicolas@avila.inc>"]
+authors = [
+    "Nícolas Ávila <nicolas@avila.inc>",
+    "Avila Development Team <dev@avila.inc>",
+]
 license = "MIT OR Apache-2.0"
 description = "Event-driven architecture for Avila Experience Fabric - Pub/sub, event bus, and message patterns"
 repository = "https://github.com/avilaops/arxis"
-homepage = "https://avila.cloud"
+homepage = "https://arxis.avilaops.com"
 documentation = "https://docs.rs/avx-events"
 readme = "README.md"
 keywords = ["events", "pubsub", "event-bus", "messaging", "async"]
