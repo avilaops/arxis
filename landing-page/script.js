@@ -62,10 +62,10 @@ const translations = {
     }
 };
 
-// Load saved language from localStorage
-let currentLang = localStorage.getItem('arxis-lang') || 'en';
+// Load saved language from localStorage (default: PT-BR)
+let currentLang = localStorage.getItem('arxis-lang') || 'pt-BR';
 langCode.textContent = currentLang === 'pt-BR' ? 'PT' : 'EN';
-flagIcon.textContent = currentLang === 'pt-BR' ? '🇧🇷' : '🇺🇸';
+flagIcon.textContent = currentLang === 'pt-BR' ? '🇧🇷' : '🇬🇧';
 
 function applyTranslations(lang) {
     const elements = document.querySelectorAll('[data-i18n]');
@@ -94,7 +94,7 @@ langToggle.addEventListener('click', () => {
     currentLang = currentLang === 'pt-BR' ? 'en' : 'pt-BR';
     localStorage.setItem('arxis-lang', currentLang);
     langCode.textContent = currentLang === 'pt-BR' ? 'PT' : 'EN';
-    flagIcon.textContent = currentLang === 'pt-BR' ? '🇧🇷' : '🇺🇸';
+    flagIcon.textContent = currentLang === 'pt-BR' ? '🇧🇷' : '🇬🇧';
     applyTranslations(currentLang);
 });
 
