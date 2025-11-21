@@ -2,7 +2,6 @@
 ///
 /// Este módulo contém todas as estruturas e operações relacionadas à geometria,
 /// incluindo quaternions 3D, quaternions duplos, rotações SO(4) e geometria euclidiana 4D.
-
 pub mod aabb;
 pub mod dual_quaternion;
 pub mod geometry4d;

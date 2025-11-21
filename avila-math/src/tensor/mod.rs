@@ -3,6 +3,7 @@ pub mod conv4d;
 ///
 /// Este módulo implementa tensores de ordem arbitrária (0-4) com operações
 /// para álgebra linear, machine learning e processamento de dados multidimensionais.
+#[allow(clippy::module_inception)]
 pub mod tensor;
 pub mod tensor4d;
 

@@ -1,0 +1,24 @@
+[workspace]
+
+[package]
+name = "avila-convexa3d"
+version = "0.1.0"
+edition = "2021"
+authors = ["AVL Cloud Platform <support@avila.cloud>"]
+description = "Processamento de dados tridimensionais 3D - Vídeos e Volumes em Rust puro"
+license = "MIT"
+repository = "https://github.com/avilacloud/avila-convexa3d"
+homepage = "https://avila.cloud"
+documentation = "https://docs.rs/avila-convexa3d"
+keywords = ["video", "3d", "volume", "convolution", "computer-vision"]
+categories = ["algorithms", "science", "multimedia::video", "computer-vision"]
+readme = "README.md"
+
+[dependencies]
+ndarray = "0.15"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+num-traits = "0.2"
+
+[dev-dependencies]
+criterion = "0.5"

@@ -203,11 +203,11 @@ pub fn conv4d(
         kernel.shape[5],
     ];
 
-    if in_channels % config.groups != 0 {
+    if !in_channels.is_multiple_of(config.groups) {
         return Err("in_channels deve ser divisível por groups".to_string());
     }
 
-    if out_channels % config.groups != 0 {
+    if !out_channels.is_multiple_of(config.groups) {
         return Err("out_channels deve ser divisível por groups".to_string());
     }
 

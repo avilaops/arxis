@@ -1,3 +1,4 @@
+#![allow(clippy::needless_range_loop)]
 
 /// Tensor de ordem N com dados armazenados linearmente
 #[derive(Debug, Clone, PartialEq)]
@@ -68,8 +69,8 @@ impl<const N: usize> Tensor<N> {
 
     /// Obtém valor em índices específicos
     pub fn get(&self, indices: [usize; N]) -> Option<f64> {
-        for i in 0..N {
-            if indices[i] >= self.shape[i] {
+        for (i, &idx) in indices.iter().enumerate().take(N) {
+            if idx >= self.shape[i] {
                 return None;
             }
         }
@@ -79,9 +80,9 @@ impl<const N: usize> Tensor<N> {
 
     /// Define valor em índices específicos
     pub fn set(&mut self, indices: [usize; N], value: f64) -> Result<(), String> {
-        for i in 0..N {
-            if indices[i] >= self.shape[i] {
-                return Err(format!("Index out of bounds at dimension {}", i));
+        for (i, &idx) in indices.iter().enumerate().take(N) {
+            if idx >= self.shape[i] {
+                return Err(format!("Índice {} fora dos limites", i));
             }
         }
         let idx = self.linear_index(&indices);

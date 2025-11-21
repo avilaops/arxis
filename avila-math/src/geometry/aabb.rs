@@ -1,5 +1,4 @@
 /// Axis-Aligned Bounding Box for collision detection and spatial queries
-
 use super::vector::Vector3;
 
 /// Axis-Aligned Bounding Box (AABB)

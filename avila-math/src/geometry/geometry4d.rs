@@ -243,6 +243,12 @@ pub struct Tesseract {
     pub cells: Vec<Vec<usize>>, // Células cúbicas (8 cubos)
 }
 
+impl Default for Tesseract {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Tesseract {
     /// Cria um tesserato centrado na origem com lado de comprimento 2
     pub fn new() -> Self {
@@ -346,6 +352,12 @@ pub struct Cell24 {
     pub edges: Vec<(usize, usize)>,
 }
 
+impl Default for Cell24 {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Cell24 {
     /// Cria um 24-cell com raio 1
     pub fn new() -> Self {
@@ -408,6 +420,12 @@ impl Cell24 {
 pub struct Simplex4D {
     pub vertices: Vec<Point4D>,
     pub edges: Vec<(usize, usize)>,
+}
+
+impl Default for Simplex4D {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl Simplex4D {
