@@ -1,0 +1,28 @@
+[package]
+name = "avila-convexa4d"
+version = "0.1.0"
+edition = "2021"
+authors = ["AVL Cloud Platform <dev@avila.cloud>"]
+description = "Processamento de dados 4D em Rust puro: tensores espaço-temporais, vídeos volumétricos, sequências de volumes"
+license = "MIT"
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://avila.cloud"
+documentation = "https://docs.rs/avila-convexa4d"
+readme = "README.md"
+keywords = ["4d", "tensor", "spatiotemporal", "volume-sequence", "convolution"]
+categories = ["algorithms", "science", "multimedia::video", "computer-vision"]
+
+[workspace]
+
+[dependencies]
+ndarray = "0.15"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+num-traits = "0.2"
+
+[dev-dependencies]
+criterion = "0.5"
+
+[[bin]]
+name = "avila-convexa4d"
+path = "src/main.rs"
