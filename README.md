@@ -1098,6 +1098,8 @@ Developed with ❤️ for the scientific community
 ⚙️ **Powerful as an engine**
 🚀 **Built in Rust**
 
+📜 **[Read our Manifesto](MANIFESTO.md)** - *Fundamentos sólidos. Horizontes longos.*
+
 Contact: nicolas@avila.inc
 GitHub: [@avilaops](https://github.com/avilaops)
 Platform: [avila.cloud](https://avila.cloud)
