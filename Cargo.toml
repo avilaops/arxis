@@ -11,6 +11,7 @@ members = [
     "avila-ml",
     "avila-telemetry",
     "avx-quantum-render",
+    "landing-page-leptos",
 ]
 resolver = "2"
 
