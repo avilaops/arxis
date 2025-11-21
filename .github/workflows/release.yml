@@ -34,27 +34,29 @@ jobs:
         name: Publish to crates.io
         runs-on: ubuntu-latest
         needs: create-release
+        env:
+            CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
         steps:
             - uses: actions/checkout@v4
 
             - uses: dtolnay/rust-toolchain@stable
 
             - name: Publish avila-math
-              run: cargo publish -p avila-math --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
+              run: cargo publish -p avila-math --token $CARGO_REGISTRY_TOKEN
               continue-on-error: true
 
             - name: Wait for indexing
               run: sleep 30
 
             - name: Publish avila-telemetry
-              run: cargo publish -p avila-telemetry --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
+              run: cargo publish -p avila-telemetry --token $CARGO_REGISTRY_TOKEN
               continue-on-error: true
 
             - name: Wait for indexing
               run: sleep 30
 
             - name: Publish avx-config
-              run: cargo publish -p avx-config --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
+              run: cargo publish -p avx-config --token $CARGO_REGISTRY_TOKEN
               continue-on-error: true
 
             - name: Wait for indexing
@@ -62,21 +64,21 @@ jobs:
 
             - name: Publish remaining crates
               run: |
-                  cargo publish -p avx-telemetry --token ${{ secrets.CARGO_REGISTRY_TOKEN }} || true
+                  cargo publish -p avx-telemetry --token $CARGO_REGISTRY_TOKEN || true
                   sleep 30
-                  cargo publish -p avx-quantum-render --token ${{ secrets.CARGO_REGISTRY_TOKEN }} || true
+                  cargo publish -p avx-quantum-render --token $CARGO_REGISTRY_TOKEN || true
                   sleep 30
-                  cargo publish -p avx-image --token ${{ secrets.CARGO_REGISTRY_TOKEN }} || true
+                  cargo publish -p avx-image --token $CARGO_REGISTRY_TOKEN || true
                   sleep 30
-                  cargo publish -p avx-gateway --token ${{ secrets.CARGO_REGISTRY_TOKEN }} || true
+                  cargo publish -p avx-gateway --token $CARGO_REGISTRY_TOKEN || true
                   sleep 30
-                  cargo publish -p avx-api-core --token ${{ secrets.CARGO_REGISTRY_TOKEN }} || true
+                  cargo publish -p avx-api-core --token $CARGO_REGISTRY_TOKEN || true
                   sleep 30
-                  cargo publish -p avx-cli --token ${{ secrets.CARGO_REGISTRY_TOKEN }} || true
+                  cargo publish -p avx-cli --token $CARGO_REGISTRY_TOKEN || true
                   sleep 30
-                  cargo publish -p avx-events --token ${{ secrets.CARGO_REGISTRY_TOKEN }} || true
+                  cargo publish -p avx-events --token $CARGO_REGISTRY_TOKEN || true
                   sleep 30
-                  cargo publish -p arxis_quaternions --token ${{ secrets.CARGO_REGISTRY_TOKEN }} || true
+                  cargo publish -p arxis_quaternions --token $CARGO_REGISTRY_TOKEN || true
 
     build-binaries:
         name: Build Binaries
