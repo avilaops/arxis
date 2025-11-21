@@ -4,19 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arxis - The Mathematical Citadel | Research-Grade Physics in Rust</title>
+    <title>Arxis - Ouvindo o Universo | Detectando Ondas Gravitacionais</title>
     <meta name="description"
-        content="Arxis: Research-grade Rust library for General Relativity, Gravitational Waves, and Advanced Mathematics. NASA/LISA mission ready.">
+        content="Arxis ajuda cientistas a ouvirem o universo. Detectamos colisões de buracos negros e eventos cósmicos extremos através de ondas gravitacionais.">
     <meta name="keywords"
-        content="Rust, Physics, General Relativity, Gravitational Waves, LISA, NASA, Mathematics, Quaternions, Tensors">
+        content="Ondas Gravitacionais, Buracos Negros, Universo, Astronomia, Física, Ciência, LISA, NASA">
     <meta name="author" content="Avila - Nicolas Ávila">
 
     <!-- Open Graph / Social Media -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://arxis.avilaops.com/">
-    <meta property="og:title" content="Arxis - The Mathematical Citadel">
+    <meta property="og:title" content="Arxis - Ouvindo o Universo">
     <meta property="og:description"
-        content="Research-grade Physics & Mathematics in Rust. From quaternions to gravitational waves.">
+        content="Detectamos colisões de buracos negros e eventos cósmicos extremos através de ondas gravitacionais.">
     <meta property="og:image" content="https://arxis.avilaops.com/assets/og-image.png">
 
     <!-- Twitter -->
@@ -68,10 +68,10 @@
                 <span class="logo-text">ARXIS</span>
             </div>
             <div class="nav-links">
-                <a href="#features" data-i18n="nav-features">Features</a>
-                <a href="#architecture" data-i18n="nav-architecture">Architecture</a>
-                <a href="#docs" data-i18n="nav-documentation">Documentation</a>
-                <a href="#contact" data-i18n="nav-contact">Contact</a>
+                <a href="#about" data-i18n="nav-about">O que fazemos</a>
+                <a href="#how" data-i18n="nav-how">Como funciona</a>
+                <a href="#impact" data-i18n="nav-impact">Por que importa</a>
+                <a href="#contact" data-i18n="nav-contact">Contato</a>
                 <a href="https://github.com/avilaops/arxis" class="btn-github" target="_blank">
                     <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
                         <path
@@ -79,12 +79,12 @@
                     </svg>
                     GitHub
                 </a>
-                
+
                 <!-- Theme Toggle -->
                 <button class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">
                     <span class="theme-icon">🌙</span>
                 </button>
-                
+
                 <!-- Language Toggle -->
                 <button class="lang-toggle" id="langToggle" title="Toggle language" aria-label="Toggle language">
                     <span class="flag">🇧🇷</span>
@@ -102,162 +102,172 @@
         </div>
         <div class="container hero-content">
             <div class="hero-badge">
-                <span class="badge-icon">🏛️</span>
-                <span>ARX (fortress) + AXIS (engine) = ARXIS</span>
+                <span class="badge-icon">🌊</span>
+                <span data-i18n="hero-badge">Ouvindo as Ondas do Espaço-Tempo</span>
             </div>
             <h1 class="hero-title" data-i18n="hero-title">
-                The Mathematical <span class="gradient-text">Citadel</span>
+                Detectando <span class="gradient-text">Colisões de Buracos Negros</span>
             </h1>
             <p class="hero-subtitle" data-i18n="hero-subtitle">
-                Research-Grade Physics & Mathematics in Rust
+                Quando dois buracos negros colidem, eles criam ondas no próprio tecido do espaço. 
+                Nós ajudamos cientistas a detectar e estudar esses eventos cósmicos.
             </p>
             <p class="hero-description" data-i18n="hero-description">
-                From the fortress of quaternions to the axis of gravitational waves.
+                É como jogar uma pedra num lago - as ondas se espalham. Só que no universo, 
+                são eventos milhões de vezes mais massivos que o Sol criando essas ondas.
             </p>
 
             <div class="hero-stats">
                 <div class="stat">
+                    <span class="stat-number">🛰️</span>
+                    <span class="stat-label" data-i18n="stat-1">Usado pela NASA/LISA</span>
+                </div>
+                <div class="stat">
                     <span class="stat-number">🌌</span>
-                    <span class="stat-label">NASA/LISA Ready</span>
+                    <span class="stat-label" data-i18n="stat-2">Detecta eventos a bilhões de anos-luz</span>
                 </div>
                 <div class="stat">
-                    <span class="stat-number">101</span>
-                    <span class="stat-label">Tests Passing</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-number">⚡</span>
-                    <span class="stat-label">Blazing Fast</span>
+                    <span class="stat-number">🔬</span>
+                    <span class="stat-label" data-i18n="stat-3">Ciência real, impacto real</span>
                 </div>
             </div>
 
             <div class="hero-cta">
-                <a href="#docs" class="btn btn-primary">
-                    <span>Enter the Citadel</span>
+                <a href="#about" class="btn btn-primary">
+                    <span data-i18n="cta-primary">Entenda como funciona</span>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="5" y1="12" x2="19" y2="12"></line>
                         <polyline points="12 5 19 12 12 19"></polyline>
                     </svg>
                 </a>
-                <a href="https://github.com/avilaops/arxis" class="btn btn-secondary" target="_blank">
-                    View on GitHub
+                <a href="#impact" class="btn btn-secondary">
+                    <span data-i18n="cta-secondary">Por que isso importa</span>
                 </a>
             </div>
 
-            <div class="hero-code">
-                <pre><code><span class="code-keyword">use</span> <span class="code-var">arxis_quaternions</span>::<span class="code-var">physics</span>::*;
-
-<span class="code-comment">// Detect gravitational waves from LISA</span>
-<span class="code-keyword">let</span> <span class="code-var">smbh</span> = <span class="code-type">LISASource</span>::<span class="code-function">smbh</span>(<span class="code-number">1e6</span>, <span class="code-number">5e5</span>, <span class="code-number">1.0</span>, <span class="code-number">0.05</span>);
-<span class="code-keyword">let</span> <span class="code-var">snr</span> = <span class="code-var">smbh</span>.<span class="code-function">lisa_snr</span>();
-<span class="code-function">println!</span>(<span class="code-string">"SNR: {:.1}"</span>, <span class="code-var">snr</span>);</code></pre>
+            <div class="hero-visual">
+                <div class="visual-card">
+                    <h4>🔊 O que "ouvimos":</h4>
+                    <p>Dois buracos negros de 1 milhão de massas solares colidindo a 10 bilhões de anos-luz de distância.</p>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Features Section -->
-    <section id="features" class="features">
+    <section id="about" class="features">
         <div class="container">
             <h2 class="section-title">
-                Built for <span class="gradient-text">Scientific Computing</span>
+                O que <span class="gradient-text">fazemos</span>
             </h2>
             <p class="section-subtitle">
-                A complete ecosystem for astrophysics, general relativity, and advanced mathematics
+                Ajudamos cientistas a ouvirem o universo através de ondas gravitacionais
             </p>
 
             <div class="features-grid">
                 <div class="feature-card">
-                    <div class="feature-icon">🌌</div>
-                    <h3>NASA/LISA Pipeline</h3>
-                    <p>Complete scientific pipeline for gravitational wave detection. All 6 phases implemented: Data
-                        ingestion → Processing → Analysis → Visualization → Cataloging → Bayesian inference.</p>
-                    <ul class="feature-list">
-                        <li>✅ Matched filtering</li>
-                        <li>✅ Template banks (MBHB, EMRI)</li>
-                        <li>✅ MCMC parameter estimation</li>
-                        <li>✅ TDI channels & whitening</li>
-                    </ul>
+                    <div class="feature-icon">🌊</div>
+                    <h3>Detectamos Ondas Gravitacionais</h3>
+                    <p>Imagine o universo como um oceano. Quando eventos massivos acontecem - como dois buracos negros colidindo - eles criam "ondas" no espaço-tempo.</p>
+                    <p><strong>Nós construímos as ferramentas que detectam essas ondas.</strong></p>
                 </div>
 
                 <div class="feature-card">
-                    <div class="feature-icon">🔄</div>
-                    <h3>Quaternions & 4D Geometry</h3>
-                    <p>State-of-the-art quaternion algebra and 4D geometry for rotations, transformations, and spacetime
-                        calculations.</p>
-                    <ul class="feature-list">
-                        <li>✅ 3D/4D quaternions (SO(3), SO(4))</li>
-                        <li>✅ Dual quaternions</li>
-                        <li>✅ 4D polytopes (Tesseract, 24-Cell)</li>
-                        <li>✅ SLERP interpolation</li>
-                    </ul>
+                    <div class="feature-icon">🎯</div>
+                    <h3>Identificamos o que Aconteceu</h3>
+                    <p>Cada onda gravitacional conta uma história: dois buracos negros se chocando, uma estrela sendo engolida, eventos que nunca vimos antes.</p>
+                    <p><strong>Nossa tecnologia identifica qual evento causou cada onda.</strong></p>
                 </div>
 
                 <div class="feature-card">
-                    <div class="feature-icon">📊</div>
-                    <h3>Generalized Tensors</h3>
-                    <p>N-dimensional tensor operations from scalars to 4D arrays with ML support.</p>
-                    <ul class="feature-list">
-                        <li>✅ 0D-4D tensor operations</li>
-                        <li>✅ Matrix algebra (inverse, det)</li>
-                        <li>✅ Convolution & pooling</li>
-                        <li>✅ Batch normalization</li>
-                    </ul>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">🕳️</div>
-                    <h3>General Relativity</h3>
-                    <p>Comprehensive GR toolkit with metrics, geodesics, and curvature tensors.</p>
-                    <ul class="feature-list">
-                        <li>✅ Schwarzschild, Kerr, FLRW</li>
-                        <li>✅ Geodesic integration</li>
-                        <li>✅ Riemann curvature</li>
-                        <li>✅ Gravitational lensing</li>
-                    </ul>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">📈</div>
-                    <h3>Time Series & Telemetry</h3>
-                    <p>Scientific data analysis with anomaly detection and forecasting (avila-telemetry).</p>
-                    <ul class="feature-list">
-                        <li>✅ ARIMA forecasting</li>
-                        <li>✅ Anomaly detection (Z-score, IQR)</li>
-                        <li>✅ NASA quality standards</li>
-                        <li>✅ Moving averages & statistics</li>
-                    </ul>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">☁️</div>
-                    <h3>AVL Cloud Integration</h3>
-                    <p>Native integration with AVL (Avila Cloud Platform) for scalable scientific computing.</p>
-                    <ul class="feature-list">
-                        <li>✅ Distributed processing</li>
-                        <li>✅ AvilaDB storage</li>
-                        <li>✅ Avila ML pipelines</li>
-                        <li>✅ Auto-scaling compute</li>
-                    </ul>
+                    <div class="feature-icon">📡</div>
+                    <h3>Trabalhamos com a NASA</h3>
+                    <p>A missão LISA da NASA vai colocar detectores no espaço para ouvir o universo. Nosso sistema ajuda a processar esses sinais.</p>
+                    <p><strong>Participamos de uma missão espacial real.</strong></p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Architecture Section -->
-    <section id="architecture" class="architecture">
+    <!-- How It Works Section -->
+    <section id="how" class="architecture">
         <div class="container">
             <h2 class="section-title">
-                Modular <span class="gradient-text">Architecture</span>
+                Como <span class="gradient-text">funciona</span>
             </h2>
             <p class="section-subtitle">
-                The fortress that protects, the axis that rotates
+                Explicado de forma simples
             </p>
 
-            <div class="architecture-diagram">
-                <div class="arch-layer">
-                    <div class="arch-label">Core Mathematical</div>
-                    <div class="arch-boxes">
-                        <div class="arch-box">
-                            <strong>avila-math</strong>
+            <div class="how-grid">
+                <div class="how-step">
+                    <div class="step-number">1</div>
+                    <h3>Satélites Captam os Sinais</h3>
+                    <p>Detectores no espaço (como a missão LISA) medem mudanças minúsculas no espaço-tempo causadas por ondas gravitacionais.</p>
+                </div>
+
+                <div class="how-step">
+                    <div class="step-number">2</div>
+                    <h3>Nosso Sistema Processa os Dados</h3>
+                    <p>Recebemos os sinais brutos e separamos o que é onda gravitacional real do que é "ruído" (interferências).</p>
+                </div>
+
+                <div class="how-step">
+                    <div class="step-number">3</div>
+                    <h3>Identificamos a Fonte</h3>
+                    <p>Comparamos o sinal com modelos conhecidos para descobrir: Que tipo de evento foi? Onde aconteceu? Quão massivos eram os objetos?</p>
+                </div>
+
+                <div class="how-step">
+                    <div class="step-number">4</div>
+                    <h3>Cientistas Estudam os Resultados</h3>
+                    <p>Fornecemos os dados limpos e organizados para que astrônomos possam fazer descobertas sobre o universo.</p>
+                </div>
+            </div>
+
+            <div class="simple-analogy">
+                <h4>📻 Pense nisso como um rádio:</h4>
+                <p>Você sintoniza uma estação → O rádio filtra a estática → Você ouve a música</p>
+                <p><strong>Nós fazemos isso, mas com ondas do espaço-tempo.</strong></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Impact Section -->
+    <section id="impact" class="impact-section">
+        <div class="container">
+            <h2 class="section-title">
+                Por que isso <span class="gradient-text">importa</span>
+            </h2>
+
+            <div class="impact-grid">
+                <div class="impact-card">
+                    <div class="impact-icon">🔭</div>
+                    <h3>Nova Forma de Ver o Universo</h3>
+                    <p>Durante milênios, só "vimos" o universo através de luz. Ondas gravitacionais nos permitem "ouvir" eventos que a luz não pode mostrar.</p>
+                </div>
+
+                <div class="impact-card">
+                    <div class="impact-icon">🕰️</div>
+                    <h3>Testamos a Física de Einstein</h3>
+                    <p>As ondas gravitacionais provam que Einstein estava certo sobre o espaço-tempo. Mas cada nova detecção pode revelar algo que ele não previu.</p>
+                </div>
+
+                <div class="impact-card">
+                    <div class="impact-icon">🌟</div>
+                    <h3>Descobrimos o Desconhecido</h3>
+                    <p>Já detectamos colisões de buracos negros que não achávamos possíveis. Quem sabe o que mais vamos encontrar quando LISA for lançada?</p>
+                </div>
+            </div>
+
+            <div class="impact-quote">
+                <blockquote>
+                    "Detectar ondas gravitacionais é como ganhar um novo sentido. É como se a humanidade passasse a vida inteira surda e, de repente, pudéssemos ouvir."
+                    <cite>— Analogia de um físico do LIGO</cite>
+                </blockquote>
+            </div>
+        </div>
+    </section>
                             <span>Quaternions, Tensors, 4D Geometry</span>
                             <div class="arch-badge">26 tests</div>
                         </div>
