@@ -1,7 +1,7 @@
 # 🏛️ Arxis - Milestone: Day One
 
-> **Criado em:** 19 de Novembro de 2025, 20:19:14  
-> **Primeira Release:** 21 de Novembro de 2025  
+> **Criado em:** 19 de Novembro de 2025, 20:19:14
+> **Primeira Release:** 21 de Novembro de 2025
 > **Tempo de desenvolvimento inicial:** ~48 horas
 
 ---
@@ -115,13 +115,13 @@
 
 ### Três Princípios Fundamentais:
 
-1. **Essência antes de escala**  
+1. **Essência antes de escala**
    Nenhuma tecnologia se sustenta sem entender o que ela resolve.
 
-2. **Profundidade antes de velocidade**  
+2. **Profundidade antes de velocidade**
    Crescimento apressado é frágil. Construímos base sólida.
 
-3. **Pessoas antes de métricas**  
+3. **Pessoas antes de métricas**
    Tecnologia só tem valor quando facilita a vida de pessoas reais.
 
 ---
@@ -169,8 +169,8 @@
 
 ## 💬 Citação para Posteridade
 
-> *"Este projeto não nasceu para competir. Nasceu para servir.*  
-> *Não surgiu para substituir. Surgiu para ampliar.*  
+> *"Este projeto não nasceu para competir. Nasceu para servir.*
+> *Não surgiu para substituir. Surgiu para ampliar.*
 > *Não foi criado para impressionar. Foi criado para durar."*
 >
 > — Nicolas Ávila, Fundador do Arxis
@@ -179,12 +179,12 @@
 
 ## 🏛️ Assinatura
 
-**Projeto:** Arxis - The Mathematical Citadel  
-**Fundador:** Nicolas Ávila (@avilaops)  
-**Organização:** Ávila Development Team  
-**Licença:** MIT OR Apache-2.0  
-**Repositório:** https://github.com/avilaops/arxis  
-**Site:** https://avilaops.github.io/arxis/  
+**Projeto:** Arxis - The Mathematical Citadel
+**Fundador:** Nicolas Ávila (@avilaops)
+**Organização:** Ávila Development Team
+**Licença:** MIT OR Apache-2.0
+**Repositório:** https://github.com/avilaops/arxis
+**Site:** https://avilaops.github.io/arxis/
 **Email:** nicolas@avila.inc
 
 ---

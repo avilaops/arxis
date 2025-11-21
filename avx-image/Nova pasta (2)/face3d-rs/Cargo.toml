@@ -1,0 +1,58 @@
+[package]
+name = "face3d-rs"
+version = "0.1.0"
+edition = "2021"
+authors = ["AVL Cloud Platform"]
+description = "3D face modeling library supporting 3DMM, FLAME, and Basel Face Model"
+license = "MIT"
+repository = "https://github.com/avila-cloud/face3d-rs"
+homepage = "https://github.com/avila-cloud/face3d-rs"
+documentation = "https://docs.rs/face3d-rs"
+readme = "README.md"
+keywords = ["3d", "face", "flame", "morphable-model", "computer-vision"]
+categories = ["graphics", "computer-vision", "science"]
+
+[dependencies]
+nalgebra = "0.33"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
+anyhow = "1.0"
+
+# Para I/O de formatos científicos
+hdf5 = { version = "0.8", optional = true }
+ndarray = { version = "0.15", optional = true }
+ndarray-npy = { version = "0.8", optional = true }
+
+# Para exportação de meshes
+obj = { version = "0.10", optional = true }
+ply-rs = { version = "0.1", optional = true }
+
+[dev-dependencies]
+approx = "0.5"
+rand = "0.8"
+
+[[example]]
+name = "threedmm_basic"
+path = "examples/threedmm_basic.rs"
+
+[[example]]
+name = "flame_expressions"
+path = "examples/flame_expressions.rs"
+
+[[example]]
+name = "bfm_generation"
+path = "examples/bfm_generation.rs"
+
+[[example]]
+name = "projection_demo"
+path = "examples/projection_demo.rs"
+
+[features]
+default = []
+# Feature para carregar datasets científicos (HDF5, NPY)
+scientific-io = ["hdf5", "ndarray", "ndarray-npy"]
+# Feature para exportar meshes em formatos comuns
+mesh-export = ["obj", "ply-rs"]
+# Feature completa
+full = ["scientific-io", "mesh-export"]

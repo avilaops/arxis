@@ -1,0 +1,20 @@
+[workspace]
+
+[package]
+name = "avila-convexa1d"
+version = "0.1.0"
+edition = "2021"
+authors = ["AVL Cloud Platform <support@avila.cloud>"]
+description = "Processamento de dados sequenciais 1D - Áudio e Texto em Rust puro"
+license = "MIT"
+repository = "https://github.com/avilacloud/avila-convexa1d"
+homepage = "https://avila.cloud"
+documentation = "https://docs.rs/avila-convexa1d"
+keywords = ["audio", "text", "sequential", "convolution", "machine-learning"]
+categories = ["algorithms", "science", "multimedia::audio", "text-processing"]
+readme = "README.md"
+
+[dependencies]
+ndarray = "0.15"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"

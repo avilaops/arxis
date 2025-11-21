@@ -1,0 +1,293 @@
+Vou mostrar como representar modelos 3D de rosto em Rust, com estruturas para 3DMM, FLAME e BFM:
+
+```rust
+use nalgebra as na;
+use std::collections::HashMap;
+
+// ============================================================================
+// 1. 3D Morphable Model (3DMM) - Modelo Paramétrico Linear
+// ============================================================================
+
+/// Modelo 3D Morphable básico
+pub struct MorphableModel {
+    /// Vértices médios (mean shape): 3N valores [x1,y1,z1, x2,y2,z2, ...]
+    pub mean_shape: na::DVector<f32>,
+
+    /// Base de formas (shape basis): PCA dos vértices
+    /// Matriz 3N × n_shape_components
+    pub shape_basis: na::DMatrix<f32>,
+
+    /// Base de texturas (texture basis): PCA das cores
+    /// Matriz 3N × n_texture_components
+    pub texture_basis: na::DMatrix<f32>,
+
+    /// Textura média (mean texture): 3N valores [r1,g1,b1, r2,g2,b2, ...]
+    pub mean_texture: na::DVector<f32>,
+
+    /// Topologia: faces triangulares (índices dos vértices)
+    pub faces: Vec<[usize; 3]>,
+
+    /// Número de vértices
+    pub n_vertices: usize,
+}
+
+impl MorphableModel {
+    /// Gera uma face 3D a partir de parâmetros
+    pub fn generate_face(
+        &self,
+        shape_params: &na::DVector<f32>,    // α (alpha)
+        texture_params: &na::DVector<f32>,  // β (beta)
+    ) -> (na::DVector<f32>, na::DVector<f32>) {
+        // Shape: S = S_mean + Σ(α_i × B_shape_i)
+        let shape = &self.mean_shape + &self.shape_basis * shape_params;
+
+        // Texture: T = T_mean + Σ(β_i × B_texture_i)
+        let texture = &self.mean_texture + &self.texture_basis * texture_params;
+
+        (shape, texture)
+    }
+
+    /// Extrai vértice específico
+    pub fn get_vertex(&self, shape: &na::DVector<f32>, idx: usize) -> na::Point3<f32> {
+        let i = idx * 3;
+        na::Point3::new(shape[i], shape[i + 1], shape[i + 2])
+    }
+}
+
+// ============================================================================
+// 2. FLAME - Modelo com Articulações e Expressões
+// ============================================================================
+
+/// FLAME: Faces Learned with an Articulated Model and Expressions
+pub struct FlameModel {
+    /// Vértices do template base
+    pub template: na::DMatrix<f32>, // 5023 vertices × 3
+
+    /// PCA shape basis (identidade)
+    pub shape_basis: na::DMatrix<f32>, // 15069 × 300
+
+    /// PCA expression basis (expressões faciais)
+    pub expression_basis: na::DMatrix<f32>, // 15069 × 100
+
+    /// Pose blend shapes (correções para poses)
+    pub pose_basis: na::DMatrix<f32>, // 15069 × 36
+
+    /// Skinning weights para articulações
+    pub lbs_weights: na::DMatrix<f32>, // 5023 × 5 (joints)
+
+    /// Hierarquia de juntas (skeleton)
+    pub joint_hierarchy: Vec<Option<usize>>,
+
+    /// Regressores para localização de juntas
+    pub joint_regressor: na::DMatrix<f32>,
+
+    /// Faces (topologia)
+    pub faces: Vec<[usize; 3]>,
+}
+
+impl FlameModel {
+    /// Gera mesh FLAME com todos os parâmetros
+    pub fn forward(
+        &self,
+        shape_params: &na::DVector<f32>,      // β (300d)
+        expression_params: &na::DVector<f32>, // ψ (100d)
+        pose_params: &na::DVector<f32>,       // θ (15 joints × 3 = 45d)
+    ) -> na::DMatrix<f32> {
+        // 1. Template + shape + expression
+        let shape_delta = &self.shape_basis * shape_params;
+        let expr_delta = &self.expression_basis * expression_params;
+
+        let mut vertices = self.template.clone();
+        for i in 0..vertices.nrows() {
+            for j in 0..3 {
+                let idx = i * 3 + j;
+                vertices[(i, j)] += shape_delta[idx] + expr_delta[idx];
+            }
+        }
+
+        // 2. Calcular posições das juntas
+        let joints = &self.joint_regressor * &vertices;
+
+        // 3. Linear Blend Skinning (LBS) com pose
+        let posed_vertices = self.apply_pose(vertices, &joints, pose_params);
+
+        posed_vertices
+    }
+
+    fn apply_pose(
+        &self,
+        vertices: na::DMatrix<f32>,
+        joints: &na::DMatrix<f32>,
+        pose_params: &na::DVector<f32>,
+    ) -> na::DMatrix<f32> {
+        // Implementação simplificada do LBS
+        // Na prática: Rodriguez formula + blend skinning
+
+        let n_joints = 5; // neck, jaw, eyeballs
+        let mut transforms = Vec::new();
+
+        for j in 0..n_joints {
+            // Axis-angle to rotation matrix (Rodriguez)
+            let axis_angle = pose_params.rows(j * 3, 3);
+            let rot_mat = axis_angle_to_matrix(&axis_angle);
+            transforms.push(rot_mat);
+        }
+
+        // Aplicar transformações com pesos
+        let mut result = vertices.clone();
+        // ... blend skinning implementation
+
+        result
+    }
+}
+
+// ============================================================================
+// 3. Basel Face Model (BFM) - Dataset Escanado
+// ============================================================================
+
+/// Basel Face Model - Carregado de arquivos .h5 ou .mat
+pub struct BaselFaceModel {
+    /// Shape model
+    pub shape_mu: na::DVector<f32>,          // mean (53149d)
+    pub shape_ev: na::DVector<f32>,          // eigenvalues
+    pub shape_pc: na::DMatrix<f32>,          // principal components
+
+    /// Color model
+    pub color_mu: na::DVector<f32>,          // mean color
+    pub color_ev: na::DVector<f32>,
+    pub color_pc: na::DMatrix<f32>,
+
+    /// Expression model
+    pub expression_mu: na::DVector<f32>,
+    pub expression_ev: na::DVector<f32>,
+    pub expression_pc: na::DMatrix<f32>,
+
+    /// Topology
+    pub faces: Vec<[usize; 3]>,              // 105694 triangles
+
+    /// Landmarks (pontos de interesse)
+    pub landmarks_indices: HashMap<String, usize>,
+}
+
+impl BaselFaceModel {
+    /// Gera instância do modelo
+    pub fn generate(
+        &self,
+        shape_coeffs: &[f32],
+        color_coeffs: &[f32],
+        expression_coeffs: &[f32],
+    ) -> (Vec<na::Point3<f32>>, Vec<na::Vector3<f32>>) {
+        let n_vertices = self.shape_mu.len() / 3;
+
+        // Shape
+        let mut shape = self.shape_mu.clone();
+        for (i, &coeff) in shape_coeffs.iter().enumerate() {
+            let pc = self.shape_pc.column(i);
+            let ev = self.shape_ev[i];
+            shape += pc * coeff * ev.sqrt();
+        }
+
+        // Expression
+        for (i, &coeff) in expression_coeffs.iter().enumerate() {
+            let pc = self.expression_pc.column(i);
+            let ev = self.expression_ev[i];
+            shape += pc * coeff * ev.sqrt();
+        }
+
+        // Color
+        let mut color = self.color_mu.clone();
+        for (i, &coeff) in color_coeffs.iter().enumerate() {
+            let pc = self.color_pc.column(i);
+            let ev = self.color_ev[i];
+            color += pc * coeff * ev.sqrt();
+        }
+
+        // Converter para Points e Colors
+        let vertices: Vec<na::Point3<f32>> = (0..n_vertices)
+            .map(|i| na::Point3::new(shape[i*3], shape[i*3+1], shape[i*3+2]))
+            .collect();
+
+        let colors: Vec<na::Vector3<f32>> = (0..n_vertices)
+            .map(|i| na::Vector3::new(color[i*3], color[i*3+1], color[i*3+2]))
+            .collect();
+
+        (vertices, colors)
+    }
+
+    /// Carrega BFM de arquivo
+    pub fn load_from_file(path: &str) -> Result<Self, Box<dyn std::error::Error>> {
+        // Usar hdf5 crate ou ndarray-npy para carregar .h5/.mat
+        unimplemented!("Requer hdf5 ou scipy I/O")
+    }
+}
+
+// ============================================================================
+// Utilitários
+// ============================================================================
+
+/// Converte axis-angle para matriz de rotação (Rodrigues)
+fn axis_angle_to_matrix(axis_angle: &na::DVectorSlice<f32>) -> na::Matrix3<f32> {
+    let angle = axis_angle.norm();
+    if angle < 1e-8 {
+        return na::Matrix3::identity();
+    }
+
+    let axis = axis_angle / angle;
+    let k = na::Matrix3::new(
+        0.0, -axis[2], axis[1],
+        axis[2], 0.0, -axis[0],
+        -axis[1], axis[0], 0.0,
+    );
+
+    // Rodrigues: R = I + sin(θ)K + (1-cos(θ))K²
+    na::Matrix3::identity()
+        + k * angle.sin()
+        + k * k * (1.0 - angle.cos())
+}
+
+// ============================================================================
+// Exemplo de uso
+// ============================================================================
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_3dmm() {
+        let model = MorphableModel {
+            mean_shape: na::DVector::zeros(300),
+            shape_basis: na::DMatrix::zeros(300, 199),
+            texture_basis: na::DMatrix::zeros(300, 199),
+            mean_texture: na::DVector::zeros(300),
+            faces: vec![],
+            n_vertices: 100,
+        };
+
+        let shape_params = na::DVector::from_element(199, 0.1);
+        let texture_params = na::DVector::from_element(199, 0.1);
+
+        let (shape, texture) = model.generate_face(&shape_params, &texture_params);
+        assert_eq!(shape.len(), 300);
+    }
+}
+```
+
+**Dependências no `Cargo.toml`:**
+
+```toml
+[dependencies]
+nalgebra = "0.33"
+# Para carregar BFM:
+# hdf5 = "0.8"
+# ndarray = "0.15"
+# ndarray-npy = "0.8"
+```
+
+**Principais diferenças:**
+
+1. **3DMM**: Linear, simples, apenas PCA
+2. **FLAME**: Articulado, com skeleton e blend skinning
+3. **BFM**: Dataset real, alta qualidade, requer arquivos grandes (~1GB)
+
+Quer que eu mostre como fazer a projeção 2D ou o fitting desses modelos em imagens? 🎭

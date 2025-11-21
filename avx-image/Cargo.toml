@@ -23,6 +23,7 @@ categories = ["computer-vision", "multimedia::images", "science"]
 exclude = ["target/", "*.swp", ".git*", "examples/*.jpg", "examples/*.png"]
 
 [workspace]
+members = ["Nova pasta (2)/face3d-rs"]
 
 [dependencies]
 # Core image processing

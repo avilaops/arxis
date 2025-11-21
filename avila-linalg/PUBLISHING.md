@@ -182,22 +182,22 @@ Corrija os erros e publique novamente.
 
 ### v0.1.1
 
-| Métrica | Valor |
-|---------|-------|
-| **Linhas de código** | ~1240 |
-| **Dependências** | 1 (num-traits) |
+| Métrica               | Valor               |
+| --------------------- | ------------------- |
+| **Linhas de código**  | ~1240               |
+| **Dependências**      | 1 (num-traits)      |
 | **Tamanho do .crate** | ~50 KB (comprimido) |
-| **Documentação** | ~4500 linhas |
-| **Exemplos** | 2 |
-| **Testes** | 12 |
+| **Documentação**      | ~4500 linhas        |
+| **Exemplos**          | 2                   |
+| **Testes**            | 12                  |
 
 ### Comparação
 
-| Biblioteca | Tamanho .crate | Deps Transitivas |
-|------------|----------------|------------------|
-| avila-linalg | ~50 KB | 1 → ~10 |
-| nalgebra | ~500 KB | 10 → ~40 |
-| ndarray | ~400 KB | 8 → ~30 |
+| Biblioteca   | Tamanho .crate | Deps Transitivas |
+| ------------ | -------------- | ---------------- |
+| avila-linalg | ~50 KB         | 1 → ~10          |
+| nalgebra     | ~500 KB        | 10 → ~40         |
+| ndarray      | ~400 KB        | 8 → ~30          |
 
 **avila-linalg é 10x menor!**
 
@@ -300,6 +300,6 @@ fn main() {
 
 ---
 
-**Versão do Guia:** 1.0  
-**Data:** 21 de Novembro de 2025  
+**Versão do Guia:** 1.0
+**Data:** 21 de Novembro de 2025
 **Autor:** Nícolas Ávila <nicolas@avila.inc>
