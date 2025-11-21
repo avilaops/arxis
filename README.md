@@ -21,9 +21,13 @@
 
 ---
 
-**Research-grade Rust library for General Relativity, Gravitational Waves, and Advanced Mathematics**
+**Research-grade Rust library for General Relativity, Gravitational Waves, Advanced Mathematics, and 1D/2D Convolutions**
 
 *From the fortress of quaternions to the axis of gravitational waves*
+
+[![Release](https://img.shields.io/github/v/release/avilaops/arxis?label=latest)](https://github.com/avilaops/arxis/releases)
+[![Day One Milestone](https://img.shields.io/badge/Milestone-62,444%20files%20in%2048h-00C853.svg)](MILESTONE_DAY_ONE.md)
+[![Manifesto](https://img.shields.io/badge/Read-Manifesto-FFD700.svg)](MANIFESTO.md)
 
 </div>
 
@@ -59,6 +63,24 @@ The name combines:
 Arxis is built as a modular ecosystem - the fortress that protects and the axis that rotates:
 
 ### 📦 Core Crates
+
+#### **avila-convexa1d** - 1D Convolutions (Audio & Text) 🎵📝
+High-performance 1D convolution engine for sequential data:
+- **Audio Processing**: Voice recognition, music analysis, acoustic features
+- **Text/NLP**: Sequence modeling, sentiment analysis, language detection
+- **Signal Processing**: Filters, feature extraction, time-series analysis
+- **Architectures**: Conv1D layers, temporal CNNs, WaveNet-style models
+- **Zero dependencies** (pure Rust, no external libs)
+- **Production ready** ✅
+
+#### **avila-convexa2d** - 2D Convolutions (Images & Video) 🖼️
+Computer vision and image processing with 2D convolutions:
+- **Image Processing**: Edge detection, blur, sharpening, filters
+- **Computer Vision**: Feature extraction, object detection prep
+- **CNNs**: Convolutional layers for neural networks
+- **Transforms**: Rotate, scale, crop, color space conversions
+- **Zero dependencies** (pure Rust)
+- **Production ready** ✅
 
 #### **avila-math** - Mathematical Kernel
 Standalone mathematical library providing foundational primitives:
