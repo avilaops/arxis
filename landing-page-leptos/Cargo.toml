@@ -4,9 +4,6 @@ version = "0.1.0"
 edition = "2021"
 authors = ["Nicolas Ávila <nicolas@avila.inc>"]
 
-[workspace]
-# Este crate faz parte do workspace principal em ../Cargo.toml
-
 [lib]
 crate-type = ["cdylib", "rlib"]
 
