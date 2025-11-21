@@ -1,16 +1,18 @@
 [workspace]
 members = [
     ".",
-    "avx-config",
-    "avx-telemetry",
-    "avx-gateway",
-    "avx-api-core",
-    "avx-events",
-    "avx-cli",
+    "avila-clustering",
+    "avila-linalg",
     "avila-math",
     "avila-ml",
     "avila-telemetry",
+    "avx-api-core",
+    "avx-cli",
+    "avx-config",
+    "avx-events",
+    "avx-gateway",
     "avx-quantum-render",
+    "avx-telemetry",
     "landing-page-leptos",
 ]
 resolver = "2"

@@ -8,12 +8,9 @@ authors = [
 ]
 description = "State-of-the-art clustering algorithms for Rust - surpassing scikit-learn, HDBSCAN, and RAPIDS cuML"
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/avilacloud/avila-clustering"
+repository = "https://github.com/avilaops/arxis"
 keywords = ["clustering", "machine-learning", "hdbscan", "kmeans", "science"]
 categories = ["algorithms", "science"]
-
-[workspace]
-# Empty workspace to avoid parent workspace conflicts
 
 [dependencies]
 ndarray = { version = "0.15", features = ["rayon", "serde"] }
