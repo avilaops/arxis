@@ -70,7 +70,7 @@ impl WienerFilter {
     /// Apply Wiener filter to a real signal (performs FFT internally)
     pub fn apply(&self, signal: &[f64]) -> Vec<f64> {
         use rustfft::num_complex::Complex;
-        use rustfft::{num_traits::Zero, FftPlanner};
+        use rustfft::FftPlanner;
 
         let n = signal.len();
         let mut planner = FftPlanner::new();

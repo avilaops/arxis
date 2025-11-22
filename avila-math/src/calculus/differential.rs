@@ -87,10 +87,10 @@ where
     let f_dim = f(point).len();
     let mut jac = vec![vec![0.0; 4]; f_dim];
 
-    for i in 0..f_dim {
-        for j in 0..4 {
+    for (i, jac_row) in jac.iter_mut().enumerate().take(f_dim) {
+        for (j, jac_cell) in jac_row.iter_mut().enumerate().take(4) {
             let component_f = |p: &[f64]| f(p)[i];
-            jac[i][j] = partial_derivative(&component_f, point, j, h);
+            *jac_cell = partial_derivative(&component_f, point, j, h);
         }
     }
 

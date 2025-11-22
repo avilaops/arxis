@@ -48,10 +48,10 @@ pub fn cwt(signal: &[f64], scales: &[f64]) -> Vec<Vec<Complex<f64>>> {
             let mut sum = Complex::new(0.0, 0.0);
 
             // Convolução com wavelet Morlet escalada
-            for k in 0..n {
+            for (k, &sig_val) in signal.iter().enumerate().take(n) {
                 let tau = k as f64 - t as f64;
                 let wavelet = morlet_wavelet(tau / scale, scale);
-                sum += wavelet * signal[k];
+                sum += wavelet * sig_val;
             }
 
             row.push(sum / scale.sqrt());

@@ -82,7 +82,7 @@ pub fn evaluate_at(signal: &[f64], z: Complex64) -> Complex64 {
 /// For a transfer function H(z) = B(z)/A(z)
 /// * `b` - Numerator coefficients
 /// * `a` - Denominator coefficients
-pub fn poles_zeros(b: &[f64], a: &[f64]) -> (Vec<Complex64>, Vec<Complex64>) {
+pub fn poles_zeros(_b: &[f64], _a: &[f64]) -> (Vec<Complex64>, Vec<Complex64>) {
     // This is simplified - in practice, use eigenvalue solver
     // For now, return empty vectors
     // TODO: Implement companion matrix eigenvalue method
@@ -119,7 +119,7 @@ pub fn frequency_response(b: &[f64], a: &[f64], n_points: usize) -> ZTransform {
 }
 
 /// Check system stability (all poles inside unit circle)
-pub fn is_stable(a: &[f64]) -> bool {
+pub fn is_stable(_a: &[f64]) -> bool {
     // Simplified check - should compute poles properly
     // A system is stable if all poles are inside unit circle (|z| < 1)
     true // Placeholder
@@ -131,12 +131,12 @@ pub fn design_lowpass(cutoff: f64, order: usize) -> (Vec<f64>, Vec<f64>) {
     let mut b = vec![0.0; order + 1];
     let fc = cutoff / PI;
 
-    for i in 0..=order {
+    for (i, coef) in b.iter_mut().enumerate().take(order + 1) {
         let n = i as f64 - order as f64 / 2.0;
         if n.abs() < 1e-10 {
-            b[i] = 2.0 * fc;
+            *coef = 2.0 * fc;
         } else {
-            b[i] = (2.0 * PI * fc * n).sin() / (PI * n);
+            *coef = (2.0 * PI * fc * n).sin() / (PI * n);
         }
     }
 

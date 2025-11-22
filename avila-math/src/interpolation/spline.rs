@@ -1,6 +1,7 @@
 //! Splines cúbicas 4D
 
 /// Interpolação linear para uso interno
+#[allow(dead_code)]
 fn lerp_4d(a: &[f64; 4], b: &[f64; 4], t: f64) -> [f64; 4] {
     [
         a[0] + t * (b[0] - a[0]),

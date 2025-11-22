@@ -19,8 +19,6 @@
 //! let state = kf.state();
 //! ```
 
-use std::ops::{Add, Mul, Sub};
-
 /// Kalman Filter for linear state estimation
 #[derive(Debug, Clone)]
 pub struct KalmanFilter {
@@ -214,15 +212,16 @@ fn mat_inv(m: &[Vec<f64>]) -> Vec<Vec<f64>> {
         aug.swap(i, max_row);
 
         let pivot = aug[i][i];
-        for j in 0..2 * n {
-            aug[i][j] /= pivot;
+        for aug_val in aug[i].iter_mut().take(2 * n) {
+            *aug_val /= pivot;
         }
 
         for k in 0..n {
             if k != i {
                 let factor = aug[k][i];
-                for j in 0..2 * n {
-                    aug[k][j] -= factor * aug[i][j];
+                let aug_i_row = aug[i].clone();
+                for (j, aug_kj) in aug[k].iter_mut().enumerate().take(2 * n) {
+                    *aug_kj -= factor * aug_i_row[j];
                 }
             }
         }

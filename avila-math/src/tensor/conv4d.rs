@@ -306,7 +306,8 @@ impl Conv4DLayer {
         }
 
         // Calcula gradiente do bias (soma sobre batch e dimensões espaciais)
-        if let Some(ref mut gb) = grad_bias.as_ref() {
+        if let Some(gb) = grad_bias.as_ref() {
+            let mut new_grad_bias = gb.clone();
             for oc in 0..out_channels {
                 let mut sum = 0.0;
                 for b in 0..batch {
@@ -320,11 +321,9 @@ impl Conv4DLayer {
                         }
                     }
                 }
-                // Cria novo tensor com o valor atualizado
-                let mut new_grad_bias = gb.clone();
                 new_grad_bias.set([oc], sum).unwrap();
-                return Ok((grad_input, grad_weights, Some(new_grad_bias)));
             }
+            return Ok((grad_input, grad_weights, Some(new_grad_bias)));
         }
 
         Ok((grad_input, grad_weights, grad_bias))

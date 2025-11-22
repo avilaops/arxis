@@ -29,6 +29,7 @@ impl Variable {
     }
 
     /// Set the value (for tape operations)
+    #[allow(dead_code)]
     pub(crate) fn set_value(&self, val: f64) {
         *self.value.borrow_mut() = val;
     }

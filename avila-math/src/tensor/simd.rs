@@ -54,7 +54,7 @@ unsafe fn dot_product_avx2(a: &[f64], b: &[f64]) -> f64 {
     let len = a.len();
     let lanes = 4; // AVX2 processa 4 f64 por vez
     let chunks = len / lanes;
-    let remainder = len % lanes;
+    let _remainder = len % lanes;
 
     let mut sum_vec = _mm256_setzero_pd();
 
@@ -121,7 +121,7 @@ unsafe fn mul_elementwise_avx2(a: &[f64], b: &[f64]) -> Vec<f64> {
     let len = a.len();
     let lanes = 4;
     let chunks = len / lanes;
-    let remainder = len % lanes;
+    let _remainder = len % lanes;
 
     let mut result = vec![0.0; len];
 
@@ -285,8 +285,8 @@ unsafe fn sum_avx2(input: &[f64]) -> f64 {
     let mut sum = result.iter().sum::<f64>();
 
     let start = chunks * lanes;
-    for i in start..len {
-        sum += input[i];
+    for val in input.iter().skip(start) {
+        sum += val;
     }
 
     sum
