@@ -55,11 +55,6 @@ aviladb = ["reqwest"]
 compression = ["flate2"]
 scientific = []
 
-[profile.release]
-strip = true
-opt-level = 3
-lto = true
-
 [[example]]
 name = "quickstart_native"
 required-features = []

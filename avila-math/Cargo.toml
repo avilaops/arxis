@@ -23,7 +23,7 @@ rustfft = "6.2"     # FFT para análise espectral
 num-complex = "0.4" # Números complexos para FFT
 serde = { version = "1.0", features = ["derive"], optional = true }
 nalgebra = "0.33"   # Álgebra linear (SVD, eigenvalues)
-pyo3 = { version = "0.21", features = ["extension-module"], optional = true }
+pyo3 = { version = "0.23", features = ["extension-module"], optional = true }
 numpy = { version = "0.21", optional = true }
 
 [dev-dependencies]
@@ -34,15 +34,6 @@ approx = "0.5"      # Comparações com tolerância
 default = []
 serde = ["dep:serde"]
 python = ["dep:pyo3", "dep:numpy", "serde"]
-
-[profile.release]
-opt-level = 3
-lto = "fat"
-codegen-units = 1
-panic = "abort"
-
-[profile.bench]
-inherits = "release"
 
 [[bench]]
 name = "tensor_ops"
