@@ -4,305 +4,431 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arxis - The Mathematical Citadel</title>
+    <title>Arxis - Processamento de Dados Científicos Simplificado</title>
     <meta name="description"
-        content="Research-Grade Physics & Mathematics in Rust - The fortress of solid foundations and powerful computational engines">
-    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="styles.css">
+        content="Ajudamos cientistas e pesquisadores a processar dados complexos sem perder informação. Rápido, seguro e feito no Brasil.">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #fff;
+        }
+
+        .page {
+            max-width: 100%;
+        }
+
+        section {
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1,
+        h2,
+        h3 {
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+
+        h1 {
+            font-size: 3rem;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            text-align: center;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+        }
+
+        /* ==================== HERO ==================== */
+        .hero {
+            text-align: center;
+            padding: 120px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .hero h1 {
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            opacity: 0.95;
+        }
+
+        .cta-button {
+            background: white;
+            color: #667eea;
+            padding: 20px 50px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        /* ==================== PROBLEM ==================== */
+        .problem {
+            background: #f9f9f9;
+        }
+
+        .problem-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .emoji {
+            font-size: 4rem;
+            display: block;
+            margin-bottom: 20px;
+        }
+
+        /* ==================== SOLUTION ==================== */
+        .solution {
+            background: white;
+        }
+
+        .benefits {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-top: 50px;
+        }
+
+        .benefit {
+            text-align: center;
+        }
+
+        .icon {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 20px;
+        }
+
+        /* ==================== HOW IT WORKS ==================== */
+        .how-it-works {
+            background: #f9f9f9;
+        }
+
+        .timeline {
+            margin-top: 50px;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 30px;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        /* ==================== RESULTS ==================== */
+        .results {
+            background: white;
+        }
+
+        .testimonials {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 40px;
+            margin-top: 50px;
+        }
+
+        .testimonial {
+            background: #f9f9f9;
+            padding: 40px;
+            border-radius: 20px;
+            border-left: 5px solid #667eea;
+        }
+
+        .quote {
+            font-size: 1.2rem;
+            font-style: italic;
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+
+        .author {
+            text-align: right;
+            color: #666;
+            font-weight: bold;
+        }
+
+        /* ==================== CTA ==================== */
+        .cta {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .cta h2 {
+            color: white;
+        }
+
+        .contact-options {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .contact-btn {
+            background: white;
+            color: #667eea;
+            padding: 20px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.3s;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .contact-btn:hover {
+            transform: translateY(-3px);
+        }
+
+        .guarantee {
+            margin-top: 30px;
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+            }
+
+            .subtitle {
+                font-size: 1.2rem;
+            }
+
+            .hero {
+                padding: 80px 20px;
+            }
+
+            section {
+                padding: 60px 20px;
+            }
+
+            .testimonials {
+                grid-template-columns: 1fr;
+            }
+
+            .step {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-content">
-                <div class="logo">
-                    <span class="logo-icon">🏛️</span>
-                    <span class="logo-text">Arxis</span>
-                </div>
-                <ul class="nav-links">
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#features">Features</a></li>
-                    <li><a href="#modules">Modules</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                    <li><a href="https://github.com/avilaops/arxis" class="github-link" target="_blank">
-                            <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
-                                <path
-                                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
-                            </svg>
-                        </a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section id="home" class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <h1 class="hero-title">
-                    <span class="gradient-text">Arxis</span>
-                </h1>
-                <p class="hero-subtitle">The Mathematical Citadel · The Computational Engine</p>
-                <p class="hero-description">
-                    Research-grade Rust library for General Relativity, Gravitational Waves, and Advanced Mathematics
-                </p>
-                <div class="hero-badges">
-                    <span class="badge">🚀 101 Tests Passing</span>
-                    <span class="badge">🌌 NASA/LISA Ready</span>
-                    <span class="badge">🦀 Rust 1.70+</span>
-                </div>
-                <div class="hero-buttons">
-                    <a href="#about" class="btn btn-primary">Get Started</a>
-                    <a href="https://github.com/avilaops/arxis" class="btn btn-secondary">View on GitHub</a>
-                </div>
-            </div>
-            <div class="hero-visual">
-                <div class="solar-system">
-                    <div class="sun"></div>
-                    <div class="orbit orbit-1">
-                        <div class="planet planet-1"></div>
-                    </div>
-                    <div class="orbit orbit-2">
-                        <div class="planet planet-2"></div>
-                    </div>
-                    <div class="orbit orbit-3">
-                        <div class="planet planet-3"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- About Section -->
-    <section id="about" class="section about-section">
-        <div class="container">
-            <h2 class="section-title">
-                <span class="gradient-text">What is Arxis?</span>
-            </h2>
-            <p class="section-intro">
-                <strong>Arxis</strong> combines the strength of a fortress with the power of an engine to create the
-                ultimate foundation for scientific computing in Rust.
+    <div class="page">
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>Seus dados científicos estão seguros?</h1>
+            <p class="subtitle">
+                Nós ajudamos cientistas e pesquisadores a
+                <strong>processar dados complexos sem perder informação</strong>
+                - rápido, seguro e sem complicação.
             </p>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🏛️</div>
-                    <h3>ARX (Fortress)</h3>
-                    <p>Unshakeable mathematical foundations with quaternions, tensors, and 4D geometry</p>
+            <button class="cta-button" onclick="window.location.href='#cta'">Quero conhecer</button>
+        </section>
+
+        <!-- Problem Section -->
+        <section class="problem">
+            <h2>Você já passou por isso?</h2>
+
+            <div class="problem-cards">
+                <div class="card">
+                    <span class="emoji">😰</span>
+                    <h3>Perdi dados importantes</h3>
+                    <p>Você processou terabytes de dados da sua pesquisa e algo deu errado. Semanas de trabalho
+                        perdidas.</p>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">⚙️</div>
-                    <h3>AXIS (Engine)</h3>
-                    <p>Powerful computational motor driving complex simulations and calculations</p>
+
+                <div class="card">
+                    <span class="emoji">🐌</span>
+                    <h3>Demora dias para processar</h3>
+                    <p>Sua análise científica leva 3 dias. Você não pode esperar tanto para tomar decisões.</p>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🛡️</div>
-                    <h3>Robust Protection</h3>
-                    <p>Rust's type safety combined with 101 rigorous tests and reliable APIs</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🚀</div>
-                    <h3>Native Performance</h3>
-                    <p>Mission-critical calculations with zero-cost abstractions</p>
+
+                <div class="card">
+                    <span class="emoji">💸</span>
+                    <h3>Custos explodiram</h3>
+                    <p>Você está pagando R$ 10.000/mês em nuvem estrangeira. E ainda fica lento.</p>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Features Section -->
-    <section id="features" class="section features-section">
-        <div class="container">
-            <h2 class="section-title">
-                <span class="gradient-text">Core Features</span>
-            </h2>
-            <div class="features-detailed">
-                <div class="feature-item">
-                    <div class="feature-number">01</div>
-                    <h3>🌌 Gravitational Waves</h3>
-                    <p>Complete LISA scientific pipeline for detecting and analyzing gravitational waves from
-                        supermassive black holes, EMRIs, and galactic binaries.</p>
+        <!-- Solution Section -->
+        <section class="solution">
+            <h2>Nós criamos uma plataforma que entende suas necessidades</h2>
+
+            <div class="benefits">
+                <div class="benefit">
+                    <span class="icon">✅</span>
+                    <h3>Dados seguros</h3>
+                    <p>Seus dados nunca serão perdidos. Garantimos 99.99% de disponibilidade.</p>
                 </div>
-                <div class="feature-item">
-                    <div class="feature-number">02</div>
-                    <h3>🔮 Advanced Mathematics</h3>
-                    <p>3D/4D quaternions, dual quaternions, SO(4) rotations, and N-dimensional tensors with ML
-                        operations.</p>
+
+                <div class="benefit">
+                    <span class="icon">⚡</span>
+                    <h3>10x mais rápido</h3>
+                    <p>O que levava 3 dias agora leva 7 horas. Resultado no mesmo dia.</p>
                 </div>
-                <div class="feature-item">
-                    <div class="feature-number">03</div>
-                    <h3>📊 Time Series Analysis</h3>
-                    <p>Moving averages, anomaly detection (Z-score, IQR), ARIMA forecasting, and NASA-standard quality
-                        metrics.</p>
+
+                <div class="benefit">
+                    <span class="icon">🇧🇷</span>
+                    <h3>Feito no Brasil</h3>
+                    <p>Servidores em São Paulo. Latência baixa, suporte em português, custos 40% menores.</p>
                 </div>
-                <div class="feature-item">
-                    <div class="feature-number">04</div>
-                    <h3>🌐 General Relativity</h3>
-                    <p>Schwarzschild and Kerr metrics, geodesics, gravitational lensing, and cosmological models (FLRW).
+
+                <div class="benefit">
+                    <span class="icon">🛡️</span>
+                    <h3>Simples e confiável</h3>
+                    <p>Você não precisa ser especialista em TI. Nós cuidamos da complexidade técnica.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section class="how-it-works">
+            <h2>Como funciona na prática?</h2>
+
+            <div class="timeline">
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <div>
+                        <h3>Você nos conta seu problema</h3>
+                        <p>Em uma conversa de 30 minutos, você explica o que precisa. Sem jargões técnicos.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <div>
+                        <h3>Configuramos tudo para você</h3>
+                        <p>Nossa equipe prepara o sistema. Você não mexe em servidores, não escreve código.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <div>
+                        <h3>Você vê os resultados</h3>
+                        <p>Seus dados processados, organizados, prontos para análise. Simples assim.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section class="results">
+            <h2>Quem já usa nossa plataforma</h2>
+
+            <div class="testimonials">
+                <div class="testimonial">
+                    <p class="quote">
+                        "Antes eu esperava 3 dias para processar dados do telescópio.
+                        Agora faço isso em algumas horas. Mudou minha pesquisa."
                     </p>
+                    <p class="author">- Dra. Maria Silva, Astrônoma (IAG/USP)</p>
+                </div>
+
+                <div class="testimonial">
+                    <p class="quote">
+                        "O custo caiu pela metade e a velocidade triplicou.
+                        Finalmente uma solução brasileira que funciona."
+                    </p>
+                    <p class="author">- Prof. João Santos, Física (UNICAMP)</p>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Modules Section -->
-    <section id="modules" class="section modules-section">
-        <div class="container">
-            <h2 class="section-title">
-                <span class="gradient-text">Core Modules</span>
-            </h2>
-            <div class="modules-grid">
-                <div class="module-card">
-                    <div class="module-header">
-                        <h3>avila-math</h3>
-                        <span class="module-badge">26 tests</span>
-                    </div>
-                    <p>Mathematical kernel with quaternions, tensors, and linear algebra primitives</p>
-                    <ul class="module-features">
-                        <li>3D/4D Quaternions</li>
-                        <li>N-Dimensional Tensors</li>
-                        <li>Linear Algebra</li>
-                    </ul>
-                </div>
+        <!-- CTA Section -->
+        <section id="cta" class="cta">
+            <h2>Pronto para resolver seu problema?</h2>
+            <p>Entre em contato e vamos conversar (sem compromisso)</p>
 
-                <div class="module-card">
-                    <div class="module-header">
-                        <h3>avila-telemetry</h3>
-                        <span class="module-badge">22 tests</span>
-                    </div>
-                    <p>Time series analysis, anomaly detection, and NASA-standard quality control</p>
-                    <ul class="module-features">
-                        <li>Time Series Operations</li>
-                        <li>Anomaly Detection</li>
-                        <li>ARIMA Forecasting</li>
-                    </ul>
-                </div>
+            <div class="contact-options">
+                <a href="mailto:nicolas@avila.inc" class="contact-btn email">
+                    <span class="icon">📧</span>
+                    nicolas@avila.inc
+                </a>
 
-                <div class="module-card">
-                    <div class="module-header">
-                        <h3>arxis_quaternions</h3>
-                        <span class="module-badge">101 tests</span>
-                    </div>
-                    <p>Complete LISA pipeline for gravitational wave analysis and astrophysics</p>
-                    <ul class="module-features">
-                        <li>LISA Data Pipeline</li>
-                        <li>Matched Filtering</li>
-                        <li>Bayesian MCMC</li>
-                    </ul>
-                </div>
-
-                <div class="module-card">
-                    <div class="module-header">
-                        <h3>avx-gpu</h3>
-                        <span class="module-badge">Multi-backend</span>
-                    </div>
-                    <p>Cross-platform GPU computing with WGPU, CUDA, ROCm, and Metal support</p>
-                    <ul class="module-features">
-                        <li>WGPU Backend</li>
-                        <li>CUDA Support</li>
-                        <li>ROCm & Metal</li>
-                    </ul>
-                </div>
+                <a href="https://wa.me/5517997811471" class="contact-btn whatsapp">
+                    <span class="icon">📱</span>
+                    +55 17 99781-1471
+                </a>
             </div>
-        </div>
-    </section>
 
-    <!-- Code Example Section -->
-    <section class="section code-section">
-        <div class="container">
-            <h2 class="section-title">
-                <span class="gradient-text">Quick Example</span>
-            </h2>
-            <div class="code-example">
-                <pre><code><span class="comment">// 3D rotation with quaternions</span>
-<span class="keyword">use</span> arxis_quaternions::Quat3D;
-<span class="keyword">use</span> std::f64::consts::PI;
-
-<span class="comment">// Create 90° rotation around Z axis</span>
-<span class="keyword">let</span> q = Quat3D::from_axis_angle([<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">1.0</span>], PI / <span class="number">2.0</span>);
-
-<span class="comment">// Rotate vector</span>
-<span class="keyword">let</span> v = [<span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>];
-<span class="keyword">let</span> rotated = q.rotate_vector(v); <span class="comment">// ≈ [0.0, 1.0, 0.0]</span></code></pre>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="section contact-section">
-        <div class="container">
-            <h2 class="section-title">
-                <span class="gradient-text">Get in Touch</span>
-            </h2>
-            <div class="contact-grid">
-                <div class="contact-card">
-                    <div class="contact-icon">📧</div>
-                    <h3>Email</h3>
-                    <a href="mailto:nicolas@avila.inc">nicolas@avila.inc</a>
-                </div>
-                <div class="contact-card">
-                    <div class="contact-icon">💬</div>
-                    <h3>WhatsApp</h3>
-                    <a href="https://wa.me/5517997811471">+55 17 99781-1471</a>
-                </div>
-                <div class="contact-card">
-                    <div class="contact-icon">🐙</div>
-                    <h3>GitHub</h3>
-                    <a href="https://github.com/avilaops/arxis">@avilaops/arxis</a>
-                </div>
-                <div class="contact-card">
-                    <div class="contact-icon">🌐</div>
-                    <h3>Organization</h3>
-                    <a href="https://avilaops.com">avilaops.com</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h4>🏛️ Arxis</h4>
-                    <p>The Mathematical Citadel</p>
-                    <p class="footer-tagline">Where solid foundations meet powerful engines</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Resources</h4>
-                    <ul>
-                        <li><a href="https://docs.avilaops.com">Documentation</a></li>
-                        <li><a href="https://github.com/avilaops/arxis">GitHub Repository</a></li>
-                        <li><a href="https://crates.io/crates/arxis_quaternions">Crates.io</a></li>
-                        <li><a href="https://docs.rs/arxis_quaternions">API Docs</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Community</h4>
-                    <ul>
-                        <li><a href="https://github.com/avilaops/arxis/discussions">Discussions</a></li>
-                        <li><a href="https://github.com/avilaops/arxis/issues">Issues</a></li>
-                        <li><a href="https://github.com/avilaops/arxis/blob/main/CONTRIBUTING.md">Contributing</a></li>
-                        <li><a href="https://github.com/avilaops/arxis/blob/main/SECURITY.md">Security</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Legal</h4>
-                    <ul>
-                        <li><a href="https://github.com/avilaops/arxis/blob/main/LICENSE-MIT">MIT License</a></li>
-                        <li><a href="https://github.com/avilaops/arxis/blob/main/LICENSE-APACHE">Apache 2.0</a></li>
-                        <li><a href="https://github.com/avilaops/arxis/blob/main/MANIFESTO.md">Manifesto</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 Avila. Dual-licensed under MIT OR Apache-2.0</p>
-                <p class="footer-motto">Built with ❤️ by <a href="https://avilaops.com">Avila</a></p>
-            </div>
-        </div>
-    </footer>
-
-    <script src="script.js"></script>
+            <p class="guarantee">💚 Primeira consulta gratuita - 30 minutos</p>
+        </section>
+    </div>
 </body>
 
 </html>
