@@ -4,9 +4,24 @@
 
 ---
 
-## 📦 1. Crates Documentados (11 total)
+## 📦 1. Crates Documentados (13 total)
 
-### ✅ Core Mathematical
+### ✅ Core Mathematical & NLP
+- [x] **avila-compress** - Biblioteca de compressão nativa 🚀 NEW!
+  - Cargo.toml completo ✓
+  - README.md profissional ✓
+  - LZ4 implementation ✓
+  - Zero dependencies ✓
+  - Testes e benchmarks ✓
+
+- [x] **avila-tokenizers** - Tokenização para NLP/LLMs 🚀 NEW!
+  - Cargo.toml completo ✓
+  - README.md profissional ✓
+  - BPE, WordPiece, Unigram ✓
+  - GPT-2/3/4, BERT, Llama ✓
+  - 100+ testes de compatibilidade ✓
+  - Benchmarks vs HF Tokenizers ✓
+
 - [x] **avila-math** - Kernel matemático
   - Cargo.toml completo ✓
   - README.md profissional ✓

@@ -1,0 +1,13 @@
+[build]
+target = "index.html"
+
+[[proxy]]
+backend = "http://127.0.0.1:8000"
+
+[watch]
+ignore = ["target"]
+
+[serve]
+address = "127.0.0.1"
+port = 8080
+open = true

@@ -66,6 +66,7 @@ approx = "0.5"
 
 [features]
 default = []
+full = ["data-loading", "gpu"]
 data-loading = ["avila-dataframe"]
 gpu = []                  # Placeholder for future CUDA/ROCm support
 

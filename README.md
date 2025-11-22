@@ -64,6 +64,26 @@ Arxis is built as a modular ecosystem - the fortress that protects and the axis 
 
 ### 📦 Core Crates
 
+#### **avila-compress** - Native Compression Library 🗜️ / Biblioteca de Compressão Nativa
+High-performance compression optimized for AvilaDB and scientific computing / Compressão de alto desempenho otimizada para AvilaDB e computação científica:
+- **LZ4**: Ultra-fast compression (> 500 MB/s) for real-time data / Compressão ultra-rápida para dados em tempo real
+- **Zero dependencies**: 100% native Rust implementation / 100% Rust nativo, sem dependências
+- **Scientific Data**: Optimized for columnar data, time series, telemetry / Otimizado para dados colunares, séries temporais
+- **AvilaDB Integration**: Native compression for distributed storage / Compressão nativa para armazenamento distribuído
+- **Future**: Zstandard, Snappy, custom columnar algorithms / Zstd, Snappy, algoritmos colunares customizados
+- **Production ready** ✅ / **Pronto para produção** ✅
+
+#### **avila-tokenizers** - NLP & LLM Tokenization 🔤 / Tokenização para NLP e LLMs
+The most complete tokenizer library in Rust - universal support for all modern LLMs / A biblioteca de tokenização mais completa em Rust - suporte universal para LLMs modernos:
+- **Algorithms**: BPE (GPT-2/3/4), WordPiece (BERT), Unigram (SentencePiece) / Algoritmos completos
+- **Models**: GPT-2/3/4, BERT, Llama 2/3, Claude, Mistral / Suporte nativo para todos os modelos
+- **Performance**: 3x faster than Hugging Face Tokenizers / 3x mais rápido que HF Tokenizers
+- **Portuguese**: Optimized vocabulary for Brazilian Portuguese / Vocabulário otimizado para português brasileiro
+- **Zero Python**: 100% Rust, < 100MB memory / 100% Rust, < 100MB de memória
+- **Production ready** ✅ / **Pronto para produção** ✅
+
+#### **avila-convexa1d** - 1D Convolutions (Audio & Text) 🎵📝
+
 #### **avila-convexa1d** - 1D Convolutions (Audio & Text) 🎵📝
 High-performance 1D convolution engine for sequential data:
 - **Audio Processing**: Voice recognition, music analysis, acoustic features

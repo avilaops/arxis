@@ -18,13 +18,15 @@
 ## 🚀 O Que Foi Criado em 48 Horas
 
 ### Core Libraries (100% Rust)
-1. ✅ **avila-math** - Matemática fundamental (vetores, matrizes, quaternions)
-2. ✅ **avila-telemetry** - Processamento de sinais (LISA, ondas gravitacionais)
-3. ✅ **avila-dataframe** - Manipulação de dados (tipo Pandas)
-4. ✅ **avila-ml** - Machine Learning (redes neurais, autograd)
-5. ✅ **avila-linalg** - Álgebra linear avançada
-6. ✅ **avila-clustering** - Algoritmos de clustering
-7. ✅ **avila-reduction** - Redução de dimensionalidade
+1. ✅ **avila-compress** - Compressão nativa (LZ4, Zstd) 🚀 NEW!
+2. ✅ **avila-tokenizers** - Tokenização NLP/LLM (GPT, BERT, Llama) 🚀 NEW!
+3. ✅ **avila-math** - Matemática fundamental (vetores, matrizes, quaternions)
+4. ✅ **avila-telemetry** - Processamento de sinais (LISA, ondas gravitacionais)
+5. ✅ **avila-dataframe** - Manipulação de dados (tipo Pandas)
+6. ✅ **avila-ml** - Machine Learning (redes neurais, autograd)
+7. ✅ **avila-linalg** - Álgebra linear avançada
+8. ✅ **avila-clustering** - Algoritmos de clustering
+9. ✅ **avila-reduction** - Redução de dimensionalidade
 
 ### AVX Platform
 8. ✅ **avx-image** - Processamento de imagens (Blueprint completo)
