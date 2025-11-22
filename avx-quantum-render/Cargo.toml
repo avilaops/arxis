@@ -18,7 +18,7 @@ exclude = ["target/", "*.swp", ".git*", "examples/*.ppm", "output_*.ppm"]
 
 [dependencies]
 # Core Avila ecosystem
-avila-math = { path = "../avila-math" }
+avila-math = { path = "../avila-math", default-features = false }
 avx-config = { path = "../avx-config" }
 
 # Numerical computing

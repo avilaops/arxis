@@ -80,7 +80,7 @@ path = "examples/geometry4d_example.rs"
 rand = "0.8"
 rand_distr = "0.4"
 chrono = { version = "0.4", features = ["serde"] }
-avila-math = { path = "avila-math" }
+avila-math = { path = "avila-math", default-features = false }
 avila-telemetry = { path = "avila-telemetry" }
 rayon = "1.10"
 
