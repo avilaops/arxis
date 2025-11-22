@@ -80,19 +80,12 @@ path = "examples/geometry4d_example.rs"
 rand = "0.8"
 rand_distr = "0.4"
 chrono = { version = "0.4", features = ["serde"] }
-avila-math = { path = "avila-math", default-features = false }
+avila-math = { path = "avila-math" }
 avila-telemetry = { path = "avila-telemetry" }
 rayon = "1.10"
 
 # Big Data & Parallel Processing
-polars = { version = "0.44", features = [
-    "lazy",
-    "sql",
-    "streaming",
-    "parquet",
-    "ipc",
-    "json",
-] }
+avila-dataframe = { path = "avila-dataframe", features = ["full"] }
 datafusion = "43.0" # SQL query engine para big data
 arrow = "53.0" # Apache Arrow (columnar format)
 parquet = "53.0" # Parquet file format

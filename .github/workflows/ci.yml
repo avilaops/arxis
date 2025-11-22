@@ -46,16 +46,10 @@ jobs:
                   key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
 
             - name: Check all packages
-              run: cargo check --workspace --exclude avila-math --all-features
-
-            - name: Check avila-math without python
-              run: cargo check -p avila-math --no-default-features
+              run: cargo check --workspace --all-features
 
             - name: Run tests
-              run: cargo test --workspace --exclude avila-math --all-features
-
-            - name: Test avila-math without python
-              run: cargo test -p avila-math --no-default-features
+              run: cargo test --workspace --all-features
 
             - name: Run doctests
               run: cargo test --workspace --doc
@@ -78,8 +72,7 @@ jobs:
             - uses: dtolnay/rust-toolchain@stable
               with:
                   components: clippy
-            - run: cargo clippy --workspace --exclude avila-math --all-features -- -D warnings
-            - run: cargo clippy -p avila-math --no-default-features -- -D warnings
+            - run: cargo clippy --workspace --all-features -- -D warnings
 
     docs:
         name: Documentation
@@ -87,10 +80,7 @@ jobs:
         steps:
             - uses: actions/checkout@v4
             - uses: dtolnay/rust-toolchain@stable
-            - run: cargo doc --workspace --exclude avila-math --no-deps --all-features
-              env:
-                  RUSTDOCFLAGS: -D warnings
-            - run: cargo doc -p avila-math --no-deps --no-default-features
+            - run: cargo doc --workspace --no-deps --all-features
               env:
                   RUSTDOCFLAGS: -D warnings
 

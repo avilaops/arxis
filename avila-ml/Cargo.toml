@@ -52,7 +52,7 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
 # Data loading
-polars = { version = "0.44", features = ["lazy", "csv"], optional = true }
+avila-dataframe = { path = "../avila-dataframe", features = ["full"], optional = true }
 
 # FFT for scientific computing
 rustfft = "6.2"
@@ -66,7 +66,7 @@ approx = "0.5"
 
 [features]
 default = []
-data-loading = ["polars"]
+data-loading = ["avila-dataframe"]
 gpu = []                  # Placeholder for future CUDA/ROCm support
 
 [[bench]]
