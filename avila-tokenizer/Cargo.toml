@@ -9,6 +9,9 @@ repository = "https://github.com/avilaops/arxis"
 keywords = ["tokenizer", "nlp", "llm", "gpt", "bert"]
 categories = ["text-processing", "algorithms"]
 
+[workspace]
+# Empty workspace to avoid being part of parent workspace
+
 [dependencies]
 regex = "1.10"
 unicode-normalization = "0.1"
@@ -23,6 +26,7 @@ rand = "0.8"
 [dev-dependencies]
 criterion = { version = "0.5", features = ["html_reports"] }
 tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+tempfile = "3"
 
 [features]
 default = []

@@ -360,7 +360,7 @@ impl Router {
 
     async fn handle(&self, request: Request) -> Response {
         let key = (request.method.clone(), request.path.clone());
-        
+
         if let Some(handler) = self.routes.get(&key) {
             handler(request).await
         } else {
@@ -404,7 +404,7 @@ mod tests {
     fn test_parse_request() {
         let request_data = b"GET /hello HTTP/1.1\r\nHost: localhost\r\n\r\n";
         let request = parse_request(request_data).unwrap();
-        
+
         assert_eq!(request.method, Method::GET);
         assert_eq!(request.path, "/hello");
     }

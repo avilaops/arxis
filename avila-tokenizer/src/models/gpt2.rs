@@ -1,9 +1,7 @@
 use crate::algorithms::BPE;
 use crate::error::{Result, TokenizerError};
 use crate::utils::unicode::{byte_to_unicode, unicode_to_byte};
-use crate::utils::regex::gpt2_split;
 use std::collections::HashMap;
-use rayon::prelude::*;
 
 /// GPT-2 Tokenizer using byte-level BPE
 /// Compatible with OpenAI's GPT-2, GPT-3, and tiktoken
@@ -36,8 +34,9 @@ impl GPT2Tokenizer {
         let byte_encoder = byte_to_unicode();
         let byte_decoder = unicode_to_byte();
 
+        // GPT-2 tokenization pattern (lookahead not supported, using simplified version)
         let pattern = regex::Regex::new(
-            r"'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"
+            r"'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+"
         ).unwrap();
 
         Self {

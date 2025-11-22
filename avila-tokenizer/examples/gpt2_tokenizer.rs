@@ -1,5 +1,5 @@
 //! Example: GPT-2 Tokenization
-//! 
+//!
 //! This example demonstrates how to use the GPT-2 tokenizer to encode and decode text.
 
 use avila_tokenizers::models::GPT2Tokenizer;
@@ -14,7 +14,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Example 1: Basic encoding
     let text = "Hello, world! How are you today?";
     println!("Input text: \"{}\"", text);
-    
+
     let ids = tokenizer.encode(text);
     println!("Token IDs: {:?}", ids);
     println!("Token count: {}\n", ids.len());
@@ -67,10 +67,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let short_text = "Short";
     let mut ids = tokenizer.encode(short_text);
     println!("Original: \"{}\" -> {} tokens", short_text, ids.len());
-    
+
     ids = tokenizer.pad(ids, 10, 0);
     println!("Padded to 10: {:?}", ids);
-    
+
     ids = tokenizer.truncate(ids, 5);
     println!("Truncated to 5: {:?}\n", ids);
 

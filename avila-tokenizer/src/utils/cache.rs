@@ -3,6 +3,7 @@ use std::hash::Hash;
 use std::num::NonZeroUsize;
 
 /// Thread-safe LRU cache wrapper for tokenization results
+#[derive(Debug, Clone)]
 pub struct TokenCache<K, V>
 where
     K: Hash + Eq,

@@ -13,7 +13,7 @@ lazy_static! {
 
     /// Pattern to match punctuation
     pub static ref PUNCTUATION_PATTERN: Regex = Regex::new(
-        r"[!\"#$%&'()*+,\-./:;<=>?@\[\\\]^_`{|}~]"
+        r"[!#$%&'()*+,\-./:;<=>?@\[\\\]^_`{|}~]"
     ).unwrap();
 
     /// Pattern to match digits

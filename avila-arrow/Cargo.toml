@@ -1,0 +1,46 @@
+[package]
+name = "avila-arrow"
+version = "0.1.0"
+edition = "2021"
+authors = [
+    "Nícolas Ávila <nicolas@avila.inc>",
+    "Avila Development Team <dev@avila.inc>",
+]
+license = "MIT OR Apache-2.0"
+description = "Native columnar format for AvilaDB with scientific types (Quaternions, Tensors, Complex, Spinors) - Optimized for Brazilian research infrastructure"
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://avila.cloud"
+documentation = "https://docs.rs/avila-arrow"
+readme = "README.md"
+keywords = ["arrow", "columnar", "quaternion", "scientific", "aviladb"]
+categories = ["science", "database-implementations", "data-structures"]
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+
+[features]
+default = ["scientific"]
+scientific = []  # Scientific types (Quaternion, Tensor4D, Complex, Spinor)
+compression = []  # Integration with avila-compress
+aviladb = []  # AvilaDB native integration
+
+[[bench]]
+name = "scientific_bench"
+harness = false
+
+[lib]
+name = "avila_arrow"
+path = "src/lib.rs"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+
+[profile.bench]
+opt-level = 3
+lto = true

@@ -6,7 +6,6 @@ use std::collections::HashMap;
 
 /// Llama Tokenizer using Unigram/SentencePiece algorithm
 /// Compatible with Llama 2, Llama 3, Mistral, and SentencePiece models
-#[derive(Clone)]
 pub struct LlamaTokenizer {
     unigram: Unigram,
     normalizer: Box<dyn Normalizer>,
@@ -14,18 +13,18 @@ pub struct LlamaTokenizer {
     vocab: HashMap<String, u32>,
     id_to_token: HashMap<u32, String>,
     scores: HashMap<String, f32>,
-    
+
     // Special tokens
     bos_token: String,
     eos_token: String,
     unk_token: String,
     pad_token: String,
-    
+
     bos_token_id: u32,
     eos_token_id: u32,
     unk_token_id: u32,
     pad_token_id: u32,
-    
+
     add_bos_token: bool,
     add_eos_token: bool,
 }
@@ -53,27 +52,36 @@ impl LlamaTokenizer {
             .map(|(k, &v)| (v, k.clone()))
             .collect();
 
-        let unk_token = "<unk>".to_string();
-        let unigram = Unigram::new(vocab.clone(), scores.clone(), unk_token.clone());
+        // Convert vocab and scores to Vec<(String, f64)> for Unigram
+        let mut pieces: Vec<(String, f64)> = vocab.iter()
+            .map(|(token, _)| {
+                let score = *scores.get(token).unwrap_or(&0.0) as f64;
+                (token.clone(), score)
+            })
+            .collect();
+
+        let unigram = Unigram::new(pieces);
 
         Self {
             unigram,
             normalizer: Box::new(NFKCNormalizer),
-            pre_tokenizer: Metaspace::new('▁', true),
+            pre_tokenizer: Metaspace::new()
+                .with_replacement('▁')
+                .with_prefix_space(true),
             vocab,
             id_to_token,
             scores,
-            
+
             bos_token: "<s>".to_string(),
             eos_token: "</s>".to_string(),
             unk_token: "<unk>".to_string(),
             pad_token: "<pad>".to_string(),
-            
+
             bos_token_id: 1,
             eos_token_id: 2,
             unk_token_id: 0,
             pad_token_id: 0,
-            
+
             add_bos_token,
             add_eos_token,
         }
@@ -203,10 +211,10 @@ impl LlamaTokenizer {
         }
 
         // Normalize
-        let normalized = self.normalizer.normalize(text);
+        let normalized = self.normalizer.normalize(text).unwrap_or_else(|_| text.to_string());
 
         // Pre-tokenize (add metaspace)
-        let pre_tokens = self.pre_tokenizer.pre_tokenize(&normalized);
+        let pre_tokens = self.pre_tokenizer.pre_tokenize(&normalized).unwrap_or_else(|_| vec![normalized.clone()]);
 
         // Apply Unigram
         let mut token_ids = Vec::new();
@@ -345,7 +353,7 @@ impl LlamaTokenizer {
     /// Apply chat template for Llama 2 style
     pub fn apply_chat_template(&self, messages: &[(&str, &str)]) -> String {
         let mut formatted = String::new();
-        
+
         for (role, content) in messages {
             match *role {
                 "system" => {
@@ -367,7 +375,7 @@ impl LlamaTokenizer {
     /// Apply chat template for Llama 3 style (different format)
     pub fn apply_chat_template_llama3(&self, messages: &[(&str, &str)]) -> String {
         let mut formatted = String::new();
-        
+
         for (role, content) in messages {
             formatted.push_str(&format!("<|start_header_id|>{}<|end_header_id|>\n\n{}<|eot_id|>", role, content));
         }

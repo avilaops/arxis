@@ -19,7 +19,6 @@ pub trait Normalizer: Send + Sync {
 }
 
 /// Chain multiple normalizers
-#[derive(Debug, Clone)]
 pub struct SequenceNormalizer {
     normalizers: Vec<Box<dyn Normalizer>>,
 }

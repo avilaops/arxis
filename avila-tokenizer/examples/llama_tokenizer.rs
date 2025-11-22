@@ -1,5 +1,5 @@
 //! Example: Llama Tokenization
-//! 
+//!
 //! This example demonstrates how to use the Llama tokenizer for LLM applications.
 
 use avila_tokenizers::models::LlamaTokenizer;
@@ -14,7 +14,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Example 1: Basic encoding
     let text = "Hello, world! How are you today?";
     println!("Input text: \"{}\"", text);
-    
+
     let ids = tokenizer.encode(text);
     println!("Token IDs: {:?}", ids);
     println!("Token count: {}\n", ids.len());
@@ -52,10 +52,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         ("assistant", "Olá! Estou bem, obrigado. Como posso ajudar você hoje?"),
         ("user", "Me conte sobre o Brasil."),
     ];
-    
+
     let formatted = tokenizer.apply_chat_template(&messages);
     println!("Formatted chat:\n{}\n", formatted);
-    
+
     let chat_ids = tokenizer.encode_with_special(&formatted);
     println!("Chat token count: {}\n", chat_ids.len());
 
@@ -100,10 +100,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let short_text = "Short";
     let mut ids = tokenizer.encode_with_special(short_text);
     println!("Original: \"{}\" -> {} tokens", short_text, ids.len());
-    
+
     ids = tokenizer.pad(ids, 15);
     println!("Padded to 15: {:?}", ids);
-    
+
     ids = tokenizer.truncate(ids, 8);
     println!("Truncated to 8: {:?}\n", ids);
 
@@ -111,7 +111,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let instruction = "Translate the following text to Portuguese:";
     let input_text = "Hello, how are you?";
     let prompt = format!("{}\n\nInput: {}\n\nOutput:", instruction, input_text);
-    
+
     println!("Instruction-following prompt:");
     println!("{}", prompt);
     let prompt_ids = tokenizer.encode_with_special(&prompt);

@@ -350,7 +350,7 @@ fn parse_response(data: Vec<u8>) -> Result<Response> {
     // Find the separator between headers and body
     let separator = b"\r\n\r\n";
     let mut header_end = 0;
-    
+
     for i in 0..data.len().saturating_sub(3) {
         if &data[i..i + 4] == separator {
             header_end = i + 4;
@@ -447,7 +447,7 @@ mod tests {
     #[test]
     fn test_request_builder_methods() {
         let client = Client::new();
-        
+
         let get_req = client.get("https://example.com");
         assert_eq!(get_req.method, Method::GET);
 

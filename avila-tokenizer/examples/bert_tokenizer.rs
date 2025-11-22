@@ -1,5 +1,5 @@
 //! Example: BERT Tokenization
-//! 
+//!
 //! This example demonstrates how to use the BERT tokenizer for NLP tasks.
 
 use avila_tokenizers::models::BertTokenizer;
@@ -14,7 +14,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Example 1: Basic encoding
     let text = "Hello, world! How are you today?";
     println!("Input text: \"{}\"", text);
-    
+
     let ids = tokenizer.encode(text);
     println!("Token IDs: {:?}", ids);
     println!("Token count: {}\n", ids.len());
@@ -49,7 +49,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let text_with_padding = "Short text.";
     let mut ids = tokenizer.encode_with_special(text_with_padding);
     ids = tokenizer.pad(ids, 10); // Pad to length 10
-    
+
     println!("Padded IDs: {:?}", ids);
     let attention_mask = tokenizer.create_attention_mask(&ids);
     println!("Attention mask: {:?}", attention_mask);
@@ -96,7 +96,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Original text: \"{}\"", long_text);
     let ids = tokenizer.encode_with_special(long_text);
     println!("Original length: {} tokens", ids.len());
-    
+
     let padded_truncated = tokenizer.pad_and_truncate(ids, 20);
     println!("After pad_and_truncate(20): {:?}\n", padded_truncated);
 

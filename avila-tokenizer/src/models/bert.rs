@@ -6,7 +6,6 @@ use std::collections::HashMap;
 
 /// BERT Tokenizer using WordPiece algorithm
 /// Compatible with BERT, DistilBERT, RoBERTa, ALBERT models
-#[derive(Clone)]
 pub struct BertTokenizer {
     wordpiece: WordPiece,
     normalizer: Box<dyn Normalizer>,
@@ -47,13 +46,13 @@ impl BertTokenizer {
     pub fn new(
         vocab: HashMap<String, u32>,
         do_lower_case: bool,
-    ) -> Self {
+    ) -> Result<Self> {
         let id_to_token: HashMap<u32, String> = vocab.iter()
             .map(|(k, &v)| (v, k.clone()))
             .collect();
 
         let unk_token = "[UNK]".to_string();
-        let wordpiece = WordPiece::new(vocab.clone(), unk_token.clone());
+        let wordpiece = WordPiece::new(vocab.clone(), unk_token.clone(), "##".to_string())?;
 
         let normalizer: Box<dyn Normalizer> = if do_lower_case {
             Box::new(LowercaseNormalizer)
@@ -61,7 +60,7 @@ impl BertTokenizer {
             Box::new(NFKCNormalizer)
         };
 
-        Self {
+        Ok(Self {
             wordpiece,
             normalizer,
             pre_tokenizer: WhitespaceSplit,
@@ -81,32 +80,30 @@ impl BertTokenizer {
             mask_token_id: 103,
 
             do_lower_case,
-        }
-    }
-
-    fn load_bert_base_uncased() -> Result<Self> {
+        })
+    }    fn load_bert_base_uncased() -> Result<Self> {
         let vocab = Self::create_bert_vocab();
-        Ok(Self::new(vocab, true))
+        Self::new(vocab, true)
     }
 
     fn load_bert_base_cased() -> Result<Self> {
         let vocab = Self::create_bert_vocab();
-        Ok(Self::new(vocab, false))
+        Self::new(vocab, false)
     }
 
     fn load_bert_large_uncased() -> Result<Self> {
         let vocab = Self::create_bert_vocab();
-        Ok(Self::new(vocab, true))
+        Self::new(vocab, true)
     }
 
     fn load_bert_large_cased() -> Result<Self> {
         let vocab = Self::create_bert_vocab();
-        Ok(Self::new(vocab, false))
+        Self::new(vocab, false)
     }
 
     fn load_distilbert_base_uncased() -> Result<Self> {
         let vocab = Self::create_bert_vocab();
-        Ok(Self::new(vocab, true))
+        Self::new(vocab, true)
     }
 
     /// Create BERT vocabulary (30,522 tokens)
@@ -159,10 +156,10 @@ impl BertTokenizer {
         }
 
         // Normalize
-        let normalized = self.normalizer.normalize(text);
+        let normalized = self.normalizer.normalize(text).unwrap_or_else(|_| text.to_string());
 
         // Pre-tokenize
-        let pre_tokens = self.pre_tokenizer.pre_tokenize(&normalized);
+        let pre_tokens = self.pre_tokenizer.pre_tokenize(&normalized).unwrap_or_else(|_| vec![normalized.clone()]);
 
         // Apply WordPiece
         let mut token_ids = Vec::new();
@@ -236,12 +233,10 @@ impl BertTokenizer {
 
     /// Check if token is special
     pub fn is_special_token(&self, token: &str) -> bool {
-        matches!(token,
-            "[CLS]" | "[SEP]" | "[PAD]" | "[UNK]" | "[MASK]" |
-            t if t.starts_with("[unused"))
-    }
-
-    /// Get vocabulary size
+        token == "[CLS]" || token == "[SEP]" || token == "[PAD]" ||
+        token == "[UNK]" || token == "[MASK]" ||
+        token.starts_with("[unused")
+    }    /// Get vocabulary size
     pub fn vocab_size(&self) -> usize {
         self.vocab.len()
     }

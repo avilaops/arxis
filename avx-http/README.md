@@ -151,12 +151,12 @@ let client = Client::builder()
 
 Benchmarks on AWS c6i.xlarge (São Paulo region):
 
-| Operation | avx-http | reqwest | Improvement |
-|-----------|----------|---------|-------------|
-| Simple GET | 480µs | 2.1ms | **4.4x faster** |
-| JSON POST | 520µs | 2.3ms | **4.4x faster** |
-| Large file (1MB) | 15ms | 18ms | **20% faster** |
-| Compressed (10KB) | 1.2ms | 3.1ms | **2.6x faster** |
+| Operation         | avx-http | reqwest | Improvement     |
+| ----------------- | -------- | ------- | --------------- |
+| Simple GET        | 480µs    | 2.1ms   | **4.4x faster** |
+| JSON POST         | 520µs    | 2.3ms   | **4.4x faster** |
+| Large file (1MB)  | 15ms     | 18ms    | **20% faster**  |
+| Compressed (10KB) | 1.2ms    | 3.1ms   | **2.6x faster** |
 
 ## 🧪 Testing
 

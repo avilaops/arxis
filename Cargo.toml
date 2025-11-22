@@ -1,6 +1,7 @@
 [workspace]
 members = [
     ".",
+    "avila-arrow",  # Native columnar format with scientific types
     "avila-clustering",
     "avila-dataframe",
     "avila-linalg",

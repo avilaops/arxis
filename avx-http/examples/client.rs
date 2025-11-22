@@ -13,7 +13,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Make GET request to example.com
     println!("📤 Making GET request to http://example.com...");
-    
+
     match client.get("http://example.com").send().await {
         Ok(response) => {
             println!("✅ Response Status: {}", response.status());
