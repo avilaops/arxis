@@ -1,7 +1,7 @@
 //! OCR text recognition example
 
-use avx_image::prelude::*;
 use avx_image::ocr;
+use avx_image::prelude::*;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("📝 AVX-Image - OCR Example\n");
@@ -41,11 +41,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Display detected text regions
     for (i, bbox) in result.bounding_boxes.iter().enumerate() {
-        println!(
-            "\n   Region {}: \"{}\"",
-            i + 1,
-            bbox.text
-        );
+        println!("\n   Region {}: \"{}\"", i + 1, bbox.text);
         println!(
             "      Position: ({}, {}) Size: {}x{}",
             bbox.x, bbox.y, bbox.width, bbox.height

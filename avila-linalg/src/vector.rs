@@ -3,7 +3,7 @@
 //! Implementa vetores 2D, 3D, 4D e N-dimensionais
 
 use num_traits::{Float, Num, Zero};
-use std::ops::{Add, Sub, Mul};
+use std::ops::{Add, Mul, Sub};
 
 /// Vetor 2D genérico
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -84,9 +84,7 @@ impl<T: Num + Copy> Vector3<T> {
     ///
     /// v · w = vₓwₓ + vᵧwᵧ + vᵤwᵤ
     pub fn dot(&self, other: &Self) -> T {
-        self.data[0] * other.data[0] +
-        self.data[1] * other.data[1] +
-        self.data[2] * other.data[2]
+        self.data[0] * other.data[0] + self.data[1] * other.data[1] + self.data[2] * other.data[2]
     }
 
     /// Produto vetorial (cross product)
@@ -125,11 +123,7 @@ impl<T: Float> Vector3<T> {
     /// v̂ = v / ||v||
     pub fn normalize(&self) -> Self {
         let n = self.norm();
-        Self::new(
-            self.data[0] / n,
-            self.data[1] / n,
-            self.data[2] / n,
-        )
+        Self::new(self.data[0] / n, self.data[1] / n, self.data[2] / n)
     }
 
     /// Projeção de self em other
@@ -158,23 +152,31 @@ impl<T: Num + Copy> Vector4<T> {
     }
 
     /// Componente X
-    pub fn x(&self) -> T { self.data[0] }
+    pub fn x(&self) -> T {
+        self.data[0]
+    }
 
     /// Componente Y
-    pub fn y(&self) -> T { self.data[1] }
+    pub fn y(&self) -> T {
+        self.data[1]
+    }
 
     /// Componente Z
-    pub fn z(&self) -> T { self.data[2] }
+    pub fn z(&self) -> T {
+        self.data[2]
+    }
 
     /// Componente W
-    pub fn w(&self) -> T { self.data[3] }
+    pub fn w(&self) -> T {
+        self.data[3]
+    }
 
     /// Produto escalar
     pub fn dot(&self, other: &Self) -> T {
-        self.data[0] * other.data[0] +
-        self.data[1] * other.data[1] +
-        self.data[2] * other.data[2] +
-        self.data[3] * other.data[3]
+        self.data[0] * other.data[0]
+            + self.data[1] * other.data[1]
+            + self.data[2] * other.data[2]
+            + self.data[3] * other.data[3]
     }
 }
 

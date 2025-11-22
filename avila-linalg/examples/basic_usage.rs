@@ -34,11 +34,7 @@ fn main() {
     println!("Matriz identidade:");
     println!("{:?}", identity);
 
-    let m = Matrix3x3::from_rows([
-        [1.0, 2.0, 3.0],
-        [4.0, 5.0, 6.0],
-        [7.0, 8.0, 9.0],
-    ]);
+    let m = Matrix3x3::from_rows([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]);
     println!("\nMatriz M:");
     println!("{:?}", m);
 
@@ -55,7 +51,7 @@ fn main() {
     // Matriz × Vetor
     println!("🎯 Transformações (Matriz × Vetor):");
     let rotation = Matrix3x3::from_rows([
-        [0.0, -1.0, 0.0],  // Rotação 90° em torno de Z
+        [0.0, -1.0, 0.0], // Rotação 90° em torno de Z
         [1.0, 0.0, 0.0],
         [0.0, 0.0, 1.0],
     ]);
@@ -82,13 +78,7 @@ fn main() {
 
     // Matriz dinâmica
     println!("📊 Matriz Dinâmica (MxN):");
-    let mat = MatrixMxN::from_vec(
-        2, 3,
-        vec![
-            1.0, 2.0, 3.0,
-            4.0, 5.0, 6.0,
-        ]
-    );
+    let mat = MatrixMxN::from_vec(2, 3, vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
     println!("Matriz 2×3:");
     for i in 0..mat.rows() {
         print!("[ ");

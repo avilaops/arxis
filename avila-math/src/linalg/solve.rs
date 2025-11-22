@@ -122,11 +122,7 @@ pub fn solve_lower_triangular(l: &Matrix, b: &Vector) -> Result<Vector, String> 
 }
 
 /// Wrapper unificado para resolver sistemas triangulares
-pub fn solve_triangular(
-    matrix: &Matrix,
-    b: &Vector,
-    upper: bool,
-) -> Result<Vector, String> {
+pub fn solve_triangular(matrix: &Matrix, b: &Vector, upper: bool) -> Result<Vector, String> {
     if upper {
         solve_upper_triangular(matrix, b)
     } else {
@@ -160,7 +156,8 @@ pub fn solve_least_squares(a: &Matrix, b: &Vector) -> Result<Vector, String> {
 
     // Resolve usando SVD
     let svd = a_matrix.svd(true, true);
-    let x_vector = svd.solve(&b_vector, 1e-10)
+    let x_vector = svd
+        .solve(&b_vector, 1e-10)
         .map_err(|_| "Failed to solve least squares".to_string())?;
 
     let x_data: Vec<f64> = x_vector.iter().copied().collect();
@@ -186,11 +183,8 @@ mod tests {
 
     #[test]
     fn test_solve_upper_triangular() {
-        let u = Matrix::from_data([3, 3], vec![
-            2.0, 1.0, 1.0,
-            0.0, 3.0, 2.0,
-            0.0, 0.0, 4.0
-        ]).unwrap();
+        let u =
+            Matrix::from_data([3, 3], vec![2.0, 1.0, 1.0, 0.0, 3.0, 2.0, 0.0, 0.0, 4.0]).unwrap();
 
         let b = Vector::from_slice(&[6.0, 8.0, 4.0]);
 
@@ -206,11 +200,7 @@ mod tests {
     #[test]
     fn test_solve_least_squares() {
         // Sistema sobredeterminado 3×2
-        let a = Matrix::from_data([3, 2], vec![
-            1.0, 1.0,
-            2.0, 1.0,
-            3.0, 1.0
-        ]).unwrap();
+        let a = Matrix::from_data([3, 2], vec![1.0, 1.0, 2.0, 1.0, 3.0, 1.0]).unwrap();
 
         let b = Vector::from_slice(&[2.0, 3.0, 4.0]);
 

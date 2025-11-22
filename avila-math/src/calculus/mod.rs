@@ -11,12 +11,6 @@ pub mod differential;
 pub mod fields;
 pub mod operators;
 
-pub use differential::{
-    derivative, gradient_4d, hessian, jacobian, partial_derivative,
-};
-pub use fields::{
-    curl_4d, divergence_4d, scalar_field_4d, vector_field_4d, VectorField4D,
-};
-pub use operators::{
-    laplacian_4d, directional_derivative, grad_div_4d,
-};
+pub use differential::{derivative, gradient_4d, hessian, jacobian, partial_derivative};
+pub use fields::{curl_4d, divergence_4d, scalar_field_4d, vector_field_4d, VectorField4D};
+pub use operators::{directional_derivative, grad_div_4d, laplacian_4d};

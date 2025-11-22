@@ -59,18 +59,23 @@ impl FeatureExtractor {
             let mean = window_data.iter().sum::<f64>() / window as f64;
             means.push(mean);
 
-            let variance = window_data.iter()
-                .map(|x| (x - mean).powi(2))
-                .sum::<f64>() / window as f64;
+            let variance =
+                window_data.iter().map(|x| (x - mean).powi(2)).sum::<f64>() / window as f64;
             stds.push(variance.sqrt());
 
-            mins.push(*window_data.iter()
-                .min_by(|a, b| a.partial_cmp(b).unwrap())
-                .unwrap());
+            mins.push(
+                *window_data
+                    .iter()
+                    .min_by(|a, b| a.partial_cmp(b).unwrap())
+                    .unwrap(),
+            );
 
-            maxs.push(*window_data.iter()
-                .max_by(|a, b| a.partial_cmp(b).unwrap())
-                .unwrap());
+            maxs.push(
+                *window_data
+                    .iter()
+                    .max_by(|a, b| a.partial_cmp(b).unwrap())
+                    .unwrap(),
+            );
         }
 
         Ok(RollingStats {

@@ -1,7 +1,7 @@
 //! Spectral clustering
 
+use crate::{ClusteringError, Result};
 use ndarray::{Array1, Array2, ArrayView2};
-use crate::{Result, ClusteringError};
 
 /// Affinity type for spectral clustering
 #[derive(Debug, Clone)]

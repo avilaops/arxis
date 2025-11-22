@@ -2,8 +2,8 @@
 
 #![cfg(feature = "python")]
 
-use pyo3::prelude::*;
 use crate::autograd::{Tape, Variable};
+use pyo3::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -64,7 +64,10 @@ impl PyVariable {
 
     /// Add
     fn add(&self, other: &PyVariable) -> PyVariable {
-        let result = self.inner.add(&other.inner).eval(&mut self.tape.borrow_mut());
+        let result = self
+            .inner
+            .add(&other.inner)
+            .eval(&mut self.tape.borrow_mut());
         PyVariable {
             inner: result,
             tape: self.tape.clone(),
@@ -73,7 +76,10 @@ impl PyVariable {
 
     /// Subtract
     fn sub(&self, other: &PyVariable) -> PyVariable {
-        let result = self.inner.sub(&other.inner).eval(&mut self.tape.borrow_mut());
+        let result = self
+            .inner
+            .sub(&other.inner)
+            .eval(&mut self.tape.borrow_mut());
         PyVariable {
             inner: result,
             tape: self.tape.clone(),
@@ -82,7 +88,10 @@ impl PyVariable {
 
     /// Multiply
     fn mul(&self, other: &PyVariable) -> PyVariable {
-        let result = self.inner.mul(&other.inner).eval(&mut self.tape.borrow_mut());
+        let result = self
+            .inner
+            .mul(&other.inner)
+            .eval(&mut self.tape.borrow_mut());
         PyVariable {
             inner: result,
             tape: self.tape.clone(),
@@ -91,7 +100,10 @@ impl PyVariable {
 
     /// Divide
     fn div(&self, other: &PyVariable) -> PyVariable {
-        let result = self.inner.div(&other.inner).eval(&mut self.tape.borrow_mut());
+        let result = self
+            .inner
+            .div(&other.inner)
+            .eval(&mut self.tape.borrow_mut());
         PyVariable {
             inner: result,
             tape: self.tape.clone(),

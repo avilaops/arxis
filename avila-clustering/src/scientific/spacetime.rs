@@ -1,11 +1,11 @@
 //! 4D spacetime clustering for gravitational wave events
 
-use ndarray::Array2;
-use crate::{Result, ClusteringError};
 use crate::metrics::distance::Metric;
+use crate::{ClusteringError, Result};
+use ndarray::Array2;
 
 /// 4D tensor representation (n_samples, 3_spatial, time_bins, freq_bins)
-pub type Tensor4D = Array2<f64>;  // Simplified for now
+pub type Tensor4D = Array2<f64>; // Simplified for now
 
 /// KMeans clustering adapted for 4D spacetime data
 pub struct SpaceTimeKMeans {

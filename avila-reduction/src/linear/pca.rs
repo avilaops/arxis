@@ -1,8 +1,8 @@
 //! Principal Component Analysis (PCA)
 
+use crate::{ReductionError, Result};
 use ndarray::{Array1, Array2, ArrayView2, Axis};
 use ndarray_linalg::{SVD, SVDDC};
-use crate::{Result, ReductionError};
 
 /// Component specification for PCA
 #[derive(Debug, Clone)]
@@ -125,7 +125,8 @@ impl PCA {
         let (n_samples, n_features) = data.dim();
 
         // Compute mean
-        let mean = data.mean_axis(Axis(0))
+        let mean = data
+            .mean_axis(Axis(0))
             .ok_or_else(|| ReductionError::NumericalError("Failed to compute mean".to_string()))?;
 
         // Center data
@@ -139,7 +140,9 @@ impl PCA {
     }
 
     pub fn transform(&self, data: &ArrayView2<f64>) -> Result<Array2<f64>> {
-        let components = self.components.as_ref()
+        let components = self
+            .components
+            .as_ref()
             .ok_or_else(|| ReductionError::InvalidParameter("PCA not fitted yet".to_string()))?;
 
         let mean = self.mean.as_ref().unwrap();
@@ -162,7 +165,9 @@ impl PCA {
     }
 
     pub fn inverse_transform(&self, data: &ArrayView2<f64>) -> Result<Array2<f64>> {
-        let components = self.components.as_ref()
+        let components = self
+            .components
+            .as_ref()
             .ok_or_else(|| ReductionError::InvalidParameter("PCA not fitted yet".to_string()))?;
 
         let mean = self.mean.as_ref().unwrap();

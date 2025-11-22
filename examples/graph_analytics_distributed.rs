@@ -1,8 +1,7 @@
+use petgraph::algo::{astar, connected_components, dijkstra};
 /// Análise avançada: Graph Analytics + Distributed Processing
 /// Demonstra uso de petgraph e processamento paralelo massivo
-
 use petgraph::graph::{Graph, NodeIndex};
-use petgraph::algo::{dijkstra, connected_components, astar};
 use petgraph::Directed;
 use rayon::prelude::*;
 use std::collections::HashMap;
@@ -78,7 +77,10 @@ fn gravitational_wave_network() {
         let distances = dijkstra(&graph, start, Some(end), |e| *e.weight());
 
         if let Some(&distance) = distances.get(&end) {
-            println!("  ✓ Caminho mais curto (evento 0 → evento {}):", nodes.len() - 1);
+            println!(
+                "  ✓ Caminho mais curto (evento 0 → evento {}):",
+                nodes.len() - 1
+            );
             println!("    Distância total: {:.2}", distance);
         } else {
             println!("  ✓ Nenhum caminho encontrado entre eventos selecionados");
@@ -144,11 +146,7 @@ fn spacetime_pathfinding() {
                 let current = nodes[idx];
 
                 // Conectar com vizinhos
-                let neighbors = [
-                    (x + 1, y, z),
-                    (x, y + 1, z),
-                    (x, y, z + 1),
-                ];
+                let neighbors = [(x + 1, y, z), (x, y + 1, z), (x, y, z + 1)];
 
                 for (nx, ny, nz) in neighbors {
                     if nx < grid_size && ny < grid_size && nz < grid_size {
@@ -200,8 +198,14 @@ fn spacetime_pathfinding() {
         let start_point = &graph[path_nodes[0]];
         let end_point = &graph[*path_nodes.last().unwrap()];
 
-        println!("    Início: ({:.0}, {:.0}, {:.0})", start_point.x, start_point.y, start_point.z);
-        println!("    Fim: ({:.0}, {:.0}, {:.0})", end_point.x, end_point.y, end_point.z);
+        println!(
+            "    Início: ({:.0}, {:.0}, {:.0})",
+            start_point.x, start_point.y, start_point.z
+        );
+        println!(
+            "    Fim: ({:.0}, {:.0}, {:.0})",
+            end_point.x, end_point.y, end_point.z
+        );
     } else {
         println!("  ✗ Nenhum caminho encontrado");
     }
@@ -265,7 +269,10 @@ fn massive_parallel_processing() {
     let elapsed = start.elapsed();
 
     println!("  ✓ Cálculo completo em {:.2}s", elapsed.as_secs_f64());
-    println!("    Taxa: {:.0} tensores/segundo", n_tensors as f64 / elapsed.as_secs_f64());
+    println!(
+        "    Taxa: {:.0} tensores/segundo",
+        n_tensors as f64 / elapsed.as_secs_f64()
+    );
 
     // 3. Estatísticas
     let mean: f64 = determinants.par_iter().sum::<f64>() / n_tensors as f64;
@@ -299,7 +306,8 @@ fn massive_parallel_processing() {
         .map(|(i, &det)| (i, det))
         .collect();
 
-    println!("  ✓ Tensores com |det| ≈ 1.0: {} ({:.2}%)",
+    println!(
+        "  ✓ Tensores com |det| ≈ 1.0: {} ({:.2}%)",
         interesting.len(),
         (interesting.len() as f64 / n_tensors as f64) * 100.0
     );
@@ -313,10 +321,7 @@ fn massive_parallel_processing() {
         .enumerate()
         .map(|(chunk_id, chunk)| {
             // Map: processar chunk
-            let det_sum: f64 = chunk
-                .iter()
-                .map(|t| calculate_determinant_4x4(t))
-                .sum();
+            let det_sum: f64 = chunk.iter().map(|t| calculate_determinant_4x4(t)).sum();
 
             ChunkResult {
                 chunk_id,
@@ -333,7 +338,10 @@ fn massive_parallel_processing() {
 
     println!("    Chunks processados: {}", chunk_results.len());
     println!("    Média global (MapReduce): {:.6}", global_mean);
-    println!("    Diferença da média direta: {:.2e}", (global_mean - mean).abs());
+    println!(
+        "    Diferença da média direta: {:.2e}",
+        (global_mean - mean).abs()
+    );
 }
 
 #[derive(Debug)]

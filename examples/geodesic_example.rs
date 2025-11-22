@@ -13,15 +13,24 @@ fn main() {
     // 1. PROPRIEDADES ORBITAIS
     // ===============================================================
     println!("┌───────────────────────────────────────────────────────┐");
-    println!("│ 1. PROPRIEDADES ORBITAIS (M = {:.1} M☉)              │", mass);
+    println!(
+        "│ 1. PROPRIEDADES ORBITAIS (M = {:.1} M☉)              │",
+        mass
+    );
     println!("└───────────────────────────────────────────────────────┘");
 
     let calc = OrbitCalculator::new(mass);
 
     println!("  Raios críticos:");
     println!("    • Horizonte de eventos: r_s = {:.4}", 2.0 * mass);
-    println!("    • Esfera de fótons:     r_ph = {:.4}", calc.photon_sphere_radius());
-    println!("    • ISCO:                 r_isco = {:.4}", calc.isco_radius());
+    println!(
+        "    • Esfera de fótons:     r_ph = {:.4}",
+        calc.photon_sphere_radius()
+    );
+    println!(
+        "    • ISCO:                 r_isco = {:.4}",
+        calc.isco_radius()
+    );
 
     println!("\n  Órbitas circulares estáveis (r > ISCO):");
     println!("  ┌─────────┬────────────┬────────────┬────────────┐");
@@ -31,7 +40,11 @@ fn main() {
     for r in [6.0, 8.0, 10.0, 15.0, 20.0].iter() {
         let omega = calc.circular_angular_velocity(*r);
         let period = calc.orbital_period(*r);
-        let stable = if calc.is_stable_orbit(*r) { "Sim" } else { "Não" };
+        let stable = if calc.is_stable_orbit(*r) {
+            "Sim"
+        } else {
+            "Não"
+        };
 
         println!(
             "  │ {r:7.2} │ {omega:10.6} │ {period:10.4} │ {stable:10} │",
@@ -131,7 +144,10 @@ fn main() {
     let mercury_a = 57.9;
     let mercury_e = 0.206;
     let mercury_precession = calc.perihelion_precession(mercury_a, mercury_e);
-    println!("    Precessão: {:.2} arcsec/órbita", mercury_precession * 206265.0);
+    println!(
+        "    Precessão: {:.2} arcsec/órbita",
+        mercury_precession * 206265.0
+    );
     println!("    (Valor observado: ~43 arcsec/século)");
 
     // ===============================================================
@@ -244,9 +260,17 @@ fn main() {
     let final_state = trajectory.last().unwrap();
     let r_variation = (final_state.position[1] - r_orbit).abs();
 
-    println!("\n  Após {} passos (λ = {:.2}):", trajectory.len(), final_state.lambda);
+    println!(
+        "\n  Após {} passos (λ = {:.2}):",
+        trajectory.len(),
+        final_state.lambda
+    );
     println!("    • r_final = {:.6}", final_state.position[1]);
-    println!("    • Δr = {:.6} ({:.2}%)", r_variation, (r_variation / r_orbit) * 100.0);
+    println!(
+        "    • Δr = {:.6} ({:.2}%)",
+        r_variation,
+        (r_variation / r_orbit) * 100.0
+    );
 
     if r_variation / r_orbit < 0.01 {
         println!("    ✓ Órbita estável!");

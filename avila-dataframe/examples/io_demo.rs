@@ -6,12 +6,11 @@
 //! - Work with HDF5 (scientific data)
 //! - Connect to AvilaDB (native cloud database)
 
-use avila_dataframe::prelude::*;
 use avila_dataframe::io::{
-    ParquetCompression, ParquetWriteOptions,
-    CsvWriteOptions, CsvReadOptions,
-    AvilaDbConfig, AvilaDbQuery,
+    AvilaDbConfig, AvilaDbQuery, CsvReadOptions, CsvWriteOptions, ParquetCompression,
+    ParquetWriteOptions,
 };
+use avila_dataframe::prelude::*;
 
 fn main() -> Result<()> {
     println!("🚀 AvilaDB DataFrame - I/O Operations Demo");
@@ -60,8 +59,11 @@ fn main() -> Result<()> {
     // Read back
     println!("\n📖 Reading from Parquet...");
     let events_from_parquet = DataFrame::read_parquet(parquet_path)?;
-    println!("✅ Loaded {} rows, {} columns",
-        events_from_parquet.height(), events_from_parquet.width());
+    println!(
+        "✅ Loaded {} rows, {} columns",
+        events_from_parquet.height(),
+        events_from_parquet.width()
+    );
 
     // Read specific columns only (column pruning)
     println!("\n📖 Reading specific columns only...");
@@ -82,7 +84,7 @@ fn main() -> Result<()> {
     // Write with custom delimiter
     let tsv_path = "temp_events.tsv";
     let csv_options = CsvWriteOptions {
-        delimiter: b'\t',  // Tab-separated
+        delimiter: b'\t', // Tab-separated
         header: true,
         ..Default::default()
     };
@@ -92,8 +94,11 @@ fn main() -> Result<()> {
     // Read CSV
     println!("\n📖 Reading from CSV...");
     let events_from_csv = DataFrame::read_csv(csv_path)?;
-    println!("✅ Loaded {} rows, {} columns",
-        events_from_csv.height(), events_from_csv.width());
+    println!(
+        "✅ Loaded {} rows, {} columns",
+        events_from_csv.height(),
+        events_from_csv.width()
+    );
 
     // ========== 3. CSV STREAMING ==========
     println!("\n{}", "=".repeat(60));
@@ -131,14 +136,16 @@ fn main() -> Result<()> {
         }
     }
 
-    println!("✅ Processed {} chunks, {} total rows", chunk_count, total_rows);
+    println!(
+        "✅ Processed {} chunks, {} total rows",
+        chunk_count, total_rows
+    );
 
     // Process with callback
     println!("\n🔄 Processing chunks with callback (filter)...");
     let mut reader2 = DataFrame::read_csv_chunked(large_csv_path, 100)?;
-    let filtered_chunks = reader2.process_chunks(|chunk| {
-        chunk.filter(col("value").gt(lit(500.0)))
-    })?;
+    let filtered_chunks =
+        reader2.process_chunks(|chunk| chunk.filter(col("value").gt(lit(500.0))))?;
 
     let filtered_total: usize = filtered_chunks.iter().map(|df| df.height()).sum();
     println!("✅ Filtered result: {} rows (value > 500)", filtered_total);
@@ -157,8 +164,11 @@ fn main() -> Result<()> {
 
         println!("\n📖 Reading from HDF5...");
         let events_from_hdf5 = DataFrame::read_hdf5(hdf5_path, "gw_events")?;
-        println!("✅ Loaded {} rows, {} columns",
-            events_from_hdf5.height(), events_from_hdf5.width());
+        println!(
+            "✅ Loaded {} rows, {} columns",
+            events_from_hdf5.height(),
+            events_from_hdf5.width()
+        );
 
         println!("\n📋 Listing HDF5 datasets...");
         let datasets = DataFrame::list_hdf5_datasets(hdf5_path)?;
@@ -238,7 +248,10 @@ fn main() -> Result<()> {
     println!("\n📊 File Sizes:");
     println!("   Parquet (compressed): {} bytes", parquet_size);
     println!("   CSV (text): {} bytes", csv_size);
-    println!("   Compression ratio: {:.1}x", csv_size as f64 / parquet_size as f64);
+    println!(
+        "   Compression ratio: {:.1}x",
+        csv_size as f64 / parquet_size as f64
+    );
 
     println!("\n⚡ Performance Characteristics:");
     println!();

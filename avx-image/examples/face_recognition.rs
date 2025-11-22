@@ -1,7 +1,7 @@
 //! Face detection and recognition example
 
-use avx_image::prelude::*;
 use avx_image::face;
+use avx_image::prelude::*;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("👤 AVX-Image - Face Recognition Example\n");
@@ -18,8 +18,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Process each face
     for (i, detected_face) in faces.iter().enumerate() {
         println!("\n👤 Face {}:", i + 1);
-        println!("   Position: ({}, {})", detected_face.bbox.x, detected_face.bbox.y);
-        println!("   Size: {}x{}", detected_face.bbox.width, detected_face.bbox.height);
+        println!(
+            "   Position: ({}, {})",
+            detected_face.bbox.x, detected_face.bbox.y
+        );
+        println!(
+            "   Size: {}x{}",
+            detected_face.bbox.width, detected_face.bbox.height
+        );
         println!("   Confidence: {:.2}%", detected_face.confidence * 100.0);
 
         // Detect landmarks

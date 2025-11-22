@@ -1,15 +1,17 @@
 //! Group by operations
 
 use crate::core::{DataFrame, Series};
-use crate::error::{Result, AvilaError};
-use crate::ops::expressions::{Expr, AggFunc};
+use crate::error::{AvilaError, Result};
+use crate::ops::expressions::{AggFunc, Expr};
 use std::collections::HashMap;
 
 impl DataFrame {
     /// Group by one or more columns
     pub fn group_by(&self, by: &[&str]) -> Result<GroupBy> {
         if by.is_empty() {
-            return Err(AvilaError::generic("Must specify at least one column to group by"));
+            return Err(AvilaError::generic(
+                "Must specify at least one column to group by",
+            ));
         }
 
         // Verify all grouping columns exist
@@ -100,19 +102,17 @@ impl GroupBy {
     }
 
     /// Apply an aggregation expression
-    fn apply_aggregation(
-        &self,
-        expr: &Expr,
-        groups: &[(GroupKey, Vec<usize>)],
-    ) -> Result<Series> {
+    fn apply_aggregation(&self, expr: &Expr, groups: &[(GroupKey, Vec<usize>)]) -> Result<Series> {
         match expr {
             Expr::Agg { input, func } => {
                 // Get column name from input expression
                 let col_name = match input.as_ref() {
                     Expr::Column(name) => name,
-                    _ => return Err(AvilaError::generic(
-                        "Aggregation input must be a column reference"
-                    )),
+                    _ => {
+                        return Err(AvilaError::generic(
+                            "Aggregation input must be a column reference",
+                        ))
+                    }
                 };
 
                 let series = self.df.column(col_name)?;
@@ -127,9 +127,10 @@ impl GroupBy {
                 result = result.rename(name.clone());
                 Ok(result)
             }
-            _ => Err(AvilaError::generic(
-                format!("Expression type not supported in aggregation: {:?}", expr)
-            )),
+            _ => Err(AvilaError::generic(format!(
+                "Expression type not supported in aggregation: {:?}",
+                expr
+            ))),
         }
     }
 
@@ -143,34 +144,33 @@ impl GroupBy {
         groups
             .iter()
             .map(|(_, indices)| {
-                let values: Result<Vec<f64>> = indices
-                    .iter()
-                    .map(|&i| series.get_f64(i))
-                    .collect();
+                let values: Result<Vec<f64>> = indices.iter().map(|&i| series.get_f64(i)).collect();
                 let values = values?;
 
                 match func {
                     AggFunc::Sum => Ok(values.iter().sum()),
                     AggFunc::Mean => Ok(values.iter().sum::<f64>() / values.len() as f64),
-                    AggFunc::Min => values.iter().cloned()
+                    AggFunc::Min => values
+                        .iter()
+                        .cloned()
                         .min_by(|a, b| a.partial_cmp(b).unwrap())
                         .ok_or_else(|| AvilaError::generic("No values to aggregate")),
-                    AggFunc::Max => values.iter().cloned()
+                    AggFunc::Max => values
+                        .iter()
+                        .cloned()
                         .max_by(|a, b| a.partial_cmp(b).unwrap())
                         .ok_or_else(|| AvilaError::generic("No values to aggregate")),
                     AggFunc::Count => Ok(values.len() as f64),
                     AggFunc::Std => {
                         let mean = values.iter().sum::<f64>() / values.len() as f64;
-                        let variance = values.iter()
-                            .map(|v| (v - mean).powi(2))
-                            .sum::<f64>() / values.len() as f64;
+                        let variance = values.iter().map(|v| (v - mean).powi(2)).sum::<f64>()
+                            / values.len() as f64;
                         Ok(variance.sqrt())
                     }
                     AggFunc::Var => {
                         let mean = values.iter().sum::<f64>() / values.len() as f64;
-                        Ok(values.iter()
-                            .map(|v| (v - mean).powi(2))
-                            .sum::<f64>() / values.len() as f64)
+                        Ok(values.iter().map(|v| (v - mean).powi(2)).sum::<f64>()
+                            / values.len() as f64)
                     }
                     AggFunc::Median => {
                         let mut sorted = values.clone();

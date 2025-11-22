@@ -1,7 +1,7 @@
 //! Hierarchical clustering
 
+use crate::{ClusteringError, Result};
 use ndarray::{Array1, Array2, ArrayView2};
-use crate::{Result, ClusteringError};
 
 /// Linkage criterion for hierarchical clustering
 #[derive(Debug, Clone, Copy)]
@@ -103,10 +103,9 @@ impl HierarchicalResult {
     }
 
     pub fn dendrogram(&self) -> Result<&Dendrogram> {
-        self.dendrogram.as_ref()
-            .ok_or_else(|| ClusteringError::InvalidParameter(
-                "compute_full_tree was not enabled".to_string()
-            ))
+        self.dendrogram.as_ref().ok_or_else(|| {
+            ClusteringError::InvalidParameter("compute_full_tree was not enabled".to_string())
+        })
     }
 }
 

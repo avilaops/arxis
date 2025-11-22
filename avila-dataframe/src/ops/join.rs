@@ -1,7 +1,7 @@
 //! Join operations
 
 use crate::core::{DataFrame, Series};
-use crate::error::{Result, AvilaError};
+use crate::error::{AvilaError, Result};
 use std::collections::HashMap;
 
 /// Join type
@@ -39,7 +39,7 @@ impl DataFrame {
     ) -> Result<Self> {
         if left_on.len() != right_on.len() {
             return Err(AvilaError::generic(
-                "Left and right join keys must have same length"
+                "Left and right join keys must have same length",
             ));
         }
         self.join_impl(other, left_on, right_on, how)

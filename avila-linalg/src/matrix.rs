@@ -2,9 +2,9 @@
 //!
 //! Implementa matrizes 2x2, 3x3, 4x4 e MxN
 
-use num_traits::{Float, Num, Zero, One};
-use std::ops::Mul;
 use crate::vector::Vector3;
+use num_traits::{Float, Num, One, Zero};
+use std::ops::Mul;
 
 /// Matriz 2x2 genérica
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -23,10 +23,7 @@ impl<T: Num + Copy> Matrix2x2<T> {
     where
         T: Zero + One,
     {
-        Self::from_rows([
-            [T::one(), T::zero()],
-            [T::zero(), T::one()],
-        ])
+        Self::from_rows([[T::one(), T::zero()], [T::zero(), T::one()]])
     }
 
     /// Transposta
@@ -72,11 +69,7 @@ impl<T: Num + Copy> Matrix3x3<T> {
     where
         T: Zero,
     {
-        Self::from_rows([
-            [T::zero(); 3],
-            [T::zero(); 3],
-            [T::zero(); 3],
-        ])
+        Self::from_rows([[T::zero(); 3], [T::zero(); 3], [T::zero(); 3]])
     }
 
     /// Acesso aos dados internos
@@ -133,18 +126,26 @@ impl<T: Float> Matrix3x3<T> {
         let c22 = self.data[0][0] * self.data[1][1] - self.data[0][1] * self.data[1][0];
 
         // Adjunta (transposta da matriz de cofatores)
-        let adj = Self::from_rows([
-            [c00, c10, c20],
-            [c01, c11, c21],
-            [c02, c12, c22],
-        ]);
+        let adj = Self::from_rows([[c00, c10, c20], [c01, c11, c21], [c02, c12, c22]]);
 
         // Inversa = adjunta / det
         let inv_det = T::one() / det;
         Some(Self::from_rows([
-            [adj.data[0][0] * inv_det, adj.data[0][1] * inv_det, adj.data[0][2] * inv_det],
-            [adj.data[1][0] * inv_det, adj.data[1][1] * inv_det, adj.data[1][2] * inv_det],
-            [adj.data[2][0] * inv_det, adj.data[2][1] * inv_det, adj.data[2][2] * inv_det],
+            [
+                adj.data[0][0] * inv_det,
+                adj.data[0][1] * inv_det,
+                adj.data[0][2] * inv_det,
+            ],
+            [
+                adj.data[1][0] * inv_det,
+                adj.data[1][1] * inv_det,
+                adj.data[1][2] * inv_det,
+            ],
+            [
+                adj.data[2][0] * inv_det,
+                adj.data[2][1] * inv_det,
+                adj.data[2][2] * inv_det,
+            ],
         ]))
     }
 }
@@ -179,7 +180,9 @@ impl<T: Num + Copy> Matrix4x4<T> {
     where
         T: Zero,
     {
-        Self { data: [[T::zero(); 4]; 4] }
+        Self {
+            data: [[T::zero(); 4]; 4],
+        }
     }
 
     /// Acesso aos dados internos
@@ -325,22 +328,14 @@ mod tests {
 
     #[test]
     fn test_matrix3x3_det() {
-        let m = Matrix3x3::from_rows([
-            [1.0, 2.0, 3.0],
-            [0.0, 1.0, 4.0],
-            [5.0, 6.0, 0.0],
-        ]);
+        let m = Matrix3x3::from_rows([[1.0, 2.0, 3.0], [0.0, 1.0, 4.0], [5.0, 6.0, 0.0]]);
         let det = m.det();
         assert_eq!(det, 1.0);
     }
 
     #[test]
     fn test_matrix_vector_mul() {
-        let m = Matrix3x3::from_rows([
-            [1.0, 0.0, 0.0],
-            [0.0, 1.0, 0.0],
-            [0.0, 0.0, 1.0],
-        ]);
+        let m = Matrix3x3::from_rows([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]);
         let v = Vector3::new(1.0, 2.0, 3.0);
         let result = m * v;
         assert_eq!(result, v);

@@ -3,7 +3,7 @@
 #[cfg(feature = "gpu-wgpu")]
 use wgpu::{Device, Queue};
 
-use crate::{Result, ReductionError};
+use crate::{ReductionError, Result};
 
 #[cfg(feature = "gpu-wgpu")]
 pub struct RocmPCA {
@@ -32,7 +32,7 @@ pub struct RocmPCA;
 impl RocmPCA {
     pub fn new(_n_components: usize) -> Result<Self> {
         Err(ReductionError::GpuError(
-            "GPU-wgpu support not enabled. Compile with --features gpu-wgpu".to_string()
+            "GPU-wgpu support not enabled. Compile with --features gpu-wgpu".to_string(),
         ))
     }
 }

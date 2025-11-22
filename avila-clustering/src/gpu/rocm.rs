@@ -3,7 +3,7 @@
 #[cfg(feature = "gpu-wgpu")]
 use wgpu::{Device, Queue};
 
-use crate::{Result, ClusteringError};
+use crate::{ClusteringError, Result};
 
 #[cfg(feature = "gpu-wgpu")]
 pub struct RocmKMeans {
@@ -38,7 +38,7 @@ pub struct RocmKMeans;
 impl RocmKMeans {
     pub fn new(_n_clusters: usize) -> Result<Self> {
         Err(ClusteringError::GpuError(
-            "GPU-wgpu support not enabled. Compile with --features gpu-wgpu".to_string()
+            "GPU-wgpu support not enabled. Compile with --features gpu-wgpu".to_string(),
         ))
     }
 }

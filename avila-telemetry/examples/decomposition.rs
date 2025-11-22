@@ -1,4 +1,4 @@
-use avila_telemetry::{TimeSeries, Decomposer, DecompositionType};
+use avila_telemetry::{Decomposer, DecompositionType, TimeSeries};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("=== Time Series Decomposition Example ===\n");

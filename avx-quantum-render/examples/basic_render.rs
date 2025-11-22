@@ -2,8 +2,8 @@
 //!
 //! Demonstra renderização usando path integral formulation
 
+use avx_quantum_render::scene::{Camera, Light, Material, Surface};
 use avx_quantum_render::{QEDRenderer, RenderConfig, Scene};
-use avx_quantum_render::scene::{Light, Surface, Material, Camera};
 
 fn main() {
     println!("=== AVX Quantum Renderer - QED Path Integral Demo ===\n");
@@ -90,10 +90,11 @@ fn create_cornell_box() -> Scene {
 
     // Configurar câmera
     let camera = Camera::new(
-        [0.0, 2.5, 8.0],   // Posição
-        [0.0, 2.5, 0.0],   // Olhando para
+        [0.0, 2.5, 8.0],             // Posição
+        [0.0, 2.5, 0.0],             // Olhando para
         std::f64::consts::FRAC_PI_3, // FOV
-    ).with_resolution(80, 40); // Resolução baixa para ASCII
+    )
+    .with_resolution(80, 40); // Resolução baixa para ASCII
 
     scene.set_camera(camera);
 
@@ -149,8 +150,8 @@ fn save_ascii_image(image: &[Vec<f64>], filename: &str) {
 /// Demonstra cálculos quânticos individuais
 fn demonstrate_quantum_calculations() {
     use avx_quantum_render::amplitude::{ComplexAmplitude, PhaseAccumulator};
-    use avx_quantum_render::feynman::{FeynmanVertex, compton_scattering_amplitude};
-    use avx_quantum_render::photon::{PhotonPath, Vertex, InteractionType};
+    use avx_quantum_render::feynman::{compton_scattering_amplitude, FeynmanVertex};
+    use avx_quantum_render::photon::{InteractionType, PhotonPath, Vertex};
     use avx_quantum_render::FINE_STRUCTURE;
 
     println!("\n\n🔬 === Demonstração de Cálculos Quânticos ===\n");
@@ -160,8 +161,16 @@ fn demonstrate_quantum_calculations() {
     let amp1 = ComplexAmplitude::from_polar(2.0, std::f64::consts::PI / 4.0);
     let amp2 = ComplexAmplitude::from_polar(1.5, std::f64::consts::PI / 3.0);
     let sum = amp1 + amp2;
-    println!("   |A₁| = {:.3}, φ₁ = {:.3}°", amp1.magnitude(), amp1.phase().to_degrees());
-    println!("   |A₂| = {:.3}, φ₂ = {:.3}°", amp2.magnitude(), amp2.phase().to_degrees());
+    println!(
+        "   |A₁| = {:.3}, φ₁ = {:.3}°",
+        amp1.magnitude(),
+        amp1.phase().to_degrees()
+    );
+    println!(
+        "   |A₂| = {:.3}, φ₂ = {:.3}°",
+        amp2.magnitude(),
+        amp2.phase().to_degrees()
+    );
     println!("   |A₁+A₂| = {:.3}", sum.magnitude());
     println!("   P(A₁+A₂) = |A|² = {:.4}", sum.probability());
 
@@ -169,27 +178,43 @@ fn demonstrate_quantum_calculations() {
     println!("\n2. Acumulação de Fase Quântica:");
     let mut phase = PhaseAccumulator::new();
     let wavelength = 550e-9; // Verde (550nm)
-    let distance = 1e-6;     // 1 micrômetro
+    let distance = 1e-6; // 1 micrômetro
     phase.add_propagation(distance, wavelength, 1.0);
     println!("   λ = {:.0} nm", wavelength * 1e9);
     println!("   d = {:.1} μm", distance * 1e6);
-    println!("   Fase acumulada: {:.2} rad = {:.1}°", phase.total_phase, phase.total_phase.to_degrees());
+    println!(
+        "   Fase acumulada: {:.2} rad = {:.1}°",
+        phase.total_phase,
+        phase.total_phase.to_degrees()
+    );
     let amp = phase.to_amplitude();
-    println!("   Amplitude resultante: {:.3}∠{:.1}°", amp.magnitude(), amp.phase().to_degrees());
+    println!(
+        "   Amplitude resultante: {:.3}∠{:.1}°",
+        amp.magnitude(),
+        amp.phase().to_degrees()
+    );
 
     // 3. Vértice de Feynman
     println!("\n3. Vértice de Feynman (QED):");
     let mut vertex = FeynmanVertex::new([0.0, 0.0, 0.0], InteractionType::Emission);
     vertex.compute_qed_amplitude();
-    println!("   Constante de estrutura fina: α = {:.6} ≈ 1/{:.0}",
-             FINE_STRUCTURE, 1.0/FINE_STRUCTURE);
-    println!("   Coupling constant: e = √(4πα) = {:.6}",
-             (4.0 * std::f64::consts::PI * FINE_STRUCTURE).sqrt());
-    println!("   Amplitude do vértice: |V| = {:.6}", vertex.amplitude.magnitude());
+    println!(
+        "   Constante de estrutura fina: α = {:.6} ≈ 1/{:.0}",
+        FINE_STRUCTURE,
+        1.0 / FINE_STRUCTURE
+    );
+    println!(
+        "   Coupling constant: e = √(4πα) = {:.6}",
+        (4.0 * std::f64::consts::PI * FINE_STRUCTURE).sqrt()
+    );
+    println!(
+        "   Amplitude do vértice: |V| = {:.6}",
+        vertex.amplitude.magnitude()
+    );
 
     // 4. Espalhamento Compton
     println!("\n4. Espalhamento Compton (γ + e⁻ → γ + e⁻):");
-    let photon_in = 1e-15;  // 1 keV
+    let photon_in = 1e-15; // 1 keV
     let photon_out = 0.9e-15;
     let angle = std::f64::consts::FRAC_PI_4; // 45°
     let compton_amp = compton_scattering_amplitude(photon_in, photon_out, angle);
@@ -197,13 +222,22 @@ fn demonstrate_quantum_calculations() {
     println!("   E_out = {:.1} keV", photon_out * 1e18 / 1.602176634);
     println!("   θ = {:.0}°", angle.to_degrees());
     println!("   Amplitude: {:.6}", compton_amp.magnitude());
-    println!("   Seção de choque ∝ |A|²: {:.3e}", compton_amp.probability());
+    println!(
+        "   Seção de choque ∝ |A|²: {:.3e}",
+        compton_amp.probability()
+    );
 
     // 5. Caminho de Fóton
     println!("\n5. Caminho Quântico de Fóton:");
     let mut path = PhotonPath::new();
     let v1 = Vertex::emission([0.0, 0.0, 0.0], [1.0, 0.0, 0.0], 3e-19);
-    let v2 = Vertex::new([1.0, 0.0, 0.0], 1e-9, InteractionType::Scattering, [0.0, 1.0, 0.0], 3e-19);
+    let v2 = Vertex::new(
+        [1.0, 0.0, 0.0],
+        1e-9,
+        InteractionType::Scattering,
+        [0.0, 1.0, 0.0],
+        3e-19,
+    );
     let v3 = Vertex::detection([1.0, 1.0, 0.0], 2e-9);
 
     path.add_vertex(v1);

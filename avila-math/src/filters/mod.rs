@@ -8,4 +8,4 @@ pub mod ztransform;
 
 pub use kalman::KalmanFilter;
 pub use wiener::WienerFilter;
-pub use ztransform::{ztransform, inverse_ztransform, ZTransform};
+pub use ztransform::{inverse_ztransform, ztransform, ZTransform};

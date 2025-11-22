@@ -4,7 +4,7 @@
 //! ideal para astronomia, análise de ondas gravitacionais, e processamento de sinais.
 
 use crate::error::{AvilaError, Result};
-use rustfft::{FftPlanner, num_complex::Complex};
+use rustfft::{num_complex::Complex, FftPlanner};
 use std::f64::consts::PI;
 
 /// Tipos de janelas para FFT
@@ -25,41 +25,34 @@ fn apply_window(signal: &[f64], window: WindowType) -> Vec<f64> {
     let n = signal.len();
     match window {
         WindowType::None => signal.to_vec(),
-        WindowType::Hann => {
-            signal
-                .iter()
-                .enumerate()
-                .map(|(i, &x)| {
-                    let w = 0.5 * (1.0 - (2.0 * PI * i as f64 / (n - 1) as f64).cos());
-                    x * w
-                })
-                .collect()
-        }
-        WindowType::Hamming => {
-            signal
-                .iter()
-                .enumerate()
-                .map(|(i, &x)| {
-                    let w = 0.54 - 0.46 * (2.0 * PI * i as f64 / (n - 1) as f64).cos();
-                    x * w
-                })
-                .collect()
-        }
-        WindowType::Blackman => {
-            signal
-                .iter()
-                .enumerate()
-                .map(|(i, &x)| {
-                    let a0 = 0.42;
-                    let a1 = 0.5;
-                    let a2 = 0.08;
-                    let w = a0
-                        - a1 * (2.0 * PI * i as f64 / (n - 1) as f64).cos()
-                        + a2 * (4.0 * PI * i as f64 / (n - 1) as f64).cos();
-                    x * w
-                })
-                .collect()
-        }
+        WindowType::Hann => signal
+            .iter()
+            .enumerate()
+            .map(|(i, &x)| {
+                let w = 0.5 * (1.0 - (2.0 * PI * i as f64 / (n - 1) as f64).cos());
+                x * w
+            })
+            .collect(),
+        WindowType::Hamming => signal
+            .iter()
+            .enumerate()
+            .map(|(i, &x)| {
+                let w = 0.54 - 0.46 * (2.0 * PI * i as f64 / (n - 1) as f64).cos();
+                x * w
+            })
+            .collect(),
+        WindowType::Blackman => signal
+            .iter()
+            .enumerate()
+            .map(|(i, &x)| {
+                let a0 = 0.42;
+                let a1 = 0.5;
+                let a2 = 0.08;
+                let w = a0 - a1 * (2.0 * PI * i as f64 / (n - 1) as f64).cos()
+                    + a2 * (4.0 * PI * i as f64 / (n - 1) as f64).cos();
+                x * w
+            })
+            .collect(),
     }
 }
 
@@ -92,10 +85,7 @@ pub fn fft(signal: &[f64], window: Option<WindowType>) -> Result<Vec<f64>> {
     };
 
     // Converte para Complex
-    let mut buffer: Vec<Complex<f64>> = windowed
-        .iter()
-        .map(|&x| Complex::new(x, 0.0))
-        .collect();
+    let mut buffer: Vec<Complex<f64>> = windowed.iter().map(|&x| Complex::new(x, 0.0)).collect();
 
     // Calcula FFT
     let mut planner = FftPlanner::new();
@@ -133,7 +123,9 @@ pub fn power_spectral_density(
     window: Option<WindowType>,
 ) -> Result<Vec<f64>> {
     if sample_rate <= 0.0 {
-        return Err(AvilaError::InvalidInput("Sample rate must be positive".into()));
+        return Err(AvilaError::InvalidInput(
+            "Sample rate must be positive".into(),
+        ));
     }
 
     let spectrum = fft(signal, window)?;
@@ -169,9 +161,7 @@ pub fn frequency_vector(n_samples: usize, sample_rate: f64) -> Vec<f64> {
     let n_freq = n_samples / 2;
     let freq_resolution = sample_rate / n_samples as f64;
 
-    (0..n_freq)
-        .map(|i| i as f64 * freq_resolution)
-        .collect()
+    (0..n_freq).map(|i| i as f64 * freq_resolution).collect()
 }
 
 /// Encontra o pico dominante no espectro

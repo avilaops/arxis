@@ -95,7 +95,11 @@ fn main() {
         }
 
         if epoch % 100 == 0 {
-            println!("Epoch {}: Loss = {:.6}", epoch, total_loss / training_data.len() as f64);
+            println!(
+                "Epoch {}: Loss = {:.6}",
+                epoch,
+                total_loss / training_data.len() as f64
+            );
         }
     }
 

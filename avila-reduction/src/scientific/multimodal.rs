@@ -1,7 +1,7 @@
 //! Multi-modal dimensionality reduction
 
+use crate::{ReductionError, Result};
 use ndarray::{Array2, ArrayView2};
-use crate::{Result, ReductionError};
 
 /// Modality type
 #[derive(Debug, Clone, Copy)]

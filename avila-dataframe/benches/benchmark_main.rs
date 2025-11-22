@@ -1,5 +1,5 @@
-use criterion::{black_box, criterion_group, criterion_main, Criterion, BenchmarkId};
 use avila_dataframe::prelude::*;
+use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criterion};
 
 fn benchmark_groupby(c: &mut Criterion) {
     let mut group = c.benchmark_group("groupby");
@@ -8,9 +8,7 @@ fn benchmark_groupby(c: &mut Criterion) {
         let df = create_test_dataframe(*size);
 
         group.bench_with_input(BenchmarkId::from_parameter(size), size, |b, _| {
-            b.iter(|| {
-                df.group_by(&["category"]).unwrap()
-            });
+            b.iter(|| df.group_by(&["category"]).unwrap());
         });
     }
 
@@ -24,9 +22,7 @@ fn benchmark_filter(c: &mut Criterion) {
         let df = create_test_dataframe(*size);
 
         group.bench_with_input(BenchmarkId::from_parameter(size), size, |b, _| {
-            b.iter(|| {
-                df.filter(col("value").gt(lit(50.0))).unwrap()
-            });
+            b.iter(|| df.filter(col("value").gt(lit(50.0))).unwrap());
         });
     }
 
@@ -38,21 +34,15 @@ fn benchmark_aggregations(c: &mut Criterion) {
     let series = df.column("value").unwrap();
 
     c.bench_function("mean_100k", |b| {
-        b.iter(|| {
-            black_box(series.mean().unwrap())
-        });
+        b.iter(|| black_box(series.mean().unwrap()));
     });
 
     c.bench_function("std_100k", |b| {
-        b.iter(|| {
-            black_box(series.std().unwrap())
-        });
+        b.iter(|| black_box(series.std().unwrap()));
     });
 
     c.bench_function("sum_100k", |b| {
-        b.iter(|| {
-            black_box(series.sum().unwrap())
-        });
+        b.iter(|| black_box(series.sum().unwrap()));
     });
 }
 
@@ -63,8 +53,14 @@ fn create_test_dataframe(size: usize) -> DataFrame {
     DataFrame::new(vec![
         Series::new("value", values),
         Series::new("category", categories),
-    ]).unwrap()
+    ])
+    .unwrap()
 }
 
-criterion_group!(benches, benchmark_groupby, benchmark_filter, benchmark_aggregations);
+criterion_group!(
+    benches,
+    benchmark_groupby,
+    benchmark_filter,
+    benchmark_aggregations
+);
 criterion_main!(benches);

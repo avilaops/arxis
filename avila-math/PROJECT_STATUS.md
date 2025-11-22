@@ -301,7 +301,7 @@ python -c "import avila_math; print(avila_math.Quaternion.identity())"
 
 ## 🎉 Conclusão
 
-**avila-math é genuinamente 100% Rust**, sem dependências de frameworks de ML externos (PyTorch, TensorFlow, etc.). 
+**avila-math é genuinamente 100% Rust**, sem dependências de frameworks de ML externos (PyTorch, TensorFlow, etc.).
 
 Todas as implementações são nativas:
 - ✅ Conv4D: implementação própria com Rayon

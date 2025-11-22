@@ -7,8 +7,8 @@
 //! - Fazer ranking de estudantes
 //! - Visualizar dados agregados
 
+use avila_dataframe::ops::{JoinType, PivotAggFunc, SortOrder};
 use avila_dataframe::prelude::*;
-use avila_dataframe::ops::{JoinType, SortOrder, PivotAggFunc};
 
 fn main() -> Result<()> {
     println!("🎓 Sistema de Análise de Notas Acadêmicas");
@@ -20,11 +20,25 @@ fn main() -> Result<()> {
 
     // DataFrame com notas de alunos em diferentes provas
     let notas = DataFrame::new(vec![
-        Series::new("aluno_id", vec![1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0, 4.0, 4.0, 4.0]),
-        Series::new("disciplina", vec![1.0, 2.0, 3.0, 1.0, 2.0, 3.0, 1.0, 2.0, 3.0, 1.0, 2.0, 3.0]),
+        Series::new(
+            "aluno_id",
+            vec![1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0, 4.0, 4.0, 4.0],
+        ),
+        Series::new(
+            "disciplina",
+            vec![1.0, 2.0, 3.0, 1.0, 2.0, 3.0, 1.0, 2.0, 3.0, 1.0, 2.0, 3.0],
+        ),
         // Disciplinas: 1=Cálculo, 2=Física, 3=Programação
-        Series::new("nota", vec![8.5, 7.0, 9.5, 6.0, 5.5, 7.5, 9.0, 8.5, 10.0, 4.5, 6.0, 7.0]),
-        Series::new("presenca", vec![95.0, 90.0, 100.0, 80.0, 75.0, 85.0, 100.0, 95.0, 100.0, 70.0, 65.0, 75.0]),
+        Series::new(
+            "nota",
+            vec![8.5, 7.0, 9.5, 6.0, 5.5, 7.5, 9.0, 8.5, 10.0, 4.5, 6.0, 7.0],
+        ),
+        Series::new(
+            "presenca",
+            vec![
+                95.0, 90.0, 100.0, 80.0, 75.0, 85.0, 100.0, 95.0, 100.0, 70.0, 65.0, 75.0,
+            ],
+        ),
     ])?;
 
     println!("Notas dos Alunos:");
@@ -44,24 +58,24 @@ fn main() -> Result<()> {
     println!("\n📊 2. IDENTIFICAR ALUNOS EM RISCO (nota < 6.0)");
     println!("━".repeat(60));
 
-    let em_risco = notas
-        .filter(col("nota").lt(lit(6.0)))?;
+    let em_risco = notas.filter(col("nota").lt(lit(6.0)))?;
 
     println!("Alunos com notas abaixo de 6.0:");
     println!("{}", em_risco);
-    println!("⚠️  Total de provas abaixo da média: {} registros", em_risco.height());
+    println!(
+        "⚠️  Total de provas abaixo da média: {} registros",
+        em_risco.height()
+    );
 
     // ========== 3. CALCULAR MÉDIA POR ALUNO ==========
     println!("\n📊 3. MÉDIA GERAL POR ALUNO");
     println!("━".repeat(60));
 
-    let media_por_aluno = notas
-        .group_by(&["aluno_id"])?
-        .agg(&[
-            col("nota").mean().alias("media_geral"),
-            col("nota").sum().alias("soma_notas"),
-            col("presenca").mean().alias("media_presenca"),
-        ])?;
+    let media_por_aluno = notas.group_by(&["aluno_id"])?.agg(&[
+        col("nota").mean().alias("media_geral"),
+        col("nota").sum().alias("soma_notas"),
+        col("presenca").mean().alias("media_presenca"),
+    ])?;
 
     println!("Médias por Aluno:");
     println!("{}", media_por_aluno);
@@ -70,14 +84,12 @@ fn main() -> Result<()> {
     println!("\n📊 4. DESEMPENHO POR DISCIPLINA");
     println!("━".repeat(60));
 
-    let media_por_disciplina = notas
-        .group_by(&["disciplina"])?
-        .agg(&[
-            col("nota").mean().alias("media_turma"),
-            col("nota").std().alias("desvio_padrao"),
-            col("nota").min().alias("nota_minima"),
-            col("nota").max().alias("nota_maxima"),
-        ])?;
+    let media_por_disciplina = notas.group_by(&["disciplina"])?.agg(&[
+        col("nota").mean().alias("media_turma"),
+        col("nota").std().alias("desvio_padrao"),
+        col("nota").min().alias("nota_minima"),
+        col("nota").max().alias("nota_maxima"),
+    ])?;
 
     println!("Estatísticas por Disciplina:");
     println!("(1=Cálculo, 2=Física, 3=Programação)");
@@ -87,8 +99,7 @@ fn main() -> Result<()> {
     println!("\n📊 5. RANKING GERAL DOS ALUNOS");
     println!("━".repeat(60));
 
-    let ranking = media_por_aluno
-        .sort("media_geral", SortOrder::Descending)?;
+    let ranking = media_por_aluno.sort("media_geral", SortOrder::Descending)?;
 
     println!("Ranking (do melhor para o pior):");
     println!("{}", ranking);
@@ -109,7 +120,7 @@ fn main() -> Result<()> {
     println!("━".repeat(60));
 
     let calculo = notas
-        .filter(col("disciplina").eq(lit(1.0)))?  // 1 = Cálculo
+        .filter(col("disciplina").eq(lit(1.0)))? // 1 = Cálculo
         .sort("nota", SortOrder::Descending)?;
 
     println!("Notas em Cálculo (ordenadas):");
@@ -131,13 +142,7 @@ fn main() -> Result<()> {
     println!("\n📊 9. MATRIZ DE NOTAS (Aluno × Disciplina)");
     println!("━".repeat(60));
 
-    let matriz_notas = notas
-        .pivot(
-            &["aluno_id"],
-            "disciplina",
-            "nota",
-            PivotAggFunc::Mean
-        )?;
+    let matriz_notas = notas.pivot(&["aluno_id"], "disciplina", "nota", PivotAggFunc::Mean)?;
 
     println!("Matriz Aluno × Disciplina:");
     println!("{}", matriz_notas);
@@ -154,8 +159,7 @@ fn main() -> Result<()> {
 
     println!("📈 Média geral da turma: {:.2}", media_turma);
 
-    let acima_media = media_por_aluno
-        .filter(col("media_geral").gt(lit(media_turma)))?;
+    let acima_media = media_por_aluno.filter(col("media_geral").gt(lit(media_turma)))?;
 
     println!("\nAlunos com média acima da turma:");
     println!("{}", acima_media);
@@ -215,7 +219,10 @@ fn main() -> Result<()> {
     println!("📝 Total de avaliações: {}", total_provas);
     println!("✅ Alunos aprovados (média ≥ 6.0): {}", aprovados);
     println!("❌ Alunos em risco (média < 6.0): {}", reprovados);
-    println!("📊 Taxa de aprovação: {:.1}%", (aprovados as f64 / total_alunos as f64) * 100.0);
+    println!(
+        "📊 Taxa de aprovação: {:.1}%",
+        (aprovados as f64 / total_alunos as f64) * 100.0
+    );
     println!("📈 Média geral da turma: {:.2}", media_turma);
 
     // ========== CONCLUSÃO ==========

@@ -46,9 +46,11 @@ impl Decomposer {
     /// Decompose a time series
     pub fn decompose(&self, ts: &TimeSeries) -> Result<DecompositionResult> {
         if ts.len() < 2 * self.period {
-            return Err(TelemetryError::InsufficientData(
-                format!("Need at least {} data points for period {}", 2 * self.period, self.period),
-            ));
+            return Err(TelemetryError::InsufficientData(format!(
+                "Need at least {} data points for period {}",
+                2 * self.period,
+                self.period
+            )));
         }
 
         // Calculate trend using centered moving average
@@ -96,7 +98,8 @@ impl Decomposer {
 
     /// Remove trend from series
     fn detrend(&self, values: &[f64], trend: &[f64]) -> Result<Vec<f64>> {
-        let detrended: Vec<f64> = values.iter()
+        let detrended: Vec<f64> = values
+            .iter()
             .zip(trend.iter())
             .map(|(&v, &t)| {
                 if t.is_nan() {
@@ -163,8 +166,14 @@ impl Decomposer {
     }
 
     /// Calculate residual component
-    fn calculate_residual(&self, values: &[f64], trend: &[f64], seasonal: &[f64]) -> Result<Vec<f64>> {
-        let residual: Vec<f64> = values.iter()
+    fn calculate_residual(
+        &self,
+        values: &[f64],
+        trend: &[f64],
+        seasonal: &[f64],
+    ) -> Result<Vec<f64>> {
+        let residual: Vec<f64> = values
+            .iter()
             .zip(trend.iter())
             .zip(seasonal.iter())
             .map(|((&v, &t), &s)| {

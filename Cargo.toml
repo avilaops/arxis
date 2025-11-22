@@ -2,18 +2,21 @@
 members = [
     ".",
     "avila-clustering",
+    "avila-dataframe",
     "avila-linalg",
     "avila-math",
     "avila-ml",
+    "avila-reduction",
     "avila-telemetry",
     "avx-api-core",
     "avx-cli",
     "avx-config",
     "avx-events",
     "avx-gateway",
+    # "avx-gpu", # Nested workspace - has its own sub-crates
+    "avx-image",
     "avx-quantum-render",
     "avx-telemetry",
-    "landing-page-leptos",
 ]
 resolver = "2"
 

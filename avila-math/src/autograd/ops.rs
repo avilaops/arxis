@@ -6,46 +6,61 @@ use super::variable::Variable;
 /// Add two variables
 pub fn add(tape: &mut Tape, a: &Variable, b: &Variable) -> Variable {
     let value = a.value() + b.value();
-    tape.record(value, Operation::Add {
-        a: a.clone(),
-        b: b.clone(),
-    })
+    tape.record(
+        value,
+        Operation::Add {
+            a: a.clone(),
+            b: b.clone(),
+        },
+    )
 }
 
 /// Subtract two variables
 pub fn sub(tape: &mut Tape, a: &Variable, b: &Variable) -> Variable {
     let value = a.value() - b.value();
-    tape.record(value, Operation::Sub {
-        a: a.clone(),
-        b: b.clone(),
-    })
+    tape.record(
+        value,
+        Operation::Sub {
+            a: a.clone(),
+            b: b.clone(),
+        },
+    )
 }
 
 /// Multiply two variables
 pub fn mul(tape: &mut Tape, a: &Variable, b: &Variable) -> Variable {
     let value = a.value() * b.value();
-    tape.record(value, Operation::Mul {
-        a: a.clone(),
-        b: b.clone(),
-    })
+    tape.record(
+        value,
+        Operation::Mul {
+            a: a.clone(),
+            b: b.clone(),
+        },
+    )
 }
 
 /// Divide two variables
 pub fn div(tape: &mut Tape, a: &Variable, b: &Variable) -> Variable {
     let value = a.value() / b.value();
-    tape.record(value, Operation::Div {
-        a: a.clone(),
-        b: b.clone(),
-    })
+    tape.record(
+        value,
+        Operation::Div {
+            a: a.clone(),
+            b: b.clone(),
+        },
+    )
 }
 
 /// Power (a^b where b is constant)
 pub fn pow(tape: &mut Tape, a: &Variable, exponent: f64) -> Variable {
     let value = a.value().powf(exponent);
-    tape.record(value, Operation::Pow {
-        a: a.clone(),
-        b: exponent,
-    })
+    tape.record(
+        value,
+        Operation::Pow {
+            a: a.clone(),
+            b: exponent,
+        },
+    )
 }
 
 /// Exponential

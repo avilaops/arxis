@@ -22,8 +22,7 @@ keywords = [
 categories = ["computer-vision", "multimedia::images", "science"]
 exclude = ["target/", "*.swp", ".git*", "examples/*.jpg", "examples/*.png"]
 
-[workspace]
-members = ["Nova pasta (2)/face3d-rs"]
+# Note: Sub-workspace removed - face3d-rs should be separate project
 
 [dependencies]
 # Core image processing

@@ -1,9 +1,9 @@
 //! Core: DataFrame - Tabela de dados
 
 use super::series_native::{Series, Value};
-use crate::error::{Result, AvilaError};
+use crate::error::{AvilaError, Result};
+use serde::{Deserialize, Serialize};
 use std::fmt;
-use serde::{Serialize, Deserialize};
 
 /// Alias para compatibilidade
 pub type Column = Series;
@@ -32,9 +32,11 @@ impl DataFrame {
         let len = columns[0].len();
         for col in &columns {
             if col.len() != len {
-                return Err(AvilaError::shape_mismatch(
-                    format!("Todas as colunas devem ter mesmo tamanho: esperado {}, encontrado {}", len, col.len())
-                ));
+                return Err(AvilaError::shape_mismatch(format!(
+                    "Todas as colunas devem ter mesmo tamanho: esperado {}, encontrado {}",
+                    len,
+                    col.len()
+                )));
             }
         }
 
@@ -85,9 +87,11 @@ impl DataFrame {
     /// Adicionar coluna
     pub fn add_column(&mut self, series: Series) -> Result<()> {
         if !self.is_empty() && series.len() != self.height() {
-            return Err(AvilaError::shape_mismatch(
-                format!("Coluna deve ter {} linhas, tem {}", self.height(), series.len())
-            ));
+            return Err(AvilaError::shape_mismatch(format!(
+                "Coluna deve ter {} linhas, tem {}",
+                self.height(),
+                series.len()
+            )));
         }
         self.columns.push(series);
         Ok(())
@@ -99,23 +103,26 @@ impl DataFrame {
         for name in names {
             new_columns.push(self.column(name)?.clone());
         }
-        Ok(Self { columns: new_columns })
+        Ok(Self {
+            columns: new_columns,
+        })
     }
 
     /// Filtrar linhas por mask booleana
     pub fn filter(&self, mask: &[bool]) -> Result<Self> {
         if mask.len() != self.height() {
-            return Err(AvilaError::shape_mismatch(
-                format!("Mask deve ter {} elementos, tem {}", self.height(), mask.len())
-            ));
+            return Err(AvilaError::shape_mismatch(format!(
+                "Mask deve ter {} elementos, tem {}",
+                self.height(),
+                mask.len()
+            )));
         }
 
-        let filtered_columns = self.columns
-            .iter()
-            .map(|col| col.filter(mask))
-            .collect();
+        let filtered_columns = self.columns.iter().map(|col| col.filter(mask)).collect();
 
-        Ok(Self { columns: filtered_columns })
+        Ok(Self {
+            columns: filtered_columns,
+        })
     }
 
     /// Pegar primeiras N linhas
@@ -139,7 +146,8 @@ impl DataFrame {
             return Err(AvilaError::index_out_of_bounds(idx, self.height()));
         }
 
-        Ok(self.columns
+        Ok(self
+            .columns
             .iter()
             .map(|col| col.get(idx).cloned().unwrap_or(Value::Null))
             .collect())
@@ -153,9 +161,10 @@ impl DataFrame {
     /// Estatísticas descritivas
     pub fn describe(&self) -> Self {
         let stats = vec!["count", "mean", "min", "max"];
-        let mut result_columns = vec![
-            Series::new_str("stat", stats.iter().map(|s| s.to_string()).collect())
-        ];
+        let mut result_columns = vec![Series::new_str(
+            "stat",
+            stats.iter().map(|s| s.to_string()).collect(),
+        )];
 
         for col in &self.columns {
             let count = col.len() as f64;
@@ -163,13 +172,12 @@ impl DataFrame {
             let min = col.min().unwrap_or(f64::NAN);
             let max = col.max().unwrap_or(f64::NAN);
 
-            result_columns.push(Series::new_float(
-                col.name(),
-                vec![count, mean, min, max]
-            ));
+            result_columns.push(Series::new_float(col.name(), vec![count, mean, min, max]));
         }
 
-        Self { columns: result_columns }
+        Self {
+            columns: result_columns,
+        }
     }
 }
 
@@ -181,7 +189,12 @@ impl Default for DataFrame {
 
 impl fmt::Display for DataFrame {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "DataFrame [{} rows × {} cols]", self.height(), self.width())?;
+        writeln!(
+            f,
+            "DataFrame [{} rows × {} cols]",
+            self.height(),
+            self.width()
+        )?;
         writeln!(f, "{}", "─".repeat(80))?;
 
         // Header
@@ -222,7 +235,8 @@ mod tests {
         let df = DataFrame::from_series(vec![
             Series::new_float("a", vec![1.0, 2.0, 3.0]),
             Series::new_float("b", vec![4.0, 5.0, 6.0]),
-        ]).unwrap();
+        ])
+        .unwrap();
 
         assert_eq!(df.shape(), (3, 2));
         assert_eq!(df.column_names(), vec!["a", "b"]);
@@ -234,7 +248,8 @@ mod tests {
             Series::new_float("a", vec![1.0, 2.0]),
             Series::new_float("b", vec![3.0, 4.0]),
             Series::new_float("c", vec![5.0, 6.0]),
-        ]).unwrap();
+        ])
+        .unwrap();
 
         let selected = df.select(&["a", "c"]).unwrap();
         assert_eq!(selected.width(), 2);
@@ -246,7 +261,8 @@ mod tests {
         let df = DataFrame::from_series(vec![
             Series::new_float("x", vec![1.0, 2.0, 3.0, 4.0]),
             Series::new_float("y", vec![5.0, 6.0, 7.0, 8.0]),
-        ]).unwrap();
+        ])
+        .unwrap();
 
         let filtered = df.filter(&[true, false, true, false]).unwrap();
         assert_eq!(filtered.height(), 2);

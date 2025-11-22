@@ -75,7 +75,12 @@ impl CubicSpline4D {
                 3.0 * delta[3] - 2.0 * d[3],
             ];
 
-            let b = [delta[0] - c[0] - d[0], delta[1] - c[1] - d[1], delta[2] - c[2] - d[2], delta[3] - c[3] - d[3]];
+            let b = [
+                delta[0] - c[0] - d[0],
+                delta[1] - c[1] - d[1],
+                delta[2] - c[2] - d[2],
+                delta[3] - c[3] - d[3],
+            ];
 
             coefficients.push([a, b, c, d]);
         }
@@ -192,11 +197,7 @@ pub fn cubic_spline_4d(points: &[[f64; 4]], t: f64) -> [f64; 4] {
 pub fn bspline_4d(control_points: &[[f64; 4]], t: f64) -> [f64; 4] {
     let n = control_points.len();
     if n < 4 {
-        return if n > 0 {
-            control_points[0]
-        } else {
-            [0.0; 4]
-        };
+        return if n > 0 { control_points[0] } else { [0.0; 4] };
     }
 
     // Escala t para o domínio válido

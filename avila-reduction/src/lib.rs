@@ -10,13 +10,13 @@
 //! - **Neural Methods**: Autoencoders, VAE, Contractive AE
 //! - **Scientific**: 4D tensor reduction, physics-aware reduction, streaming
 
+pub mod gpu;
 pub mod linear;
 pub mod manifold;
 pub mod neural;
+pub mod prelude;
 pub mod scientific;
 pub mod streaming;
-pub mod gpu;
-pub mod prelude;
 
 pub use prelude::*;
 

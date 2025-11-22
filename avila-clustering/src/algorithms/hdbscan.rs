@@ -1,8 +1,8 @@
 //! HDBSCAN (Hierarchical Density-Based Spatial Clustering)
 
-use ndarray::{Array1, Array2, ArrayView2};
-use crate::{Result, ClusteringError};
 use crate::metrics::distance::Metric;
+use crate::{ClusteringError, Result};
+use ndarray::{Array1, Array2, ArrayView2};
 
 /// HDBSCAN algorithm variant
 #[derive(Debug, Clone, Copy)]
@@ -108,7 +108,7 @@ impl HDBSCAN {
 
 /// Result of HDBSCAN clustering
 pub struct HDBSCANResult {
-    pub labels: Array1<i32>,  // -1 for noise
+    pub labels: Array1<i32>, // -1 for noise
     probabilities: Option<Array1<f64>>,
     outlier_scores: Option<Array1<f64>>,
 }
@@ -119,16 +119,14 @@ impl HDBSCANResult {
     }
 
     pub fn probabilities(&self) -> Result<&Array1<f64>> {
-        self.probabilities.as_ref()
-            .ok_or_else(|| ClusteringError::InvalidParameter(
-                "prediction_data was not enabled".to_string()
-            ))
+        self.probabilities.as_ref().ok_or_else(|| {
+            ClusteringError::InvalidParameter("prediction_data was not enabled".to_string())
+        })
     }
 
     pub fn outlier_scores(&self) -> Result<&Array1<f64>> {
-        self.outlier_scores.as_ref()
-            .ok_or_else(|| ClusteringError::InvalidParameter(
-                "outlier scores not computed".to_string()
-            ))
+        self.outlier_scores.as_ref().ok_or_else(|| {
+            ClusteringError::InvalidParameter("outlier scores not computed".to_string())
+        })
     }
 }

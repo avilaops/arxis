@@ -2,7 +2,7 @@
 //!
 //! Demonstrates frequency response analysis using Z-transform.
 
-use avila_math::filters::ztransform::{frequency_response, design_lowpass};
+use avila_math::filters::ztransform::{design_lowpass, frequency_response};
 use std::f64::consts::PI;
 
 fn main() {
@@ -14,7 +14,11 @@ fn main() {
 
     println!("Designing low-pass FIR filter:");
     println!("  Order: {}", order);
-    println!("  Cutoff: {:.2} rad/sample ({:.1} Hz at fs=1000 Hz)", cutoff, cutoff / (2.0 * PI) * 1000.0);
+    println!(
+        "  Cutoff: {:.2} rad/sample ({:.1} Hz at fs=1000 Hz)",
+        cutoff,
+        cutoff / (2.0 * PI) * 1000.0
+    );
 
     let (b, a) = design_lowpass(cutoff, order);
 
@@ -30,7 +34,10 @@ fn main() {
     let response = frequency_response(&b, &a, n_points);
 
     println!("\nFrequency Response:");
-    println!("{:>10} {:>15} {:>15} {:>15}", "Freq (Hz)", "Magnitude", "Magnitude (dB)", "Phase (deg)");
+    println!(
+        "{:>10} {:>15} {:>15} {:>15}",
+        "Freq (Hz)", "Magnitude", "Magnitude (dB)", "Phase (deg)"
+    );
     println!("{}", "-".repeat(60));
 
     let sample_rate = 1000.0; // Hz
@@ -60,12 +67,15 @@ fn main() {
         let actual_cutoff = response.frequencies[cutoff_idx] / (2.0 * PI) * sample_rate;
         println!("\n✅ Filter characteristics:");
         println!("   -3dB cutoff: {:.1} Hz", actual_cutoff);
-        println!("   Stopband attenuation: {:.1} dB", 
-                 20.0 * response.response[n_points - 1].norm().log10());
+        println!(
+            "   Stopband attenuation: {:.1} dB",
+            20.0 * response.response[n_points - 1].norm().log10()
+        );
     }
 
     // Check passband flatness
-    let passband_ripple = response.response
+    let passband_ripple = response
+        .response
         .iter()
         .take(cutoff_idx)
         .map(|h| 20.0 * h.norm().log10())

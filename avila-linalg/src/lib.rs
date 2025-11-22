@@ -24,21 +24,21 @@
 #![deny(missing_docs)]
 #![warn(clippy::all)]
 
-pub mod vector;
 pub mod matrix;
 pub mod ops;
 pub mod transform;
+pub mod vector;
 
 // Re-exports principais
-pub use vector::{Vector2, Vector3, Vector4, VectorN};
 pub use matrix::{Matrix2x2, Matrix3x3, Matrix4x4, MatrixMxN};
+pub use vector::{Vector2, Vector3, Vector4, VectorN};
 
 /// Módulo prelude para imports convenientes
 pub mod prelude {
-    pub use crate::vector::*;
     pub use crate::matrix::*;
     pub use crate::ops::*;
     pub use crate::transform::*;
+    pub use crate::vector::*;
 }
 
 #[cfg(test)]

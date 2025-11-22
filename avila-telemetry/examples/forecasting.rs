@@ -1,12 +1,11 @@
-use avila_telemetry::{TimeSeries, Forecaster, ExponentialSmoothing, MovingAverageForecaster};
+use avila_telemetry::{ExponentialSmoothing, Forecaster, MovingAverageForecaster, TimeSeries};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("=== Forecasting Example ===\n");
 
     // Create historical data (simulating monthly sales)
     let historical_data = vec![
-        100.0, 120.0, 115.0, 130.0, 125.0, 140.0,
-        135.0, 150.0, 145.0, 160.0, 155.0, 170.0,
+        100.0, 120.0, 115.0, 130.0, 125.0, 140.0, 135.0, 150.0, 145.0, 160.0, 155.0, 170.0,
     ];
 
     let ts = TimeSeries::new(historical_data).with_name("monthly_sales");

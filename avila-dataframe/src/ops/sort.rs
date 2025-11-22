@@ -1,7 +1,7 @@
 //! Sorting operations
 
 use crate::core::{DataFrame, Series};
-use crate::error::{Result, AvilaError};
+use crate::error::{AvilaError, Result};
 
 /// Sort order
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -21,12 +21,14 @@ impl DataFrame {
     /// Sort by multiple columns
     pub fn sort_by(&self, by: &[&str], order: &[SortOrder]) -> Result<Self> {
         if by.is_empty() {
-            return Err(AvilaError::generic("Must specify at least one column to sort by"));
+            return Err(AvilaError::generic(
+                "Must specify at least one column to sort by",
+            ));
         }
 
         if by.len() != order.len() {
             return Err(AvilaError::generic(
-                "Number of sort columns must match number of sort orders"
+                "Number of sort columns must match number of sort orders",
             ));
         }
 
@@ -50,9 +52,9 @@ impl DataFrame {
                     (true, true) => std::cmp::Ordering::Equal,
                     (true, false) => std::cmp::Ordering::Greater,
                     (false, true) => std::cmp::Ordering::Less,
-                    (false, false) => {
-                        val_a.partial_cmp(&val_b).unwrap_or(std::cmp::Ordering::Equal)
-                    }
+                    (false, false) => val_a
+                        .partial_cmp(&val_b)
+                        .unwrap_or(std::cmp::Ordering::Equal),
                 };
 
                 // Apply sort order
@@ -74,13 +76,12 @@ impl DataFrame {
 
     /// Take rows by indices
     fn take_by_indices(&self, indices: &[usize]) -> Result<Self> {
-        let reordered_columns: Result<Vec<Series>> = self.columns
+        let reordered_columns: Result<Vec<Series>> = self
+            .columns
             .iter()
             .map(|series| {
-                let values: Result<Vec<f64>> = indices
-                    .iter()
-                    .map(|&idx| series.get_f64(idx))
-                    .collect();
+                let values: Result<Vec<f64>> =
+                    indices.iter().map(|&idx| series.get_f64(idx)).collect();
                 Ok(Series::new(series.name(), values?))
             })
             .collect();
@@ -103,9 +104,9 @@ impl DataFrame {
                 (true, true) => std::cmp::Ordering::Equal,
                 (true, false) => std::cmp::Ordering::Greater,
                 (false, true) => std::cmp::Ordering::Less,
-                (false, false) => {
-                    val_a.partial_cmp(&val_b).unwrap_or(std::cmp::Ordering::Equal)
-                }
+                (false, false) => val_a
+                    .partial_cmp(&val_b)
+                    .unwrap_or(std::cmp::Ordering::Equal),
             };
 
             match order {
@@ -140,10 +141,7 @@ mod tests {
 
     #[test]
     fn test_sort_descending() {
-        let df = DataFrame::new(vec![
-            Series::new("x", vec![1.0, 5.0, 3.0]),
-        ])
-        .unwrap();
+        let df = DataFrame::new(vec![Series::new("x", vec![1.0, 5.0, 3.0])]).unwrap();
 
         let sorted = df.sort("x", SortOrder::Descending).unwrap();
         let values: Vec<f64> = (0..sorted.height())

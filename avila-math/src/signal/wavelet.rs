@@ -201,12 +201,7 @@ fn daubechies4_low_pass() -> [f64; 4] {
 /// Coeficientes Daubechies-4 para filtro passa-alta
 fn daubechies4_high_pass() -> [f64; 4] {
     let h = daubechies4_low_pass();
-    [
-        h[3],
-        -h[2],
-        h[1],
-        -h[0],
-    ]
+    [h[3], -h[2], h[1], -h[0]]
 }
 
 /// Calcula a energia dos coeficientes wavelet em cada escala
@@ -228,9 +223,7 @@ pub fn wavelet_peak_positions(coeffs: &[Vec<Complex<f64>>]) -> Vec<usize> {
         .map(|row| {
             row.iter()
                 .enumerate()
-                .max_by(|(_, a), (_, b)| {
-                    a.norm().partial_cmp(&b.norm()).unwrap()
-                })
+                .max_by(|(_, a), (_, b)| a.norm().partial_cmp(&b.norm()).unwrap())
                 .map(|(i, _)| i)
                 .unwrap_or(0)
         })

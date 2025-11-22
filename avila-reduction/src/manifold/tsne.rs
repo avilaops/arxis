@@ -1,8 +1,8 @@
 //! t-SNE (t-Distributed Stochastic Neighbor Embedding)
 
-use ndarray::{Array2, ArrayView2};
-use crate::{Result, ReductionError};
 use crate::metrics::distance::Metric;
+use crate::{ReductionError, Result};
+use ndarray::{Array2, ArrayView2};
 
 /// t-SNE method
 #[derive(Debug, Clone, Copy)]
@@ -140,7 +140,7 @@ impl TSNE {
         callback: F,
     ) -> Result<Array2<f64>>
     where
-        F: Fn(usize, f64),  // (iteration, kl_divergence)
+        F: Fn(usize, f64), // (iteration, kl_divergence)
     {
         // TODO: Implement t-SNE with callback for monitoring
         unimplemented!("TSNE::fit_transform_with_callback")

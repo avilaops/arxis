@@ -2,9 +2,9 @@
 //!
 //! Color analysis, illumination estimation, and photometric calibration.
 
+pub mod calibration;
 pub mod color_spaces;
 pub mod illumination;
-pub mod calibration;
 pub mod optimization;
 
 use crate::core::ImageBuffer;

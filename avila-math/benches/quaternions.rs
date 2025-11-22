@@ -9,25 +9,17 @@ fn bench_quaternion_ops(c: &mut Criterion) {
     let q2 = Quat3D::from_axis_angle([1.0, 0.0, 0.0], PI / 3.0);
     let v = [1.0, 2.0, 3.0];
 
-    group.bench_function("multiply", |b| {
-        b.iter(|| black_box(q1.multiply(&q2)))
-    });
+    group.bench_function("multiply", |b| b.iter(|| black_box(q1.multiply(&q2))));
 
     group.bench_function("rotate_vector", |b| {
         b.iter(|| black_box(q1.rotate_vector(v)))
     });
 
-    group.bench_function("normalize", |b| {
-        b.iter(|| black_box(q1.normalize()))
-    });
+    group.bench_function("normalize", |b| b.iter(|| black_box(q1.normalize())));
 
-    group.bench_function("conjugate", |b| {
-        b.iter(|| black_box(q1.conjugate()))
-    });
+    group.bench_function("conjugate", |b| b.iter(|| black_box(q1.conjugate())));
 
-    group.bench_function("inverse", |b| {
-        b.iter(|| black_box(q1.inverse()))
-    });
+    group.bench_function("inverse", |b| b.iter(|| black_box(q1.inverse())));
 
     group.finish();
 }
@@ -59,9 +51,7 @@ fn bench_dual_quaternions(c: &mut Criterion) {
         b.iter(|| black_box(dq.transform_point(point)))
     });
 
-    group.bench_function("normalize", |b| {
-        b.iter(|| black_box(dq.normalize()))
-    });
+    group.bench_function("normalize", |b| b.iter(|| black_box(dq.normalize())));
 
     group.finish();
 }
@@ -78,9 +68,7 @@ fn bench_so4_rotation(c: &mut Criterion) {
         b.iter(|| black_box(so4.rotate_vector_4d(v4)))
     });
 
-    group.bench_function("compose", |b| {
-        b.iter(|| black_box(so4.compose(&so4)))
-    });
+    group.bench_function("compose", |b| b.iter(|| black_box(so4.compose(&so4))));
 
     group.finish();
 }

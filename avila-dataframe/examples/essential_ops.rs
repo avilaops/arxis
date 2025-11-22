@@ -1,7 +1,7 @@
 //! Example demonstrating essential DataFrame operations: filter, group_by, joins, sorting, pivot
 
+use avila_dataframe::ops::{JoinType, PivotAggFunc, SortOrder};
 use avila_dataframe::prelude::*;
-use avila_dataframe::ops::{JoinType, SortOrder, PivotAggFunc};
 
 fn main() -> Result<()> {
     println!("🚀 AvilaDB DataFrame - Essential Operations Demo\n");
@@ -12,7 +12,10 @@ fn main() -> Result<()> {
 
     let df = DataFrame::new(vec![
         Series::new("timestamp", vec![0.0, 0.001, 0.002, 0.003, 0.004]),
-        Series::new("strain_h", vec![1.2e-21, 1.5e-21, 1.1e-21, 2.0e-21, 1.3e-21]),
+        Series::new(
+            "strain_h",
+            vec![1.2e-21, 1.5e-21, 1.1e-21, 2.0e-21, 1.3e-21],
+        ),
         Series::new("snr", vec![8.5, 12.3, 9.1, 15.7, 10.2]),
         Series::new("mass1", vec![30.0, 35.0, 25.0, 40.0, 28.0]),
     ])?;
@@ -26,9 +29,7 @@ fn main() -> Result<()> {
     println!("{}", filtered);
 
     // Complex filter with AND
-    let complex_filter = df.filter(
-        col("snr").gt(lit(10.0))
-    )?;
+    let complex_filter = df.filter(col("snr").gt(lit(10.0)))?;
     println!("\n✅ Complex Filter (SNR > 10 AND mass1 > 30):");
     println!("{}", complex_filter);
 
@@ -45,13 +46,11 @@ fn main() -> Result<()> {
     println!("Events DataFrame:");
     println!("{}", events_df);
 
-    let grouped = events_df
-        .group_by(&["event_type"])?
-        .agg(&[
-            col("mass").mean().alias("mean_mass"),
-            col("snr").sum().alias("total_snr"),
-            col("mass").sum().alias("total_mass"),
-        ])?;
+    let grouped = events_df.group_by(&["event_type"])?.agg(&[
+        col("mass").mean().alias("mean_mass"),
+        col("snr").sum().alias("total_snr"),
+        col("mass").sum().alias("total_mass"),
+    ])?;
 
     println!("\n✅ Grouped by event_type:");
     println!("{}", grouped);
@@ -117,7 +116,7 @@ fn main() -> Result<()> {
 
     let sorted_multi = multi_sort.sort_by(
         &["priority", "value"],
-        &[SortOrder::Ascending, SortOrder::Descending]
+        &[SortOrder::Ascending, SortOrder::Descending],
     )?;
     println!("\n✅ Multi-column Sort (priority ASC, value DESC):");
     println!("{}", sorted_multi);
@@ -135,12 +134,7 @@ fn main() -> Result<()> {
     println!("Long Format Data:");
     println!("{}", long_data);
 
-    let pivoted = long_data.pivot(
-        &["date"],
-        "detector",
-        "count",
-        PivotAggFunc::Sum
-    )?;
+    let pivoted = long_data.pivot(&["date"], "detector", "count", PivotAggFunc::Sum)?;
     println!("\n✅ Pivoted (date × detector):");
     println!("{}", pivoted);
 
@@ -154,12 +148,7 @@ fn main() -> Result<()> {
     println!("\n Wide Format Data:");
     println!("{}", wide_data);
 
-    let unpivoted = wide_data.unpivot(
-        &["id"],
-        &["jan", "feb"],
-        "month",
-        "value"
-    )?;
+    let unpivoted = wide_data.unpivot(&["id"], &["jan", "feb"], "month", "value")?;
     println!("\n✅ Unpivoted (wide to long):");
     println!("{}", unpivoted);
 

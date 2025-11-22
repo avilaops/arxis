@@ -72,11 +72,9 @@ impl BezierCurve4D {
         for i in 0..samples {
             let t = i as f64 * dt;
             let tangent = self.tangent(t);
-            let speed = (tangent[0].powi(2)
-                + tangent[1].powi(2)
-                + tangent[2].powi(2)
-                + tangent[3].powi(2))
-            .sqrt();
+            let speed =
+                (tangent[0].powi(2) + tangent[1].powi(2) + tangent[2].powi(2) + tangent[3].powi(2))
+                    .sqrt();
             length += speed * dt;
         }
 
@@ -128,11 +126,7 @@ pub fn bezier_curve_4d(control_points: &[[f64; 4]], t: f64) -> [f64; 4] {
 }
 
 /// Superfície de Bézier 4D (tensor product de curvas)
-pub fn bezier_surface_4d(
-    control_grid: &[Vec<[f64; 4]>],
-    u: f64,
-    v: f64,
-) -> [f64; 4] {
+pub fn bezier_surface_4d(control_grid: &[Vec<[f64; 4]>], u: f64, v: f64) -> [f64; 4] {
     // Interpola ao longo de u primeiro
     let mut u_curves = Vec::new();
     for row in control_grid {

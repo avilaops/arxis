@@ -1,5 +1,5 @@
+use avila_telemetry::{AnomalyDetector, ExponentialSmoothing, Forecaster, TimeSeries};
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use avila_telemetry::{TimeSeries, AnomalyDetector, Forecaster, ExponentialSmoothing};
 
 fn bench_moving_average(c: &mut Criterion) {
     let data: Vec<f64> = (0..1000).map(|x| x as f64).collect();
@@ -20,7 +20,9 @@ fn bench_exponential_moving_average(c: &mut Criterion) {
 }
 
 fn bench_anomaly_detection(c: &mut Criterion) {
-    let data: Vec<f64> = (0..1000).map(|x| x as f64 + (x as f64 / 10.0).sin() * 5.0).collect();
+    let data: Vec<f64> = (0..1000)
+        .map(|x| x as f64 + (x as f64 / 10.0).sin() * 5.0)
+        .collect();
     let ts = TimeSeries::new(data);
     let detector = AnomalyDetector::default();
 

@@ -30,16 +30,13 @@ impl WienerFilter {
         let coefficients = signal_power
             .iter()
             .zip(noise_power.iter())
-            .map(|(s, n)| {
-                if s + n > 1e-10 {
-                    s / (s + n)
-                } else {
-                    0.0
-                }
-            })
+            .map(|(s, n)| if s + n > 1e-10 { s / (s + n) } else { 0.0 })
             .collect();
 
-        Self { coefficients, order }
+        Self {
+            coefficients,
+            order,
+        }
     }
 
     /// Create a Wiener filter with known SNR
@@ -49,7 +46,10 @@ impl WienerFilter {
     /// * `snr` - Signal-to-noise ratio
     pub fn from_snr(order: usize, snr: f64) -> Self {
         let coefficients = vec![snr / (snr + 1.0); order];
-        Self { coefficients, order }
+        Self {
+            coefficients,
+            order,
+        }
     }
 
     /// Apply Wiener filter to a signal in frequency domain
@@ -70,7 +70,7 @@ impl WienerFilter {
     /// Apply Wiener filter to a real signal (performs FFT internally)
     pub fn apply(&self, signal: &[f64]) -> Vec<f64> {
         use rustfft::num_complex::Complex;
-        use rustfft::{FftPlanner, num_traits::Zero};
+        use rustfft::{num_traits::Zero, FftPlanner};
 
         let n = signal.len();
         let mut planner = FftPlanner::new();
@@ -78,10 +78,7 @@ impl WienerFilter {
         let ifft = planner.plan_fft_inverse(n);
 
         // Forward FFT
-        let mut buffer: Vec<Complex<f64>> = signal
-            .iter()
-            .map(|&x| Complex::new(x, 0.0))
-            .collect();
+        let mut buffer: Vec<Complex<f64>> = signal.iter().map(|&x| Complex::new(x, 0.0)).collect();
         fft.process(&mut buffer);
 
         // Apply filter
@@ -113,7 +110,7 @@ pub fn estimate_power_spectra(
     segment_length: usize,
     overlap: usize,
 ) -> (Vec<f64>, Vec<f64>) {
-    use rustfft::{FftPlanner, num_complex::Complex};
+    use rustfft::{num_complex::Complex, FftPlanner};
 
     let mut planner = FftPlanner::new();
     let fft = planner.plan_fft_forward(segment_length);
@@ -131,10 +128,7 @@ pub fn estimate_power_spectra(
         }
 
         let segment = &signal[start..end];
-        let mut buffer: Vec<Complex<f64>> = segment
-            .iter()
-            .map(|&x| Complex::new(x, 0.0))
-            .collect();
+        let mut buffer: Vec<Complex<f64>> = segment.iter().map(|&x| Complex::new(x, 0.0)).collect();
 
         fft.process(&mut buffer);
 
@@ -144,10 +138,7 @@ pub fn estimate_power_spectra(
     }
 
     // Average power
-    let power: Vec<f64> = power_sum
-        .iter()
-        .map(|p| p / num_segments as f64)
-        .collect();
+    let power: Vec<f64> = power_sum.iter().map(|p| p / num_segments as f64).collect();
 
     // Estimate noise floor (assume lowest 10% is noise)
     let mut sorted = power.clone();
@@ -175,10 +166,7 @@ mod tests {
     fn test_wiener_apply() {
         let mut rng = rand::thread_rng();
         let signal: Vec<f64> = (0..128).map(|i| (i as f64 * 0.1).sin()).collect();
-        let noisy: Vec<f64> = signal
-            .iter()
-            .map(|&s| s + rng.gen::<f64>() * 0.1)
-            .collect();
+        let noisy: Vec<f64> = signal.iter().map(|&s| s + rng.gen::<f64>() * 0.1).collect();
 
         let wf = WienerFilter::from_snr(128, 5.0);
         let filtered = wf.apply(&noisy);

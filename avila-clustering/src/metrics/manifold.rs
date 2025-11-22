@@ -1,12 +1,15 @@
 //! Manifold-related computations for clustering
 
+use crate::{ClusteringError, Result};
 use ndarray::ArrayView1;
-use crate::{Result, ClusteringError};
 
 pub use crate::metrics::distance::Manifold;
 
 /// Compute Christoffel symbols for a given manifold
-pub fn christoffel_symbols(manifold: &Manifold, point: &ArrayView1<f64>) -> Result<Vec<Vec<Vec<f64>>>> {
+pub fn christoffel_symbols(
+    manifold: &Manifold,
+    point: &ArrayView1<f64>,
+) -> Result<Vec<Vec<Vec<f64>>>> {
     // TODO: Implement Christoffel symbol computation
     // Needed for geodesic calculations in curved spacetime
     unimplemented!("christoffel_symbols")

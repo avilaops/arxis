@@ -1,7 +1,7 @@
 //! Time series dimensionality reduction
 
+use crate::{ReductionError, Result};
 use ndarray::{Array2, ArrayView2};
-use crate::{Result, ReductionError};
 
 /// Alignment method for time series
 #[derive(Debug, Clone, Copy)]

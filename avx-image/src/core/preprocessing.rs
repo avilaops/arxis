@@ -86,7 +86,7 @@ impl Preprocessing {
         }
 
         let mut hist = vec![0usize; 256];
-        
+
         // Build histogram
         for &pixel in &img.data {
             let bin = (pixel * 255.0).clamp(0.0, 255.0) as usize;
@@ -101,7 +101,7 @@ impl Preprocessing {
         }
 
         let total_pixels = (img.width * img.height) as usize;
-        
+
         // Normalize CDF
         let mut equalized = img.clone();
         for pixel in &mut equalized.data {
@@ -115,7 +115,7 @@ impl Preprocessing {
     /// Binary thresholding
     pub fn threshold(img: &ImageBuffer, threshold: f32) -> Result<ImageBuffer> {
         let mut binary = img.clone();
-        
+
         for pixel in &mut binary.data {
             *pixel = if *pixel > threshold { 1.0 } else { 0.0 };
         }
@@ -132,7 +132,7 @@ impl Preprocessing {
         }
 
         let mut hist = vec![0usize; 256];
-        
+
         for &pixel in &img.data {
             let bin = (pixel * 255.0).clamp(0.0, 255.0) as usize;
             hist[bin] += 1;
@@ -186,7 +186,7 @@ impl Preprocessing {
             for x in 0..size {
                 let dx = x as f32 - center as f32;
                 let dy = y as f32 - center as f32;
-                let value = (-( dx * dx + dy * dy) / (2.0 * sigma * sigma)).exp();
+                let value = (-(dx * dx + dy * dy) / (2.0 * sigma * sigma)).exp();
                 kernel[y][x] = value;
                 sum += value;
             }
@@ -246,8 +246,16 @@ mod tests {
 
         let normalized = Preprocessing::normalize(&img).unwrap();
 
-        let min = normalized.data.iter().cloned().fold(f32::INFINITY, f32::min);
-        let max = normalized.data.iter().cloned().fold(f32::NEG_INFINITY, f32::max);
+        let min = normalized
+            .data
+            .iter()
+            .cloned()
+            .fold(f32::INFINITY, f32::min);
+        let max = normalized
+            .data
+            .iter()
+            .cloned()
+            .fold(f32::NEG_INFINITY, f32::max);
 
         assert!((min - 0.0).abs() < 1e-5);
         assert!((max - 1.0).abs() < 1e-5);
@@ -269,7 +277,7 @@ mod tests {
     fn test_blur() {
         let img = ImageBuffer::new(10, 10, 1);
         let blurred = Preprocessing::gaussian_blur(&img, 1.0).unwrap();
-        
+
         assert_eq!(blurred.width, img.width);
         assert_eq!(blurred.height, img.height);
     }

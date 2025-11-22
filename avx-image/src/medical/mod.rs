@@ -1,8 +1,8 @@
 //! Medical imaging module (DICOM, segmentation, measurements)
 
 pub mod dicom;
-pub mod segmentation;
 pub mod measurements;
+pub mod segmentation;
 
 use crate::core::ImageBuffer;
 use crate::Result;

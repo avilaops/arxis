@@ -1,7 +1,7 @@
 //! Streaming and incremental clustering
 
+use crate::{ClusteringError, Result};
 use ndarray::{Array2, ArrayView2};
-use crate::{Result, ClusteringError};
 
 /// Streaming KMeans for online learning
 pub struct StreamingKMeans {

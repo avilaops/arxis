@@ -22,7 +22,11 @@ pub enum FilterType {
     /// Butterworth filter
     Butterworth { cutoff: f64, order: usize },
     /// Chebyshev Type I
-    Chebyshev1 { cutoff: f64, order: usize, ripple: f64 },
+    Chebyshev1 {
+        cutoff: f64,
+        order: usize,
+        ripple: f64,
+    },
     /// Bessel filter
     Bessel { cutoff: f64, order: usize },
     /// Moving average
@@ -186,9 +190,8 @@ impl RollingWindow {
     pub fn std(&self) -> Result<DataFrame> {
         self.apply(|window| {
             let mean = window.iter().sum::<f64>() / window.len() as f64;
-            let variance = window.iter()
-                .map(|x| (x - mean).powi(2))
-                .sum::<f64>() / window.len() as f64;
+            let variance =
+                window.iter().map(|x| (x - mean).powi(2)).sum::<f64>() / window.len() as f64;
             variance.sqrt()
         })
     }
@@ -202,9 +205,7 @@ mod tests {
     fn test_detrend() {
         // Create signal with linear trend
         let signal: Vec<f64> = (0..100).map(|i| i as f64 * 2.0 + 10.0).collect();
-        let df = DataFrame::new(vec![
-            Series::new("signal", signal),
-        ]).unwrap();
+        let df = DataFrame::new(vec![Series::new("signal", signal)]).unwrap();
 
         let detrended = df.detrend("signal").unwrap();
         let result_series = detrended.column("signal").unwrap();

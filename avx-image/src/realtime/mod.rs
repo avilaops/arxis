@@ -1,8 +1,8 @@
 //! Real-time processing and optimization
 
 pub mod camera;
-pub mod tracking;
 pub mod optimization;
+pub mod tracking;
 
 use crate::core::ImageBuffer;
 use crate::Result;

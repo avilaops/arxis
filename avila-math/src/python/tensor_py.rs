@@ -2,9 +2,9 @@
 
 #![cfg(feature = "python")]
 
-use pyo3::prelude::*;
-use numpy::{PyArray, PyArrayMethods, ToPyArray};
 use crate::tensor::Tensor;
+use numpy::{PyArray, PyArrayMethods, ToPyArray};
+use pyo3::prelude::*;
 
 /// Python wrapper for Tensor
 #[pyclass(name = "Tensor")]
@@ -102,6 +102,10 @@ impl PyTensor {
 
     /// String representation
     fn __repr__(&self) -> String {
-        format!("Tensor(shape={:?}, size={})", self.inner.shape(), self.inner.size())
+        format!(
+            "Tensor(shape={:?}, size={})",
+            self.inner.shape(),
+            self.inner.size()
+        )
     }
 }

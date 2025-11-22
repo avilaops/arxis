@@ -1,10 +1,10 @@
 //! KMedoids clustering (PAM, CLARA, CLARANS)
 
+use crate::metrics::distance::{euclidean_distance, Metric};
+use crate::{ClusteringError, Result};
 use ndarray::{Array1, Array2, ArrayView2};
 use rand::{Rng, SeedableRng};
 use rand_xoshiro::Xoshiro256PlusPlus;
-use crate::{Result, ClusteringError};
-use crate::metrics::distance::{Metric, euclidean_distance};
 
 /// KMedoids algorithm variant
 #[derive(Debug, Clone, Copy)]
@@ -12,9 +12,15 @@ pub enum KMedoidsAlgorithm {
     /// PAM (Partitioning Around Medoids) - exact but O(n²)
     PAM,
     /// CLARA (Clustering LARge Applications) - sampling-based
-    CLARA { sample_size: usize, n_samples: usize },
+    CLARA {
+        sample_size: usize,
+        n_samples: usize,
+    },
     /// CLARANS (Clustering Large Applications based on RANdomized Search)
-    CLARANS { num_local: usize, max_neighbor: usize },
+    CLARANS {
+        num_local: usize,
+        max_neighbor: usize,
+    },
 }
 
 /// KMedoids clustering
@@ -60,12 +66,14 @@ impl KMedoids {
     pub fn fit(&self, data: &ArrayView2<f64>) -> Result<KMedoidsResult> {
         match self.algorithm {
             KMedoidsAlgorithm::PAM => self.fit_pam(data),
-            KMedoidsAlgorithm::CLARA { sample_size, n_samples } => {
-                self.fit_clara(data, sample_size, n_samples)
-            }
-            KMedoidsAlgorithm::CLARANS { num_local, max_neighbor } => {
-                self.fit_clarans(data, num_local, max_neighbor)
-            }
+            KMedoidsAlgorithm::CLARA {
+                sample_size,
+                n_samples,
+            } => self.fit_clara(data, sample_size, n_samples),
+            KMedoidsAlgorithm::CLARANS {
+                num_local,
+                max_neighbor,
+            } => self.fit_clarans(data, num_local, max_neighbor),
         }
     }
 
@@ -74,8 +82,8 @@ impl KMedoids {
         let mut rng = self.get_rng();
 
         // Initialize medoids randomly
-        let mut medoid_indices: Vec<usize> = rand::seq::index::sample(&mut rng, n_samples, self.n_clusters)
-            .into_vec();
+        let mut medoid_indices: Vec<usize> =
+            rand::seq::index::sample(&mut rng, n_samples, self.n_clusters).into_vec();
 
         let mut labels = Array1::zeros(n_samples);
         let mut total_cost = f64::INFINITY;
@@ -142,8 +150,12 @@ impl KMedoids {
         })
     }
 
-    fn fit_clara(&self, data: &ArrayView2<f64>, sample_size: usize, n_samples_iter: usize)
-        -> Result<KMedoidsResult> {
+    fn fit_clara(
+        &self,
+        data: &ArrayView2<f64>,
+        sample_size: usize,
+        n_samples_iter: usize,
+    ) -> Result<KMedoidsResult> {
         let n_samples = data.dim().0;
         let mut rng = self.get_rng();
         let mut best_result: Option<KMedoidsResult> = None;
@@ -151,8 +163,9 @@ impl KMedoids {
 
         // Run PAM on multiple samples
         for _ in 0..n_samples_iter {
-            let sample_indices = rand::seq::index::sample(&mut rng, n_samples,
-                sample_size.min(n_samples)).into_vec();
+            let sample_indices =
+                rand::seq::index::sample(&mut rng, n_samples, sample_size.min(n_samples))
+                    .into_vec();
 
             // Create sample dataset
             let mut sample_data = Array2::zeros((sample_indices.len(), data.dim().1));
@@ -164,7 +177,9 @@ impl KMedoids {
             let sample_result = self.fit_pam(&sample_data.view())?;
 
             // Evaluate on full dataset
-            let medoid_indices: Vec<usize> = sample_result.medoid_indices.iter()
+            let medoid_indices: Vec<usize> = sample_result
+                .medoid_indices
+                .iter()
                 .map(|&i| sample_indices[i])
                 .collect();
 
@@ -190,8 +205,12 @@ impl KMedoids {
         best_result.ok_or_else(|| ClusteringError::ConvergenceFailure(0))
     }
 
-    fn fit_clarans(&self, data: &ArrayView2<f64>, num_local: usize, max_neighbor: usize)
-        -> Result<KMedoidsResult> {
+    fn fit_clarans(
+        &self,
+        data: &ArrayView2<f64>,
+        num_local: usize,
+        max_neighbor: usize,
+    ) -> Result<KMedoidsResult> {
         let n_samples = data.dim().0;
         let mut rng = self.get_rng();
         let mut best_result: Option<KMedoidsResult> = None;
@@ -199,8 +218,8 @@ impl KMedoids {
 
         for _ in 0..num_local {
             // Random initialization
-            let mut medoid_indices: Vec<usize> = rand::seq::index::sample(&mut rng, n_samples, self.n_clusters)
-                .into_vec();
+            let mut medoid_indices: Vec<usize> =
+                rand::seq::index::sample(&mut rng, n_samples, self.n_clusters).into_vec();
 
             let mut labels = self.assign_to_medoids(data, &medoid_indices)?;
             let mut cost = self.compute_total_cost(data, &medoid_indices, &labels)?;
@@ -250,8 +269,11 @@ impl KMedoids {
         best_result.ok_or_else(|| ClusteringError::ConvergenceFailure(0))
     }
 
-    fn assign_to_medoids(&self, data: &ArrayView2<f64>, medoid_indices: &[usize])
-        -> Result<Array1<usize>> {
+    fn assign_to_medoids(
+        &self,
+        data: &ArrayView2<f64>,
+        medoid_indices: &[usize],
+    ) -> Result<Array1<usize>> {
         let n_samples = data.dim().0;
         let mut labels = Array1::zeros(n_samples);
 
@@ -279,8 +301,12 @@ impl KMedoids {
         Ok(labels)
     }
 
-    fn compute_total_cost(&self, data: &ArrayView2<f64>, medoid_indices: &[usize],
-                         labels: &Array1<usize>) -> Result<f64> {
+    fn compute_total_cost(
+        &self,
+        data: &ArrayView2<f64>,
+        medoid_indices: &[usize],
+        labels: &Array1<usize>,
+    ) -> Result<f64> {
         let n_samples = data.dim().0;
         let mut total_cost = 0.0;
 

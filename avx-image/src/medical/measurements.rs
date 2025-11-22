@@ -1,6 +1,6 @@
 //! Anatomical measurements
 
-use crate::medical::{MedicalImage, Measurements, Segmentation};
+use crate::medical::{Measurements, MedicalImage, Segmentation};
 use crate::Result;
 
 /// Compute measurements from segmentation

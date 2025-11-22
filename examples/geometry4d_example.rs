@@ -7,11 +7,12 @@
 /// - Cinemática de corpos rígidos em 4D
 use std::f64::consts::PI;
 
-// Import do módulo geometry4d (assumindo que será adicionado ao lib.rs)
-#[path = "../geometry4d.rs"]
-mod geometry4d;
-
-use geometry4d::*;
+// Import do módulo geometry4d from avila-math
+// TODO: Fix this import path
+use avila_math::geometry::*;
+// #[path = "../geometry4d.rs"]
+// mod geometry4d;
+// use geometry4d::*;
 
 fn main() {
     println!("═══════════════════════════════════════════════════════");

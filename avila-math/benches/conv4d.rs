@@ -11,8 +11,22 @@ fn bench_conv4d_forward(c: &mut Criterion) {
     ];
 
     for (name, batch, in_ch, out_ch, input_size, kernel_size) in configs {
-        let input = Tensor6D::zeros([batch, in_ch, input_size[0], input_size[1], input_size[2], input_size[3]]);
-        let kernel = Tensor6D::zeros([out_ch, in_ch, kernel_size[0], kernel_size[1], kernel_size[2], kernel_size[3]]);
+        let input = Tensor6D::zeros([
+            batch,
+            in_ch,
+            input_size[0],
+            input_size[1],
+            input_size[2],
+            input_size[3],
+        ]);
+        let kernel = Tensor6D::zeros([
+            out_ch,
+            in_ch,
+            kernel_size[0],
+            kernel_size[1],
+            kernel_size[2],
+            kernel_size[3],
+        ]);
         let config = Conv4DConfig::default();
 
         group.bench_with_input(BenchmarkId::new("forward", name), &name, |b, _| {

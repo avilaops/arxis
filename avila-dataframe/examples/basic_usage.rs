@@ -8,7 +8,10 @@ fn main() -> Result<()> {
     // Create a DataFrame for LIGO/LISA gravitational wave data
     let df = DataFrame::new(vec![
         Series::new("timestamp", vec![0.0, 0.001, 0.002, 0.003, 0.004]),
-        Series::new("strain_h", vec![1.2e-21, 1.5e-21, 1.1e-21, 1.8e-21, 1.3e-21]),
+        Series::new(
+            "strain_h",
+            vec![1.2e-21, 1.5e-21, 1.1e-21, 1.8e-21, 1.3e-21],
+        ),
         Series::new("snr", vec![8.5, 12.3, 9.1, 15.7, 10.2]),
         Series::new("mass1", vec![30.0, 35.0, 25.0, 40.0, 28.0]),
         Series::new("mass2", vec![25.0, 30.0, 20.0, 35.0, 23.0]),
@@ -18,12 +21,10 @@ fn main() -> Result<()> {
     println!("{}", df);
 
     // Calculate total mass
-    let df = df.with_column(
-        Series::new(
-            "total_mass",
-            vec![55.0, 65.0, 45.0, 75.0, 51.0]
-        )
-    )?;
+    let df = df.with_column(Series::new(
+        "total_mass",
+        vec![55.0, 65.0, 45.0, 75.0, 51.0],
+    ))?;
 
     println!("\n✨ With calculated total_mass column:");
     println!("{}", df);

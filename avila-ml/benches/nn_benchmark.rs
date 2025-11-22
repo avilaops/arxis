@@ -1,7 +1,7 @@
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use avila_ml::nn::{Module, Linear};
 use avila_ml::nn::activation::ReLU;
+use avila_ml::nn::{Linear, Module};
 use avila_ml::tensor::Tensor;
+use criterion::{black_box, criterion_group, criterion_main, Criterion};
 
 fn bench_linear_layer(c: &mut Criterion) {
     let layer = Linear::<f32>::new(784, 128);

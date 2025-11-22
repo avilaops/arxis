@@ -68,24 +68,25 @@ pub fn trilinear_4d(
 ///
 /// Interpola entre 16 pontos em um hipercubo unitário
 #[allow(clippy::too_many_arguments)]
-pub fn quadrilinear_4d(
-    points: &[[f64; 4]; 16],
-    u: f64,
-    v: f64,
-    w: f64,
-    t: f64,
-) -> [f64; 4] {
+pub fn quadrilinear_4d(points: &[[f64; 4]; 16], u: f64, v: f64, w: f64, t: f64) -> [f64; 4] {
     // Interpolação trilinear nas duas "fatias" do hipercubo
     let slice0 = trilinear_4d(
-        &points[0], &points[1], &points[2], &points[3],
-        &points[4], &points[5], &points[6], &points[7],
-        u, v, w,
+        &points[0], &points[1], &points[2], &points[3], &points[4], &points[5], &points[6],
+        &points[7], u, v, w,
     );
 
     let slice1 = trilinear_4d(
-        &points[8], &points[9], &points[10], &points[11],
-        &points[12], &points[13], &points[14], &points[15],
-        u, v, w,
+        &points[8],
+        &points[9],
+        &points[10],
+        &points[11],
+        &points[12],
+        &points[13],
+        &points[14],
+        &points[15],
+        u,
+        v,
+        w,
     );
 
     // Interpolação linear entre as fatias

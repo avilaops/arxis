@@ -1,8 +1,8 @@
 //! Cluster validation metrics
 
-use ndarray::{Array1, Array2, ArrayView1, ArrayView2};
-use crate::{Result, ClusteringError};
 use crate::metrics::distance::Metric;
+use crate::{ClusteringError, Result};
+use ndarray::{Array1, Array2, ArrayView1, ArrayView2};
 
 /// Silhouette score (internal metric)
 pub fn silhouette_score(
@@ -17,19 +17,13 @@ pub fn silhouette_score(
 }
 
 /// Davies-Bouldin index (internal metric, lower is better)
-pub fn davies_bouldin_score(
-    data: &ArrayView2<f64>,
-    labels: &ArrayView1<usize>,
-) -> Result<f64> {
+pub fn davies_bouldin_score(data: &ArrayView2<f64>, labels: &ArrayView1<usize>) -> Result<f64> {
     // TODO: Implement Davies-Bouldin index
     unimplemented!("davies_bouldin_score")
 }
 
 /// Calinski-Harabasz index (internal metric, higher is better)
-pub fn calinski_harabasz_score(
-    data: &ArrayView2<f64>,
-    labels: &ArrayView1<usize>,
-) -> Result<f64> {
+pub fn calinski_harabasz_score(data: &ArrayView2<f64>, labels: &ArrayView1<usize>) -> Result<f64> {
     // TODO: Implement Calinski-Harabasz index
     // Ratio of between-cluster to within-cluster dispersion
     unimplemented!("calinski_harabasz_score")

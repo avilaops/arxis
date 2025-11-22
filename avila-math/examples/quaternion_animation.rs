@@ -44,7 +44,10 @@ fn main() {
 
     let result = combined.rotate_vector([1.0, 0.0, 0.0]);
     println!("Rotating [1, 0, 0] by 45° around X, then 45° around Y:");
-    println!("Result: [{:.3}, {:.3}, {:.3}]", result[0], result[1], result[2]);
+    println!(
+        "Result: [{:.3}, {:.3}, {:.3}]",
+        result[0], result[1], result[2]
+    );
 
     // Convert to rotation matrix
     println!("\n📐 Rotation matrix representation:");

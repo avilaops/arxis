@@ -8,7 +8,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create a test image
     let mut img = ImageBuffer::new(640, 480, 3);
 
-    println!("✅ Created {}x{} image with {} channels", img.width, img.height, img.channels);
+    println!(
+        "✅ Created {}x{} image with {} channels",
+        img.width, img.height, img.channels
+    );
 
     // Add some pattern
     for y in 0..img.height {

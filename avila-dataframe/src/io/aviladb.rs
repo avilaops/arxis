@@ -1,7 +1,7 @@
 //! AvilaDB connector - Native integration with AVL Cloud Platform database
 
 use crate::core::{DataFrame, Series};
-use crate::error::{Result, AvilaError};
+use crate::error::{AvilaError, Result};
 use serde::Serialize;
 
 /// AvilaDB connection configuration
@@ -21,7 +21,11 @@ pub struct AvilaDbConfig {
 
 impl AvilaDbConfig {
     /// Create new config
-    pub fn new(account: impl Into<String>, database: impl Into<String>, collection: impl Into<String>) -> Self {
+    pub fn new(
+        account: impl Into<String>,
+        database: impl Into<String>,
+        collection: impl Into<String>,
+    ) -> Self {
         Self {
             account: account.into(),
             database: database.into(),
@@ -46,8 +50,10 @@ impl AvilaDbConfig {
     /// Get connection string
     pub fn connection_string(&self) -> String {
         let endpoint = self.endpoint.as_deref().unwrap_or("https://avila.cloud");
-        format!("{}/accounts/{}/dbs/{}/colls/{}",
-            endpoint, self.account, self.database, self.collection)
+        format!(
+            "{}/accounts/{}/dbs/{}/colls/{}",
+            endpoint, self.account, self.database, self.collection
+        )
     }
 }
 
@@ -107,8 +113,11 @@ impl DataFrame {
         let documents = self.to_json_documents()?;
 
         // TODO: Implement actual HTTP client to AvilaDB
-        println!("Writing {} documents to AvilaDB: {}",
-            documents.len(), config.connection_string());
+        println!(
+            "Writing {} documents to AvilaDB: {}",
+            documents.len(),
+            config.connection_string()
+        );
 
         // Simulate successful write
         Ok(())
@@ -133,7 +142,9 @@ impl DataFrame {
         println!("Query: {}", query.query);
 
         // For now, return empty DataFrame
-        Err(AvilaError::not_implemented("read_aviladb - HTTP client pending"))
+        Err(AvilaError::not_implemented(
+            "read_aviladb - HTTP client pending",
+        ))
     }
 
     /// Scan entire AvilaDB collection
@@ -154,8 +165,7 @@ impl DataFrame {
                 doc.insert(
                     series.name().to_string(),
                     serde_json::Value::Number(
-                        serde_json::Number::from_f64(value)
-                            .unwrap_or(serde_json::Number::from(0))
+                        serde_json::Number::from_f64(value).unwrap_or(serde_json::Number::from(0)),
                     ),
                 );
             }
@@ -173,13 +183,12 @@ impl DataFrame {
         }
 
         // Extract column names from first document
-        let first_doc = documents.first()
+        let first_doc = documents
+            .first()
             .and_then(|v| v.as_object())
             .ok_or_else(|| AvilaError::generic("Invalid JSON document"))?;
 
-        let column_names: Vec<String> = first_doc.keys()
-            .map(|k| k.to_string())
-            .collect();
+        let column_names: Vec<String> = first_doc.keys().map(|k| k.to_string()).collect();
 
         // Build columns
         let mut columns = Vec::new();
@@ -187,11 +196,9 @@ impl DataFrame {
             let values: Result<Vec<f64>> = documents
                 .iter()
                 .map(|doc| {
-                    doc.get(&col_name)
-                        .and_then(|v| v.as_f64())
-                        .ok_or_else(|| AvilaError::generic(
-                            format!("Failed to extract column: {}", col_name)
-                        ))
+                    doc.get(&col_name).and_then(|v| v.as_f64()).ok_or_else(|| {
+                        AvilaError::generic(format!("Failed to extract column: {}", col_name))
+                    })
                 })
                 .collect();
 

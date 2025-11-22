@@ -136,7 +136,10 @@ pub fn matrix_rank(matrix: &Matrix, tolerance: Option<f64>) -> Result<usize, Str
     let (_, singular_values, _) = svd(matrix)?;
 
     let tol = tolerance.unwrap_or_else(|| {
-        let max_sv = singular_values.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
+        let max_sv = singular_values
+            .iter()
+            .cloned()
+            .fold(f64::NEG_INFINITY, f64::max);
         let n = matrix.shape[0].max(matrix.shape[1]) as f64;
         max_sv * n * f64::EPSILON
     });
@@ -152,8 +155,14 @@ pub fn condition_number(matrix: &Matrix) -> Result<f64, String> {
         return Err("Matrix has no singular values".to_string());
     }
 
-    let max_sv = singular_values.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
-    let min_sv = singular_values.iter().cloned().fold(f64::INFINITY, f64::min);
+    let max_sv = singular_values
+        .iter()
+        .cloned()
+        .fold(f64::NEG_INFINITY, f64::max);
+    let min_sv = singular_values
+        .iter()
+        .cloned()
+        .fold(f64::INFINITY, f64::min);
 
     if min_sv == 0.0 {
         Ok(f64::INFINITY)
@@ -168,10 +177,7 @@ mod tests {
 
     #[test]
     fn test_svd_simple() {
-        let m = Matrix::from_data([2, 2], vec![
-            4.0, 0.0,
-            3.0, -5.0
-        ]).unwrap();
+        let m = Matrix::from_data([2, 2], vec![4.0, 0.0, 3.0, -5.0]).unwrap();
 
         let result = svd(&m);
         assert!(result.is_ok());
@@ -188,11 +194,8 @@ mod tests {
 
     #[test]
     fn test_qr_decomposition() {
-        let m = Matrix::from_data([3, 3], vec![
-            1.0, 2.0, 3.0,
-            4.0, 5.0, 6.0,
-            7.0, 8.0, 9.0
-        ]).unwrap();
+        let m =
+            Matrix::from_data([3, 3], vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]).unwrap();
 
         let result = qr_decomposition(&m);
         assert!(result.is_ok());
@@ -204,11 +207,8 @@ mod tests {
 
     #[test]
     fn test_lu_decomposition() {
-        let m = Matrix::from_data([3, 3], vec![
-            2.0, 1.0, 1.0,
-            4.0, 3.0, 3.0,
-            8.0, 7.0, 9.0
-        ]).unwrap();
+        let m =
+            Matrix::from_data([3, 3], vec![2.0, 1.0, 1.0, 4.0, 3.0, 3.0, 8.0, 7.0, 9.0]).unwrap();
 
         let result = lu_decomposition(&m);
         assert!(result.is_ok());
@@ -221,20 +221,17 @@ mod tests {
     #[test]
     fn test_matrix_rank() {
         // Matriz de rank 2
-        let m = Matrix::from_data([3, 3], vec![
-            1.0, 2.0, 3.0,
-            2.0, 4.0, 6.0,
-            0.0, 1.0, 1.0
-        ]).unwrap();
+        let m =
+            Matrix::from_data([3, 3], vec![1.0, 2.0, 3.0, 2.0, 4.0, 6.0, 0.0, 1.0, 1.0]).unwrap();
 
         let rank = matrix_rank(&m, Some(1e-10)).unwrap();
-        assert!(rank <= 3);  // Rank máximo é 3
+        assert!(rank <= 3); // Rank máximo é 3
     }
 
     #[test]
     fn test_condition_number() {
         let m = Matrix::identity(3);
         let cond = condition_number(&m).unwrap();
-        assert!((cond - 1.0).abs() < 1e-10);  // Matriz identidade tem condição 1
+        assert!((cond - 1.0).abs() < 1e-10); // Matriz identidade tem condição 1
     }
 }

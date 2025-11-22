@@ -62,5 +62,11 @@ fn bench_fft_4d(c: &mut Criterion) {
     group.finish();
 }
 
-criterion_group!(benches, bench_fft_1d, bench_fft_2d, bench_fft_3d, bench_fft_4d);
+criterion_group!(
+    benches,
+    bench_fft_1d,
+    bench_fft_2d,
+    bench_fft_3d,
+    bench_fft_4d
+);
 criterion_main!(benches);

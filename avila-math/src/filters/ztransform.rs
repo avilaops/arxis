@@ -40,7 +40,10 @@ pub fn ztransform(signal: &[f64], n_points: usize) -> ZTransform {
         response.push(h);
     }
 
-    ZTransform { response, frequencies }
+    ZTransform {
+        response,
+        frequencies,
+    }
 }
 
 /// Compute inverse Z-transform using contour integration (residue method)
@@ -48,7 +51,7 @@ pub fn ztransform(signal: &[f64], n_points: usize) -> ZTransform {
 /// This is a simplified version for FIR systems
 pub fn inverse_ztransform(ztrans: &ZTransform) -> Vec<f64> {
     // For simplicity, use IFFT on unit circle samples
-    use rustfft::{FftPlanner, num_complex::Complex};
+    use rustfft::{num_complex::Complex, FftPlanner};
 
     let n = ztrans.response.len();
     let mut planner = FftPlanner::new();
@@ -109,7 +112,10 @@ pub fn frequency_response(b: &[f64], a: &[f64], n_points: usize) -> ZTransform {
         response.push(h);
     }
 
-    ZTransform { response, frequencies }
+    ZTransform {
+        response,
+        frequencies,
+    }
 }
 
 /// Check system stability (all poles inside unit circle)
@@ -153,7 +159,7 @@ mod tests {
 
     #[test]
     fn test_frequency_response() {
-        let b = vec![1.0, 0.5];  // Simple FIR filter
+        let b = vec![1.0, 0.5]; // Simple FIR filter
         let a = vec![1.0];
         let h = frequency_response(&b, &a, 64);
 

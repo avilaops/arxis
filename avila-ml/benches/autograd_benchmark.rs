@@ -1,5 +1,5 @@
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use avila_ml::tensor::{Tensor, TensorLike};
+use criterion::{black_box, criterion_group, criterion_main, Criterion};
 
 fn bench_tensor_creation(c: &mut Criterion) {
     c.bench_function("tensor_zeros_100x100", |b| {

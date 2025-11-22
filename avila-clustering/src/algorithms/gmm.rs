@@ -1,7 +1,7 @@
 //! Gaussian Mixture Models
 
+use crate::{ClusteringError, Result};
 use ndarray::{Array1, Array2, ArrayView2};
-use crate::{Result, ClusteringError};
 
 /// Covariance type for GMM
 #[derive(Debug, Clone, Copy)]

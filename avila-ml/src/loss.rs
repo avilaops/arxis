@@ -60,9 +60,7 @@ impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Loss
         let one = T::one();
 
         // Clamp predictions to avoid log(0)
-        let pred_clamped = predictions.data.mapv(|x| {
-            x.max(eps).min(one - eps)
-        });
+        let pred_clamped = predictions.data.mapv(|x| x.max(eps).min(one - eps));
 
         let log_pred = pred_clamped.mapv(|x| x.ln());
         let log_one_minus_pred = pred_clamped.mapv(|x| (one - x).ln());
@@ -71,7 +69,10 @@ impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Loss
         let term2 = targets.data.mapv(|x| one - x) * &log_one_minus_pred;
 
         let loss_data = -(term1 + term2);
-        let loss_sum = Tensor::new(ndarray::ArrayD::from_elem(ndarray::IxDyn(&[]), loss_data.sum()));
+        let loss_sum = Tensor::new(ndarray::ArrayD::from_elem(
+            ndarray::IxDyn(&[]),
+            loss_data.sum(),
+        ));
 
         // Return mean
         let size = T::from(predictions.size()).unwrap();
@@ -102,13 +103,19 @@ impl CrossEntropyLoss {
     }
 }
 
-impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Loss<T> for CrossEntropyLoss {
+impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Loss<T>
+    for CrossEntropyLoss
+{
     fn forward(&self, predictions: &Tensor<T>, targets: &Tensor<T>) -> Tensor<T> {
         // CrossEntropy = -sum(targets * log(softmax(predictions)))
         let eps = T::from(self.epsilon).unwrap();
 
         // Apply softmax to predictions
-        let max_val = predictions.data.iter().cloned().fold(T::neg_infinity(), T::max);
+        let max_val = predictions
+            .data
+            .iter()
+            .cloned()
+            .fold(T::neg_infinity(), T::max);
         let exp_data = predictions.data.mapv(|x| (x - max_val).exp());
         let sum = exp_data.sum();
         let softmax = exp_data.mapv(|x| (x / sum).max(eps));
@@ -135,7 +142,9 @@ impl<T: Float> HuberLoss<T> {
     }
 }
 
-impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Loss<T> for HuberLoss<T> {
+impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Loss<T>
+    for HuberLoss<T>
+{
     fn forward(&self, predictions: &Tensor<T>, targets: &Tensor<T>) -> Tensor<T> {
         // Huber(a) = 0.5 * a^2 if |a| <= delta
         //          = delta * (|a| - 0.5 * delta) otherwise
@@ -190,7 +199,9 @@ impl<T: Float> SmoothL1Loss<T> {
     }
 }
 
-impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Loss<T> for SmoothL1Loss<T> {
+impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Loss<T>
+    for SmoothL1Loss<T>
+{
     fn forward(&self, predictions: &Tensor<T>, targets: &Tensor<T>) -> Tensor<T> {
         let diff = predictions.sub(targets);
         let half = T::from(0.5).unwrap();

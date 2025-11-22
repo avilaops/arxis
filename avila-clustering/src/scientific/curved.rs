@@ -1,8 +1,8 @@
 //! Clustering in curved spacetime manifolds
 
-use ndarray::{Array1, ArrayView2};
-use crate::{Result, ClusteringError};
 use crate::metrics::distance::Manifold;
+use crate::{ClusteringError, Result};
+use ndarray::{Array1, ArrayView2};
 
 /// DBSCAN adapted for curved spacetime
 pub struct ManifoldDBSCAN {

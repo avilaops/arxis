@@ -26,13 +26,13 @@
 
 use pyo3::prelude::*;
 
-mod tensor_py;
-mod quaternion_py;
 mod autograd_py;
+mod quaternion_py;
+mod tensor_py;
 
-pub use tensor_py::*;
-pub use quaternion_py::*;
 pub use autograd_py::*;
+pub use quaternion_py::*;
+pub use tensor_py::*;
 
 /// Python module for avila-math
 #[pymodule]

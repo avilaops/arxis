@@ -1,7 +1,7 @@
 //! LLE (Locally Linear Embedding)
 
+use crate::{ReductionError, Result};
 use ndarray::{Array2, ArrayView2};
-use crate::{Result, ReductionError};
 
 /// LLE (Locally Linear Embedding)
 pub struct LLE {

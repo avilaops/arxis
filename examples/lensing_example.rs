@@ -16,9 +16,9 @@ fn main() {
 
     // Galáxia massiva como lente
     let galaxy_lens = GravitationalLens::point_mass(
-        1e11,   // 100 bilhões de massas solares
-        1e9,    // 1 Gpc do observador
-        2e9,    // Fonte a 2 Gpc
+        1e11, // 100 bilhões de massas solares
+        1e9,  // 1 Gpc do observador
+        2e9,  // Fonte a 2 Gpc
     );
 
     let theta_e = galaxy_lens.einstein_radius_arcsec();
@@ -26,7 +26,10 @@ fn main() {
     println!("    • Raio de Einstein: {:.3} arcsec", theta_e);
     println!("    • D_L = {} Gpc", galaxy_lens.distance_lens / 1e9);
     println!("    • D_S = {} Gpc", galaxy_lens.distance_source / 1e9);
-    println!("    • D_LS = {:.1} Gpc\n", galaxy_lens.distance_lens_source() / 1e9);
+    println!(
+        "    • D_LS = {:.1} Gpc\n",
+        galaxy_lens.distance_lens_source() / 1e9
+    );
 
     // Posições de imagens para diferentes posições da fonte
     println!("  Posições de Imagens Múltiplas:");
@@ -109,9 +112,18 @@ fn main() {
     println!("  Ângulo de Deflexão α(θ) para θ = 2θ_E:");
     let theta_test = point_lens.einstein_radius() * 2.0;
 
-    println!("    • Point Mass:  α = {:.4e} rad", point_lens.deflection_angle(theta_test));
-    println!("    • SIS:         α = {:.4e} rad (constante)", sis_lens.deflection_angle(theta_test));
-    println!("    • NFW:         α = {:.4e} rad\n", nfw_lens.deflection_angle(theta_test));
+    println!(
+        "    • Point Mass:  α = {:.4e} rad",
+        point_lens.deflection_angle(theta_test)
+    );
+    println!(
+        "    • SIS:         α = {:.4e} rad (constante)",
+        sis_lens.deflection_angle(theta_test)
+    );
+    println!(
+        "    • NFW:         α = {:.4e} rad\n",
+        nfw_lens.deflection_angle(theta_test)
+    );
 
     // ========== 3. WEAK LENSING ==========
     println!("┌────────────────────────────────────────────────────────────┐");
@@ -119,9 +131,9 @@ fn main() {
     println!("└────────────────────────────────────────────────────────────┘\n");
 
     let weak_lens = WeakLensing::new(
-        0.08,   // κ (convergência)
-        0.02,   // γ₁ (shear)
-        0.03,   // γ₂ (shear)
+        0.08, // κ (convergência)
+        0.02, // γ₁ (shear)
+        0.03, // γ₂ (shear)
     );
 
     println!("  Parâmetros de Weak Lensing:");
@@ -129,8 +141,14 @@ fn main() {
     println!("    • Shear γ₁ = {:.3}", weak_lens.shear_1);
     println!("    • Shear γ₂ = {:.3}", weak_lens.shear_2);
     println!("    • Shear total γ = {:.4}", weak_lens.total_shear());
-    println!("    • Ângulo do shear = {:.2}°", weak_lens.shear_angle().to_degrees());
-    println!("    • Elipticidade induzida = {:.4}", weak_lens.induced_ellipticity());
+    println!(
+        "    • Ângulo do shear = {:.2}°",
+        weak_lens.shear_angle().to_degrees()
+    );
+    println!(
+        "    • Elipticidade induzida = {:.4}",
+        weak_lens.induced_ellipticity()
+    );
     println!("    • Magnificação = {:.4}\n", weak_lens.magnification());
 
     // Distorção de galáxias de fundo
@@ -157,19 +175,34 @@ fn main() {
     println!("└────────────────────────────────────────────────────────────┘\n");
 
     let microlens_event = MicrolensingEvent::new(
-        0.5,    // 0.5 M☉ (estrela típica)
-        0.3,    // u₀ = 0.3 (parâmetro de impacto)
-        25.0,   // t_E = 25 dias
-        100.0,  // Pico em t₀ = 100 dias
+        0.5,   // 0.5 M☉ (estrela típica)
+        0.3,   // u₀ = 0.3 (parâmetro de impacto)
+        25.0,  // t_E = 25 dias
+        100.0, // Pico em t₀ = 100 dias
     );
 
     println!("  Evento de Microlente:");
     println!("    • Massa da lente: {:.1} M☉", microlens_event.lens_mass);
-    println!("    • Parâmetro de impacto: u₀ = {:.2}", microlens_event.impact_parameter);
-    println!("    • Tempo de Einstein: t_E = {:.1} dias", microlens_event.einstein_time);
-    println!("    • Tempo do pico: t₀ = {:.1} dias", microlens_event.peak_time);
-    println!("    • Magnificação no pico: A(t₀) = {:.2}", microlens_event.peak_magnification());
-    println!("    • Duração (FWHM): {:.1} dias", microlens_event.event_duration());
+    println!(
+        "    • Parâmetro de impacto: u₀ = {:.2}",
+        microlens_event.impact_parameter
+    );
+    println!(
+        "    • Tempo de Einstein: t_E = {:.1} dias",
+        microlens_event.einstein_time
+    );
+    println!(
+        "    • Tempo do pico: t₀ = {:.1} dias",
+        microlens_event.peak_time
+    );
+    println!(
+        "    • Magnificação no pico: A(t₀) = {:.2}",
+        microlens_event.peak_magnification()
+    );
+    println!(
+        "    • Duração (FWHM): {:.1} dias",
+        microlens_event.event_duration()
+    );
     println!(
         "    • Detectável? {}",
         if microlens_event.is_detectable(1.34) {
@@ -203,9 +236,9 @@ fn main() {
     println!("└────────────────────────────────────────────────────────────┘\n");
 
     // Profundidade óptica para bojo galáctico
-    let n_stars = 1e9;  // densidade de estrelas
-    let distance_bulge = 8000.0;  // pc
-    let typical_theta_e = 1e-9;  // rad
+    let n_stars = 1e9; // densidade de estrelas
+    let distance_bulge = 8000.0; // pc
+    let typical_theta_e = 1e-9; // rad
 
     let tau = LensingStatistics::optical_depth(n_stars, distance_bulge, typical_theta_e);
     println!("  Profundidade Óptica:");

@@ -59,11 +59,7 @@ fn main() {
         .iter()
         .cloned()
         .fold(f64::NEG_INFINITY, f64::max);
-    let output_min = output
-        .data
-        .iter()
-        .cloned()
-        .fold(f64::INFINITY, f64::min);
+    let output_min = output.data.iter().cloned().fold(f64::INFINITY, f64::min);
 
     println!("\nOutput statistics:");
     println!("  - Mean: {:.6}", output_mean);

@@ -3,7 +3,7 @@
 #[cfg(feature = "gpu")]
 use cudarc::driver::CudaDevice;
 
-use crate::{Result, ReductionError};
+use crate::{ReductionError, Result};
 
 #[cfg(feature = "gpu")]
 pub struct GpuPCA {
@@ -39,7 +39,7 @@ pub struct GpuPCA;
 impl GpuPCA {
     pub fn new(_n_components: usize) -> Result<Self> {
         Err(ReductionError::GpuError(
-            "GPU support not enabled. Compile with --features gpu".to_string()
+            "GPU support not enabled. Compile with --features gpu".to_string(),
         ))
     }
 }

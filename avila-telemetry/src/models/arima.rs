@@ -1,7 +1,7 @@
 //! ARIMA (AutoRegressive Integrated Moving Average) model
 
+use crate::forecasting::{ForecastResult, Forecaster};
 use crate::{Result, TelemetryError, TimeSeries};
-use crate::forecasting::{Forecaster, ForecastResult};
 
 /// ARIMA model parameters
 #[derive(Debug, Clone)]
@@ -40,9 +40,7 @@ impl ARIMA {
         let mut result = data.to_vec();
 
         for _ in 0..self.params.d {
-            result = result.windows(2)
-                .map(|w| w[1] - w[0])
-                .collect();
+            result = result.windows(2).map(|w| w[1] - w[0]).collect();
         }
 
         result
@@ -90,11 +88,7 @@ impl ARIMA {
                 sum_x2 += data[j - lag] * data[j - lag];
             }
 
-            self.ar_coeffs[i] = if sum_x2 != 0.0 {
-                sum_xy / sum_x2
-            } else {
-                0.0
-            };
+            self.ar_coeffs[i] = if sum_x2 != 0.0 { sum_xy / sum_x2 } else { 0.0 };
         }
 
         Ok(())
@@ -170,19 +164,31 @@ impl Forecaster for ARIMA {
         })
     }
 
-    fn forecast_with_confidence(&self, steps: usize, confidence_level: f64) -> Result<ForecastResult> {
+    fn forecast_with_confidence(
+        &self,
+        steps: usize,
+        confidence_level: f64,
+    ) -> Result<ForecastResult> {
         let base_forecast = self.forecast(steps)?;
 
         // Simple confidence interval calculation
         let std_dev = 1.0; // Simplified - should calculate from residuals
-        let z_score = if confidence_level >= 0.95 { 1.96 } else { 1.645 };
+        let z_score = if confidence_level >= 0.95 {
+            1.96
+        } else {
+            1.645
+        };
         let margin = z_score * std_dev;
 
-        let lower_bound = base_forecast.predictions.iter()
+        let lower_bound = base_forecast
+            .predictions
+            .iter()
             .map(|&v| v - margin)
             .collect();
 
-        let upper_bound = base_forecast.predictions.iter()
+        let upper_bound = base_forecast
+            .predictions
+            .iter()
             .map(|&v| v + margin)
             .collect();
 

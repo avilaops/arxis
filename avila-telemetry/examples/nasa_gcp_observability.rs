@@ -1,10 +1,9 @@
 //! Example demonstrating NASA and Google Cloud best practices
 
 use avila_telemetry::{
-    TimeSeries, AnomalyDetector, Forecaster, ExponentialSmoothing,
-    DataQuality, NASAQualityControl, GoldenSignals, PerformanceTracker,
-    ServiceLevelObjective, ErrorBudget, StructuredLog, LogSeverity,
-    AlertLevel, Alert,
+    Alert, AlertLevel, AnomalyDetector, DataQuality, ErrorBudget, ExponentialSmoothing, Forecaster,
+    GoldenSignals, LogSeverity, NASAQualityControl, PerformanceTracker, ServiceLevelObjective,
+    StructuredLog, TimeSeries,
 };
 use std::time::Duration;
 
@@ -13,8 +12,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Create telemetry data
     let data = vec![
-        100.0, 102.0, 101.0, 103.0, 102.0, 104.0, 103.0, 105.0,
-        104.0, 106.0, 105.0, 107.0, 106.0, 108.0, 107.0, 109.0,
+        100.0, 102.0, 101.0, 103.0, 102.0, 104.0, 103.0, 105.0, 104.0, 106.0, 105.0, 107.0, 106.0,
+        108.0, 107.0, 109.0,
     ];
     let ts = TimeSeries::new(data.clone()).with_name("spacecraft_temperature");
 
@@ -52,9 +51,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("--- Google SRE Service Level Objective ---");
     let slo = ServiceLevelObjective {
         name: "Telemetry Processing Latency".to_string(),
-        target: 0.999, // 99.9%
+        target: 0.999,                               // 99.9%
         window: Duration::from_secs(30 * 24 * 3600), // 30 days
-        error_budget: ErrorBudget::new(0.001), // 0.1% error budget
+        error_budget: ErrorBudget::new(0.001),       // 0.1% error budget
     };
     println!("SLO Target: {:.1}%", slo.target * 100.0);
     println!("Error Budget: {:.3}%", slo.error_budget.total * 100.0);
@@ -144,14 +143,22 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     for (i, pred) in forecast.predictions.iter().enumerate() {
         let lower = forecast.lower_bound.as_ref().unwrap()[i];
         let upper = forecast.upper_bound.as_ref().unwrap()[i];
-        println!("  Step {}: {:.2} (95% CI: [{:.2}, {:.2}])",
-                 i + 1, pred, lower, upper);
+        println!(
+            "  Step {}: {:.2} (95% CI: [{:.2}, {:.2}])",
+            i + 1,
+            pred,
+            lower,
+            upper
+        );
     }
     println!();
 
     // 8. Mission Report Summary
     println!("=== Mission Report Summary ===");
-    println!("✅ Data Quality: {:.1}% (NASA Standard)", dqa.overall_score * 100.0);
+    println!(
+        "✅ Data Quality: {:.1}% (NASA Standard)",
+        dqa.overall_score * 100.0
+    );
     println!("✅ Control Limits: All within 6-Sigma");
     println!("✅ SLO Target: {:.1}% achieved", slo.target * 100.0);
     println!("✅ Latency P99: {:?}", latency.p99);

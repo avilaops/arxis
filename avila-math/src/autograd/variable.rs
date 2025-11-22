@@ -1,7 +1,7 @@
 //! Variable type for automatic differentiation
 
-use std::rc::Rc;
 use std::cell::RefCell;
+use std::rc::Rc;
 
 /// A variable in the computational graph
 #[derive(Debug, Clone)]

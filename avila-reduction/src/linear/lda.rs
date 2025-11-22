@@ -1,7 +1,7 @@
 //! Linear Discriminant Analysis (LDA)
 
+use crate::{ReductionError, Result};
 use ndarray::{Array1, Array2, ArrayView2};
-use crate::{Result, ReductionError};
 
 /// Linear Discriminant Analysis (supervised)
 pub struct LDA {
@@ -33,7 +33,11 @@ impl LDA {
         unimplemented!("LDA::transform")
     }
 
-    pub fn fit_transform(&mut self, data: &ArrayView2<f64>, labels: &[usize]) -> Result<Array2<f64>> {
+    pub fn fit_transform(
+        &mut self,
+        data: &ArrayView2<f64>,
+        labels: &[usize],
+    ) -> Result<Array2<f64>> {
         self.fit(data, labels)?;
         self.transform(data)
     }

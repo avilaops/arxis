@@ -65,5 +65,10 @@ fn bench_tensor_creation(c: &mut Criterion) {
     group.finish();
 }
 
-criterion_group!(benches, bench_vector_ops, bench_matrix_ops, bench_tensor_creation);
+criterion_group!(
+    benches,
+    bench_vector_ops,
+    bench_matrix_ops,
+    bench_tensor_creation
+);
 criterion_main!(benches);

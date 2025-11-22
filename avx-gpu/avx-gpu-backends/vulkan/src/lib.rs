@@ -338,17 +338,13 @@ impl Drop for VulkanBackend {
             // Wait for device to finish all operations
             let _ = self.device.device_wait_idle();
 
-            // Clean up command pool first
+            // Clean up command pool
             self.device.destroy_command_pool(self.command_pool, None);
             
-            // Destroy device
-            self.device.destroy_device(None);
-            
-            // Destroy instance last
-            self.instance.destroy_instance(None);
-            
-            // Note: gpu-allocator and buffers will be dropped automatically
-            // We don't manually free them to avoid double-free issues
+            // Note: We intentionally don't destroy device/instance here to avoid
+            // crashes with gpu-allocator. The OS will clean up Vulkan resources
+            // when the process exits. For long-running apps, implement explicit
+            // cleanup methods instead of relying on Drop.
         }
     }
 }

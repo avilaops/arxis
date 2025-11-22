@@ -1,7 +1,7 @@
 //! Incremental/streaming dimensionality reduction
 
+use crate::{ReductionError, Result};
 use ndarray::{Array1, Array2, ArrayView2};
-use crate::{Result, ReductionError};
 
 /// Streaming PCA
 pub struct StreamingPCA {

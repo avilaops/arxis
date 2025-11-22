@@ -4,8 +4,8 @@
 
 pub mod detection;
 pub mod landmarks;
-pub mod recognition;
 pub mod liveness;
+pub mod recognition;
 
 use crate::core::ImageBuffer;
 use crate::Result;

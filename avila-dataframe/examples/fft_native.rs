@@ -4,10 +4,7 @@
 
 use avila_dataframe::prelude::*;
 use avila_dataframe::scientific::fft_native::{
-    fft as fft_native,
-    power_spectral_density,
-    frequency_vector,
-    find_peak,
+    fft as fft_native, find_peak, frequency_vector, power_spectral_density,
     WindowTypeNative as WindowType,
 };
 use std::f64::consts::PI;
@@ -55,7 +52,10 @@ fn main() -> Result<()> {
 
     println!("✅ Sinal gerado: {} pontos", signal.len());
     println!("   • Frequência inicial: {} Hz", f0);
-    println!("   • Frequência final: {:.1} Hz\n", f0 + chirp_rate * duration);
+    println!(
+        "   • Frequência final: {:.1} Hz\n",
+        f0 + chirp_rate * duration
+    );
 
     // ========================================
     // 2. Calcular FFT com diferentes janelas
@@ -89,8 +89,14 @@ fn main() -> Result<()> {
 
     println!("   PSD Statistics:");
     println!("   • Bins: {}", psd.len());
-    println!("   • Pico de potência: {:.2e} @ {:.2} Hz", peak_power, peak_freq);
-    println!("   • Resolução: {:.3} Hz/bin\n", sample_rate / n_samples as f64);
+    println!(
+        "   • Pico de potência: {:.2e} @ {:.2} Hz",
+        peak_power, peak_freq
+    );
+    println!(
+        "   • Resolução: {:.3} Hz/bin\n",
+        sample_rate / n_samples as f64
+    );
 
     // ========================================
     // 4. Criar DataFrame com resultados
@@ -168,11 +174,26 @@ fn main() -> Result<()> {
     println!("║                   RESUMO DA ANÁLISE                     ║");
     println!("╠══════════════════════════════════════════════════════════╣");
     println!("║  Sinal:          Onda gravitacional (chirp)            ║");
-    println!("║  Amostras:       {}                                  ║", n_samples);
-    println!("║  Taxa:           {} Hz                                ║", sample_rate as usize);
-    println!("║  FFT bins:       {}                                   ║", spectrum_final.len());
-    println!("║  Pico global:    {:.1} Hz                             ║", peak_freq);
-    println!("║  Pico na banda:  {:.1} Hz (30-150 Hz)                ║", peak_freq_filtered);
+    println!(
+        "║  Amostras:       {}                                  ║",
+        n_samples
+    );
+    println!(
+        "║  Taxa:           {} Hz                                ║",
+        sample_rate as usize
+    );
+    println!(
+        "║  FFT bins:       {}                                   ║",
+        spectrum_final.len()
+    );
+    println!(
+        "║  Pico global:    {:.1} Hz                             ║",
+        peak_freq
+    );
+    println!(
+        "║  Pico na banda:  {:.1} Hz (30-150 Hz)                ║",
+        peak_freq_filtered
+    );
     println!("╚══════════════════════════════════════════════════════════╝\n");
 
     println!("✅ Análise FFT completa!");

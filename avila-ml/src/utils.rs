@@ -5,7 +5,9 @@ use ndarray::ArrayD;
 use num_traits::{Float, NumAssign};
 
 /// Initialize weights with Xavier/Glorot initialization
-pub fn xavier_uniform<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static>(shape: &[usize]) -> Tensor<T> {
+pub fn xavier_uniform<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static>(
+    shape: &[usize],
+) -> Tensor<T> {
     let fan_in = if shape.len() > 1 { shape[1] } else { shape[0] };
     let fan_out = shape[0];
     let limit = T::from((6.0 / (fan_in + fan_out) as f64).sqrt()).unwrap();
@@ -25,7 +27,9 @@ pub fn xavier_uniform<T: Float + NumAssign + ndarray::ScalarOperand + Send + Syn
 }
 
 /// Initialize weights with Kaiming/He initialization
-pub fn kaiming_uniform<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static>(shape: &[usize]) -> Tensor<T> {
+pub fn kaiming_uniform<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static>(
+    shape: &[usize],
+) -> Tensor<T> {
     let fan_in = if shape.len() > 1 { shape[1] } else { shape[0] };
     let limit = T::from((3.0 / fan_in as f64).sqrt()).unwrap();
 

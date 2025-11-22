@@ -8,10 +8,10 @@
 //! - Matrizes de view/camera
 //! - Interpolação (lerp, slerp)
 
+use crate::matrix::{Matrix3x3, Matrix4x4};
+use crate::vector::{Vector3, Vector4};
 use num_traits::Float;
 use std::ops::Mul;
-use crate::vector::{Vector3, Vector4};
-use crate::matrix::{Matrix3x3, Matrix4x4};
 
 /// Quaternion para rotações (evita gimbal lock)
 ///
@@ -114,9 +114,24 @@ impl<T: Float> Quaternion<T> {
         let wz = self.w * self.z;
 
         Matrix4x4::from_rows([
-            [T::one() - two * (yy + zz), two * (xy - wz), two * (xz + wy), T::zero()],
-            [two * (xy + wz), T::one() - two * (xx + zz), two * (yz - wx), T::zero()],
-            [two * (xz - wy), two * (yz + wx), T::one() - two * (xx + yy), T::zero()],
+            [
+                T::one() - two * (yy + zz),
+                two * (xy - wz),
+                two * (xz + wy),
+                T::zero(),
+            ],
+            [
+                two * (xy + wz),
+                T::one() - two * (xx + zz),
+                two * (yz - wx),
+                T::zero(),
+            ],
+            [
+                two * (xz - wy),
+                two * (yz + wx),
+                T::one() - two * (xx + yy),
+                T::zero(),
+            ],
             [T::zero(), T::zero(), T::zero(), T::one()],
         ])
     }
@@ -175,12 +190,15 @@ impl<T: Float> Quaternion<T> {
 
         // Garantir caminho mais curto
         let (other, dot) = if dot < T::zero() {
-            (Quaternion {
-                w: -other.w,
-                x: -other.x,
-                y: -other.y,
-                z: -other.z,
-            }, -dot)
+            (
+                Quaternion {
+                    w: -other.w,
+                    x: -other.x,
+                    y: -other.y,
+                    z: -other.z,
+                },
+                -dot,
+            )
         } else {
             (*other, dot)
         };
@@ -298,9 +316,9 @@ impl<T: Float> Matrix4x4<T> {
     /// target: ponto que a câmera está olhando
     /// up: vetor "para cima" (geralmente (0,1,0))
     pub fn look_at(eye: Vector3<T>, target: Vector3<T>, up: Vector3<T>) -> Self {
-        let f = (target - eye).normalize();  // forward
-        let r = f.cross(&up).normalize();    // right
-        let u = r.cross(&f);                 // up recalculado
+        let f = (target - eye).normalize(); // forward
+        let r = f.cross(&up).normalize(); // right
+        let u = r.cross(&f); // up recalculado
 
         Self::from_rows([
             [r.x(), r.y(), r.z(), -r.dot(&eye)],
@@ -326,7 +344,12 @@ impl<T: Float> Matrix4x4<T> {
         Self::from_rows([
             [f / aspect, T::zero(), T::zero(), T::zero()],
             [T::zero(), f, T::zero(), T::zero()],
-            [T::zero(), T::zero(), -(far + near) / range, -(two * far * near) / range],
+            [
+                T::zero(),
+                T::zero(),
+                -(far + near) / range,
+                -(two * far * near) / range,
+            ],
             [T::zero(), T::zero(), -T::one(), T::zero()],
         ])
     }

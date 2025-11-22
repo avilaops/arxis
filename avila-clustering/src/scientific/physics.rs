@@ -1,7 +1,7 @@
 //! Physics-aware clustering that preserves conservation laws
 
+use crate::{ClusteringError, Result};
 use ndarray::{Array1, Array2, ArrayView2};
-use crate::{Result, ClusteringError};
 
 /// Conservation laws to enforce
 #[derive(Debug, Clone, Copy)]
@@ -60,8 +60,7 @@ pub struct PhysicsClusteringResult {
 impl PhysicsClusteringResult {
     /// Check if conservation laws are satisfied within tolerance
     pub fn is_valid(&self, tolerance: f64) -> bool {
-        self.conservation_errors.iter()
-            .all(|&err| err < tolerance)
+        self.conservation_errors.iter().all(|&err| err < tolerance)
     }
 }
 

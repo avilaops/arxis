@@ -1,12 +1,11 @@
-use avila_telemetry::{TimeSeries, AnomalyDetector};
+use avila_telemetry::{AnomalyDetector, TimeSeries};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("=== Anomaly Detection Example ===\n");
 
     // Create a time series with an obvious anomaly
     let data = vec![
-        10.0, 12.0, 11.0, 13.0, 12.0, 11.0, 10.0,
-        100.0,  // <- Anomaly
+        10.0, 12.0, 11.0, 13.0, 12.0, 11.0, 10.0, 100.0, // <- Anomaly
         11.0, 12.0, 10.0, 13.0, 11.0, 12.0,
     ];
 

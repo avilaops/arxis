@@ -1,8 +1,8 @@
 //! Integration tests for avila-telemetry
 
 use avila_telemetry::{
-    TimeSeries, AnomalyDetector, Forecaster, ExponentialSmoothing,
-    FeatureExtractor, Decomposer, DecompositionType,
+    AnomalyDetector, Decomposer, DecompositionType, ExponentialSmoothing, FeatureExtractor,
+    Forecaster, TimeSeries,
 };
 
 #[test]

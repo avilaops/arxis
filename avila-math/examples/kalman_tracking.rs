@@ -34,12 +34,15 @@ fn main() {
 
     let mut rng = rand::thread_rng();
 
-    println!("{:>8} {:>12} {:>12} {:>12} {:>12}", "Time", "True Pos", "Measured", "Estimated", "Velocity");
+    println!(
+        "{:>8} {:>12} {:>12} {:>12} {:>12}",
+        "Time", "True Pos", "Measured", "Estimated", "Velocity"
+    );
     println!("{}", "-".repeat(60));
 
     for step in 0..50 {
         let time = step as f64 * dt;
-        
+
         // True position (constant velocity)
         let true_position = 1.0 * time;
 

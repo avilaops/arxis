@@ -90,7 +90,10 @@ fn main() {
     println!("\nMean Squared Error:");
     println!("  Noisy:    {:.6}", mse_noisy);
     println!("  Filtered: {:.6}", mse_filtered);
-    println!("  Reduction: {:.1}%", (1.0 - mse_filtered / mse_noisy) * 100.0);
+    println!(
+        "  Reduction: {:.1}%",
+        (1.0 - mse_filtered / mse_noisy) * 100.0
+    );
 
     println!("\n✅ Wiener filter successfully reduced noise!");
     println!("   Filter coefficients: {} taps", wf.order());

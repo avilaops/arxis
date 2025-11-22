@@ -1,7 +1,7 @@
 //! Distance metrics for clustering
 
+use crate::{ClusteringError, Result};
 use ndarray::ArrayView1;
-use crate::{Result, ClusteringError};
 
 /// Distance metric for clustering
 #[derive(Debug, Clone)]
@@ -77,10 +77,7 @@ pub fn euclidean_distance(x: &ArrayView1<f64>, y: &ArrayView1<f64>) -> f64 {
 
 /// Manhattan distance
 pub fn manhattan_distance(x: &ArrayView1<f64>, y: &ArrayView1<f64>) -> f64 {
-    x.iter()
-        .zip(y.iter())
-        .map(|(a, b)| (a - b).abs())
-        .sum()
+    x.iter().zip(y.iter()).map(|(a, b)| (a - b).abs()).sum()
 }
 
 /// Cosine distance

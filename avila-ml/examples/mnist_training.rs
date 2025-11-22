@@ -1,9 +1,9 @@
 //! MNIST training example (simplified)
 
+use avila_ml::data::{DataLoader, TensorDataset};
 use avila_ml::prelude::*;
 use avila_ml::tensor::Tensor;
-use avila_ml::data::{TensorDataset, DataLoader};
-use avila_ml::utils::{one_hot, accuracy, EarlyStopping, CosineAnnealingLR};
+use avila_ml::utils::{accuracy, one_hot, CosineAnnealingLR, EarlyStopping};
 use std::sync::Arc;
 
 fn main() {
@@ -107,8 +107,13 @@ fn main() {
         let current_lr = scheduler.step();
 
         if (epoch + 1) % 5 == 0 {
-            println!("Epoch [{:3}/{}] - Loss: {:.6} - LR: {:.6}",
-                     epoch + 1, epochs, avg_loss, current_lr);
+            println!(
+                "Epoch [{:3}/{}] - Loss: {:.6} - LR: {:.6}",
+                epoch + 1,
+                epochs,
+                avg_loss,
+                current_lr
+            );
         }
 
         // Early stopping check

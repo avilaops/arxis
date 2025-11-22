@@ -10,7 +10,7 @@ pub mod scientific;
 
 pub mod prelude {
     //! Tudo que você precisa para começar
-    pub use crate::core::{Column, DataFrame, Series, Value, DataType};
+    pub use crate::core::{Column, DataFrame, DataType, Series, Value};
     pub use crate::error::{AvilaError, Result};
     pub use crate::ops::*;
 }

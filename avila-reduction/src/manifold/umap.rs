@@ -1,7 +1,7 @@
 //! UMAP (Uniform Manifold Approximation and Projection)
 
+use crate::{ReductionError, Result};
 use ndarray::{Array2, ArrayView2};
-use crate::{Result, ReductionError};
 
 /// Distance metric (simplified from clustering crate)
 #[derive(Debug, Clone)]

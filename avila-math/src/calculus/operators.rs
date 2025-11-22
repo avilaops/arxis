@@ -37,23 +37,16 @@ where
 }
 
 /// Derivada direcional: D_v f = ∇f · v
-pub fn directional_derivative<F>(
-    f: &F,
-    point: &[f64; 4],
-    direction: &[f64; 4],
-    h: f64,
-) -> f64
+pub fn directional_derivative<F>(f: &F, point: &[f64; 4], direction: &[f64; 4], h: f64) -> f64
 where
     F: Fn(&[f64]) -> f64,
 {
     let grad = gradient_4d(f, point, h);
 
     // Normaliza direção
-    let norm = (direction[0].powi(2)
-        + direction[1].powi(2)
-        + direction[2].powi(2)
-        + direction[3].powi(2))
-    .sqrt();
+    let norm =
+        (direction[0].powi(2) + direction[1].powi(2) + direction[2].powi(2) + direction[3].powi(2))
+            .sqrt();
 
     if norm == 0.0 {
         return 0.0;
@@ -66,10 +59,7 @@ where
         direction[3] / norm,
     ];
 
-    grad[0] * unit_dir[0]
-        + grad[1] * unit_dir[1]
-        + grad[2] * unit_dir[2]
-        + grad[3] * unit_dir[3]
+    grad[0] * unit_dir[0] + grad[1] * unit_dir[1] + grad[2] * unit_dir[2] + grad[3] * unit_dir[3]
 }
 
 /// Operador grad-div: ∇(∇·F)

@@ -76,25 +76,34 @@ impl AABB {
     /// Check if AABB contains a point
     #[inline]
     pub fn contains_point(&self, point: Vector3) -> bool {
-        point.x >= self.min.x && point.x <= self.max.x &&
-        point.y >= self.min.y && point.y <= self.max.y &&
-        point.z >= self.min.z && point.z <= self.max.z
+        point.x >= self.min.x
+            && point.x <= self.max.x
+            && point.y >= self.min.y
+            && point.y <= self.max.y
+            && point.z >= self.min.z
+            && point.z <= self.max.z
     }
 
     /// Check if two AABBs intersect
     #[inline]
     pub fn intersects(&self, other: &AABB) -> bool {
-        self.min.x <= other.max.x && self.max.x >= other.min.x &&
-        self.min.y <= other.max.y && self.max.y >= other.min.y &&
-        self.min.z <= other.max.z && self.max.z >= other.min.z
+        self.min.x <= other.max.x
+            && self.max.x >= other.min.x
+            && self.min.y <= other.max.y
+            && self.max.y >= other.min.y
+            && self.min.z <= other.max.z
+            && self.max.z >= other.min.z
     }
 
     /// Check if this AABB completely contains another
     #[inline]
     pub fn contains(&self, other: &AABB) -> bool {
-        self.min.x <= other.min.x && self.max.x >= other.max.x &&
-        self.min.y <= other.min.y && self.max.y >= other.max.y &&
-        self.min.z <= other.min.z && self.max.z >= other.max.z
+        self.min.x <= other.min.x
+            && self.max.x >= other.max.x
+            && self.min.y <= other.min.y
+            && self.max.y >= other.max.y
+            && self.min.z <= other.min.z
+            && self.max.z >= other.max.z
     }
 
     /// Get intersection of two AABBs (returns None if they don't intersect)
@@ -187,10 +196,12 @@ mod tests {
     #[test]
     fn test_aabb_intersection() {
         let aabb1 = AABB::from_center_size(Vector3::zero(), Vector3::new(2.0, 2.0, 2.0));
-        let aabb2 = AABB::from_center_size(Vector3::new(1.0, 0.0, 0.0), Vector3::new(2.0, 2.0, 2.0));
+        let aabb2 =
+            AABB::from_center_size(Vector3::new(1.0, 0.0, 0.0), Vector3::new(2.0, 2.0, 2.0));
         assert!(aabb1.intersects(&aabb2));
 
-        let aabb3 = AABB::from_center_size(Vector3::new(5.0, 0.0, 0.0), Vector3::new(2.0, 2.0, 2.0));
+        let aabb3 =
+            AABB::from_center_size(Vector3::new(5.0, 0.0, 0.0), Vector3::new(2.0, 2.0, 2.0));
         assert!(!aabb1.intersects(&aabb3));
     }
 

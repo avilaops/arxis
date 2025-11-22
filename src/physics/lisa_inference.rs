@@ -37,10 +37,7 @@
 /// - Veitch et al., Phys. Rev. D 91, 042003 (2015)
 /// - LIGO Algorithm Library: LALInference
 /// - Thrane & Talbot, PASA 36, e010 (2019)
-
-use crate::physics::{
-    lisa_data::StrainTimeSeries, lisa_processing::PowerSpectralDensity,
-};
+use crate::physics::{lisa_data::StrainTimeSeries, lisa_processing::PowerSpectralDensity};
 use rand::Rng;
 use rand_distr::{Distribution, Normal, Uniform};
 use std::f64::consts::PI;
@@ -153,7 +150,11 @@ impl ParameterEstimation {
         for (i, name) in self.param_names.iter().enumerate() {
             println!(
                 "{:<20} {:>12.4e} {:>12.4e} {:>12.4e} {:>8.0}",
-                name, self.medians[i], self.credible_intervals[i].0, self.credible_intervals[i].1, self.ess[i]
+                name,
+                self.medians[i],
+                self.credible_intervals[i].0,
+                self.credible_intervals[i].1,
+                self.ess[i]
             );
         }
 
@@ -333,7 +334,11 @@ impl MCMCSampler {
         println!();
 
         // Initialize chain from prior
-        let mut current: Vec<f64> = self.priors.iter().map(|p| p.sample(&mut self.rng)).collect();
+        let mut current: Vec<f64> = self
+            .priors
+            .iter()
+            .map(|p| p.sample(&mut self.rng))
+            .collect();
         let mut current_log_post = self.log_posterior(&current);
 
         let mut samples = Vec::new();
@@ -388,7 +393,10 @@ impl MCMCSampler {
         let acceptance_rate = n_accepted as f64 / total_iterations as f64;
         println!();
         println!("✓ MCMC completed!");
-        println!("   └─ Final acceptance rate: {:.1}%", acceptance_rate * 100.0);
+        println!(
+            "   └─ Final acceptance rate: {:.1}%",
+            acceptance_rate * 100.0
+        );
         println!();
 
         let mut result = ParameterEstimation {
@@ -442,7 +450,10 @@ mod tests {
 
     #[test]
     fn test_prior_uniform() {
-        let prior = Prior::Uniform { min: 0.0, max: 10.0 };
+        let prior = Prior::Uniform {
+            min: 0.0,
+            max: 10.0,
+        };
 
         // Test log_prob
         assert!((prior.log_prob(5.0) - (-10.0_f64.ln())).abs() < 1e-10);
@@ -459,7 +470,10 @@ mod tests {
 
     #[test]
     fn test_prior_log_uniform() {
-        let prior = Prior::LogUniform { min: 1.0, max: 100.0 };
+        let prior = Prior::LogUniform {
+            min: 1.0,
+            max: 100.0,
+        };
 
         let log_p = prior.log_prob(10.0);
         assert!(log_p.is_finite());
@@ -529,14 +543,8 @@ mod tests {
 
         // Set up priors
         let priors = vec![
-            Prior::Uniform {
-                min: 1e5,
-                max: 1e7,
-            }, // m1
-            Prior::Uniform {
-                min: 1e5,
-                max: 1e7,
-            }, // m2
+            Prior::Uniform { min: 1e5, max: 1e7 }, // m1
+            Prior::Uniform { min: 1e5, max: 1e7 }, // m2
             Prior::LogUniform {
                 min: 1e24,
                 max: 1e26,
@@ -571,14 +579,8 @@ mod tests {
 
         // Set up priors
         let priors = vec![
-            Prior::Uniform {
-                min: 1e5,
-                max: 1e7,
-            },
-            Prior::Uniform {
-                min: 1e5,
-                max: 1e7,
-            },
+            Prior::Uniform { min: 1e5, max: 1e7 },
+            Prior::Uniform { min: 1e5, max: 1e7 },
             Prior::LogUniform {
                 min: 1e24,
                 max: 1e26,

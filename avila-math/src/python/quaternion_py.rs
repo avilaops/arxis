@@ -2,8 +2,8 @@
 
 #![cfg(feature = "python")]
 
-use pyo3::prelude::*;
 use crate::geometry::quaternion3d::Quaternion3D;
+use pyo3::prelude::*;
 
 /// Python wrapper for Quaternion3D
 #[pyclass(name = "Quaternion")]

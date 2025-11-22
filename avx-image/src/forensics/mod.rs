@@ -1,7 +1,7 @@
 //! Forensics module (fingerprints, documents, analysis)
 
-pub mod fingerprint;
 pub mod document;
+pub mod fingerprint;
 
 use crate::core::ImageBuffer;
 use crate::Result;

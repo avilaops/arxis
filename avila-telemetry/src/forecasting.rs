@@ -24,7 +24,11 @@ pub trait Forecaster {
     fn forecast(&self, steps: usize) -> Result<ForecastResult>;
 
     /// Forecast with confidence intervals
-    fn forecast_with_confidence(&self, steps: usize, confidence_level: f64) -> Result<ForecastResult>;
+    fn forecast_with_confidence(
+        &self,
+        steps: usize,
+        confidence_level: f64,
+    ) -> Result<ForecastResult>;
 }
 
 /// Simple exponential smoothing forecaster
@@ -88,18 +92,26 @@ impl Forecaster for ExponentialSmoothing {
         })
     }
 
-    fn forecast_with_confidence(&self, steps: usize, confidence_level: f64) -> Result<ForecastResult> {
+    fn forecast_with_confidence(
+        &self,
+        steps: usize,
+        confidence_level: f64,
+    ) -> Result<ForecastResult> {
         let base_forecast = self.forecast(steps)?;
         let last_value = self.last_value.unwrap();
 
         // Simple confidence interval based on confidence level
         let margin = last_value * (1.0 - confidence_level) * 0.5;
 
-        let lower_bound = base_forecast.predictions.iter()
+        let lower_bound = base_forecast
+            .predictions
+            .iter()
             .map(|&v| v - margin)
             .collect();
 
-        let upper_bound = base_forecast.predictions.iter()
+        let upper_bound = base_forecast
+            .predictions
+            .iter()
             .map(|&v| v + margin)
             .collect();
 
@@ -137,9 +149,10 @@ impl MovingAverageForecaster {
 impl Forecaster for MovingAverageForecaster {
     fn fit(&mut self, ts: &TimeSeries) -> Result<()> {
         if ts.len() < self.window {
-            return Err(TelemetryError::InsufficientData(
-                format!("Need at least {} data points", self.window),
-            ));
+            return Err(TelemetryError::InsufficientData(format!(
+                "Need at least {} data points",
+                self.window
+            )));
         }
 
         self.history = Some(ts.values.clone());
@@ -147,10 +160,9 @@ impl Forecaster for MovingAverageForecaster {
     }
 
     fn forecast(&self, steps: usize) -> Result<ForecastResult> {
-        let history = self.history.as_ref()
-            .ok_or_else(|| TelemetryError::ModelError(
-                "Model must be fitted before forecasting".to_string()
-            ))?;
+        let history = self.history.as_ref().ok_or_else(|| {
+            TelemetryError::ModelError("Model must be fitted before forecasting".to_string())
+        })?;
 
         // Use last 'window' values to predict
         let last_values = &history[history.len() - self.window..];
@@ -166,27 +178,38 @@ impl Forecaster for MovingAverageForecaster {
         })
     }
 
-    fn forecast_with_confidence(&self, steps: usize, confidence_level: f64) -> Result<ForecastResult> {
+    fn forecast_with_confidence(
+        &self,
+        steps: usize,
+        confidence_level: f64,
+    ) -> Result<ForecastResult> {
         let base_forecast = self.forecast(steps)?;
         let history = self.history.as_ref().unwrap();
 
         // Calculate std dev of recent values
         let last_values = &history[history.len() - self.window..];
         let mean: f64 = last_values.iter().sum::<f64>() / self.window as f64;
-        let variance: f64 = last_values.iter()
-            .map(|x| (x - mean).powi(2))
-            .sum::<f64>() / self.window as f64;
+        let variance: f64 =
+            last_values.iter().map(|x| (x - mean).powi(2)).sum::<f64>() / self.window as f64;
         let std_dev = variance.sqrt();
 
         // Use std dev for confidence intervals
-        let z_score = if confidence_level >= 0.95 { 1.96 } else { 1.645 };
+        let z_score = if confidence_level >= 0.95 {
+            1.96
+        } else {
+            1.645
+        };
         let margin = z_score * std_dev;
 
-        let lower_bound = base_forecast.predictions.iter()
+        let lower_bound = base_forecast
+            .predictions
+            .iter()
             .map(|&v| v - margin)
             .collect();
 
-        let upper_bound = base_forecast.predictions.iter()
+        let upper_bound = base_forecast
+            .predictions
+            .iter()
             .map(|&v| v + margin)
             .collect();
 

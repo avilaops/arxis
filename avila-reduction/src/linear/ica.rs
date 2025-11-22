@@ -1,7 +1,7 @@
 //! Independent Component Analysis (ICA)
 
+use crate::{ReductionError, Result};
 use ndarray::{Array2, ArrayView2};
-use crate::{Result, ReductionError};
 
 /// ICA algorithm
 #[derive(Debug, Clone, Copy)]

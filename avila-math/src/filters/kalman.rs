@@ -50,12 +50,7 @@ impl KalmanFilter {
     /// * `h` - Measurement matrix (m × n)
     /// * `q` - Process noise covariance (n × n)
     /// * `r` - Measurement noise covariance (m × m)
-    pub fn new(
-        f: Vec<Vec<f64>>,
-        h: Vec<Vec<f64>>,
-        q: Vec<Vec<f64>>,
-        r: Vec<Vec<f64>>,
-    ) -> Self {
+    pub fn new(f: Vec<Vec<f64>>, h: Vec<Vec<f64>>, q: Vec<Vec<f64>>, r: Vec<Vec<f64>>) -> Self {
         let n = f.len();
         let m = h.len();
 
@@ -63,14 +58,19 @@ impl KalmanFilter {
         let x = vec![0.0; n];
         // Initialize covariance to identity
         let p = (0..n)
-            .map(|i| {
-                (0..n)
-                    .map(|j| if i == j { 1.0 } else { 0.0 })
-                    .collect()
-            })
+            .map(|i| (0..n).map(|j| if i == j { 1.0 } else { 0.0 }).collect())
             .collect();
 
-        Self { x, p, f, h, q, r, n, m }
+        Self {
+            x,
+            p,
+            f,
+            h,
+            q,
+            r,
+            n,
+            m,
+        }
     }
 
     /// Set initial state
@@ -158,26 +158,14 @@ fn mat_mul(a: &[Vec<f64>], b: &[Vec<f64>]) -> Vec<Vec<f64>> {
 fn mat_add(a: &[Vec<f64>], b: &[Vec<f64>]) -> Vec<Vec<f64>> {
     a.iter()
         .zip(b.iter())
-        .map(|(row_a, row_b)| {
-            row_a
-                .iter()
-                .zip(row_b.iter())
-                .map(|(a, b)| a + b)
-                .collect()
-        })
+        .map(|(row_a, row_b)| row_a.iter().zip(row_b.iter()).map(|(a, b)| a + b).collect())
         .collect()
 }
 
 fn mat_sub(a: &[Vec<f64>], b: &[Vec<f64>]) -> Vec<Vec<f64>> {
     a.iter()
         .zip(b.iter())
-        .map(|(row_a, row_b)| {
-            row_a
-                .iter()
-                .zip(row_b.iter())
-                .map(|(a, b)| a - b)
-                .collect()
-        })
+        .map(|(row_a, row_b)| row_a.iter().zip(row_b.iter()).map(|(a, b)| a - b).collect())
         .collect()
 }
 
@@ -195,11 +183,7 @@ fn transpose(m: &[Vec<f64>]) -> Vec<Vec<f64>> {
 
 fn identity(n: usize) -> Vec<Vec<f64>> {
     (0..n)
-        .map(|i| {
-            (0..n)
-                .map(|j| if i == j { 1.0 } else { 0.0 })
-                .collect()
-        })
+        .map(|i| (0..n).map(|j| if i == j { 1.0 } else { 0.0 }).collect())
         .collect()
 }
 
@@ -245,9 +229,7 @@ fn mat_inv(m: &[Vec<f64>]) -> Vec<Vec<f64>> {
     }
 
     // Extract inverse
-    aug.iter()
-        .map(|row| row[n..].to_vec())
-        .collect()
+    aug.iter().map(|row| row[n..].to_vec()).collect()
 }
 
 #[cfg(test)]

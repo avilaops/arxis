@@ -1,10 +1,12 @@
-use avila_telemetry::{TimeSeries, FeatureExtractor};
+use avila_telemetry::{FeatureExtractor, TimeSeries};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("=== Feature Engineering Example ===\n");
 
     // Create a time series
-    let data: Vec<f64> = (1..=20).map(|x| x as f64 + (x as f64 / 5.0).sin() * 3.0).collect();
+    let data: Vec<f64> = (1..=20)
+        .map(|x| x as f64 + (x as f64 / 5.0).sin() * 3.0)
+        .collect();
     let ts = TimeSeries::new(data.clone());
 
     println!("Original data (first 10): {:?}\n", &ts.values[..10]);

@@ -70,7 +70,7 @@ pub mod filters;
 pub mod python;
 
 // Re-export commonly used types
-pub use geometry::{DualQuat, Matrix4, Quat3D, SO4Rotation, Vector2, Vector3, Vector4, AABB};
-pub use tensor::{Tensor, Tensor4D};
 pub use autograd::{Tape, Variable};
 pub use filters::{KalmanFilter, WienerFilter};
+pub use geometry::{DualQuat, Matrix4, Quat3D, SO4Rotation, Vector2, Vector3, Vector4, AABB};
+pub use tensor::{Tensor, Tensor4D};
