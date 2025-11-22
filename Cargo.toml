@@ -8,6 +8,7 @@ members = [
     "avila-ml",
     "avila-reduction",
     "avila-telemetry",
+    "avila-compress",  # Native compression library (LZ4, Zstd)
     "avx-api-core",
     "avx-cli",
     "avx-config",
@@ -90,14 +91,15 @@ datafusion = "43.0" # SQL query engine para big data
 arrow = "53.0" # Apache Arrow (columnar format)
 parquet = "53.0" # Parquet file format
 
-# Machine Learning & Deep Learning
+# Machine Learning & Deep Learning (USING OUR OWN TOOLS! 🚀)
+avila-ml = { path = "avila-ml", features = ["full"] }
+avila-clustering = { path = "avila-clustering" }
+avila-reduction = { path = "avila-reduction" }
+avila-linalg = { path = "avila-linalg" }
 ndarray = { version = "0.16", features = ["rayon", "serde"] }
-ndarray-linalg = "0.16"                                       # Linear algebra (BLAS/LAPACK)
-linfa = "0.7"                                                 # ML framework (KMeans, PCA, regression, etc)
-linfa-clustering = "0.7"
-linfa-reduction = "0.7"
-smartcore = "0.3"                                             # Comprehensive ML (SVM, Random Forest, Neural Nets)
-# candle-core = "0.7"                                           # Hugging Face ML framework (incompatível com rand_distr)
+# smartcore = "0.3"  # Replaced by avila-ml
+# linfa = "0.7"     # Replaced by avila-ml
+# candle-core = "0.7"  # Hugging Face ML framework (incompatível com rand_distr)
 # candle-nn = "0.7"
 
 # LLM & NLP
@@ -106,18 +108,20 @@ hf-hub = "0.3"      # Download models from Hugging Face
 llm-chain = "0.13"  # LLM chaining framework
 tiktoken-rs = "0.5" # OpenAI tokenizer
 
-# Computer Vision
-image = "0.25"
-imageproc = "0.25"
+# Computer Vision (USING OUR OWN TOOLS! 🚀)
+avx-image = { path = "avx-image" }
+# image = "0.25"        # Replaced by avx-image
+# imageproc = "0.25"    # Replaced by avx-image
 rustfft = "6.2"    # FFT (já usado em avila-telemetry)
 
 # Graph Analytics & Network Science
 petgraph = "0.6"     # Graph data structures
 pathfinding = "4.11" # Pathfinding algorithms
 
-# Statistical Analysis
-statrs = "0.17"   # Statistical distributions (já usado)
-nalgebra = "0.33" # Linear algebra
+# Statistical Analysis (USING OUR OWN TOOLS! 🚀)
+# Already using avila-telemetry which includes statrs functionality
+# statrs = "0.17"   # Replaced by avila-telemetry
+# nalgebra = "0.33" # Replaced by avila-linalg
 
 # Time Series (complementar ao avila-telemetry)
 prophet = { version = "0.1", optional = true } # Facebook Prophet (se disponível)

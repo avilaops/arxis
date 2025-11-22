@@ -1,0 +1,44 @@
+[package]
+name = "avila-compress"
+version = "0.1.0"
+edition = "2021"
+authors = [
+    "Nícolas Ávila <nicolas@avila.inc>",
+    "Avila Development Team <dev@avila.inc>",
+]
+license = "MIT OR Apache-2.0"
+description = "Native compression library optimized for AvilaDB - LZ4, Zstandard, and custom columnar algorithms. Zero external dependencies."
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://avila.cloud"
+documentation = "https://docs.rs/avila-compress"
+readme = "README.md"
+keywords = ["compression", "lz4", "aviladb", "scientific-computing", "columnar"]
+categories = ["compression", "algorithms", "database-implementations"]
+exclude = ["target/", "*.swp", ".git*", "benches/*.txt"]
+
+[dependencies]
+# Zero external dependencies - 100% native Rust implementation
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+
+[features]
+default = []
+simd = []  # Future: AVX2/AVX-512 optimizations
+
+[[bench]]
+name = "lz4_bench"
+harness = false
+
+[lib]
+name = "avila_compress"
+path = "src/lib.rs"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+
+[profile.bench]
+opt-level = 3
+lto = true
