@@ -15,6 +15,7 @@ members = [
     "avx-events",
     "avx-gateway",
     # "avx-gpu", # Nested workspace - has its own sub-crates
+    "avx-http",  # Native HTTP client/server for AVL Platform
     "avx-image",
     "avx-quantum-render",
     "avx-telemetry",
