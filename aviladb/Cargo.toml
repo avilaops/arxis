@@ -19,8 +19,8 @@ serde_json = "1.0"
 thiserror = "2.0"
 anyhow = "1.0"
 
-# Compression (internal)
-avila-compress = { version = "0.1", path = "../avila-compress" }
+# Compression (internal) - Coming soon on crates.io
+# avila-compress = { version = "0.8", path = "../avila-compress" }
 
 # Networking
 axum = "0.7"
