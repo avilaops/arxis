@@ -79,7 +79,7 @@ with-ml = ["dep:avila-ml"]
 
 [dev-dependencies]
 tokio-test = "0.4"
-criterion = { version = "0.5", features = ["html_reports", "async_tokio"] }
+criterion = { version = "0.7", features = ["html_reports", "async_tokio"] }
 proptest = "1.5"
 
 [[bench]]

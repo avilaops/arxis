@@ -54,7 +54,7 @@ version = "0.20"
 optional = true
 
 [dev-dependencies]
-criterion = "0.5"
+criterion = "0.7"
 proptest = "1.4"
 
 [features]

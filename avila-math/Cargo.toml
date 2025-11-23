@@ -27,7 +27,7 @@ pyo3 = { version = "0.23", features = ["extension-module"], optional = true }
 numpy = { version = "0.23", optional = true }
 
 [dev-dependencies]
-criterion = { version = "0.5", features = ["html_reports"] }
+criterion = { version = "0.7", features = ["html_reports"] }
 approx = "0.5"      # Comparações com tolerância
 
 [features]

@@ -49,7 +49,7 @@ avx-telemetry = { version = "0.1", path = "../avx-telemetry" }
 aws-sdk-s3 = { version = "1.67", optional = true }
 
 [dev-dependencies]
-criterion = "0.5"
+criterion = "0.7"
 tempfile = "3.14"
 
 [features]

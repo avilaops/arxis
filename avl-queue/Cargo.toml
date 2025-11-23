@@ -38,7 +38,7 @@ tracing = "0.1"
 avx-telemetry = { path = "../avx-telemetry" }
 
 [dev-dependencies]
-criterion = "0.5"
+criterion = "0.7"
 tracing-subscriber = "0.3"
 
 [features]
