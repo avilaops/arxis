@@ -7,6 +7,7 @@ use crate::{
     auth::AuthProvider,
     cache::{CacheConfig, QueryCache},
     http::{HttpClient, HttpConfig},
+    telemetry::{TelemetryCollector, TelemetryConfig},
     Config, Database, Result,
 };
 
@@ -17,6 +18,7 @@ pub struct AvilaClient {
     http_client: Arc<HttpClient>,
     auth_provider: Arc<AuthProvider>,
     query_cache: Arc<QueryCache>,
+    telemetry: Arc<TelemetryCollector>,
 }
 
 impl AvilaClient {
@@ -65,11 +67,15 @@ impl AvilaClient {
         };
         let query_cache = QueryCache::new(cache_config);
 
+        let telemetry_config = TelemetryConfig::default();
+        let telemetry = TelemetryCollector::new(telemetry_config);
+
         Ok(Self {
             config: Arc::new(config),
             http_client: Arc::new(http_client),
             auth_provider: Arc::new(auth_provider),
             query_cache: Arc::new(query_cache),
+            telemetry: Arc::new(telemetry),
         })
     }
 
@@ -124,6 +130,11 @@ impl AvilaClient {
     /// Get query cache
     pub fn query_cache(&self) -> &QueryCache {
         &self.query_cache
+    }
+
+    /// Get telemetry collector
+    pub fn telemetry(&self) -> &TelemetryCollector {
+        &self.telemetry
     }
 
     /// Get client statistics

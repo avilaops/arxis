@@ -36,6 +36,10 @@ name = "lz4_bench"
 harness = false
 
 [[bench]]
+name = "compression_benchmark"
+harness = false
+
+[[bench]]
 name = "simd_bench"
 harness = false
 required-features = ["simd"]

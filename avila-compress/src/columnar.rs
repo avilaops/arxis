@@ -383,7 +383,7 @@ mod tests {
         assert_eq!(data, decoded);
 
         // Should be highly compressed
-        let original_size = data.len() * mem::size_of::<f64>();
+        let original_size = data.len() * std::mem::size_of::<f64>();
         assert!(encoded.len() < original_size / 10);
     }
 

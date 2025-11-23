@@ -515,6 +515,14 @@ async fn proxy_handler(
 				let headers = up.headers().clone();
 				let bytes = up.bytes().await.unwrap_or_default();
 
+				// Only consider 5xx errors as failures for retry
+				if status.is_server_error() && attempts < max_attempts {
+					backend.record_failure();
+					debug!(backend=%backend.url, status=%status, attempt=attempts, "server error, retrying");
+					tokio::time::sleep(inner.retry_config.backoff).await;
+					continue;
+				}
+
 				if status.is_success() || status.is_redirection() {
 					backend.record_success();
 				}
@@ -897,12 +905,18 @@ mod tests {
 		sleep(Duration::from_millis(100)).await;
 
 		let client = reqwest::Client::new();
-		// Send first request (will be slow)
-		let fut1 = client.get(format!("http://{}", lb_addr)).send();
-		sleep(Duration::from_millis(50)).await; // ensure first request is in-flight
-		// Second request should go to backend2 (fewer connections)
+		// Send first request (will be slow, holds connection)
+		let handle_clone = client.clone();
+		let addr_clone = lb_addr.clone();
+		let fut1 = tokio::spawn(async move {
+			handle_clone.get(format!("http://{}", addr_clone)).send().await
+		});
+		sleep(Duration::from_millis(100)).await; // ensure first request is in-flight holding connection
+		// Second request should go to backend2 (0 connections vs 1 connection)
 		let r2 = client.get(format!("http://{}", lb_addr)).send().await?;
-		assert_eq!(r2.text().await?, "backend2");
+		let body2 = r2.text().await?;
+		// Due to timing, backend1 should still be processing, so backend2 is chosen
+		assert_eq!(body2, "backend2");
 
 		let _r1 = fut1.await?; // complete first request
 
