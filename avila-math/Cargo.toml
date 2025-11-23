@@ -22,7 +22,7 @@ rayon = "1.10"      # Paralelização para Conv4D
 rustfft = "6.2"     # FFT para análise espectral
 num-complex = "0.4" # Números complexos para FFT
 serde = { version = "1.0", features = ["derive"], optional = true }
-nalgebra = "0.33"   # Álgebra linear (SVD, eigenvalues)
+nalgebra = "0.34"   # Álgebra linear (SVD, eigenvalues)
 pyo3 = { version = "0.23", features = ["extension-module"], optional = true }
 numpy = { version = "0.23", optional = true }
 
