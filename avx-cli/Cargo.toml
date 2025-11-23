@@ -23,7 +23,7 @@ clap_complete = "4"
 anyhow = "1"
 
 # Output formatting
-tabled = "0.15"
+tabled = "0.20"
 colored_json = "4"
 console = "0.15"
 indicatif = "0.17"
