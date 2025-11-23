@@ -23,7 +23,7 @@ exclude = ["target/", "*.swp", ".git*", "benches/*.txt"]
 rayon = { version = "1.8", optional = true }
 
 [dev-dependencies]
-criterion = { version = "0.5", features = ["html_reports"] }
+criterion = { version = "0.7", features = ["html_reports"] }
 
 [features]
 default = []
