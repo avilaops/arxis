@@ -52,6 +52,7 @@ pub mod middleware;
 pub mod retry;
 pub mod routing;
 pub mod transform;
+pub mod webrtc;
 pub mod websocket;
 
 pub use config::GatewayConfig;
@@ -74,5 +75,6 @@ pub mod prelude {
     pub use crate::retry::*;
     pub use crate::routing::*;
     pub use crate::transform::*;
+    pub use crate::webrtc::*;
     pub use crate::websocket::*;
 }

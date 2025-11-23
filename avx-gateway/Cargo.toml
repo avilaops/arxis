@@ -32,6 +32,7 @@ reqwest = { version = "0.12", features = ["json"] }
 # WebSocket
 tokio-tungstenite = "0.24"
 futures = "0.3"
+futures-util = "0.3"
 
 # Compression
 flate2 = "1.0"
@@ -85,6 +86,10 @@ path = "examples/websocket_proxy.rs"
 [[example]]
 name = "with_caching"
 path = "examples/with_caching.rs"
+
+[[example]]
+name = "webrtc_signaling"
+path = "examples/webrtc_signaling.rs"
 
 [[bench]]
 name = "gateway_bench"
