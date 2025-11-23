@@ -73,11 +73,11 @@ unsafe fn compress_avx2(input: &[u8], level: Level) -> Result<Vec<u8>> {
     let shift_amount = 32 - HASH_LOG;
 
     match level {
-        Level::Fast => compress_avx2_fast(input, &mut output, &mut hash_table, input_limit),
+        Level::Fast => compress_avx2_fast(input, &mut output, &mut hash_table, input_limit)?,
         Level::Balanced => {
-            compress_avx2_balanced(input, &mut output, &mut hash_table, input_limit)
+            compress_avx2_balanced(input, &mut output, &mut hash_table, input_limit)?
         }
-        Level::Best => compress_avx2_best(input, &mut output, &mut hash_table, input_limit),
+        Level::Best => compress_avx2_best(input, &mut output, &mut hash_table, input_limit)?,
     }
 
     Ok(output)
@@ -107,7 +107,7 @@ unsafe fn compress_avx2_fast(
         // Try to find match using AVX2 for faster hashing
         if pos + MIN_MATCH + 32 <= input_end {
             // Load 32 bytes at once for parallel hash computation
-            let data_vec = _mm256_loadu_si256(input.as_ptr().add(pos) as *const __m256i);
+            let _data_vec = _mm256_loadu_si256(input.as_ptr().add(pos) as *const __m256i);
 
             // Compute hash for current position (scalar for now, can optimize further)
             let hash = hash4_simd(&input[pos..]);

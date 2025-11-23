@@ -4,19 +4,19 @@
 
 We actively support the following versions with security updates:
 
-| Project | Version | Supported          |
-| ------- | ------- | ------------------ |
-| avila-clustering | 0.1.x | :white_check_mark: |
-| avila-compress | 0.3.x | :white_check_mark: |
-| avila-dataframe | 0.1.x | :white_check_mark: |
-| avila-linalg | 0.1.x | :white_check_mark: |
-| avila-math | 0.1.x | :white_check_mark: |
-| avila-ml | 0.1.x | :white_check_mark: |
-| avila-tokenizer | 0.1.x | :white_check_mark: |
-| aviladb | 0.1.x | :white_check_mark: |
-| avx-gateway | 0.1.x | :white_check_mark: |
-| avx-http | 0.2.x | :white_check_mark: |
-| avx-image | 0.1.x | :white_check_mark: |
+| Project          | Version | Supported          |
+| ---------------- | ------- | ------------------ |
+| avila-clustering | 0.1.x   | :white_check_mark: |
+| avila-compress   | 0.3.x   | :white_check_mark: |
+| avila-dataframe  | 0.1.x   | :white_check_mark: |
+| avila-linalg     | 0.1.x   | :white_check_mark: |
+| avila-math       | 0.1.x   | :white_check_mark: |
+| avila-ml         | 0.1.x   | :white_check_mark: |
+| avila-tokenizer  | 0.1.x   | :white_check_mark: |
+| aviladb          | 0.1.x   | :white_check_mark: |
+| avx-gateway      | 0.1.x   | :white_check_mark: |
+| avx-http         | 0.2.x   | :white_check_mark: |
+| avx-image        | 0.1.x   | :white_check_mark: |
 
 ## Reporting a Vulnerability
 

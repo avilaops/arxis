@@ -9,7 +9,6 @@
 //! These algorithms are inspired by Apache Arrow, Parquet, and ClickHouse.
 
 use crate::{Error, Result};
-use std::mem;
 
 /// Run-Length Encoding for repetitive data
 ///
