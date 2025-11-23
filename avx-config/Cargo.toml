@@ -18,5 +18,5 @@ exclude = ["target/", "*.swp", ".git*"]
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }
-config = "0.14"
+config = "0.15"
 thiserror = "1"
