@@ -198,7 +198,141 @@ impl Series {
     pub fn max(&self) -> Option<f64> {
         self.data.iter().filter_map(|v| v.as_f64()).reduce(f64::max)
     }
+
+    /// FFT - Fast Fourier Transform
+    /// Retorna o espectro de frequências como vetor de números complexos
+    pub fn fft(&self) -> Result<Vec<crate::scientific::Complex<f64>>, String> {
+        // Extrair valores numéricos
+        let values: Vec<f64> = self
+            .data
+            .iter()
+            .filter_map(|v| v.as_f64())
+            .collect();
+
+        if values.is_empty() {
+            return Err("Series não contém valores numéricos".to_string());
+        }
+
+        // Aplicar RFFT (otimizado para sinais reais)
+        let spectrum = crate::scientific::rfft(&values);
+        Ok(spectrum)
+    }
+
+    /// IFFT - Inverse Fast Fourier Transform
+    /// Reconstrói o sinal a partir do espectro de frequências
+    pub fn ifft(
+        &self,
+        spectrum: &[crate::scientific::Complex<f64>],
+        n: usize,
+    ) -> Result<Self, String> {
+        use crate::scientific::fft_pure::irfft;
+
+        let reconstructed = irfft(spectrum, n);
+
+        Ok(Series::new_float(&self.name, reconstructed))
+    }
+
+    /// Power Spectrum - Espectro de potência
+    /// Retorna uma nova Series com as magnitudes ao quadrado
+    pub fn power_spectrum(&self, sample_rate: f64) -> Result<Self, String> {
+        let spectrum = self.fft()?;
+        let n = self.len();
+
+        let power: Vec<f64> = spectrum
+            .iter()
+            .map(|z| {
+                let mag_sq = z.magnitude_squared();
+                mag_sq / (n * n) as f64 * 2.0
+            })
+            .collect();
+
+        // Calcular frequências correspondentes
+        let freq_bin = sample_rate / n as f64;
+        let _frequencies: Vec<f64> = (0..power.len())
+            .map(|k| k as f64 * freq_bin)
+            .collect();
+
+        Ok(Series::new_float(
+            format!("{}_power_spectrum", self.name),
+            power,
+        ))
+    }
+
+    /// Magnitude Spectrum - Espectro de magnitude
+    pub fn magnitude_spectrum(&self) -> Result<Self, String> {
+        let spectrum = self.fft()?;
+
+        let magnitudes: Vec<f64> = spectrum.iter().map(|z| z.magnitude()).collect();
+
+        Ok(Series::new_float(
+            format!("{}_magnitude", self.name),
+            magnitudes,
+        ))
+    }
+
+    /// Phase Spectrum - Espectro de fase
+    pub fn phase_spectrum(&self) -> Result<Self, String> {
+        let spectrum = self.fft()?;
+
+        let phases: Vec<f64> = spectrum.iter().map(|z| z.phase()).collect();
+
+        Ok(Series::new_float(format!("{}_phase", self.name), phases))
+    }
+
+    /// Convolução com outro sinal usando FFT
+    pub fn convolve(&self, other: &Self) -> Result<Self, String> {
+        use crate::scientific::convolve_fft;
+
+        let values1: Vec<f64> = self
+            .data
+            .iter()
+            .filter_map(|v| v.as_f64())
+            .collect();
+
+        let values2: Vec<f64> = other
+            .data
+            .iter()
+            .filter_map(|v| v.as_f64())
+            .collect();
+
+        if values1.is_empty() || values2.is_empty() {
+            return Err("Series devem conter valores numéricos".to_string());
+        }
+
+        let result = convolve_fft(&values1, &values2);
+
+        Ok(Series::new_float(
+            format!("{}_convolved", self.name),
+            result,
+        ))
+    }
+
+    /// Correlação cruzada com outro sinal usando FFT
+    pub fn xcorr(&self, other: &Self) -> Result<Self, String> {
+        use crate::scientific::xcorr_fft;
+
+        let values1: Vec<f64> = self
+            .data
+            .iter()
+            .filter_map(|v| v.as_f64())
+            .collect();
+
+        let values2: Vec<f64> = other
+            .data
+            .iter()
+            .filter_map(|v| v.as_f64())
+            .collect();
+
+        if values1.is_empty() || values2.is_empty() {
+            return Err("Series devem conter valores numéricos".to_string());
+        }
+
+        let result = xcorr_fft(&values1, &values2);
+
+        Ok(Series::new_float(format!("{}_xcorr", self.name), result))
+    }
 }
+
 
 impl fmt::Display for Series {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

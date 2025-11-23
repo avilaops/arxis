@@ -16,20 +16,28 @@
 //!
 //! ```rust,no_run
 //! use avx_image::prelude::*;
+//! use avx_image::native::NativeImageBuffer;
 //!
-//! // Load image
-//! let img = ImageBuffer::load("document.jpg")?;
+//! // Create native buffer (100% Rust, no external deps)
+//! let mut img = NativeImageBuffer::new(1920, 1080, 3);
 //!
-//! // OCR
-//! let text = ocr::recognize(&img)?;
-//! println!("Detected text: {}", text);
+//! // Convert to grayscale
+//! let gray = img.to_grayscale();
 //!
-//! // Face detection
-//! let faces = face::detect(&img)?;
-//! println!("Found {} faces", faces.len());
+//! // Apply Gaussian blur
+//! let blurred = gray.gaussian_blur(2.0);
+//!
+//! // Resize
+//! let resized = blurred.resize(800, 600);
+//!
+//! println!("Processed image: {}x{}", resized.width, resized.height);
 //! # Ok::<(), Box<dyn std::error::Error>>(())
 //! ```
 
+// Native implementations (100% Rust, zero external dependencies)
+pub mod native;
+
+// High-level modules (built on top of native)
 pub mod core;
 pub mod face;
 pub mod forensics;
@@ -40,10 +48,15 @@ pub mod photometry;
 pub mod realtime;
 
 pub mod prelude {
-    pub use crate::core::{FeatureExtractor, ImageBuffer, Preprocessing};
-    pub use crate::face;
-    pub use crate::ocr;
-    pub use crate::photometry;
+    pub use crate::native::{
+        buffer::NativeImageBuffer,
+        color::*,
+        convolution::*,
+        fft::*,
+        linalg::*,
+        math::*,
+        simd::*,
+    };
     pub use crate::AvxImageError;
 }
 
@@ -68,9 +81,6 @@ pub enum AvxImageError {
 
     #[error("IO error: {0}")]
     IoError(#[from] std::io::Error),
-
-    #[error("Image error: {0}")]
-    ImageError(#[from] image::ImageError),
 }
 
 pub type Result<T> = std::result::Result<T, AvxImageError>;

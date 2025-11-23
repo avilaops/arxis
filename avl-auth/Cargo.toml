@@ -1,0 +1,55 @@
+[package]
+name = "avl-auth"
+version = "0.1.0"
+edition = "2021"
+authors = ["Nicolas Ávila <nicolas@avila.inc>"]
+license = "MIT OR Apache-2.0"
+description = "AVL Auth - Identity and Access Management for AVL Cloud Platform"
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://avila.cloud"
+documentation = "https://docs.rs/avl-auth"
+readme = "README.md"
+keywords = ["authentication", "authorization", "iam", "oauth", "security"]
+categories = ["authentication", "web-programming", "cryptography"]
+
+[dependencies]
+tokio = { version = "1.40", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "2.0"
+anyhow = "1.0"
+
+# Authentication
+jsonwebtoken = "9.3"
+argon2 = "0.5"
+rand = "0.8"
+
+# OAuth2/OIDC
+oauth2 = "4.4"
+
+# Networking
+axum = "0.7"
+tower = "0.5"
+tower-http = { version = "0.6", features = ["cors", "trace"] }
+
+# Time
+chrono = "0.4"
+uuid = { version = "1.11", features = ["v4", "serde"] }
+
+# Database
+aviladb = { path = "../aviladb" }
+
+# Observability
+tracing = "0.1"
+tracing-subscriber = "0.3"
+avx-telemetry = { path = "../avx-telemetry" }
+
+[dev-dependencies]
+criterion = "0.5"
+
+[[bench]]
+name = "auth_ops"
+harness = false
+
+[package.metadata.docs.rs]
+all-features = true

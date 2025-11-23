@@ -40,3 +40,10 @@ serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 chrono = "0.4"
 anyhow = "1.0"
+
+[profile.release]
+opt-level = 3              # Máxima otimização
+lto = "fat"                # Link-Time Optimization para melhor performance
+codegen-units = 1          # Melhor otimização (compilação mais lenta)
+strip = true               # Remove símbolos de debug (binário menor)
+panic = "abort"            # Reduz tamanho do binário

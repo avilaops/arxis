@@ -1,8 +1,8 @@
 # AVX CLI - Copilot Instructions
 
-**Projeto**: avx-cli  
-**Descrição**: Command-line tools for Avila Experience Fabric - Deploy, Monitor, Manage  
-**Status**: Desenvolvimento inicial (estrutura criada)  
+**Projeto**: avx-cli
+**Descrição**: Command-line tools for Avila Experience Fabric - Deploy, Monitor, Manage
+**Status**: Desenvolvimento inicial (estrutura criada)
 **Filosofia**: Developer Experience > Feature Completeness
 
 ---
@@ -159,11 +159,11 @@ struct Cli {
     /// Global log level
     #[arg(long, global = true, default_value = "info")]
     log_level: String,
-    
+
     /// Config file path
     #[arg(long, global = true, default_value = "avx.toml")]
     config: String,
-    
+
     #[command(subcommand)]
     command: Commands,
 }
@@ -174,38 +174,38 @@ enum Commands {
     Init {
         /// Project name
         name: String,
-        
+
         /// Project template
         #[arg(long, default_value = "service")]
         template: String,
     },
-    
+
     /// Configuration management
     Config {
         #[command(subcommand)]
         action: ConfigAction,
     },
-    
+
     /// Start development server
     Dev {
         /// Port to bind
         #[arg(long, short, default_value = "8080")]
         port: u16,
-        
+
         /// Enable hot reload
         #[arg(long, default_value = "true")]
         hot_reload: bool,
     },
-    
+
     /// Deploy to environment
     Deploy {
         /// Environment name
         env: String,
-        
+
         /// Specific service to deploy
         #[arg(long)]
         service: Option<String>,
-        
+
         /// Image tag
         #[arg(long)]
         tag: Option<String>,
@@ -219,18 +219,18 @@ enum ConfigAction {
         #[arg(long)]
         env: Option<String>,
     },
-    
+
     /// Show configuration
     Show {
         #[arg(long)]
         env: Option<String>,
     },
-    
+
     /// Set configuration value
     Set {
         /// Key path (e.g., "server.port")
         key: String,
-        
+
         /// Value
         value: String,
     },
@@ -248,38 +248,38 @@ enum ConfigAction {
 // TODO: Implementar avx init
 pub async fn init_project(name: &str, template: &str) -> Result<()> {
     println!("🚀 Initializing AVX project '{}'...", name);
-    
+
     // 1. Criar diretório
     fs::create_dir_all(name)?;
-    
+
     // 2. Copiar template
     let template_path = format!("templates/{}", template);
     copy_dir_recursive(&template_path, name)?;
-    
+
     // 3. Substituir placeholders
     replace_in_files(name, &[
         ("{{PROJECT_NAME}}", name),
         ("{{YEAR}}", &chrono::Utc::now().year().to_string()),
     ])?;
-    
+
     // 4. Inicializar Git
     Command::new("git")
         .args(&["init"])
         .current_dir(name)
         .output()?;
-    
+
     // 5. Install dependencies
     println!("📦 Installing dependencies...");
     Command::new("cargo")
         .args(&["build"])
         .current_dir(name)
         .status()?;
-    
+
     println!("✅ Project '{}' created successfully!", name);
     println!("\n📝 Next steps:");
     println!("   cd {}", name);
     println!("   avx dev");
-    
+
     Ok(())
 }
 
@@ -325,7 +325,7 @@ impl AvxConfig {
             &home_dir().join(".avx/config.toml"),
             Path::new("/etc/avx/config.toml"),
         ];
-        
+
         for path in paths {
             if path.exists() {
                 let contents = fs::read_to_string(path)?;
@@ -333,36 +333,36 @@ impl AvxConfig {
                     .with_context(|| format!("Failed to parse {}", path.display()));
             }
         }
-        
+
         // Defaults
         Ok(Self::default())
     }
-    
+
     /// Validate config
     pub fn validate(&self) -> Result<Vec<ValidationError>> {
         let mut errors = vec![];
-        
+
         // Validar portas
         if self.dev.port == 0 || self.dev.port > 65535 {
             errors.push(ValidationError::InvalidPort(self.dev.port));
         }
-        
+
         // Validar routes (gateway)
         if let Some(gw) = &self.gateway {
             for route in &gw.routes {
                 if !route.path.starts_with('/') {
                     errors.push(ValidationError::InvalidRoutePath(route.path.clone()));
                 }
-                
+
                 if let Err(e) = Url::parse(&route.upstream) {
                     errors.push(ValidationError::InvalidUpstream(route.upstream.clone(), e));
                 }
             }
         }
-        
+
         Ok(errors)
     }
-    
+
     /// Merge com env vars (AVX_* prefix)
     pub fn merge_env_vars(&mut self) {
         if let Ok(port) = env::var("AVX_PORT") {
@@ -370,7 +370,7 @@ impl AvxConfig {
                 self.dev.port = p;
             }
         }
-        
+
         if let Ok(level) = env::var("AVX_LOG_LEVEL") {
             self.telemetry.level = level;
         }
@@ -394,35 +394,35 @@ pub async fn dev_server(config: &AvxConfig) -> Result<()> {
     println!("   Port: {}", config.dev.port);
     println!("   Hot reload: {}", config.dev.hot_reload);
     println!();
-    
+
     // 1. Build inicial
     build_project()?;
-    
+
     // 2. Start server process
     let mut child = spawn_server(config.dev.port)?;
-    
+
     // 3. Watch filesystem
     if config.dev.hot_reload {
         let (tx, rx) = channel();
         let mut watcher = notify::watcher(tx, Duration::from_secs(1))?;
         watcher.watch("./src", RecursiveMode::Recursive)?;
-        
+
         println!("👀 Watching for file changes...");
-        
+
         loop {
             match rx.recv() {
                 Ok(DebouncedEvent::Write(_)) | Ok(DebouncedEvent::Create(_)) => {
                     println!("🔄 File changed, rebuilding...");
-                    
+
                     // Kill old process
                     child.kill()?;
-                    
+
                     // Rebuild
                     if let Err(e) = build_project() {
                         eprintln!("❌ Build failed: {}", e);
                         continue;
                     }
-                    
+
                     // Restart
                     child = spawn_server(config.dev.port)?;
                     println!("✅ Server restarted");
@@ -435,7 +435,7 @@ pub async fn dev_server(config: &AvxConfig) -> Result<()> {
         // Just wait for Ctrl+C
         child.wait()?;
     }
-    
+
     Ok(())
 }
 
@@ -443,11 +443,11 @@ fn build_project() -> Result<()> {
     let status = Command::new("cargo")
         .args(&["build"])
         .status()?;
-    
+
     if !status.success() {
         bail!("cargo build failed");
     }
-    
+
     Ok(())
 }
 
@@ -468,25 +468,25 @@ fn spawn_server(port: u16) -> Result<Child> {
 ### Fase 5: Deployment (Semanas 9-10)
 ```rust
 // TODO: Deploy para K8s/Docker/AVL Cloud
-pub async fn deploy(env: &str, service: Option<&str>, tag: Option<&str>) 
+pub async fn deploy(env: &str, service: Option<&str>, tag: Option<&str>)
     -> Result<()> {
     let config = AvxConfig::load()?;
     let deploy_config = config.deployment.get(env)
         .ok_or_else(|| anyhow!("Environment '{}' not found", env))?;
-    
+
     println!("🚀 Deploying to {} ({})...", env, deploy_config.host);
-    
+
     // 1. Build Docker image
     println!("📦 Building Docker image...");
     let image_tag = tag.unwrap_or("latest");
     let image_name = format!("{}/{}:{}", deploy_config.registry, config.project.name, image_tag);
-    
+
     docker_build(&image_name)?;
-    
+
     // 2. Push to registry
     println!("☁️  Pushing to registry...");
     docker_push(&image_name)?;
-    
+
     // 3. Deploy to K8s/Cloud
     match deploy_config.platform.as_str() {
         "kubernetes" => k8s_deploy(&image_name, deploy_config).await?,
@@ -494,14 +494,14 @@ pub async fn deploy(env: &str, service: Option<&str>, tag: Option<&str>)
         "docker" => docker_deploy(&image_name, deploy_config).await?,
         _ => bail!("Unknown platform: {}", deploy_config.platform),
     }
-    
+
     // 4. Health check
     println!("🏥 Running health check...");
     wait_for_healthy(deploy_config).await?;
-    
+
     println!("✅ Deployment successful!");
     println!("   URL: https://{}", deploy_config.host);
-    
+
     Ok(())
 }
 
@@ -509,7 +509,7 @@ pub async fn deploy(env: &str, service: Option<&str>, tag: Option<&str>)
 async fn k8s_deploy(image: &str, config: &DeploymentConfig) -> Result<()> {
     // Generate K8s manifest
     let manifest = generate_k8s_manifest(image, config)?;
-    
+
     // Apply via kubectl
     let status = Command::new("kubectl")
         .args(&["apply", "-f", "-"])
@@ -519,21 +519,21 @@ async fn k8s_deploy(image: &str, config: &DeploymentConfig) -> Result<()> {
         .stdin.as_mut()
         .unwrap()
         .write_all(manifest.as_bytes())?;
-    
+
     Ok(())
 }
 
 // AVL Cloud deployment (native)
 async fn avl_deploy(image: &str, config: &DeploymentConfig) -> Result<()> {
     let client = AvlCloudClient::new(&config.host, &config.token);
-    
+
     client.deploy(DeployRequest {
         image: image.to_string(),
         replicas: config.replicas,
         region: config.region.clone(),
         health_check: config.health_check.clone(),
     }).await?;
-    
+
     Ok(())
 }
 ```
@@ -549,16 +549,16 @@ async fn avl_deploy(image: &str, config: &DeploymentConfig) -> Result<()> {
 use avx_telemetry::TelemetryClient;
 
 // avx logs
-pub async fn logs(service: Option<&str>, follow: bool, level: Option<&str>) 
+pub async fn logs(service: Option<&str>, follow: bool, level: Option<&str>)
     -> Result<()> {
     let client = TelemetryClient::connect("telemetry.avila.cloud:9090").await?;
-    
+
     let query = LogQuery {
         service: service.map(String::from),
         level: level.map(String::from),
         since: Some(Duration::from_secs(3600)), // Last hour
     };
-    
+
     if follow {
         let mut stream = client.logs_stream(query).await?;
         while let Some(log) = stream.next().await {
@@ -570,7 +570,7 @@ pub async fn logs(service: Option<&str>, follow: bool, level: Option<&str>)
             println!("{}", format_log(&log));
         }
     }
-    
+
     Ok(())
 }
 
@@ -582,7 +582,7 @@ fn format_log(log: &LogEntry) -> String {
         "debug" => "blue",
         _ => "white",
     };
-    
+
     format!(
         "{} {} {} {}",
         log.timestamp.format("%Y-%m-%d %H:%M:%S"),
@@ -595,31 +595,31 @@ fn format_log(log: &LogEntry) -> String {
 // avx metrics
 pub async fn metrics(service: Option<&str>) -> Result<()> {
     let client = TelemetryClient::connect("telemetry.avila.cloud:9090").await?;
-    
+
     let metrics = client.metrics(service).await?;
-    
+
     // Tabela formatada
     let mut table = Table::new(&metrics);
     table.with(Style::modern());
     println!("{}", table);
-    
+
     Ok(())
 }
 
 // avx trace <request-id>
 pub async fn trace(request_id: &str) -> Result<()> {
     let client = TelemetryClient::connect("telemetry.avila.cloud:9090").await?;
-    
+
     let trace = client.get_trace(request_id).await?;
-    
+
     // Waterfall view
     println!("🔍 Trace: {}", request_id);
     println!();
-    
+
     for span in trace.spans {
         let indent = "  ".repeat(span.depth);
         let duration_ms = span.duration.as_millis();
-        
+
         println!(
             "{}{} ({} ms)",
             indent,
@@ -627,10 +627,10 @@ pub async fn trace(request_id: &str) -> Result<()> {
             duration_ms
         );
     }
-    
+
     println!();
     println!("Total duration: {} ms", trace.duration.as_millis());
-    
+
     Ok(())
 }
 ```
@@ -648,7 +648,7 @@ use predicates::prelude::*;
 fn test_avx_version() {
     let mut cmd = Command::cargo_bin("avx").unwrap();
     cmd.arg("--version");
-    
+
     cmd.assert()
         .success()
         .stdout(predicate::str::contains("avx"));
@@ -657,16 +657,16 @@ fn test_avx_version() {
 #[test]
 fn test_avx_init_creates_project() {
     let temp = tempdir().unwrap();
-    
+
     let mut cmd = Command::cargo_bin("avx").unwrap();
     cmd.arg("init")
         .arg("test-project")
         .arg("--template")
         .arg("service")
         .current_dir(&temp);
-    
+
     cmd.assert().success();
-    
+
     // Verificar arquivos criados
     assert!(temp.path().join("test-project/Cargo.toml").exists());
     assert!(temp.path().join("test-project/avx.toml").exists());
@@ -680,7 +680,7 @@ fn test_config_validate_invalid() {
         .arg("validate")
         .arg("--config")
         .arg("tests/fixtures/invalid-config.toml");
-    
+
     cmd.assert()
         .failure()
         .stderr(predicate::str::contains("Invalid port"));
@@ -699,7 +699,7 @@ fn test_config_merge_env_vars() {
         || {
             let mut config = AvxConfig::default();
             config.merge_env_vars();
-            
+
             assert_eq!(config.dev.port, 9000);
             assert_eq!(config.telemetry.level, "debug");
         },
@@ -720,7 +720,7 @@ fn test_config_validation_errors() {
         }),
         ..Default::default()
     };
-    
+
     let errors = config.validate().unwrap();
     assert_eq!(errors.len(), 3);
 }
@@ -813,7 +813,7 @@ println!("Error: Failed to deploy");
 
 // ✅ CORRETO: Cores e ícones
 use console::style;
-eprintln!("{} {}", 
+eprintln!("{} {}",
     style("❌").red().bold(),
     style("Failed to deploy service").red()
 );

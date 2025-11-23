@@ -1,26 +1,21 @@
-//! Image buffer implementation with optimized storage
-
-use image::{DynamicImage, GenericImageView, ImageBuffer as ImgBuf, Luma, Rgb, Rgba};
-use ndarray::Array3;
-use std::path::Path;
+//! Image buffer implementation
+//!
+//! LEGACY MODULE: Use `native::buffer::NativeImageBuffer` instead
+//! This module is kept for backward compatibility only
 
 use crate::{AvxImageError, Result};
 
-/// High-performance image buffer supporting multiple pixel formats
+/// Legacy image buffer (deprecated - use NativeImageBuffer)
+#[deprecated(since = "0.1.0", note = "Use native::buffer::NativeImageBuffer instead")]
 #[derive(Clone, Debug)]
 pub struct ImageBuffer {
-    /// Width in pixels
     pub width: u32,
-    /// Height in pixels
     pub height: u32,
-    /// Pixel data (row-major, channels-last)
     pub data: Vec<f32>,
-    /// Number of channels (1=grayscale, 3=RGB, 4=RGBA)
     pub channels: usize,
 }
 
 impl ImageBuffer {
-    /// Create new image buffer from dimensions
     pub fn new(width: u32, height: u32, channels: usize) -> Self {
         let size = (width * height) as usize * channels;
         Self {
@@ -31,67 +26,12 @@ impl ImageBuffer {
         }
     }
 
-    /// Load image from file path
-    pub fn load<P: AsRef<Path>>(path: P) -> Result<Self> {
-        let img = image::open(path).map_err(|e| AvxImageError::InvalidFormat(e.to_string()))?;
-
-        Ok(Self::from_dynamic(img))
+    pub fn load<P: AsRef<std::path::Path>>(_path: P) -> Result<Self> {
+        Err(AvxImageError::ProcessingError(
+            "Image loading requires codec implementation. Use native::buffer::NativeImageBuffer".into(),
+        ))
     }
 
-    /// Convert from image::DynamicImage
-    pub fn from_dynamic(img: DynamicImage) -> Self {
-        let (width, height) = img.dimensions();
-        let channels = match img {
-            DynamicImage::ImageLuma8(_) => 1,
-            DynamicImage::ImageLumaA8(_) => 2,
-            DynamicImage::ImageRgb8(_) => 3,
-            DynamicImage::ImageRgba8(_) => 4,
-            _ => 3, // Default to RGB
-        };
-
-        let mut data = Vec::with_capacity((width * height) as usize * channels);
-
-        match img {
-            DynamicImage::ImageRgb8(buf) => {
-                for pixel in buf.pixels() {
-                    data.push(pixel[0] as f32 / 255.0);
-                    data.push(pixel[1] as f32 / 255.0);
-                    data.push(pixel[2] as f32 / 255.0);
-                }
-            }
-            DynamicImage::ImageRgba8(buf) => {
-                for pixel in buf.pixels() {
-                    data.push(pixel[0] as f32 / 255.0);
-                    data.push(pixel[1] as f32 / 255.0);
-                    data.push(pixel[2] as f32 / 255.0);
-                    data.push(pixel[3] as f32 / 255.0);
-                }
-            }
-            DynamicImage::ImageLuma8(buf) => {
-                for pixel in buf.pixels() {
-                    data.push(pixel[0] as f32 / 255.0);
-                }
-            }
-            _ => {
-                // Convert to RGB8 first
-                let rgb = img.to_rgb8();
-                for pixel in rgb.pixels() {
-                    data.push(pixel[0] as f32 / 255.0);
-                    data.push(pixel[1] as f32 / 255.0);
-                    data.push(pixel[2] as f32 / 255.0);
-                }
-            }
-        }
-
-        Self {
-            width,
-            height,
-            data,
-            channels,
-        }
-    }
-
-    /// Convert to grayscale
     pub fn to_grayscale(&self) -> Self {
         if self.channels == 1 {
             return self.clone();
@@ -103,11 +43,8 @@ impl ImageBuffer {
             for x in 0..self.width {
                 let idx = ((y * self.width + x) as usize) * self.channels;
 
-                // Weighted average (ITU-R BT.709)
                 let gray = if self.channels >= 3 {
-                    0.2126 * self.data[idx]
-                        + 0.7152 * self.data[idx + 1]
-                        + 0.0722 * self.data[idx + 2]
+                    0.2126 * self.data[idx] + 0.7152 * self.data[idx + 1] + 0.0722 * self.data[idx + 2]
                 } else {
                     self.data[idx]
                 };
@@ -124,79 +61,22 @@ impl ImageBuffer {
         }
     }
 
-    /// Convert to ndarray (Height x Width x Channels)
-    pub fn to_ndarray(&self) -> Array3<f32> {
-        Array3::from_shape_vec(
-            (self.height as usize, self.width as usize, self.channels),
-            self.data.clone(),
-        )
-        .expect("Failed to create ndarray from image data")
-    }
-
-    /// Get pixel value at (x, y)
     pub fn get_pixel(&self, x: u32, y: u32) -> Vec<f32> {
         let idx = ((y * self.width + x) as usize) * self.channels;
         self.data[idx..idx + self.channels].to_vec()
     }
 
-    /// Set pixel value at (x, y)
     pub fn set_pixel(&mut self, x: u32, y: u32, values: &[f32]) {
-        assert_eq!(
-            values.len(),
-            self.channels,
-            "Pixel values must match channel count"
-        );
+        assert_eq!(values.len(), self.channels);
         let idx = ((y * self.width + x) as usize) * self.channels;
         self.data[idx..idx + self.channels].copy_from_slice(values);
     }
 
-    /// Save image to file
-    pub fn save<P: AsRef<Path>>(&self, path: P) -> Result<()> {
-        let mut img_data = vec![0u8; self.data.len()];
-        for (i, &v) in self.data.iter().enumerate() {
-            img_data[i] = (v * 255.0).clamp(0.0, 255.0) as u8;
-        }
-
-        match self.channels {
-            1 => {
-                let img = ImgBuf::<Luma<u8>, _>::from_raw(self.width, self.height, img_data)
-                    .ok_or_else(|| {
-                        AvxImageError::ProcessingError("Failed to create image buffer".into())
-                    })?;
-                img.save(path)?;
-            }
-            3 => {
-                let img = ImgBuf::<Rgb<u8>, _>::from_raw(self.width, self.height, img_data)
-                    .ok_or_else(|| {
-                        AvxImageError::ProcessingError("Failed to create image buffer".into())
-                    })?;
-                img.save(path)?;
-            }
-            4 => {
-                let img = ImgBuf::<Rgba<u8>, _>::from_raw(self.width, self.height, img_data)
-                    .ok_or_else(|| {
-                        AvxImageError::ProcessingError("Failed to create image buffer".into())
-                    })?;
-                img.save(path)?;
-            }
-            _ => {
-                return Err(AvxImageError::ProcessingError(format!(
-                    "Unsupported channel count: {}",
-                    self.channels
-                )));
-            }
-        }
-
-        Ok(())
-    }
-
-    /// Resize image using bilinear interpolation
     pub fn resize(&self, new_width: u32, new_height: u32) -> Self {
         let x_ratio = self.width as f32 / new_width as f32;
         let y_ratio = self.height as f32 / new_height as f32;
 
-        let mut resized_data =
-            Vec::with_capacity((new_width * new_height) as usize * self.channels);
+        let mut resized_data = Vec::with_capacity((new_width * new_height) as usize * self.channels);
 
         for y in 0..new_height {
             for x in 0..new_width {
@@ -219,9 +99,7 @@ impl ImageBuffer {
         }
     }
 
-    /// Crop image to specified region
     pub fn crop(&self, x: u32, y: u32, width: u32, height: u32) -> Result<ImageBuffer> {
-        // Validate bounds
         if x + width > self.width || y + height > self.height {
             return Err(AvxImageError::ProcessingError(format!(
                 "Crop region ({}x{}+{}+{}) exceeds image bounds ({}x{})",
@@ -263,15 +141,13 @@ mod tests {
     #[test]
     fn test_grayscale_conversion() {
         let mut img = ImageBuffer::new(10, 10, 3);
-
-        // Set a red pixel
         img.set_pixel(5, 5, &[1.0, 0.0, 0.0]);
 
         let gray = img.to_grayscale();
         assert_eq!(gray.channels, 1);
 
         let pixel = gray.get_pixel(5, 5);
-        assert!(pixel[0] > 0.0); // Should have some brightness from red
+        assert!(pixel[0] > 0.0);
     }
 
     #[test]

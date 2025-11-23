@@ -69,8 +69,17 @@ mod tests {
 
     #[test]
     fn test_illuminant_estimation() {
-        let img = ImageBuffer::new(100, 100, 3);
+        let mut img = ImageBuffer::new(100, 100, 3);
+
+        // Fill with non-zero values to get valid estimation
+        for i in 0..img.data.len() {
+            img.data[i] = 0.5; // Mid-gray
+        }
+
         let illuminant = estimate_illuminant(&img).unwrap();
         assert!(illuminant.color_temperature > 0.0);
+        assert!(illuminant.rgb_multipliers.0 > 0.0);
+        assert!(illuminant.rgb_multipliers.1 > 0.0);
+        assert!(illuminant.rgb_multipliers.2 > 0.0);
     }
 }

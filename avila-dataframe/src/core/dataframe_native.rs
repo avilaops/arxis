@@ -179,7 +179,115 @@ impl DataFrame {
             columns: result_columns,
         }
     }
+
+    /// FFT em uma coluna específica - Retorna espectro de magnitude
+    pub fn fft_column(&self, column: &str) -> Result<Self> {
+        let series = self.column(column)?;
+        let magnitude_spectrum = series.magnitude_spectrum().map_err(|e| {
+            crate::error_native::AvilaError::InvalidOperation(format!("FFT falhou: {}", e))
+        })?;
+
+        let mut new_df = DataFrame::new();
+        new_df.add_column(magnitude_spectrum)?;
+        Ok(new_df)
+    }
+
+    /// Spectrogram de uma coluna
+    pub fn spectrogram_column(
+        &self,
+        column: &str,
+        window_size: usize,
+        hop_size: usize,
+        sample_rate: f64,
+    ) -> Result<Self> {
+        use crate::scientific::spectrogram::{stft, WindowType};
+
+        let series = self.column(column)?;
+        let values: Vec<f64> = series
+            .iter()
+            .filter_map(|v| v.as_f64())
+            .collect();
+
+        if values.is_empty() {
+            return Err(crate::error_native::AvilaError::InvalidOperation(
+                "Coluna não contém valores numéricos".to_string(),
+            ));
+        }
+
+        let (spectrogram, _frequencies, times) =
+            stft(&values, window_size, hop_size, sample_rate, WindowType::Hann);
+
+        // Criar DataFrame com resultados
+        let mut result = DataFrame::new();
+
+        // Adicionar coluna de tempos
+        result.add_column(Series::new_float("time", times))?;
+
+        // Adicionar colunas para cada bin de frequência
+        if !spectrogram.is_empty() {
+            let n_freqs = spectrogram[0].len();
+            for freq_idx in 0..n_freqs {
+                let freq_data: Vec<f64> = spectrogram
+                    .iter()
+                    .map(|frame| frame[freq_idx])
+                    .collect();
+                result.add_column(Series::new_float(
+                    format!("freq_{}", freq_idx),
+                    freq_data,
+                ))?;
+            }
+        }
+
+        Ok(result)
+    }
+
+    /// Power Spectrum de uma coluna
+    pub fn power_spectrum_column(&self, column: &str, sample_rate: f64) -> Result<Self> {
+        let series = self.column(column)?;
+        let power_series = series.power_spectrum(sample_rate).map_err(|e| {
+            crate::error_native::AvilaError::InvalidOperation(format!(
+                "Power spectrum falhou: {}",
+                e
+            ))
+        })?;
+
+        let mut new_df = DataFrame::new();
+        new_df.add_column(power_series)?;
+        Ok(new_df)
+    }
+
+    /// Convolução entre duas colunas
+    pub fn convolve_columns(&self, col1: &str, col2: &str) -> Result<Self> {
+        let series1 = self.column(col1)?;
+        let series2 = self.column(col2)?;
+
+        let result_series = series1.convolve(series2).map_err(|e| {
+            crate::error_native::AvilaError::InvalidOperation(format!("Convolução falhou: {}", e))
+        })?;
+
+        let mut new_df = DataFrame::new();
+        new_df.add_column(result_series)?;
+        Ok(new_df)
+    }
+
+    /// Correlação cruzada entre duas colunas
+    pub fn xcorr_columns(&self, col1: &str, col2: &str) -> Result<Self> {
+        let series1 = self.column(col1)?;
+        let series2 = self.column(col2)?;
+
+        let result_series = series1.xcorr(series2).map_err(|e| {
+            crate::error_native::AvilaError::InvalidOperation(format!(
+                "Correlação cruzada falhou: {}",
+                e
+            ))
+        })?;
+
+        let mut new_df = DataFrame::new();
+        new_df.add_column(result_series)?;
+        Ok(new_df)
+    }
 }
+
 
 impl Default for DataFrame {
     fn default() -> Self {

@@ -1,7 +1,15 @@
-# 🎯 Prompt Completo: avila-tokenizers - O Tokenizer Mais Completo do Ecossistema Rust
+# 🎯 avila-tokenizers - O Tokenizer Mais Completo do Ecossistema Rust
+
+[![Crates.io](https://img.shields.io/crates/v/avila-tokenizers.svg)](https://crates.io/crates/avila-tokenizers)
+[![Documentation](https://docs.rs/avila-tokenizers/badge.svg)](https://docs.rs/avila-tokenizers)
+[![License](https://img.shields.io/badge/license-MIT%2FApache--2.0-blue.svg)](https://github.com/avilaops/arxis)
+[![CI](https://github.com/avilaops/arxis/workflows/CI/badge.svg)](https://github.com/avilaops/arxis/actions)
+[![codecov](https://codecov.io/gh/avilaops/arxis/branch/main/graph/badge.svg)](https://codecov.io/gh/avilaops/arxis)
+[![Downloads](https://img.shields.io/crates/d/avila-tokenizers.svg)](https://crates.io/crates/avila-tokenizers)
+[![Rust Version](https://img.shields.io/badge/rust-1.70%2B-blue.svg)](https://www.rust-lang.org)
 
 ## Missão
-Criar **avila-tokenizers**: a biblioteca de tokenização mais completa e rápida em Rust, superando Hugging Face Tokenizers, tiktoken-rs, e sentencepiece. Deve ser 100% nativa Rust, zero dependências Python, e otimizada para português brasileiro, com suporte universal para todos os modelos LLM modernos.
+**avila-tokenizers**: a biblioteca de tokenização mais completa e rápida em Rust, superando Hugging Face Tokenizers, tiktoken-rs, e sentencepiece. 100% nativa Rust, zero dependências Python, e otimizada para português brasileiro, com suporte universal para todos os modelos LLM modernos.
 
 ---
 

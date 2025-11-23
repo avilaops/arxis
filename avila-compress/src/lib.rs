@@ -24,6 +24,7 @@ pub mod stream;
 pub mod checksum;
 pub mod metrics;
 pub mod columnar;
+pub mod format;
 
 #[cfg(feature = "parallel")]
 pub mod parallel;
@@ -36,10 +37,11 @@ pub mod dictionary;
 
 pub use error::{Error, Result};
 pub use metrics::CompressionMetrics;
+pub use format::{AvzFormat, Block};
 
 /// Compression algorithms available
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
-pub enum Algorithm {
+pub enum CompressionAlgorithm {
     /// LZ4 - Ultra-fast compression
     Lz4,
     // Future: Zstd, Snappy, Custom

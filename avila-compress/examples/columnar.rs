@@ -19,7 +19,7 @@ fn main() {
     // Example 1: RLE for sparse sensor data
     println!("\n📊 Example 1: RLE for Sparse Sensor Data");
     println!("{}", "-".repeat(70));
-    
+
     let sensor_data = vec![
         0.0, 0.0, 0.0, 0.0, 0.0, // Sensor off
         1.5, 1.5, 1.5,           // Reading 1
@@ -43,7 +43,7 @@ fn main() {
     // Example 2: RLE for boolean/constant data
     println!("\n📊 Example 2: RLE for Constant Values (All Zeros)");
     println!("{}", "-".repeat(70));
-    
+
     let zeros = vec![0.0; 10000];
     let original_size = zeros.len() * mem::size_of::<f64>();
     let encoded = columnar::rle_encode_f64(&zeros);
@@ -59,7 +59,7 @@ fn main() {
     // Example 3: Delta encoding for timestamps
     println!("\n📊 Example 3: Delta Encoding for Timestamps");
     println!("{}", "-".repeat(70));
-    
+
     // Simulate timestamps (milliseconds since epoch)
     let base_time = 1700000000000i64;
     let timestamps: Vec<i64> = (0..1000).map(|i| base_time + i * 1000).collect(); // 1 per second
@@ -86,7 +86,7 @@ fn main() {
     // Example 4: FOR encoding for counter data
     println!("\n📊 Example 4: Frame-of-Reference for Counter Data");
     println!("{}", "-".repeat(70));
-    
+
     let counters: Vec<i64> = (5000..6000).collect(); // Counters from 5000 to 5999
 
     let original_size = counters.len() * mem::size_of::<i64>();
@@ -104,7 +104,7 @@ fn main() {
     // Example 5: Real-world IoT scenario
     println!("\n📊 Example 5: IoT Temperature Sensors (Real-World)");
     println!("{}", "-".repeat(70));
-    
+
     // Simulate temperature readings: mostly stable with occasional changes
     let mut temps = Vec::new();
     temps.extend(vec![22.5; 100]);  // Stable room temp
@@ -128,7 +128,7 @@ fn main() {
     // Example 6: Performance comparison
     println!("\n📊 Example 6: Performance Comparison (1M data points)");
     println!("{}", "-".repeat(70));
-    
+
     let large_data: Vec<i64> = (0..1_000_000).collect();
     let original_size = large_data.len() * mem::size_of::<i64>();
 

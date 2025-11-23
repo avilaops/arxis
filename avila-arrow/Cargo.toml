@@ -18,6 +18,8 @@ categories = ["science", "database-implementations", "data-structures"]
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+flatbuffers = "24.3"
+byteorder = "1.5"
 
 [dev-dependencies]
 criterion = { version = "0.5", features = ["html_reports"] }
@@ -27,6 +29,7 @@ default = ["scientific"]
 scientific = []  # Scientific types (Quaternion, Tensor4D, Complex, Spinor)
 compression = []  # Integration with avila-compress
 aviladb = []  # AvilaDB native integration
+ipc = []  # Arrow IPC format support
 
 [[bench]]
 name = "scientific_bench"

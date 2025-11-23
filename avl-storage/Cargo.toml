@@ -1,0 +1,63 @@
+[package]
+name = "avl-storage"
+version = "0.1.0"
+edition = "2021"
+authors = ["Nicolas Ávila <nicolas@avila.inc>"]
+license = "MIT OR Apache-2.0"
+description = "AVL Storage - S3-compatible object storage optimized for Brazil and LATAM"
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://avila.cloud"
+documentation = "https://docs.rs/avl-storage"
+readme = "README.md"
+keywords = ["storage", "object-storage", "s3", "cloud", "brazil"]
+categories = ["filesystem", "network-programming", "web-programming"]
+
+[dependencies]
+tokio = { version = "1.40", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "2.0"
+anyhow = "1.0"
+
+# Compression
+avila-compress = { path = "../avila-compress" }
+
+# Networking
+axum = "0.7"
+tower = "0.5"
+tower-http = { version = "0.6", features = ["cors", "trace", "fs"] }
+hyper = { version = "1.5", features = ["full"] }
+
+# Storage backend
+tokio-util = { version = "0.7", features = ["io"] }
+bytes = "1.8"
+futures = "0.3"
+
+# Crypto
+sha2 = "0.10"
+md5 = "0.7"
+hex = "0.4"
+
+# Observability
+tracing = "0.1"
+tracing-subscriber = "0.3"
+avx-telemetry = { path = "../avx-telemetry" }
+
+# S3 compatibility
+aws-sdk-s3 = { version = "1.67", optional = true }
+
+[dev-dependencies]
+criterion = "0.5"
+tempfile = "3.14"
+
+[features]
+default = []
+s3-compat = ["aws-sdk-s3"]
+
+[[bench]]
+name = "storage_ops"
+harness = false
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

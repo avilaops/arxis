@@ -47,6 +47,8 @@ pub struct Lz4Encoder {
     total_processed: usize,
     /// Original size accumulator
     original_size: usize,
+    /// Sliding window for cross-chunk matching (last 64KB)
+    history: Vec<u8>,
 }
 
 impl Lz4Encoder {
@@ -58,6 +60,7 @@ impl Lz4Encoder {
             output_buffer: Vec::with_capacity(BLOCK_SIZE + 1024),
             total_processed: 0,
             original_size: 0,
+            history: Vec::with_capacity(MAX_DISTANCE),
         }
     }
 
@@ -114,10 +117,17 @@ impl Lz4Encoder {
             return Ok(Vec::new());
         }
 
-        let input = &self.input_buffer;
-        let mut anchor = 0;
-        let mut pos = 0;
+        // Combine history + current input for matching
+        let history_len = self.history.len();
+        let mut combined = Vec::with_capacity(history_len + self.input_buffer.len());
+        combined.extend_from_slice(&self.history);
+        combined.extend_from_slice(&self.input_buffer);
+
+        let input = &combined;
+        let input_start = history_len; // Start compressing from here
         let input_end = input.len();
+        let mut anchor = input_start;
+        let mut pos = input_start;
         let input_limit = if input_end > 5 { input_end - 5 } else { 0 };
 
         while pos < input_limit {
@@ -132,21 +142,31 @@ impl Lz4Encoder {
 
                 if candidate >= 0 {
                     let candidate_pos = candidate as usize;
-                    let distance = (self.total_processed + pos) - candidate_pos;
+                    let absolute_pos = self.total_processed - history_len + pos;
+                    let distance = absolute_pos - candidate_pos;
 
                     if distance > 0 && distance <= MAX_DISTANCE {
-                        let max_match = input_end - pos;
-                        let len = self.count_match(&input[candidate_pos..], &input[pos..], max_match);
+                        // Calculate candidate position in combined buffer
+                        let candidate_in_buffer = if candidate_pos >= self.total_processed - history_len {
+                            candidate_pos - (self.total_processed - history_len)
+                        } else {
+                            continue; // Too old, not in our buffer
+                        };
 
-                        if len >= MIN_MATCH {
-                            match_found = true;
-                            match_pos = candidate_pos;
-                            match_len = len;
+                        if candidate_in_buffer < pos {
+                            let max_match = input_end - pos;
+                            let len = self.count_match(&input[candidate_in_buffer..], &input[pos..], max_match);
+
+                            if len >= MIN_MATCH {
+                                match_found = true;
+                                match_pos = candidate_in_buffer;
+                                match_len = len;
+                            }
                         }
                     }
                 }
 
-                self.hash_table[hash] = (self.total_processed + pos) as i32;
+                self.hash_table[hash] = (self.total_processed - history_len + pos) as i32;
             }
 
             if match_found {
@@ -172,7 +192,7 @@ impl Lz4Encoder {
 
                 self.output_buffer.extend_from_slice(&input[anchor..pos]);
 
-                let offset = ((self.total_processed + pos) - match_pos) as u16;
+                let offset = (pos - match_pos) as u16;
                 self.output_buffer.extend_from_slice(&offset.to_le_bytes());
 
                 if match_len >= MIN_MATCH + 15 {
@@ -209,7 +229,14 @@ impl Lz4Encoder {
             self.output_buffer.extend_from_slice(&input[anchor..]);
         }
 
-        self.total_processed += input.len();
+        // Update history: keep last MAX_DISTANCE bytes
+        self.history.extend_from_slice(&self.input_buffer);
+        if self.history.len() > MAX_DISTANCE {
+            let excess = self.history.len() - MAX_DISTANCE;
+            self.history.drain(0..excess);
+        }
+
+        self.total_processed += self.input_buffer.len();
         self.input_buffer.clear();
 
         Ok(Vec::new()) // Data buffered in output_buffer
@@ -251,8 +278,6 @@ pub struct Lz4Decoder {
     input_buffer: Vec<u8>,
     /// Expected original size (from header)
     expected_size: Option<usize>,
-    /// Current decoding position
-    pos: usize,
 }
 
 impl Lz4Decoder {
@@ -262,7 +287,6 @@ impl Lz4Decoder {
             output: Vec::new(),
             input_buffer: Vec::new(),
             expected_size: None,
-            pos: 0,
         }
     }
 
@@ -298,7 +322,6 @@ impl Lz4Decoder {
             self.expected_size = Some(size);
             self.output.reserve(size);
             self.input_buffer.drain(0..4);
-            self.pos = 0;
         }
 
         // Decompress available data
@@ -332,10 +355,14 @@ impl Lz4Decoder {
 
     /// Decompress buffered input
     fn decompress_buffered(&mut self) -> Result<()> {
-        while self.pos < self.input_buffer.len() {
+        let mut pos = 0;
+
+        while pos < self.input_buffer.len() {
+            let token_start = pos;
+
             // Read token
-            let token = self.input_buffer[self.pos];
-            self.pos += 1;
+            let token = self.input_buffer[pos];
+            pos += 1;
 
             let mut literal_len = (token >> 4) as usize;
             let mut match_len = (token & 0x0F) as usize;
@@ -343,11 +370,13 @@ impl Lz4Decoder {
             // Extended literal length
             if literal_len == 15 {
                 loop {
-                    if self.pos >= self.input_buffer.len() {
-                        return Ok(()); // Wait for more data
+                    if pos >= self.input_buffer.len() {
+                        // Incomplete token - keep entire token in buffer
+                        self.input_buffer.drain(0..token_start);
+                        return Ok(());
                     }
-                    let extra = self.input_buffer[self.pos] as usize;
-                    self.pos += 1;
+                    let extra = self.input_buffer[pos] as usize;
+                    pos += 1;
                     literal_len += extra;
                     if extra != 255 {
                         break;
@@ -357,32 +386,36 @@ impl Lz4Decoder {
 
             // Copy literals
             if literal_len > 0 {
-                if self.pos + literal_len > self.input_buffer.len() {
-                    return Ok(()); // Wait for more data
+                if pos + literal_len > self.input_buffer.len() {
+                    // Not enough data - keep entire token in buffer
+                    self.input_buffer.drain(0..token_start);
+                    return Ok(());
                 }
-                self.output.extend_from_slice(&self.input_buffer[self.pos..self.pos + literal_len]);
-                self.pos += literal_len;
+                self.output.extend_from_slice(&self.input_buffer[pos..pos + literal_len]);
+                pos += literal_len;
             }
 
-            // Check if done
-            if self.pos >= self.input_buffer.len() || match_len == 0 {
+            // Check if this is the last token (no match)
+            if match_len == 0 {
                 continue;
             }
 
             // Read match offset
-            if self.pos + 2 > self.input_buffer.len() {
-                return Ok(()); // Wait for more data
+            if pos + 2 > self.input_buffer.len() {
+                // Not enough for offset - keep entire token in buffer
+                self.input_buffer.drain(0..token_start);
+                return Ok(());
             }
             let offset = u16::from_le_bytes([
-                self.input_buffer[self.pos],
-                self.input_buffer[self.pos + 1],
+                self.input_buffer[pos],
+                self.input_buffer[pos + 1],
             ]) as usize;
-            self.pos += 2;
+            pos += 2;
 
             if offset == 0 || offset > self.output.len() {
                 return Err(Error::CorruptedData(format!(
-                    "Invalid match offset: {}",
-                    offset
+                    "Invalid match offset: {} (output len: {})",
+                    offset, self.output.len()
                 )));
             }
 
@@ -390,11 +423,13 @@ impl Lz4Decoder {
             match_len += MIN_MATCH;
             if match_len == MIN_MATCH + 15 {
                 loop {
-                    if self.pos >= self.input_buffer.len() {
-                        return Ok(()); // Wait for more data
+                    if pos >= self.input_buffer.len() {
+                        // Incomplete - keep entire token in buffer
+                        self.input_buffer.drain(0..token_start);
+                        return Ok(());
                     }
-                    let extra = self.input_buffer[self.pos] as usize;
-                    self.pos += 1;
+                    let extra = self.input_buffer[pos] as usize;
+                    pos += 1;
                     match_len += extra;
                     if extra != 255 {
                         break;
@@ -409,6 +444,9 @@ impl Lz4Decoder {
                 self.output.push(byte);
             }
         }
+
+        // We processed all available input - clear the buffer
+        self.input_buffer.clear();
 
         Ok(())
     }

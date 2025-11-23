@@ -25,45 +25,24 @@ exclude = ["target/", "*.swp", ".git*", "examples/*.jpg", "examples/*.png"]
 # Note: Sub-workspace removed - face3d-rs should be separate project
 
 [dependencies]
-# Core image processing
-image = "0.25"
-imageproc = "0.25"
-ndarray = "0.16"
+# ZERO external dependencies for core functionality
+# 100% native Rust implementation from scratch
 
-# OCR (Optical Character Recognition)
-# TODO: Implementar OCR nativo em Rust, sem dependências externas
-# tesseract = "0.14"  # Temporário para benchmarking
-
-# Face detection & recognition
-# TODO: Implementar detecção facial nativa
-dlib-face-recognition = { version = "0.3", optional = true }
-
-# Deep Learning (optional)
-tract-onnx = { version = "0.21", optional = true }
-tract-core = { version = "0.21", optional = true }
-
-# Computer Vision fundamentals
-nalgebra = "0.33"
-rayon = "1.10"
-
-# Photometry & Color Science
-palette = "0.7"
-
-# Serialization
+# Only essential crates
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-
-# Utilities
-anyhow = "1"
 thiserror = "1"
+
+# Optional: Multi-threading (using std::thread as fallback)
+rayon = { version = "1.10", optional = true }
+
+# Optional: SIMD (we'll implement manual SIMD with std::arch)
+# No external SIMD crates needed
 
 [dev-dependencies]
 criterion = "0.5"
 
 [features]
-default = ["ocr", "face-detection", "photometry"]
-ocr = []
-face-detection = []
-photometry = []
-deep-learning = ["tract-onnx", "tract-core"]
-full = ["ocr", "face-detection", "photometry", "deep-learning"]
+default = []
+parallel = ["rayon"]
+full = ["parallel"]

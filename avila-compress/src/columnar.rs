@@ -31,7 +31,7 @@ pub fn rle_encode_f64(data: &[f64]) -> Vec<u8> {
     }
 
     let mut output = Vec::new();
-    
+
     // Write count of runs
     output.extend_from_slice(&(0u32).to_le_bytes()); // Placeholder
     let mut run_count = 0u32;
@@ -382,7 +382,7 @@ mod tests {
         let encoded = rle_encode_f64(&data);
         let decoded = rle_decode_f64(&encoded).unwrap();
         assert_eq!(data, decoded);
-        
+
         // Should be highly compressed
         let original_size = data.len() * mem::size_of::<f64>();
         assert!(encoded.len() < original_size / 10);

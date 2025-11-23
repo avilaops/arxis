@@ -1,0 +1,48 @@
+[package]
+name = "avl-observability"
+version = "0.1.0"
+edition = "2021"
+authors = ["Nicolas Ávila <nicolas@avila.inc>"]
+license = "MIT OR Apache-2.0"
+description = "AVL Observability - Complete observability stack (metrics, logs, traces) for AVL Cloud"
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://avila.cloud"
+documentation = "https://docs.rs/avl-observability"
+readme = "README.md"
+keywords = ["observability", "metrics", "logging", "tracing", "monitoring"]
+categories = ["development-tools::debugging", "development-tools::profiling"]
+
+[dependencies]
+tokio = { version = "1.40", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "2.0"
+anyhow = "1.0"
+
+# Telemetry
+avx-telemetry = { path = "../avx-telemetry" }
+avila-telemetry = { path = "../avila-telemetry" }
+
+# Metrics
+prometheus = "0.13"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# Tracing
+opentelemetry = "0.27"
+opentelemetry_sdk = "0.27"
+
+# Networking
+axum = "0.7"
+tower = "0.5"
+
+# Storage
+aviladb = { path = "../aviladb" }
+
+# Time
+chrono = "0.4"
+
+[package.metadata.docs.rs]
+all-features = true

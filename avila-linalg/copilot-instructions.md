@@ -1,8 +1,8 @@
 # Avila LinAlg - Copilot Instructions
 
-**Projeto**: avila-linalg  
-**Descrição**: Pure Rust Linear Algebra Library - Vectors, Matrices, SVD, Eigenvalues  
-**Status**: v0.1.0 Released (foundation complete)  
+**Projeto**: avila-linalg
+**Descrição**: Pure Rust Linear Algebra Library - Vectors, Matrices, SVD, Eigenvalues
+**Status**: v0.1.0 Released (foundation complete)
 **Filosofia**: Clareza > Performance prematura. Correção > Otimização.
 
 ---
@@ -71,10 +71,10 @@ fn test_svd_reconstruction() {
         [4.0, 5.0, 6.0],
         [7.0, 8.0, 9.0],
     ]);
-    
+
     let svd = m.svd();
     let reconstructed = svd.u * svd.s * svd.vt;
-    
+
     // Validar A = U * Σ * V^T (erro < 1e-10)
     for i in 0..3 {
         for j in 0..3 {
@@ -163,12 +163,12 @@ impl<T: Float> MatrixMxN<T> {
 // Aplicação: Compressão de imagens
 pub fn compress_image(img: &MatrixMxN<f64>, k: usize) -> MatrixMxN<f64> {
     let svd = img.svd();
-    
+
     // Keep only k largest singular values
     let u_k = svd.u.slice_cols(0, k);
     let s_k = svd.s.slice(0, k);
     let vt_k = svd.vt.slice_rows(0, k);
-    
+
     u_k * Matrix::from_diagonal(&s_k) * vt_k
 }
 ```
@@ -193,12 +193,12 @@ impl<T: Float> MatrixMxN<T> {
     /// Compute eigenvalues via QR algorithm
     pub fn eigenvalues(&self) -> Vec<Complex<T>> {
         assert!(self.is_square(), "Matrix must be square");
-        
+
         // 1. Reduce to Hessenberg form (Householder)
         // 2. QR algorithm com shifts
         // 3. Extract eigenvalues from quasi-triangular form
     }
-    
+
     /// Compute eigenvectors (needs eigenvalues first)
     pub fn eigen(&self) -> Eigen<T> {
         let values = self.eigenvalues();
@@ -211,13 +211,13 @@ impl<T: Float> MatrixMxN<T> {
 pub fn pca(data: &MatrixMxN<f64>, k: usize) -> MatrixMxN<f64> {
     // 1. Center data (subtract mean)
     let centered = data.center_columns();
-    
+
     // 2. Covariance matrix
     let cov = (centered.t() * &centered) / (data.rows() - 1) as f64;
-    
+
     // 3. Eigendecomposition
     let eigen = cov.eigen();
-    
+
     // 4. Take k largest eigenvectors
     eigen.vectors.slice_cols(0, k)
 }
@@ -250,18 +250,18 @@ impl<T: Float> MatrixMxN<T> {
             SolverMethod::Iterative => self.solve_cg(b),
         }
     }
-    
+
     /// LU solve: PA = LU
     fn solve_lu(&self, b: &VectorN<T>) -> VectorN<T> {
         let lu = self.lu_decompose();
-        
+
         // 1. Solve Ly = Pb (forward substitution)
         let y = lu.l.forward_substitute(&lu.permute(b));
-        
+
         // 2. Solve Ux = y (backward substitution)
         lu.u.backward_substitute(&y)
     }
-    
+
     /// QR solve: A = QR, então x = R^(-1) * Q^T * b
     fn solve_qr(&self, b: &VectorN<T>) -> VectorN<T> {
         let qr = self.qr_decompose();
@@ -282,17 +282,17 @@ pub fn least_squares<T: Float>(a: &MatrixMxN<T>, b: &VectorN<T>) -> VectorN<T> {
 pub fn linear_regression(x: &[f64], y: &[f64]) -> (f64, f64) {
     // Fit y = mx + b
     let n = x.len();
-    
+
     // Design matrix: [1, x]
     let mut a = MatrixMxN::new(n, 2);
     for i in 0..n {
         a[[i, 0]] = 1.0;
         a[[i, 1]] = x[i];
     }
-    
+
     let b_vec = VectorN::from_slice(y);
     let coeffs = least_squares(&a, &b_vec);
-    
+
     (coeffs[1], coeffs[0])  // (slope, intercept)
 }
 ```
@@ -317,13 +317,13 @@ impl Vector4<f64> {
             let a = _mm256_loadu_pd(&self.x as *const f64);
             let b = _mm256_loadu_pd(&other.x as *const f64);
             let prod = _mm256_mul_pd(a, b);
-            
+
             // Horizontal sum
             let sum = _mm256_hadd_pd(prod, prod);
             let hi = _mm256_extractf128_pd(sum, 1);
             let lo = _mm256_castpd256_pd128(sum);
             let final_sum = _mm_add_pd(hi, lo);
-            
+
             _mm_cvtsd_f64(final_sum)
         }
     }
@@ -333,9 +333,9 @@ impl MatrixMxN<f64> {
     /// Matrix multiplication com blocking + SIMD
     pub fn matmul_optimized(&self, other: &Self) -> Self {
         const BLOCK_SIZE: usize = 64;  // L1 cache-friendly
-        
+
         let mut result = Self::zeros(self.rows, other.cols);
-        
+
         // Blocked multiplication (cache-friendly)
         for i in (0..self.rows).step_by(BLOCK_SIZE) {
             for j in (0..other.cols).step_by(BLOCK_SIZE) {
@@ -343,12 +343,12 @@ impl MatrixMxN<f64> {
                     let i_end = (i + BLOCK_SIZE).min(self.rows);
                     let j_end = (j + BLOCK_SIZE).min(other.cols);
                     let k_end = (k + BLOCK_SIZE).min(self.cols);
-                    
+
                     self.matmul_block(&mut result, other, i, i_end, j, j_end, k, k_end);
                 }
             }
         }
-        
+
         result
     }
 }
@@ -378,46 +378,46 @@ impl<T: Float> SparseMatrix<T> {
     /// Sparse matrix-vector multiplication
     pub fn mul_vec(&self, x: &VectorN<T>) -> VectorN<T> {
         let mut y = VectorN::zeros(self.rows);
-        
+
         for i in 0..self.rows {
             let start = self.row_ptrs[i];
             let end = self.row_ptrs[i + 1];
-            
+
             for j in start..end {
                 let col = self.col_indices[j];
                 let val = self.values[j];
                 y[i] = y[i] + val * x[col];
             }
         }
-        
+
         y
     }
-    
+
     /// Conjugate Gradient solver (para matrizes sparse simétricas)
-    pub fn solve_cg(&self, b: &VectorN<T>, max_iter: usize, tol: T) 
+    pub fn solve_cg(&self, b: &VectorN<T>, max_iter: usize, tol: T)
         -> VectorN<T> {
         let mut x = VectorN::zeros(self.cols);
         let mut r = b.clone();
         let mut p = r.clone();
         let mut rs_old = r.dot(&r);
-        
+
         for _ in 0..max_iter {
             let ap = self.mul_vec(&p);
             let alpha = rs_old / p.dot(&ap);
-            
+
             x = x + &p * alpha;
             r = r - &ap * alpha;
-            
+
             let rs_new = r.dot(&r);
             if rs_new.sqrt() < tol {
                 break;
             }
-            
+
             let beta = rs_new / rs_old;
             p = &r + &p * beta;
             rs_old = rs_new;
         }
-        
+
         x
     }
 }
@@ -443,11 +443,11 @@ mod tests {
     fn test_vector_dot_product() {
         let v1 = Vector3::new(1.0, 2.0, 3.0);
         let v2 = Vector3::new(4.0, 5.0, 6.0);
-        
+
         let dot = v1.dot(&v2);
         assert_relative_eq!(dot, 32.0, epsilon = 1e-10);
     }
-    
+
     #[test]
     fn test_matrix_determinant() {
         let m = Matrix3x3::from_rows([
@@ -455,16 +455,16 @@ mod tests {
             [0.0, 1.0, 4.0],
             [5.0, 6.0, 0.0],
         ]);
-        
+
         let det = m.determinant();
         assert_relative_eq!(det, 1.0, epsilon = 1e-10);
     }
-    
+
     #[test]
     fn test_svd_orthogonality() {
         let m = Matrix3x3::identity();
         let svd = m.svd();
-        
+
         // U^T * U = I
         let utu = svd.u.t() * &svd.u;
         for i in 0..3 {
@@ -490,15 +490,15 @@ proptest! {
     ) {
         let left = (a.clone() * b.clone()) * c.clone();
         let right = a * (b * c);
-        
+
         assert_matrices_equal(&left, &right, 1e-10);
     }
-    
+
     #[test]
     fn test_svd_reconstruction(m in matrix_5x5()) {
         let svd = m.svd();
         let reconstructed = svd.u * svd.s * svd.vt;
-        
+
         assert_matrices_equal(&m, &reconstructed, 1e-10);
     }
 }
@@ -511,11 +511,11 @@ use criterion::{black_box, criterion_group, criterion_main, Criterion};
 fn bench_vector_ops(c: &mut Criterion) {
     let v1 = Vector3::new(1.0, 2.0, 3.0);
     let v2 = Vector3::new(4.0, 5.0, 6.0);
-    
+
     c.bench_function("vector3_dot", |b| {
         b.iter(|| black_box(v1.dot(&v2)))
     });
-    
+
     c.bench_function("vector3_cross", |b| {
         b.iter(|| black_box(v1.cross(&v2)))
     });
@@ -524,7 +524,7 @@ fn bench_vector_ops(c: &mut Criterion) {
 fn bench_matrix_mul(c: &mut Criterion) {
     let m1 = Matrix3x3::identity();
     let m2 = Matrix3x3::identity();
-    
+
     c.bench_function("matrix3x3_mul", |b| {
         b.iter(|| black_box(&m1 * &m2))
     });
@@ -636,7 +636,7 @@ impl<T> Matrix3x3<T> {
         assert!(i < 3 && j < 3, "Index ({}, {}) out of bounds", i, j);
         &self.data[i * 3 + j]
     }
-    
+
     pub fn get_checked(&self, i: usize, j: usize) -> Option<&T> {
         if i < 3 && j < 3 {
             Some(&self.data[i * 3 + j])
@@ -732,11 +732,11 @@ impl<T: Float> MatrixMxN<T> {
 fn test_qr_orthogonality() {
     let m = Matrix3x3::from_rows([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]);
     let qr = m.qr_decompose();
-    
+
     // Q^T * Q = I
     let qtq = qr.q.t() * &qr.q;
     assert_matrices_equal(&qtq, &Matrix2x2::identity(), 1e-10);
-    
+
     // Q * R = A
     let reconstructed = &qr.q * &qr.r;
     assert_matrices_equal(&m, &reconstructed, 1e-10);

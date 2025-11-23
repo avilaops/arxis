@@ -1,6 +1,7 @@
 [workspace]
 members = [
     ".",
+    # Core Mathematical & Scientific Libraries
     "avila-arrow",  # Native columnar format with scientific types
     "avila-clustering",
     "avila-dataframe",
@@ -10,6 +11,20 @@ members = [
     "avila-reduction",
     "avila-telemetry",
     "avila-compress",  # Native compression library (LZ4, Zstd)
+
+    # AVL Cloud Platform - Data & Storage
+    "aviladb",         # NoSQL database (4MB docs, vector search, multi-region)
+    "avl-storage",     # S3-compatible object storage (3-8ms Brazil)
+
+    # AVL Cloud Platform - Infrastructure
+    "avl-auth",        # IAM & authentication (JWT, OAuth2, RBAC)
+    "avl-queue",       # Message queue & event streaming
+    "avl-secrets",     # Secrets management (Vault-like)
+    "avl-observability", # Metrics, logs, traces
+    "avl-loadbalancer", # L7 load balancer
+    "avl-console",     # Developer portal & web dashboard
+
+    # AVX API & Gateway
     "avx-api-core",
     "avx-cli",
     "avx-config",

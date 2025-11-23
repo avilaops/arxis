@@ -34,6 +34,9 @@ pub mod record_batch;
 #[cfg(feature = "scientific")]
 pub mod scientific;
 
+#[cfg(feature = "ipc")]
+pub mod ipc;
+
 // Re-exports
 pub use datatypes::{DataType, Field, Schema};
 pub use error::{ArrowError, Result};
