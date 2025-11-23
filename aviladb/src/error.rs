@@ -61,12 +61,6 @@ impl From<bincode::Error> for AvilaError {
     }
 }
 
-impl From<rocksdb::Error> for AvilaError {
-    fn from(err: rocksdb::Error) -> Self {
-        AvilaError::Storage(err.to_string())
-    }
-}
-
 impl From<anyhow::Error> for AvilaError {
     fn from(err: anyhow::Error) -> Self {
         AvilaError::Internal(err.to_string())

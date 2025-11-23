@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use std::time::Duration;
 
-use crate::{error::ConsoleError, state::ConsoleState};
+use crate::{error::ConsoleError, state::ConsoleState, ai_engine::{AIBackendKind, LocalAIDummyBackend, AIBackend, AIResult}};
 
 /// AI Assistant UI HTML with chat interface
 const AI_ASSISTANT_HTML: &str = r#"<!DOCTYPE html>
@@ -321,7 +321,7 @@ const AI_ASSISTANT_HTML: &str = r#"<!DOCTYPE html>
             </h1>
             <p class="subtitle">Pergunte em linguagem natural, receba queries SQL otimizadas</p>
         </div>
-        
+
         <div class="main-content">
             <div class="chat-section">
                 <div class="chat-messages" id="chatMessages">
@@ -340,12 +340,12 @@ const AI_ASSISTANT_HTML: &str = r#"<!DOCTYPE html>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="chat-input-area">
                     <div class="input-container">
-                        <textarea 
-                            class="chat-input" 
-                            id="chatInput" 
+                        <textarea
+                            class="chat-input"
+                            id="chatInput"
                             placeholder="Ex: Mostre os 10 produtos mais vendidos do último mês..."
                             rows="1"
                         ></textarea>
@@ -355,7 +355,7 @@ const AI_ASSISTANT_HTML: &str = r#"<!DOCTYPE html>
                     </div>
                 </div>
             </div>
-            
+
             <div class="sidebar">
                 <h3>💡 Sugestões Rápidas</h3>
                 <div class="suggestions">
@@ -364,26 +364,26 @@ const AI_ASSISTANT_HTML: &str = r#"<!DOCTYPE html>
                         <div class="suggestion-title">Usuários Ativos</div>
                         <div class="suggestion-text">Top 5 usuários mais ativos</div>
                     </div>
-                    
+
                     <div class="suggestion-card" onclick="useSuggestion('Mostre o total de vendas por categoria do último mês')">
                         <div class="suggestion-icon">📊</div>
                         <div class="suggestion-title">Vendas por Categoria</div>
                         <div class="suggestion-text">Análise de vendas mensal</div>
                     </div>
-                    
+
                     <div class="suggestion-card" onclick="useSuggestion('Liste pedidos pendentes com valor acima de R$ 1000')">
                         <div class="suggestion-icon">🛒</div>
                         <div class="suggestion-title">Pedidos High-Value</div>
                         <div class="suggestion-text">Pedidos importantes pendentes</div>
                     </div>
-                    
+
                     <div class="suggestion-card" onclick="useSuggestion('Explique e otimize: SELECT * FROM orders WHERE created_at > NOW() - INTERVAL 30 DAY')">
                         <div class="suggestion-icon">⚡</div>
                         <div class="suggestion-title">Otimizar Query</div>
                         <div class="suggestion-text">Melhore performance</div>
                     </div>
                 </div>
-                
+
                 <div class="stats-section">
                     <h3>📈 Estatísticas</h3>
                     <div class="stat-card">
@@ -398,18 +398,18 @@ const AI_ASSISTANT_HTML: &str = r#"<!DOCTYPE html>
             </div>
         </div>
     </div>
-    
+
     <script>
         let queryCount = 0;
         let timeSaved = 0;
-        
+
         // Auto-resize textarea
         const chatInput = document.getElementById('chatInput');
         chatInput.addEventListener('input', function() {
             this.style.height = 'auto';
             this.style.height = (this.scrollHeight) + 'px';
         });
-        
+
         // Send on Enter (Shift+Enter for new line)
         chatInput.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -417,43 +417,43 @@ const AI_ASSISTANT_HTML: &str = r#"<!DOCTYPE html>
                 sendMessage();
             }
         });
-        
+
         function useSuggestion(text) {
             chatInput.value = text;
             chatInput.focus();
         }
-        
+
         async function sendMessage() {
             const input = chatInput.value.trim();
             if (!input) return;
-            
+
             // Add user message
             addMessage('user', input);
             chatInput.value = '';
             chatInput.style.height = 'auto';
-            
+
             // Disable input while processing
             chatInput.disabled = true;
             document.getElementById('sendButton').disabled = true;
-            
+
             // Show typing indicator
             const typingId = addTypingIndicator();
-            
+
             try {
                 const response = await fetch('/ai-assistant/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: input })
                 });
-                
+
                 const data = await response.json();
-                
+
                 // Remove typing indicator
                 removeTypingIndicator(typingId);
-                
+
                 // Add AI response
                 addMessage('assistant', data.response, data.sql_query);
-                
+
                 // Update stats
                 if (data.sql_query) {
                     queryCount++;
@@ -469,21 +469,21 @@ const AI_ASSISTANT_HTML: &str = r#"<!DOCTYPE html>
                 chatInput.focus();
             }
         }
-        
+
         function addMessage(type, text, sqlQuery = null) {
             const messagesDiv = document.getElementById('chatMessages');
             const messageDiv = document.createElement('div');
             messageDiv.className = `message message-${type}`;
-            
+
             const avatarClass = type === 'user' ? 'avatar-user' : 'avatar-ai';
             const avatarIcon = type === 'user' ? '👤' : '🤖';
-            
+
             let content = `
                 <div class="message-avatar ${avatarClass}">${avatarIcon}</div>
                 <div class="message-content">
                     <div class="message-text">${formatText(text)}</div>
             `;
-            
+
             if (sqlQuery) {
                 const queryId = 'query-' + Date.now();
                 content += `
@@ -496,13 +496,13 @@ const AI_ASSISTANT_HTML: &str = r#"<!DOCTYPE html>
                     </button>
                 `;
             }
-            
+
             content += '</div>';
             messageDiv.innerHTML = content;
             messagesDiv.appendChild(messageDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
-        
+
         function addTypingIndicator() {
             const messagesDiv = document.getElementById('chatMessages');
             const typingDiv = document.createElement('div');
@@ -521,22 +521,22 @@ const AI_ASSISTANT_HTML: &str = r#"<!DOCTYPE html>
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
             return id;
         }
-        
+
         function removeTypingIndicator(id) {
             const element = document.getElementById(id);
             if (element) element.remove();
         }
-        
+
         function formatText(text) {
             return text.replace(/\n/g, '<br>');
         }
-        
+
         function copySQL(queryId) {
             const sqlElement = document.getElementById(queryId);
             navigator.clipboard.writeText(sqlElement.textContent);
             alert('✅ SQL copiado para clipboard!');
         }
-        
+
         async function executeQuery(sql) {
             if (confirm('Executar esta query no banco de dados?')) {
                 try {
@@ -545,7 +545,7 @@ const AI_ASSISTANT_HTML: &str = r#"<!DOCTYPE html>
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ query: sql })
                     });
-                    
+
                     const data = await response.json();
                     addMessage('assistant', `✅ Query executada com sucesso! ${data.rows.length} resultados encontrados.`);
                 } catch (error) {
@@ -553,7 +553,7 @@ const AI_ASSISTANT_HTML: &str = r#"<!DOCTYPE html>
                 }
             }
         }
-        
+
         function updateStats() {
             document.getElementById('queryCount').textContent = queryCount;
             document.getElementById('timeSaved').textContent = `~${timeSaved}min`;
@@ -584,6 +584,7 @@ pub struct AIConfig {
     pub model: String,
     pub temperature: f32,
     pub max_tokens: u32,
+    pub backend: AIBackendKind,
 }
 
 impl Default for AIConfig {
@@ -593,6 +594,7 @@ impl Default for AIConfig {
             model: "gpt-4".to_string(),
             temperature: 0.7,
             max_tokens: 1000,
+            backend: AIBackendKind::Pattern,
         }
     }
 }
@@ -627,7 +629,7 @@ pub fn process_natural_language(
 ) -> (String, Option<String>, Option<String>, Option<Vec<String>>) {
     // Pattern matching for common queries
     if message.contains("usuários mais ativos") || message.contains("top") && message.contains("usuários") {
-        let sql = r#"SELECT 
+        let sql = r#"SELECT
     u.id,
     u.name,
     u.email,
@@ -650,7 +652,7 @@ LIMIT 5;"#;
             ]),
         )
     } else if message.contains("vendas") && (message.contains("categoria") || message.contains("total")) {
-        let sql = r#"SELECT 
+        let sql = r#"SELECT
     c.name as category,
     COUNT(DISTINCT o.id) as order_count,
     SUM(oi.quantity * oi.price) as total_revenue,
@@ -675,7 +677,7 @@ ORDER BY total_revenue DESC;"#;
             ]),
         )
     } else if message.contains("pedidos pendentes") || message.contains("orders") && message.contains("pending") {
-        let sql = r#"SELECT 
+        let sql = r#"SELECT
     o.id,
     o.customer_name,
     o.total_amount,
@@ -707,12 +709,21 @@ ORDER BY o.total_amount DESC, o.created_at ASC;"#;
             ]),
         )
     } else {
-        (
-            "Entendi sua pergunta! 🤔\n\nPara gerar a melhor query SQL possível, pode me dar mais detalhes?\n\n• Quais tabelas você quer consultar?\n• Que dados você precisa?\n• Existe algum filtro específico?\n• Precisa de agregações (COUNT, SUM, AVG)?\n\nOu experimente uma das sugestões ao lado! →".to_string(),
-            None,
-            None,
-            None,
-        )
+        // If we evolve later to read config / state for backend we could pass it here.
+        // For now choose local backend only if environment variable AI_BACKEND=local.
+        match std::env::var("AI_BACKEND").ok().as_deref() {
+            Some("local") => {
+                let backend = LocalAIDummyBackend::new();
+                let AIResult { text, explanation, tips, sql } = backend.generate(message);
+                (text, sql, explanation, tips)
+            }
+            _ => (
+                "Entendi sua pergunta! 🤔\n\nPara gerar a melhor query SQL possível, pode me dar mais detalhes?\n\n• Quais tabelas você quer consultar?\n• Que dados você precisa?\n• Existe algum filtro específico?\n• Precisa de agregações (COUNT, SUM, AVG)?\n\nOu experimente uma das sugestões ao lado! →".to_string(),
+                None,
+                None,
+                None,
+            ),
+        }
     }
 }
 
@@ -770,5 +781,18 @@ mod tests {
         let (response, sql, _, _) = process_natural_language("xyz abc random text");
         assert!(sql.is_none());
         assert!(response.contains("mais detalhes"));
+    }
+
+    #[test]
+    fn test_local_backend_stub() {
+        // Force local backend via env var
+        std::env::set_var("AI_BACKEND", "local");
+        let (response, sql, explanation, tips) = process_natural_language("crie tabela de clientes");
+        assert!(sql.is_some());
+        assert!(response.contains("Local AI"));
+        assert!(explanation.is_some());
+        assert!(tips.is_some());
+        // Cleanup
+        std::env::remove_var("AI_BACKEND");
     }
 }

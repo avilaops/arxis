@@ -649,7 +649,7 @@ async fn execute_query(
 }
 
 /// Simulate query execution (replace with real AvilaDB calls)
-fn simulate_query_execution(
+pub fn simulate_query_execution(
     query: &str,
 ) -> Result<(Vec<String>, Vec<serde_json::Value>), ConsoleError> {
     // Mock data based on query content

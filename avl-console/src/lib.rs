@@ -33,15 +33,17 @@
 //!
 //! ## Quick Start
 //!
-//! ```rust
+//! ```rust,no_run
 //! use avl_console::{Console, ConsoleConfig};
+//! use std::net::SocketAddr;
 //!
 //! #[tokio::main]
 //! async fn main() -> anyhow::Result<()> {
 //!     let config = ConsoleConfig::from_env()?;
 //!     let console = Console::new(config).await?;
+//!     let addr: SocketAddr = "127.0.0.1:8080".parse()?;
 //!
-//!     console.serve("127.0.0.1:8080").await?;
+//!     console.serve(addr).await?;
 //!     Ok(())
 //! }
 //! ```
@@ -63,6 +65,7 @@ pub mod query_builder;
 pub mod monitoring;
 pub mod teams;
 pub mod ai_assistant;
+pub mod ai_engine;
 
 use std::net::SocketAddr;
 use std::sync::Arc;
@@ -157,9 +160,11 @@ impl Console {
     ///
     /// ```rust,no_run
     /// # use avl_console::{Console, ConsoleConfig};
+    /// # use std::net::SocketAddr;
     /// # async fn example() -> anyhow::Result<()> {
     /// let console = Console::new(ConsoleConfig::default()).await?;
-    /// console.serve("127.0.0.1:8080").await?;
+    /// let addr: SocketAddr = "127.0.0.1:8080".parse()?;
+    /// console.serve(addr).await?;
     /// # Ok(())
     /// # }
     /// ```

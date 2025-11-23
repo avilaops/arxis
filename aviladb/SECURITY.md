@@ -176,24 +176,24 @@ If you discover a security vulnerability in AvilaDB:
 
 ### ⏱️ Response Timeline
 
-| Timeframe | Action |
-|-----------|--------|
-| 24 hours | Initial acknowledgment |
-| 72 hours | Preliminary assessment |
-| 7 days | Detailed response with timeline |
-| 30 days | Fix deployed (critical vulnerabilities) |
-| 90 days | Public disclosure (if applicable) |
+| Timeframe | Action                                  |
+| --------- | --------------------------------------- |
+| 24 hours  | Initial acknowledgment                  |
+| 72 hours  | Preliminary assessment                  |
+| 7 days    | Detailed response with timeline         |
+| 30 days   | Fix deployed (critical vulnerabilities) |
+| 90 days   | Public disclosure (if applicable)       |
 
 ### 🏆 Bug Bounty Program
 
 We offer rewards for responsibly disclosed vulnerabilities:
 
-| Severity | Reward |
-|----------|--------|
+| Severity | Reward               |
+| -------- | -------------------- |
 | Critical | R$ 5,000 - R$ 10,000 |
-| High | R$ 2,000 - R$ 5,000 |
-| Medium | R$ 500 - R$ 2,000 |
-| Low | R$ 100 - R$ 500 |
+| High     | R$ 2,000 - R$ 5,000  |
+| Medium   | R$ 500 - R$ 2,000    |
+| Low      | R$ 100 - R$ 500      |
 
 **Eligibility:**
 - First to report the vulnerability

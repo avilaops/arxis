@@ -18,6 +18,7 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 thiserror = "2.0"
 anyhow = "1.0"
+uuid = { version = "1.11", features = ["v4", "serde"] }
 
 # Compression (internal) - Coming soon on crates.io
 # avila-compress = { version = "0.8", path = "../avila-compress" }
@@ -48,6 +49,7 @@ criterion = { version = "0.5", features = ["html_reports", "async_tokio"] }
 proptest = "1.5"
 rand = "0.8"
 chrono = "0.4"
+tempfile = "3.12"
 
 [features]
 default = ["vector-search"]

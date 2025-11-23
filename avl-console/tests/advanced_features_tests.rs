@@ -25,11 +25,12 @@ async fn test_monitoring_anomaly_detection() {
     // Test normal values
     let historical = vec![100.0, 102.0, 98.0, 101.0, 99.0];
     assert!(!detect_anomaly(100.5, &historical, 2.0));
-    assert!(!detect_anomaly(103.0, &historical, 2.0));
+    assert!(!detect_anomaly(102.0, &historical, 2.0));
 
     // Test anomaly (spike)
     assert!(detect_anomaly(150.0, &historical, 2.0));
     assert!(detect_anomaly(50.0, &historical, 2.0));
+    assert!(detect_anomaly(103.5, &historical, 2.0)); // Just over threshold
 
     // Test edge cases
     assert!(!detect_anomaly(100.0, &[], 2.0));
@@ -214,9 +215,9 @@ async fn test_ai_assistant_active_users_query() {
     use avl_console::ai_assistant::*;
 
     // Test AI processing for active users query
-    let (response, sql, explanation, tips) = 
+    let (response, sql, explanation, tips) =
         process_natural_language("quais são os 5 usuários mais ativos?");
-    
+
     assert!(sql.is_some());
     let sql_query = sql.unwrap();
     assert!(sql_query.contains("SELECT"));
@@ -232,9 +233,9 @@ async fn test_ai_assistant_active_users_query() {
 async fn test_ai_assistant_sales_query() {
     use avl_console::ai_assistant::*;
 
-    let (response, sql, explanation, tips) = 
+    let (response, sql, explanation, tips) =
         process_natural_language("mostre o total de vendas por categoria");
-    
+
     assert!(sql.is_some());
     let sql_query = sql.unwrap();
     assert!(sql_query.contains("categories"));
@@ -250,9 +251,9 @@ async fn test_ai_assistant_sales_query() {
 async fn test_ai_assistant_pending_orders() {
     use avl_console::ai_assistant::*;
 
-    let (response, sql, _, _) = 
+    let (response, sql, _, _) =
         process_natural_language("liste pedidos pendentes com valor acima de R$ 1000");
-    
+
     assert!(sql.is_some());
     let sql_query = sql.unwrap();
     assert!(sql_query.contains("orders"));
@@ -265,14 +266,14 @@ async fn test_ai_assistant_pending_orders() {
 async fn test_ai_assistant_optimization_tips() {
     use avl_console::ai_assistant::*;
 
-    let (response, sql, explanation, tips) = 
+    let (response, sql, explanation, tips) =
         process_natural_language("como posso otimizar minhas queries?");
-    
+
     assert!(sql.is_none()); // Optimization request doesn't generate SQL
     assert!(response.contains("Otimização"));
     assert!(explanation.is_some());
     assert!(tips.is_some());
-    
+
     let tips_vec = tips.unwrap();
     assert!(tips_vec.len() >= 2);
     assert!(tips_vec.iter().any(|t| t.contains("query log") || t.contains("profiling")));
@@ -282,9 +283,9 @@ async fn test_ai_assistant_optimization_tips() {
 async fn test_ai_assistant_unknown_query() {
     use avl_console::ai_assistant::*;
 
-    let (response, sql, _, _) = 
+    let (response, sql, _, _) =
         process_natural_language("xyz random nonsense text abc");
-    
+
     assert!(sql.is_none());
     assert!(response.contains("detalhes") || response.contains("mais"));
 }

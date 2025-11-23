@@ -1,10 +1,10 @@
 [package]
 name = "avl-console"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 authors = ["Nicolas Ávila <nicolas@avila.inc>"]
 license = "MIT OR Apache-2.0"
-description = "AVL Console - Advanced developer portal with ML-powered monitoring and visual query builder"
+description = "AVL Console - Advanced developer portal with AI Assistant, ML-powered monitoring and visual query builder"
 repository = "https://github.com/avilaops/arxis"
 homepage = "https://avila.cloud"
 documentation = "https://docs.rs/avl-console"

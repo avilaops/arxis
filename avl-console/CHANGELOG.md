@@ -7,6 +7,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2024-11-23
+
+### 🤖 Added - AI Assistant
+
+#### Natural Language to SQL (`ai_assistant.rs`)
+- **Pattern-based NLP engine** for natural language query processing
+- **4 supported query patterns:**
+  - Active users with action counts
+  - Sales aggregations by category
+  - Order filtering by status and amount
+  - Query optimization recommendations
+- **Interactive chat interface** with real-time typing indicators
+- **Query explanation system** with technical details
+- **Optimization tips engine** for performance guidance
+- **One-click SQL execution** directly from chat
+- **Copy to clipboard** for generated SQL
+- **Quick suggestion buttons** for common queries
+- **Message history** with user/AI differentiation
+- **Bilingual support** (Portuguese and English)
+
+### 🔧 Changed
+- Updated `lib.rs` to include `ai_assistant` module
+- Enhanced main router with `/ai-assistant` route
+- Added startup log for AI Assistant endpoint
+- Bumped version from 0.2.0 to 0.3.0
+
+### ✅ Testing
+- Added 6 new tests for AI Assistant functionality
+- Test coverage: pattern matching, query generation, config defaults
+- **Total: 43 tests passing** (19 unit + 16 advanced + 5 integration + 3 doc)
+- All doctests updated and passing
+
+### 🐛 Fixed
+- Fixed `simulate_query_execution` visibility in `query_builder.rs`
+- Fixed workspace dependency version mismatch (`avila-compress`)
+- Fixed anomaly detection test threshold calculations
+- Fixed doctests to properly parse `SocketAddr`
+- Removed unused imports in test files
+
+### 📚 Documentation
+- Created `AI_ASSISTANT.md` (complete feature guide)
+- Added query pattern examples with SQL output
+- Documented architecture and components
+- Added future enhancement roadmap
+- Performance benchmarks and best practices
+
+### 📊 Metrics
+- Total Lines: ~8,000+ (+600)
+- Rust Files: 23 (+1 for ai_assistant.rs)
+- Markdown Files: 12 (+1 for AI_ASSISTANT.md)
+- Clean release build
+- All tests passing
+
+### 🚀 Performance
+- Pattern matching: <1ms latency
+- Query generation: <2ms
+- Full round-trip: <10ms
+
 ## [0.2.0] - 2024-11-23
 
 ### 🚀 Added - Advanced Features

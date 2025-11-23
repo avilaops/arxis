@@ -26,11 +26,14 @@
 
 ### 🚀 Advanced Features (NEW!)
 
-- **🎨 Visual Query Builder**: Drag-and-drop SQL query constructor with real-time generation
-- **🔬 Advanced Monitoring**: ML-powered anomaly detection, predictive insights, smart alerts
-- **👥 Team Management**: Enterprise RBAC with 7 granular permissions, audit log, user invitations
+- **🤖 AI Assistant**: Natural language to SQL with query explanations and optimization tips (v0.3.0)
+- **🎨 Visual Query Builder**: Drag-and-drop SQL query constructor with real-time generation (v0.2.0)
+- **🔬 Advanced Monitoring**: ML-powered anomaly detection, predictive insights, smart alerts (v0.2.0)
+- **👥 Team Management**: Enterprise RBAC with 7 granular permissions, audit log, user invitations (v0.2.0)
 
-> 📖 **Learn More**: See [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) for detailed documentation
+> 📖 **Learn More**:
+> - [AI_ASSISTANT.md](AI_ASSISTANT.md) - Natural Language to SQL Guide
+> - [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) - Complete Advanced Features Documentation
 
 ### 🛠️ Developer Experience
 
@@ -67,7 +70,7 @@
 ```bash
 # Add to Cargo.toml
 [dependencies]
-avl-console = "0.1"
+avl-console = "0.3"
 ```
 
 ### Basic Usage

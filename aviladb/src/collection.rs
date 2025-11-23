@@ -155,7 +155,7 @@ impl UpdateBuilder {
         self
     }
 
-    pub fn where_eq<V: serde::Serialize>(mut self, field: &str, value: V) -> Self {
+    pub fn where_eq<V: serde::Serialize + std::fmt::Debug>(mut self, field: &str, value: V) -> Self {
         self.conditions.push(format!("{} = {:?}", field, value));
         self
     }
@@ -180,7 +180,7 @@ impl DeleteBuilder {
         }
     }
 
-    pub fn where_eq<V: serde::Serialize>(mut self, field: &str, value: V) -> Self {
+    pub fn where_eq<V: serde::Serialize + std::fmt::Debug>(mut self, field: &str, value: V) -> Self {
         self.conditions.push(format!("{} = {:?}", field, value));
         self
     }
