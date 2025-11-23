@@ -22,6 +22,7 @@ pub mod error;
 pub mod lz4;
 pub mod stream;
 pub mod checksum;
+pub mod metrics;
 
 #[cfg(feature = "parallel")]
 pub mod parallel;
@@ -33,6 +34,7 @@ pub mod simd;
 pub mod dictionary;
 
 pub use error::{Error, Result};
+pub use metrics::CompressionMetrics;
 
 /// Compression algorithms available
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]

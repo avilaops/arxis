@@ -1,13 +1,13 @@
-//! Example demonstrating checksum verification
+//! Example demonstrating checksum verification with metrics
 //!
-//! Shows how to use checksums to verify data integrity.
+//! Shows how to use checksums to verify data integrity and track performance.
 //!
 //! Run with:
 //! ```bash
 //! cargo run --example checksums --release
 //! ```
 
-use avila_compress::{checksum, lz4};
+use avila_compress::{checksum, lz4, metrics, Level};
 use std::time::Instant;
 
 fn main() {
@@ -145,4 +145,26 @@ fn main() {
     println!("\n========================================");
     println!("All checksum tests passed! ✓");
     println!("========================================");
+
+    // Example 6: Compression with metrics
+    println!("\n\n6. Compression with Metrics:");
+    let large_data = vec![b'A'; 1024 * 1024];
+
+    let (compressed, compress_metrics) =
+        metrics::compress_with_metrics(&large_data, "LZ4-Fast", |d| {
+            lz4::compress_with_level(d, Level::Fast)
+        })
+        .unwrap();
+
+    println!("\n{}", compress_metrics.display());
+
+    let (decompressed, full_metrics) =
+        metrics::decompress_with_metrics(compressed.as_slice(), compress_metrics, |c| {
+            lz4::decompress(c)
+        })
+        .unwrap();
+
+    println!("{}", full_metrics.display());
+    assert_eq!(large_data, decompressed);
+    println!("   ✓ Data integrity verified via checksum!\n");
 }
