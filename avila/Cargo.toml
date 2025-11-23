@@ -37,7 +37,7 @@ avl-secrets = { version = "0.1", path = "../avl-secrets", optional = true }
 avx-cli = { version = "0.1", path = "../avx-cli", optional = true }
 avx-config = { version = "0.1", path = "../avx-config", optional = true }
 avx-events = { version = "0.1", path = "../avx-events", optional = true }
-avx-http = { version = "0.1", path = "../avx-http", optional = true }
+avx-http = { version = "0.2", path = "../avx-http", optional = true }
 avx-telemetry = { version = "0.1", path = "../avx-telemetry", optional = true }
 
 [features]
