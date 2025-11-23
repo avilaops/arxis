@@ -30,9 +30,6 @@ hyper-util = "0.1"
 rustls = "0.23"
 tokio-rustls = "0.26"
 
-# Gateway integration
-avx-gateway = { version = "0.1", path = "../avx-gateway" }
-
 # Observability
 tracing = "0.1"
 avx-telemetry = { version = "0.1", path = "../avx-telemetry" }

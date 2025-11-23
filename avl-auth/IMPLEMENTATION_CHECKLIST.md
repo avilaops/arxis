@@ -239,18 +239,18 @@
 
 ## 📊 Métricas de Código
 
-| Métrica | Valor |
-|---------|-------|
-| **Linhas de código (src/)** | ~2,500 linhas |
-| **Módulos** | 12 módulos |
-| **Funções públicas** | 100+ |
-| **Structs/Enums** | 50+ |
-| **Testes** | 5+ unitários |
-| **Exemplos** | 3 completos |
-| **Documentação** | 600+ linhas (docs) |
-| **README** | 450+ linhas |
-| **Dependências** | 25 crates |
-| **Tamanho do pacote** | 278.4 KiB |
+| Métrica                     | Valor              |
+| --------------------------- | ------------------ |
+| **Linhas de código (src/)** | ~2,500 linhas      |
+| **Módulos**                 | 12 módulos         |
+| **Funções públicas**        | 100+               |
+| **Structs/Enums**           | 50+                |
+| **Testes**                  | 5+ unitários       |
+| **Exemplos**                | 3 completos        |
+| **Documentação**            | 600+ linhas (docs) |
+| **README**                  | 450+ linhas        |
+| **Dependências**            | 25 crates          |
+| **Tamanho do pacote**       | 278.4 KiB          |
 
 ---
 
@@ -283,20 +283,20 @@
 
 ## 🎯 Features Completas vs Competidores
 
-| Feature | avl-auth | AWS Cognito | Auth0 | Firebase Auth |
-|---------|----------|-------------|-------|---------------|
-| JWT (multi-algo) | ✅ RS256/ES256/HS256 | ✅ RS256 | ✅ RS256 | ✅ RS256 |
-| OAuth2 (3 providers) | ✅ | ✅ | ✅ | ✅ |
-| MFA (TOTP + WebAuthn) | ✅ | ✅ TOTP only | ✅ | ✅ |
-| RBAC + ABAC | ✅ | ⚠️ Limited | ✅ | ⚠️ Limited |
-| Risk Engine | ✅ | ❌ | ✅ | ❌ |
-| API Key Management | ✅ | ❌ | ❌ | ❌ |
-| Session Management | ✅ | ✅ | ✅ | ✅ |
-| Audit Logging | ✅ LGPD/GDPR | ✅ | ✅ | ⚠️ Basic |
-| Self-hosted | ✅ | ❌ | ❌ | ❌ |
-| Open-source | ✅ MIT/Apache | ❌ | ❌ | ❌ |
-| Brazil-optimized | ✅ 5-10ms | ⚠️ 80-120ms | ⚠️ 60-100ms | ⚠️ 70-110ms |
-| Custo (1M ops) | **R$ 0,50** | USD 1.25 | USD 2.00 | USD 0.75 |
+| Feature               | avl-auth            | AWS Cognito | Auth0      | Firebase Auth |
+| --------------------- | ------------------- | ----------- | ---------- | ------------- |
+| JWT (multi-algo)      | ✅ RS256/ES256/HS256 | ✅ RS256     | ✅ RS256    | ✅ RS256       |
+| OAuth2 (3 providers)  | ✅                   | ✅           | ✅          | ✅             |
+| MFA (TOTP + WebAuthn) | ✅                   | ✅ TOTP only | ✅          | ✅             |
+| RBAC + ABAC           | ✅                   | ⚠️ Limited   | ✅          | ⚠️ Limited     |
+| Risk Engine           | ✅                   | ❌           | ✅          | ❌             |
+| API Key Management    | ✅                   | ❌           | ❌          | ❌             |
+| Session Management    | ✅                   | ✅           | ✅          | ✅             |
+| Audit Logging         | ✅ LGPD/GDPR         | ✅           | ✅          | ⚠️ Basic       |
+| Self-hosted           | ✅                   | ❌           | ❌          | ❌             |
+| Open-source           | ✅ MIT/Apache        | ❌           | ❌          | ❌             |
+| Brazil-optimized      | ✅ 5-10ms            | ⚠️ 80-120ms  | ⚠️ 60-100ms | ⚠️ 70-110ms    |
+| Custo (1M ops)        | **R$ 0,50**         | USD 1.25    | USD 2.00   | USD 0.75      |
 
 ---
 
