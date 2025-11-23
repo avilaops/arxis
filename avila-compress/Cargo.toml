@@ -1,6 +1,6 @@
 [package]
 name = "avila-compress"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2021"
 authors = [
     "Nícolas Ávila <nicolas@avila.inc>",
@@ -29,6 +29,7 @@ criterion = { version = "0.5", features = ["html_reports"] }
 default = []
 simd = []  # AVX2/AVX-512 optimizations
 parallel = ["rayon"]  # Parallel compression
+dictionary = []  # Dictionary compression
 
 [[bench]]
 name = "lz4_bench"
@@ -38,6 +39,11 @@ harness = false
 name = "simd_bench"
 harness = false
 required-features = ["simd"]
+
+[[bench]]
+name = "dictionary_bench"
+harness = false
+required-features = ["dictionary"]
 
 [lib]
 name = "avila_compress"

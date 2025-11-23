@@ -29,6 +29,9 @@ pub mod parallel;
 #[cfg(feature = "simd")]
 pub mod simd;
 
+#[cfg(feature = "dictionary")]
+pub mod dictionary;
+
 pub use error::{Error, Result};
 
 /// Compression algorithms available
