@@ -19,7 +19,7 @@ keywords = [
 categories = ["algorithms", "science"]
 
 [dependencies]
-ndarray = { version = "0.15", features = ["rayon", "serde"] }
+ndarray = { version = "0.17", features = ["rayon", "serde"] }
 # Removido ndarray-linalg por problemas com OpenBLAS no Windows
 # ndarray-linalg = { version = "0.16", features = ["openblas-static"] }
 ndarray-stats = "0.5"

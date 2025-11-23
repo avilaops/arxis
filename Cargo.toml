@@ -114,7 +114,7 @@ avila-ml = { path = "avila-ml", features = ["full"] }
 avila-clustering = { path = "avila-clustering" }
 avila-reduction = { path = "avila-reduction" }
 avila-linalg = { path = "avila-linalg" }
-ndarray = { version = "0.16", features = ["rayon", "serde"] }
+ndarray = { version = "0.17", features = ["rayon", "serde"] }
 # smartcore = "0.3"  # Replaced by avila-ml
 # linfa = "0.7"     # Replaced by avila-ml
 # candle-core = "0.7"  # Hugging Face ML framework (incompatível com rand_distr)
