@@ -57,6 +57,7 @@ pub mod permissions;
 pub mod session;
 pub mod api_keys;
 pub mod audit;
+pub mod device_trust;
 pub mod risk;
 pub mod models;
 
