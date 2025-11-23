@@ -38,9 +38,9 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 
 # AVX Ecosystem
-avx-config = { path = "../avx-config" }
-avx-telemetry = { path = "../avx-telemetry" }
-avx-events = { path = "../avx-events" }
+avx-config = { version = "0.1", path = "../avx-config" }
+avx-telemetry = { version = "0.1", path = "../avx-telemetry" }
+avx-events = { version = "0.1", path = "../avx-events" }
 
 # AvilaDB (when available)
 # aviladb = "0.1"

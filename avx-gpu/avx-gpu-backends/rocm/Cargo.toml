@@ -8,7 +8,7 @@ authors.workspace = true
 description = "ROCm/HIP backend for AVX-GPU (AMD GPUs)"
 
 [dependencies]
-avx-gpu-core = { path = "../../avx-gpu-core" }
+avx-gpu-core = { version = "0.1", path = "../../avx-gpu-core" }
 bytemuck.workspace = true
 thiserror.workspace = true
 tracing.workspace = true

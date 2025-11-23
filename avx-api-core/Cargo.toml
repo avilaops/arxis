@@ -24,5 +24,5 @@ serde_json = "1"
 tracing = "0.1"
 anyhow = "1"
 
-avx-config = { path = "../avx-config" }
-avx-telemetry = { path = "../avx-telemetry" }
+avx-config = { version = "0.1", path = "../avx-config" }
+avx-telemetry = { version = "0.1", path = "../avx-telemetry" }

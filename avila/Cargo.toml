@@ -14,7 +14,7 @@ readme = "README.md"
 
 [dependencies]
 # Core libraries - versões publicadas
-avila-compress = { version = "0.1", optional = true }
+avila-compress = { version = "0.8", optional = true }
 avila-clustering = { version = "0.1", optional = true }
 avila-linalg = { version = "0.1", optional = true }
 avila-math = { version = "0.1", optional = true }

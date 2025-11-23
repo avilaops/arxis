@@ -38,15 +38,20 @@ use thiserror::Error;
 
 pub mod client;
 pub mod collection;
+pub mod config;
 pub mod database;
 pub mod document;
+pub mod error;
 pub mod query;
+pub mod storage;
 pub mod vector;
 
 pub use client::AvilaClient;
 pub use collection::Collection;
+pub use config::Config as AvilaConfig;
 pub use database::Database;
 pub use document::Document;
+pub use error::{AvilaError, Result as AvilaResult};
 pub use query::Query;
 
 /// Maximum document size in bytes (4 MB)

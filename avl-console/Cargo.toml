@@ -1,43 +1,65 @@
 [package]
 name = "avl-console"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 authors = ["Nicolas Ávila <nicolas@avila.inc>"]
 license = "MIT OR Apache-2.0"
-description = "AVL Console - Developer portal and web dashboard for AVL Cloud Platform"
+description = "AVL Console - Advanced developer portal with ML-powered monitoring and visual query builder"
 repository = "https://github.com/avilaops/arxis"
 homepage = "https://avila.cloud"
 documentation = "https://docs.rs/avl-console"
 readme = "README.md"
-keywords = ["console", "dashboard", "portal", "ui", "admin"]
-categories = ["web-programming", "gui"]
+keywords = ["console", "dashboard", "portal", "monitoring", "rbac"]
+categories = ["web-programming", "gui", "database"]
 
 [dependencies]
+# Async runtime
 tokio = { version = "1.40", features = ["full"] }
+
+# Serialization
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+
+# Error handling
 thiserror = "2.0"
 anyhow = "1.0"
 
 # Web framework
-axum = "0.7"
-tower = "0.5"
-tower-http = { version = "0.6", features = ["fs", "trace"] }
+axum = { version = "0.7", features = ["ws", "macros"] }
+tower = { version = "0.5", features = ["full"] }
+tower-http = { version = "0.6", features = ["fs", "trace", "compression-full", "cors"] }
+
+# WebSocket
+futures = "0.3"
 
 # Templates
-askama = "0.12"
+askama = { version = "0.12", features = ["with-axum"] }
 
-# Authentication
-avl-auth = { path = "../avl-auth" }
+# Authentication (optional)
+# avl-auth = { path = "../avl-auth", optional = true }
 
-# APIs
-aviladb = { path = "../aviladb" }
-avl-storage = { path = "../avl-storage" }
-avx-gateway = { path = "../avx-gateway" }
+# APIs (optional)
+# aviladb = { path = "../aviladb", optional = true }
+# avl-storage = { path = "../avl-storage", optional = true }
+# avx-gateway = { path = "../avx-gateway", optional = true }
 
 # Observability
 tracing = "0.1"
-avx-telemetry = { path = "../avx-telemetry" }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+# avx-telemetry = { path = "../avx-telemetry", optional = true }
+
+[[example]]
+name = "basic"
+path = "examples/basic.rs"
+
+[features]
+default = []
+full = ["with-auth", "with-apis"]
+with-auth = []
+with-apis = []
+
+[dev-dependencies]
+tokio-test = "0.4"
 
 [package.metadata.docs.rs]
 all-features = true

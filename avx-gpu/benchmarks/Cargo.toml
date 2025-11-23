@@ -13,8 +13,8 @@ name = "matrix_ops"
 harness = false
 
 [dependencies]
-avx-gpu-core = { path = "../avx-gpu-core" }
-avx-gpu-backend-wgpu = { path = "../avx-gpu-backends/wgpu" }
+avx-gpu-core = { version = "0.1", path = "../avx-gpu-core" }
+avx-gpu-backend-wgpu = { version = "0.1", path = "../avx-gpu-backends/wgpu" }
 criterion.workspace = true
 rayon.workspace = true
 

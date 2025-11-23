@@ -1,6 +1,7 @@
 [workspace]
 members = [
     ".",
+    "avila",  # Meta-package for AVL Platform
     # Core Mathematical & Scientific Libraries
     "avila-arrow",  # Native columnar format with scientific types
     "avila-clustering",

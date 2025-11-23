@@ -55,8 +55,8 @@ num_cpus = "1"
 toml = "0.8"
 
 # AVX dependencies
-avx-config = { path = "../avx-config" }
-avx-telemetry = { path = "../avx-telemetry" }
+avx-config = { version = "0.1", path = "../avx-config" }
+avx-telemetry = { version = "0.1", path = "../avx-telemetry" }
 
 [dev-dependencies]
 tokio-test = "0.4"

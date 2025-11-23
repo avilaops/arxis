@@ -20,14 +20,14 @@ thiserror = "2.0"
 anyhow = "1.0"
 
 # Compression
-avila-compress = { path = "../avila-compress" }
+avila-compress = { version = "0.8", path = "../avila-compress" }
 
 # Networking
 axum = "0.7"
 tower = "0.5"
 
 # Storage
-aviladb = { path = "../aviladb" }
+aviladb = { version = "0.1", path = "../aviladb" }
 
 # Time
 chrono = "0.4"
@@ -35,7 +35,7 @@ uuid = { version = "1.11", features = ["v4"] }
 
 # Observability
 tracing = "0.1"
-avx-telemetry = { path = "../avx-telemetry" }
+avx-telemetry = { version = "0.1", path = "../avx-telemetry" }
 
 [dev-dependencies]
 criterion = "0.5"

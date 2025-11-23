@@ -20,8 +20,8 @@ thiserror = "2.0"
 anyhow = "1.0"
 
 # Telemetry
-avx-telemetry = { path = "../avx-telemetry" }
-avila-telemetry = { path = "../avila-telemetry" }
+avx-telemetry = { version = "0.1", path = "../avx-telemetry" }
+avila-telemetry = { version = "0.1", path = "../avila-telemetry" }
 
 # Metrics
 prometheus = "0.13"
@@ -39,7 +39,7 @@ axum = "0.7"
 tower = "0.5"
 
 # Storage
-aviladb = { path = "../aviladb" }
+aviladb = { version = "0.1", path = "../aviladb" }
 
 # Time
 chrono = "0.4"

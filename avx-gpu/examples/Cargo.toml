@@ -21,7 +21,7 @@ name = "test_vulkan"
 path = "test_vulkan.rs"
 
 [dependencies]
-avx-gpu-core = { path = "../avx-gpu-core" }
-avx-gpu-backend-wgpu = { path = "../avx-gpu-backends/wgpu" }
-avx-gpu-backend-vulkan = { path = "../avx-gpu-backends/vulkan" }
+avx-gpu-core = { version = "0.1", path = "../avx-gpu-core" }
+avx-gpu-backend-wgpu = { version = "0.1", path = "../avx-gpu-backends/wgpu" }
+avx-gpu-backend-vulkan = { version = "0.1", path = "../avx-gpu-backends/vulkan" }
 env_logger = "0.11"

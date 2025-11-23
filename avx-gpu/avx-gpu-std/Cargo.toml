@@ -8,5 +8,5 @@ authors.workspace = true
 description = "Standard library for AVX-GPU (common GPU operations)"
 
 [dependencies]
-avx-gpu-core = { path = "../avx-gpu-core" }
+avx-gpu-core = { version = "0.1", path = "../avx-gpu-core" }
 bytemuck.workspace = true

@@ -1,0 +1,16 @@
+target/
+Cargo.lock
+.env
+*.log
+*.swp
+*.swo
+*~
+.DS_Store
+.vscode/
+.idea/
+*.iml
+dist/
+node_modules/
+coverage/
+*.profraw
+flamegraph.svg
