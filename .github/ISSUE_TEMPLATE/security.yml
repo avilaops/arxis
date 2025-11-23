@@ -1,0 +1,132 @@
+name: Security Vulnerability
+description: Report a security vulnerability (private disclosure)
+title: "[Security]: "
+labels: ["security"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ⚠️ **IMPORTANT**: For sensitive security issues, please DO NOT create a public issue.
+        Instead, email directly to: nicolas@avila.inc with subject "SECURITY: Arxis"
+
+        This template is for security issues that are NOT exploitable or do not expose sensitive data.
+
+  - type: checkboxes
+    id: severity
+    attributes:
+      label: Severity Assessment
+      description: What is the severity of this issue?
+      options:
+        - label: "🔴 CRITICAL - Active exploit possible, immediate action required"
+        - label: "🟠 HIGH - Potential for exploitation, should be fixed soon"
+        - label: "🟡 MEDIUM - Security concern but limited exploitability"
+        - label: "🟢 LOW - Best practice issue or hardening suggestion"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Security Issue Description
+      description: Describe the security vulnerability
+      placeholder: |
+        There is a potential vulnerability in...
+
+        **Impact**:
+        **Attack Vector**:
+        **Prerequisites**:
+    validations:
+      required: true
+
+  - type: dropdown
+    id: crate
+    attributes:
+      label: Affected Crate
+      description: Which crate is affected?
+      options:
+        - arxis_quaternions
+        - avila-math
+        - avila-telemetry
+        - avila-compress
+        - avila-tokenizers
+        - aviladb
+        - avx-auth
+        - avx-secrets
+        - avx-gateway
+        - avx-api-core
+        - Multiple crates
+        - Dependency (specify below)
+    validations:
+      required: true
+
+  - type: input
+    id: versions
+    attributes:
+      label: Affected Versions
+      description: Which versions are affected?
+      placeholder: "All versions <= 0.2.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Vulnerability Category
+      description: What type of vulnerability is this?
+      options:
+        - Memory safety (unsafe code issue)
+        - Cryptographic weakness
+        - Authentication/Authorization
+        - Input validation
+        - Dependency vulnerability
+        - Denial of Service
+        - Information disclosure
+        - Other (specify below)
+    validations:
+      required: true
+
+  - type: textarea
+    id: poc
+    attributes:
+      label: Proof of Concept
+      description: If safe to share, provide a proof of concept
+      render: rust
+      placeholder: |
+        // Safe, non-exploitable demonstration
+        use arxis_quaternions::*;
+
+        fn demonstrate_issue() {
+            // Your PoC here
+        }
+
+  - type: textarea
+    id: mitigation
+    attributes:
+      label: Suggested Mitigation
+      description: If you have suggestions for fixing this issue
+      placeholder: |
+        Possible fixes:
+        - Add bounds checking at line X
+        - Validate input before processing
+        - Use constant-time comparison
+
+  - type: checkboxes
+    id: disclosure
+    attributes:
+      label: Responsible Disclosure
+      options:
+        - label: I agree to follow responsible disclosure practices
+        - label: I will not publicly disclose details until a fix is available
+        - label: I understand this may take time to properly address
+      validations:
+        required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other relevant information
+      placeholder: |
+        - CVE ID (if assigned):
+        - Public references:
+        - Timeline considerations:

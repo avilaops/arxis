@@ -629,7 +629,7 @@ async fn query_builder_ui() -> impl IntoResponse {
 
 /// Execute a visual query
 async fn execute_query(
-    State(state): State<Arc<ConsoleState>>,
+    State(_state): State<Arc<ConsoleState>>,
     Json(payload): Json<ExecuteQueryRequest>,
 ) -> Result<Json<ExecuteQueryResponse>, ConsoleError> {
     let start = std::time::Instant::now();
@@ -686,7 +686,7 @@ pub fn simulate_query_execution(
 
 /// List saved query templates
 async fn list_templates(
-    State(state): State<Arc<ConsoleState>>,
+    State(_state): State<Arc<ConsoleState>>,
 ) -> Result<Json<Vec<QueryTemplate>>, ConsoleError> {
     // In production, load from database
     let templates = vec![
@@ -713,7 +713,7 @@ async fn list_templates(
 
 /// Save a query template
 async fn save_template(
-    State(state): State<Arc<ConsoleState>>,
+    State(_state): State<Arc<ConsoleState>>,
     Json(template): Json<QueryTemplate>,
 ) -> Result<Json<QueryTemplate>, ConsoleError> {
     // In production, save to database

@@ -1,11 +1,17 @@
 blank_issues_enabled: true
 contact_links:
-  - name: 💬 Discussions
+  - name: 💬 GitHub Discussions
     url: https://github.com/avilaops/arxis/discussions
-    about: For questions and general discussions
+    about: For questions, ideas, and general discussions
   - name: 📚 Documentation
     url: https://docs.rs/arxis_quaternions
-    about: Read the documentation
-  - name: 📧 Email Support
+    about: Read the complete API documentation
+  - name: 🏛️ Arxis Website
+    url: https://arxis.avilaops.com
+    about: Project homepage with guides and tutorials
+  - name: ☁️ AVL Cloud Platform
+    url: https://avilaops.com
+    about: Learn about the AVL Cloud Platform
+  - name: 📧 Contact
     url: https://avila.inc/contact
-    about: Contact the maintainer directly
+    about: Contact the maintainer (nicolas@avila.inc)

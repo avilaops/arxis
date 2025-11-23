@@ -63,8 +63,30 @@ impl Database {
     }
 
     /// Create a new collection
-    pub async fn create_collection(&self, name: &str) -> Result<Collection> {
-        // TODO: Send CREATE COLLECTION request
+    pub async fn create_collection(&self, name: &str, partition_key: &str) -> Result<Collection> {
+        // Send CREATE COLLECTION HTTP request
+        let token = self.auth_provider.get_token().await?;
+        let url = format!("/v1/databases/{}/collections", self.name);
+        
+        let mut headers = reqwest::header::HeaderMap::new();
+        headers.insert(
+            reqwest::header::AUTHORIZATION,
+            reqwest::header::HeaderValue::from_str(&format!("Bearer {}", token))?,
+        );
+        headers.insert(
+            reqwest::header::CONTENT_TYPE,
+            reqwest::header::HeaderValue::from_static("application/json"),
+        );
+
+        let payload = serde_json::json!({
+            "name": name,
+            "partitionKey": partition_key
+        });
+
+        let _response: serde_json::Value = self.http_client
+            .post_with_headers(&url, &payload, headers)
+            .await?;
+
         self.collection(name).await
     }
 
@@ -75,8 +97,21 @@ impl Database {
     }
 
     /// Delete a collection
-    pub async fn delete_collection(&self, _name: &str) -> Result<()> {
-        // TODO: Send DELETE COLLECTION request
+    pub async fn delete_collection(&self, name: &str) -> Result<()> {
+        // Send DELETE COLLECTION HTTP request
+        let token = self.auth_provider.get_token().await?;
+        let url = format!("/v1/databases/{}/collections/{}", self.name, name);
+        
+        let mut headers = reqwest::header::HeaderMap::new();
+        headers.insert(
+            reqwest::header::AUTHORIZATION,
+            reqwest::header::HeaderValue::from_str(&format!("Bearer {}", token))?,
+        );
+
+        self.http_client
+            .delete_with_headers(&url, headers)
+            .await?;
+
         Ok(())
     }
 }
@@ -84,11 +119,22 @@ impl Database {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::{HttpClient, HttpConfig, AuthProvider, TelemetryCollector, TelemetryConfig};
 
     #[tokio::test]
     async fn test_database_collection() {
         let config = Arc::new(Config::default());
-        let db = Database::new("testdb".to_string(), config).unwrap();
+        let http_client = Arc::new(HttpClient::new(HttpConfig::default()).unwrap());
+        let auth_provider = Arc::new(AuthProvider::new("http://localhost:8000".to_string()));
+        let telemetry = Arc::new(TelemetryCollector::new(TelemetryConfig::default()));
+
+        let db = Database::new(
+            "testdb".to_string(),
+            config,
+            http_client,
+            auth_provider,
+            telemetry,
+        ).unwrap();
 
         let collection = db.collection("users").await;
         assert!(collection.is_ok());

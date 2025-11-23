@@ -1,27 +1,61 @@
-# ⚖️ AVL LoadBalancer
+# ⚖️ AVL LoadBalancer v0.2.0
 
-**Production-Ready L7 Load Balancer and Reverse Proxy for AVL Cloud Platform**
+**Production-Grade L7 Load Balancer with TLS, Sticky Sessions, Geo-Routing & Distributed Tracing**
 
 [![Crates.io](https://img.shields.io/crates/v/avl-loadbalancer.svg)](https://crates.io/crates/avl-loadbalancer)
 [![Documentation](https://docs.rs/avl-loadbalancer/badge.svg)](https://docs.rs/avl-loadbalancer)
 [![AVL Cloud](https://img.shields.io/badge/AVL-Cloud%20Platform-00d4ff)](https://avila.cloud)
 
-🏛️ **High Availability** | ⚙️ **Smart Routing** | 🔒 **Circuit Breakers** | 📊 **Metrics**
+🏛️ **High Availability** | ⚙️ **Smart Routing** | 🔒 **TLS/Circuit Breakers** | 📊 **Distributed Tracing** | 🌍 **Geo-Routing** | 🍪 **Sticky Sessions**
 
 ---
 
 ## Features
 
+### Core Load Balancing
 - **Multiple Load Balancing Algorithms**: Round-robin, least connections, IP hash, weighted distribution
 - **Active Health Checks**: Automatic backend health monitoring with configurable intervals
 - **Circuit Breakers**: Per-backend failure detection with automatic recovery
-- **Rate Limiting**: Per-IP token bucket rate limiting with configurable burst
 - **Retry Logic**: Automatic retry with exponential backoff for failed requests
 - **Connection Tracking**: Real-time active connection monitoring per backend
+
+### Security & Performance
+- **TLS/SSL Termination**: HTTPS support with rustls for secure connections
+- **Rate Limiting**: Per-IP token bucket rate limiting with configurable burst
+- **Response Compression**: Automatic gzip/brotli compression (>1KB, only if smaller)
+- **Security Headers**: Automatic injection of security headers (HSTS, X-Frame-Options, CSP)
+
+### Advanced Features (Level 4.0)
+- **🍪 Sticky Sessions**: Session affinity with HMAC-signed cookies for consistent routing
+- **🌍 Geo-Routing**: Geographic-based routing using MaxMind GeoIP2 for optimal latency
+- **🔄 Hot-Reload**: Configuration file hot-reload without downtime
+- **📊 Distributed Tracing**: OpenTelemetry integration for full request tracing
+- **🔌 Middleware Pipeline**: Extensible request/response transformation pipeline
+- **⚡ Graceful Shutdown**: SIGTERM/SIGINT handling with connection draining
+
+### Monitoring & Observability
 - **Metrics Endpoint**: Built-in `/_metrics` with request counts, failure rates, and success rates
 - **Health Status API**: Built-in `/_health` endpoint for monitoring
-- **WebSocket Support**: Long-lived connection proxying (coming soon)
-- **TLS Termination**: SSL/TLS offloading (coming soon)
+- **OpenTelemetry**: Distributed tracing with trace context propagation
+
+### WebRTC & Real-time
+- **WebSocket Support**: Long-lived bidirectional connection proxying at `/_ws` endpoint
+- **STUN/TURN Servers**: WebRTC NAT traversal for peer-to-peer connections
+
+### Configuration
+- **Configuration Files**: YAML/TOML configuration loading with hot-reload
+- **AVL Platform Integration**: Uses native AVL workspace crates (`avila-compress`, `avx-http`, `avx-config`)
+
+## AVL Platform Dependencies
+
+This loadbalancer is fully integrated with the **AVL Cloud Platform** ecosystem:
+
+- **`avila-compress`** - Native compression library (LZ4, Zstandard) optimized for AvilaDB
+- **`avx-http`** - Native HTTP client/server with Brazilian infrastructure optimization
+- **`avx-config`** - Type-safe configuration management from multiple sources
+- **`avx-telemetry`** - Observability and monitoring integration
+
+🇧🇷 **Optimized for Brazil**: 5-10ms latency in Brazilian datacenters, 40-60% cheaper than AWS/Azure for LATAM workloads.
 
 ## Quick Start
 
@@ -79,7 +113,7 @@ See `config.example.yaml` for full configuration reference.
 
 ## Status
 
-**Current Implementation:**
+**v0.2.0 - Production Ready (Level 4.0):**
 
 ✅ Round-robin load balancing
 ✅ Least connections algorithm
@@ -90,17 +124,30 @@ See `config.example.yaml` for full configuration reference.
 ✅ Per-IP rate limiting with token bucket
 ✅ Automatic retry with configurable backoff
 ✅ Connection tracking per backend
+✅ WebSocket bidirectional proxy at `/_ws`
+✅ Response compression (gzip/brotli, automatic)
+✅ YAML/TOML configuration loading
 ✅ Metrics endpoint (`/_metrics`)
 ✅ Health status monitoring endpoint (`/_health`)
+✅ STUN server for NAT discovery
+✅ TURN server for WebRTC relay
+✅ **TLS/SSL termination** with rustls
+✅ **Sticky sessions** (session affinity) with HMAC-signed cookies
+✅ **Geo-routing** with MaxMind GeoIP2 database
+✅ **Hot-reload** of configuration files
+✅ **Middleware pipeline** for request/response transformation
+✅ **Distributed tracing** with OpenTelemetry
+✅ **Graceful shutdown** with SIGTERM/SIGINT handling
+✅ **AVL Platform integration** (workspace crates)
 ✅ Graceful fallback when backends fail
 
-**Coming Soon:**
+**Future Enhancements:**
 
-- WebSocket upgrade handling
-- TLS termination (requires build dependencies on Windows)
-- Configuration file hot-reload
-- Geographic routing
-- Request tracing and distributed tracing integration
+- Service mesh integration
+- Dynamic backend discovery (Consul, etcd)
+- Advanced traffic shaping (canary deployments, blue-green)
+- AvilaDB backend health storage
+- gRPC load balancing support
 
 ## Algorithms
 

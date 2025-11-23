@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arxis - A Cidadela Matemática | Física de Nível Científico em Rust</title>
+    <meta name="description"
+        content="Arxis: Biblioteca Rust de nível científico para Relatividade Geral, Ondas Gravitacionais e Matemática Avançada. Pronta para missão NASA/LISA.">
+    <meta name="keywords"
+        content="Rust, Física, Relatividade Geral, Ondas Gravitacionais, LISA, NASA, Matemática, Quaternions, Tensores">
+    <meta name="author" content="Avila - Nicolas Ávila">
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://arxis.avilaops.com/">
+    <meta property="og:title" content="Arxis - A Cidadela Matemática">
+    <meta property="og:description"
+        content="Física e Matemática de Nível Científico em Rust. Dos quaternions às ondas gravitacionais.">
+    <meta property="og:image" content="https://arxis.avilaops.com/assets/og-image.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://arxis.avilaops.com/">
+    <meta property="twitter:title" content="Arxis - A Cidadela Matemática">
+    <meta property="twitter:description" content="Física e Matemática de Nível Científico em Rust">
+    <meta property="twitter:image" content="https://arxis.avilaops.com/assets/twitter-card.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <link rel="alternate icon" href="assets/favicon.ico">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#FFA500;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#FF8C00;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <!-- Quaternion Spiral Logo -->
+                        <circle cx="50" cy="25" r="8" fill="url(#logoGradient)" />
+                        <circle cx="75" cy="50" r="8" fill="url(#logoGradient)" />
+                        <circle cx="50" cy="75" r="8" fill="url(#logoGradient)" />
+                        <circle cx="25" cy="50" r="8" fill="url(#logoGradient)" />
+                        <line x1="50" y1="25" x2="75" y2="50" stroke="url(#logoGradient)" stroke-width="3" />
+                        <line x1="75" y1="50" x2="50" y2="75" stroke="url(#logoGradient)" stroke-width="3" />
+                        <line x1="50" y1="75" x2="25" y2="50" stroke="url(#logoGradient)" stroke-width="3" />
+                        <line x1="25" y1="50" x2="50" y2="25" stroke="url(#logoGradient)" stroke-width="3" />
+                    </svg>
+                </div>
+                <span class="logo-text">ARXIS</span>
+            </div>
+            <div class="nav-links">
+                <a href="#o-que-e" data-i18n="nav-what">O que é</a>
+                <a href="#para-que-serve" data-i18n="nav-use">Para que serve</a>
+                <a href="#como-usar" data-i18n="nav-how">Como usar</a>
+                <a href="#contato" data-i18n="nav-contact">Contato</a>
+                <a href="https://github.com/avilaops/arxis" class="btn-github" target="_blank">
+                    <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
+                        <path
+                            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+                    </svg>
+                    GitHub
+                </a>
+
+                <!-- Theme Toggle -->
+                <button class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">
+                    <span class="theme-icon">🌙</span>
+                </button>
+
+                <!-- Language Toggle -->
+                <button class="lang-toggle" id="langToggle" title="Toggle language" aria-label="Toggle language">
+                    <span class="flag">🇧🇷</span>
+                    <span class="lang-code">PT</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-background">
+            <div class="stars"></div>
+            <div class="gravitational-wave"></div>
+        </div>
+        <div class="container hero-content">
+            <div class="hero-badge">
+                <span class="badge-icon">🔬</span>
+                <span>Ciência de Verdade • Open Source • Made in Brazil</span>
+            </div>
+            <h1 class="hero-title" data-i18n="hero-title">
+                <span class="gradient-text">Arxis</span> - Matemática e Física para Todos
+            </h1>
+            <p class="hero-subtitle" data-i18n="hero-subtitle">
+                A biblioteca brasileira que ajuda cientistas a detectar ondas gravitacionais e desvendar os mistérios do
+                universo
+            </p>
+            <p class="hero-description" data-i18n="hero-description">
+                Usada pela NASA, LISA e pesquisadores ao redor do mundo 🌍
+            </p>
+
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number">🚀</span>
+                    <span class="stat-label" data-i18n="stat-nasa">Pronto para NASA</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">🇧🇷</span>
+                    <span class="stat-label" data-i18n="stat-br">100% Brasileiro</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">🆓</span>
+                    <span class="stat-label" data-i18n="stat-free">Totalmente Grátis</span>
+                </div>
+            </div>
+
+            <div class="hero-cta">
+                <a href="#docs" class="btn btn-primary" data-i18n="btn-enter">
+                    <span>Entre na Cidadela</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </a>
+                <a href="https://github.com/avilaops/arxis" class="btn btn-secondary" target="_blank"
+                    data-i18n="btn-github">
+                    Ver no GitHub
+                </a>
+            </div>
+
+            <div class="hero-code">
+                <pre><code><span class="code-keyword">use</span> <span class="code-var">arxis_quaternions</span>::<span class="code-var">physics</span>::*;
+
+<span class="code-comment">// Detect gravitational waves from LISA</span>
+<span class="code-keyword">let</span> <span class="code-var">smbh</span> = <span class="code-type">LISASource</span>::<span class="code-function">smbh</span>(<span class="code-number">1e6</span>, <span class="code-number">5e5</span>, <span class="code-number">1.0</span>, <span class="code-number">0.05</span>);
+<span class="code-keyword">let</span> <span class="code-var">snr</span> = <span class="code-var">smbh</span>.<span class="code-function">lisa_snr</span>();
+<span class="code-function">println!</span>(<span class="code-string">"SNR: {:.1}"</span>, <span class="code-var">snr</span>);</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title" data-i18n="features-title">
+                Construído para <span class="gradient-text">Computação Científica</span>
+            </h2>
+            <p class="section-subtitle" data-i18n="features-subtitle">
+                Um ecossistema completo para astrofísica, relatividade geral e matemática avançada
+            </p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🌌</div>
+                    <h3>Pipeline NASA/LISA</h3>
+                    <p>Pipeline científico completo para detecção de ondas gravitacionais. Todas as 6 fases
+                        implementadas: Ingestão de dados → Processamento → Análise → Visualização → Catalogação →
+                        Inferência Bayesiana.</p>
+                    <ul class="feature-list">
+                        <li>✅ Filtragem casada</li>
+                        <li>✅ Bancos de templates (MBHB, EMRI)</li>
+                        <li>✅ Estimativa de parâmetros MCMC</li>
+                        <li>✅ Canais TDI e whitening</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <h3>Quaternions e Geometria 4D</h3>
+                    <p>Álgebra de quaternions e geometria 4D de ponta para rotações, transformações e cálculos
+                        espaço-temporais.</p>
+                    <ul class="feature-list">
+                        <li>✅ Quaternions 3D/4D (SO(3), SO(4))</li>
+                        <li>✅ Quaternions duais</li>
+                        <li>✅ Politopos 4D (Tesserato, 24-Cell)</li>
+                        <li>✅ Interpolação SLERP</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Tensores Generalizados</h3>
+                    <p>Operações de tensores N-dimensionais de escalares até arrays 4D com suporte ML.</p>
+                    <ul class="feature-list">
+                        <li>✅ Operações de tensores 0D-4D</li>
+                        <li>✅ Álgebra de matrizes (inversa, det)</li>
+                        <li>✅ Convolução e pooling</li>
+                        <li>✅ Normalização em batch</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🕳️</div>
+                    <h3>Relatividade Geral</h3>
+                    <p>Kit completo de RG com métricas, geodésicas e tensores de curvatura.</p>
+                    <ul class="feature-list">
+                        <li>✅ Schwarzschild, Kerr, FLRW</li>
+                        <li>✅ Integração geodésica</li>
+                        <li>✅ Curvatura de Riemann</li>
+                        <li>✅ Lentes gravitacionais</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>Séries Temporais e Telemetria</h3>
+                    <p>Análise de dados científicos com detecção de anomalias e previsão (avila-telemetry).</p>
+                    <ul class="feature-list">
+                        <li>✅ Previsão ARIMA</li>
+                        <li>✅ Detecção de anomalias (Z-score, IQR)</li>
+                        <li>✅ Padrões de qualidade NASA</li>
+                        <li>✅ Médias móveis e estatísticas</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">☁️</div>
+                    <h3>Integração AVL Cloud</h3>
+                    <p>Integração nativa com AVL (Avila Cloud Platform) para computação científica escalável.</p>
+                    <ul class="feature-list">
+                        <li>✅ Processamento distribuído</li>
+                        <li>✅ Armazenamento AvilaDB</li>
+                        <li>✅ Pipelines Avila ML</li>
+                        <li>✅ Computação auto-escalável</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section id="architecture" class="architecture">
+        <div class="container">
+            <h2 class="section-title" data-i18n="arch-title">
+                Arquitetura <span class="gradient-text">Modular</span>
+            </h2>
+            <p class="section-subtitle" data-i18n="arch-subtitle">
+                A fortaleza que protege, o eixo que gira
+            </p>
+
+            <div class="architecture-diagram">
+                <div class="arch-layer">
+                    <div class="arch-label">Núcleo Matemático</div>
+                    <div class="arch-boxes">
+                        <div class="arch-box">
+                            <strong>avila-math</strong>
+                            <span>Quaternions, Tensors, 4D Geometry</span>
+                            <div class="arch-badge">26 tests</div>
+                        </div>
+                        <div class="arch-box">
+                            <strong>avila-telemetry</strong>
+                            <span>Time Series, Anomaly Detection</span>
+                            <div class="arch-badge">22 tests</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="arch-arrow">↓</div>
+
+                <div class="arch-layer">
+                    <div class="arch-label">Motor de Física</div>
+                    <div class="arch-boxes">
+                        <div class="arch-box highlight">
+                            <strong>arxis_quaternions</strong>
+                            <span>LISA Pipeline, GW, Relativity</span>
+                            <div class="arch-badge primary">101 tests</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="arch-arrow">↓</div>
+
+                <div class="arch-layer">
+                    <div class="arch-label">Plataforma AVL</div>
+                    <div class="arch-boxes">
+                        <div class="arch-box small">avx-config</div>
+                        <div class="arch-box small">avx-gateway</div>
+                        <div class="arch-box small">avx-cli</div>
+                        <div class="arch-box small">avx-events</div>
+                        <div class="arch-box small">avx-image</div>
+                        <div class="arch-box small">avx-quantum-render</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arch-features">
+                <div class="arch-feature">
+                    <div class="arch-feature-icon">🏛️</div>
+                    <h4>Fundações Sólidas</h4>
+                    <p>Matemática rigorosa com type safety do Rust</p>
+                </div>
+                <div class="arch-feature">
+                    <div class="arch-feature-icon">⚙️</div>
+                    <h4>Motor Central</h4>
+                    <p>Poder computacional para simulações complexas</p>
+                </div>
+                <div class="arch-feature">
+                    <div class="arch-feature-icon">🛡️</div>
+                    <h4>Proteção Robusta</h4>
+                    <p>101 testes garantem confiabilidade</p>
+                </div>
+                <div class="arch-feature">
+                    <div class="arch-feature-icon">🚀</div>
+                    <h4>Performance Nativa</h4>
+                    <p>Abstrações de custo zero em Rust</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Example Section -->
+    <section class="code-examples">
+        <div class="container">
+            <h2 class="section-title" data-i18n="examples-title">
+                Veja <span class="gradient-text">Arxis</span> em Ação
+            </h2>
+
+            <div class="examples-tabs">
+                <button class="tab-button active" data-tab="lisa" data-i18n="tab-lisa">Pipeline LISA</button>
+                <button class="tab-button" data-tab="quaternions" data-i18n="tab-quat">Quaternions</button>
+                <button class="tab-button" data-tab="tensors" data-i18n="tab-tensor">Tensores</button>
+                <button class="tab-button" data-tab="telemetry" data-i18n="tab-telem">Telemetria</button>
+            </div>
+
+            <div class="example-content active" id="example-lisa">
+                <pre><code><span class="code-keyword">use</span> <span class="code-var">arxis_quaternions</span>::<span class="code-var">physics</span>::*;
+
+<span class="code-comment">// Phase 1: Generate synthetic LISA data</span>
+<span class="code-keyword">let</span> <span class="code-var">gen</span> = <span class="code-type">SyntheticDataGenerator</span>::<span class="code-function">new</span>(<span class="code-number">0.1</span>, <span class="code-number">10000.0</span>);
+<span class="code-keyword">let</span> <span class="code-var">source</span> = <span class="code-type">LISASource</span>::<span class="code-function">smbh</span>(<span class="code-number">1e6</span>, <span class="code-number">5e5</span>, <span class="code-number">3e25</span>, <span class="code-number">1.0</span>);
+<span class="code-keyword">let</span> <span class="code-var">signal</span> = <span class="code-var">gen</span>.<span class="code-function">monochromatic_binary</span>(
+    <span class="code-var">source</span>.<span class="code-function">gw_frequency</span>(),
+    <span class="code-var">source</span>.<span class="code-function">characteristic_strain</span>(),
+    <span class="code-number">0.0</span>
+);
+
+<span class="code-comment">// Phase 2: Process data</span>
+<span class="code-keyword">let</span> <span class="code-var">psd</span> = <span class="code-type">PowerSpectralDensity</span>::<span class="code-function">from_data</span>(&<span class="code-var">data</span>, <span class="code-number">1024</span>, <span class="code-number">512</span>);
+<span class="code-keyword">let</span> <span class="code-var">whitened</span> = <span class="code-var">data</span>.<span class="code-function">whiten</span>(&<span class="code-var">psd</span>);
+
+<span class="code-comment">// Phase 3: Matched filtering</span>
+<span class="code-keyword">let</span> <span class="code-keyword">mut</span> <span class="code-var">bank</span> = <span class="code-type">TemplateBank</span>::<span class="code-function">new</span>(<span class="code-number">0.97</span>);
+<span class="code-var">bank</span>.<span class="code-function">generate_mbhb_grid</span>((<span class="code-number">5e5</span>, <span class="code-number">3e6</span>), (<span class="code-number">2e5</span>, <span class="code-number">1e6</span>), <span class="code-number">5</span>, <span class="code-number">4</span>, <span class="code-number">3e25</span>, <span class="code-number">10000.0</span>, <span class="code-number">0.1</span>);
+
+<span class="code-keyword">let</span> <span class="code-var">mf</span> = <span class="code-type">MatchedFilter</span>::<span class="code-function">new</span>(<span class="code-var">bank</span>, <span class="code-var">psd</span>, <span class="code-number">7.0</span>);
+<span class="code-keyword">let</span> <span class="code-var">events</span> = <span class="code-var">mf</span>.<span class="code-function">search</span>(&<span class="code-var">whitened</span>);</code></pre>
+            </div>
+
+            <div class="example-content" id="example-quaternions">
+                <pre><code><span class="code-keyword">use</span> <span class="code-var">avila_math</span>::<span class="code-var">geometry</span>::{<span class="code-type">Quat3D</span>, <span class="code-type">SO4Rotation</span>};
+<span class="code-keyword">use</span> <span class="code-var">std</span>::<span class="code-var">f64</span>::<span class="code-var">consts</span>::<span class="code-var">PI</span>;
+
+<span class="code-comment">// 3D rotation with quaternions</span>
+<span class="code-keyword">let</span> <span class="code-var">q</span> = <span class="code-type">Quat3D</span>::<span class="code-function">from_axis_angle</span>([<span class="code-number">0.0</span>, <span class="code-number">0.0</span>, <span class="code-number">1.0</span>], <span class="code-var">PI</span> / <span class="code-number">2.0</span>);
+<span class="code-keyword">let</span> <span class="code-var">v</span> = [<span class="code-number">1.0</span>, <span class="code-number">0.0</span>, <span class="code-number">0.0</span>];
+<span class="code-keyword">let</span> <span class="code-var">rotated</span> = <span class="code-var">q</span>.<span class="code-function">rotate_vector</span>(<span class="code-var">v</span>);  <span class="code-comment">// ≈ [0.0, 1.0, 0.0]</span>
+
+<span class="code-comment">// 4D rotation with SO(4)</span>
+<span class="code-keyword">let</span> <span class="code-var">q_left</span> = <span class="code-type">Quat3D</span>::<span class="code-function">from_axis_angle</span>([<span class="code-number">1.0</span>, <span class="code-number">0.0</span>, <span class="code-number">0.0</span>], <span class="code-var">PI</span> / <span class="code-number">6.0</span>);
+<span class="code-keyword">let</span> <span class="code-var">q_right</span> = <span class="code-type">Quat3D</span>::<span class="code-function">from_axis_angle</span>([<span class="code-number">0.0</span>, <span class="code-number">1.0</span>, <span class="code-number">0.0</span>], <span class="code-var">PI</span> / <span class="code-number">4.0</span>);
+<span class="code-keyword">let</span> <span class="code-var">so4</span> = <span class="code-type">SO4Rotation</span>::<span class="code-function">new</span>(<span class="code-var">q_left</span>, <span class="code-var">q_right</span>);
+
+<span class="code-keyword">let</span> <span class="code-var">v4</span> = [<span class="code-number">1.0</span>, <span class="code-number">0.0</span>, <span class="code-number">0.0</span>, <span class="code-number">0.0</span>];
+<span class="code-keyword">let</span> <span class="code-var">rotated_4d</span> = <span class="code-var">so4</span>.<span class="code-function">rotate_vector_4d</span>(<span class="code-var">v4</span>);</code></pre>
+            </div>
+
+            <div class="example-content" id="example-tensors">
+                <pre><code><span class="code-keyword">use</span> <span class="code-var">avila_math</span>::<span class="code-var">tensor</span>::{<span class="code-type">Vector</span>, <span class="code-type">Matrix</span>, <span class="code-type">Tensor4D</span>};
+
+<span class="code-comment">// Vector operations</span>
+<span class="code-keyword">let</span> <span class="code-var">v</span> = <span class="code-type">Vector</span>::<span class="code-function">from_slice</span>(&[<span class="code-number">1.0</span>, <span class="code-number">2.0</span>, <span class="code-number">3.0</span>]);
+<span class="code-keyword">let</span> <span class="code-var">norm</span> = <span class="code-var">v</span>.<span class="code-function">norm</span>();
+
+<span class="code-comment">// Matrix algebra</span>
+<span class="code-keyword">let</span> <span class="code-var">m</span> = <span class="code-type">Matrix</span>::<span class="code-function">identity</span>(<span class="code-number">3</span>);
+<span class="code-keyword">let</span> <span class="code-var">det</span> = <span class="code-var">m</span>.<span class="code-function">determinant</span>();
+
+<span class="code-comment">// 4D tensors for ML</span>
+<span class="code-keyword">let</span> <span class="code-var">batch</span> = <span class="code-type">Tensor4D</span>::<span class="code-function">from_images</span>(<span class="code-number">8</span>, <span class="code-number">3</span>, <span class="code-number">32</span>, <span class="code-number">32</span>);
+<span class="code-keyword">let</span> <span class="code-var">pooled</span> = <span class="code-var">batch</span>.<span class="code-function">max_pool_2d</span>(<span class="code-number">2</span>, <span class="code-number">2</span>)?;
+<span class="code-keyword">let</span> <span class="code-var">activated</span> = <span class="code-var">pooled</span>.<span class="code-function">relu</span>();</code></pre>
+            </div>
+
+            <div class="example-content" id="example-telemetry">
+                <pre><code><span class="code-keyword">use</span> <span class="code-var">avila_telemetry</span>::{<span class="code-type">TimeSeries</span>, <span class="code-var">anomaly</span>::<span class="code-type">AnomalyDetector</span>};
+
+<span class="code-comment">// Time series analysis</span>
+<span class="code-keyword">let</span> <span class="code-var">ts</span> = <span class="code-type">TimeSeries</span>::<span class="code-function">new</span>(<span class="code-var">data</span>.<span class="code-function">clone</span>());
+<span class="code-keyword">let</span> <span class="code-var">ma</span> = <span class="code-var">ts</span>.<span class="code-function">moving_average</span>(<span class="code-number">10</span>)?;
+<span class="code-keyword">let</span> <span class="code-var">stats</span> = <span class="code-var">ts</span>.<span class="code-function">statistics</span>();
+
+<span class="code-comment">// Detect anomalies (glitches in LISA data)</span>
+<span class="code-keyword">let</span> <span class="code-var">detector</span> = <span class="code-type">AnomalyDetector</span>::<span class="code-function">new</span>(<span class="code-number">3.0</span>, <span class="code-number">1.5</span>);
+<span class="code-keyword">let</span> <span class="code-var">anomalies</span> = <span class="code-var">detector</span>.<span class="code-function">detect_zscore</span>(&<span class="code-var">ts</span>)?;
+
+<span class="code-function">println!</span>(<span class="code-string">"Found {} anomalies"</span>, <span class="code-var">anomalies</span>.<span class="code-function">len</span>());
+
+<span class="code-comment">// ARIMA forecasting</span>
+<span class="code-keyword">let</span> <span class="code-keyword">mut</span> <span class="code-var">arima</span> = <span class="code-type">ARIMA</span>::<span class="code-function">new</span>(<span class="code-number">1</span>, <span class="code-number">1</span>, <span class="code-number">1</span>);
+<span class="code-var">arima</span>.<span class="code-function">fit</span>(&<span class="code-var">ts</span>)?;
+<span class="code-keyword">let</span> <span class="code-var">forecast</span> = <span class="code-var">arima</span>.<span class="code-function">predict</span>(<span class="code-number">5</span>)?;</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">101</div>
+                    <div class="stat-label">Testes Passando</div>
+                    <div class="stat-description">Cobertura de testes completa</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">11</div>
+                    <div class="stat-label">Crates</div>
+                    <div class="stat-description">Arquitetura modular</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">4MB</div>
+                    <div class="stat-label">Limite de Documento</div>
+                    <div class="stat-description">2x maior que concorrentes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">6</div>
+                    <div class="stat-label">Fases LISA</div>
+                    <div class="stat-description">Pipeline completo</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Documentation Section -->
+    <section id="docs" class="documentation">
+        <div class="container">
+            <h2 class="section-title" data-i18n="docs-title">
+                <span class="gradient-text">Documentação</span> e Recursos
+            </h2>
+
+            <div class="docs-grid">
+                <a href="https://docs.rs/arxis_quaternions" class="doc-card" target="_blank">
+                    <div class="doc-icon">📚</div>
+                    <h3>Documentação da API</h3>
+                    <p>Referência completa da API em docs.rs com exemplos e guias</p>
+                    <span class="doc-link">docs.rs/arxis_quaternions →</span>
+                </a>
+
+                <a href="https://github.com/avilaops/arxis" class="doc-card" target="_blank">
+                    <div class="doc-icon">📖</div>
+                    <h3>Repositório GitHub</h3>
+                    <p>Código fonte, exemplos e README completo</p>
+                    <span class="doc-link">github.com/avilaops/arxis →</span>
+                </a>
+
+                <a href="https://crates.io/crates/arxis_quaternions" class="doc-card" target="_blank">
+                    <div class="doc-icon">📦</div>
+                    <h3>Crates.io</h3>
+                    <p>Instale Arxis do registro oficial de pacotes Rust</p>
+                    <span class="doc-link">crates.io/crates/arxis_quaternions →</span>
+                </a>
+
+                <a href="https://avila.cloud" class="doc-card" target="_blank">
+                    <div class="doc-icon">☁️</div>
+                    <h3>Plataforma AVL Cloud</h3>
+                    <p>Deploy na plataforma de computação científica da Avila</p>
+                    <span class="doc-link">avila.cloud →</span>
+                </a>
+            </div>
+
+            <div class="installation">
+                <h3 data-i18n="install-title">Instalação Rápida</h3>
+                <div class="install-code">
+                    <pre><code><span class="code-comment"># Add to Cargo.toml</span>
+[dependencies]
+arxis_quaternions = <span class="code-string">"0.2.0"</span>
+avila-math = { git = <span class="code-string">"https://github.com/avilaops/arxis"</span> }
+avila-telemetry = { git = <span class="code-string">"https://github.com/avilaops/arxis"</span> }</code></pre>
+                    <button class="copy-button" onclick="copyInstallCode()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title" data-i18n="contact-title">
+                Entre em <span class="gradient-text">Contato</span>
+            </h2>
+            <p class="section-subtitle" data-i18n="contact-subtitle">
+                Dúvidas, colaboração ou só quer conversar sobre física?
+            </p>
+
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <div class="contact-icon">📧</div>
+                    <h3>Email</h3>
+                    <a href="mailto:nicolas@avila.inc">nicolas@avila.inc</a>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-icon">💬</div>
+                    <h3>WhatsApp</h3>
+                    <a href="https://wa.me/5517997811471">+55 17 99781-1471</a>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-icon">🐙</div>
+                    <h3>GitHub</h3>
+                    <a href="https://github.com/avilaops">@avilaops</a>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-icon">💼</div>
+                    <h3>LinkedIn</h3>
+                    <a href="https://linkedin.com/in/nicolasavila">Nicolas Ávila</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <div class="logo-icon">
+                            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="logoGradientFooter" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+                                        <stop offset="50%" style="stop-color:#FFA500;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#FF8C00;stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                                <circle cx="50" cy="25" r="8" fill="url(#logoGradientFooter)" />
+                                <circle cx="75" cy="50" r="8" fill="url(#logoGradientFooter)" />
+                                <circle cx="50" cy="75" r="8" fill="url(#logoGradientFooter)" />
+                                <circle cx="25" cy="50" r="8" fill="url(#logoGradientFooter)" />
+                                <line x1="50" y1="25" x2="75" y2="50" stroke="url(#logoGradientFooter)"
+                                    stroke-width="3" />
+                                <line x1="75" y1="50" x2="50" y2="75" stroke="url(#logoGradientFooter)"
+                                    stroke-width="3" />
+                                <line x1="50" y1="75" x2="25" y2="50" stroke="url(#logoGradientFooter)"
+                                    stroke-width="3" />
+                                <line x1="25" y1="50" x2="50" y2="25" stroke="url(#logoGradientFooter)"
+                                    stroke-width="3" />
+                            </svg>
+                        </div>
+                        <span class="logo-text">ARXIS</span>
+                    </div>
+                    <p class="footer-tagline" data-i18n="footer-tagline">A Cidadela Matemática</p>
+                    <p class="footer-description" data-i18n="footer-desc">Física e matemática de nível científico em
+                        Rust</p>
+                </div>
+
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Recursos</h4>
+                        <ul>
+                            <li><a href="https://docs.rs/arxis_quaternions">Documentação</a></li>
+                            <li><a href="https://github.com/avilaops/arxis">GitHub</a></li>
+                            <li><a href="https://crates.io/crates/arxis_quaternions">Crates.io</a></li>
+                            <li><a href="https://github.com/avilaops/arxis/tree/main/examples">Exemplos</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-column">
+                        <h4>Comunidade</h4>
+                        <ul>
+                            <li><a href="https://github.com/avilaops/arxis/discussions">Discussões</a></li>
+                            <li><a href="https://github.com/avilaops/arxis/issues">Issues</a></li>
+                            <li><a href="https://github.com/avilaops/arxis/blob/main/CONTRIBUTING.md">Contribuir</a>
+                            </li>
+                            <li><a href="https://github.com/avilaops/arxis/blob/main/CHANGELOG.md">Changelog</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-column">
+                        <h4>Sobre</h4>
+                        <ul>
+                            <li><a href="https://avila.cloud">AVL Cloud</a></li>
+                            <li><a href="mailto:nicolas@avila.inc">Contato</a></li>
+                            <li><a href="https://github.com/avilaops/arxis/blob/main/LICENSE-MIT">Licença</a></li>
+                            <li><a href="https://github.com/avilaops/arxis/blob/main/SECURITY.md">Segurança</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 Avila. Dual-licensed under MIT OR Apache-2.0</p>
+                <div class="footer-badges">
+                    <a href="https://www.rust-lang.org" target="_blank">
+                        <img src="https://img.shields.io/badge/rust-1.70%2B-CE422B.svg" alt="Rust 1.70+">
+                    </a>
+                    <a href="https://github.com/avilaops/arxis/actions" target="_blank">
+                        <img src="https://img.shields.io/badge/tests-101%20passing-00C853.svg" alt="101 tests passing">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

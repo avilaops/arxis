@@ -423,13 +423,26 @@ async fn test_user_service() {
 
 ## Examples
 
+Check the `examples/` directory for complete working examples:
+
+- `basic_pubsub.rs` - Simple publish/subscribe pattern
+- `event_sourcing.rs` - Event sourcing with EventStore
+- `cqrs.rs` - Command/Query separation
+- `request_reply.rs` - RPC-style messaging
+- `topic_routing.rs` - Topic-based routing with wildcards
+- `production_service.rs` - **Production-ready service with full AVX integration**
+
+Run an example:
 ```bash
 cargo run --example basic_pubsub
-cargo run --example event_sourcing
-cargo run --example cqrs
-cargo run --example request_reply
-cargo run --example distributed
 ```
+
+Run the production service:
+```bash
+RUST_LOG=info cargo run --example production_service
+```
+
+**📚 See [PRODUCTION_GUIDE.md](./PRODUCTION_GUIDE.md) for deployment documentation.**
 
 ## Performance
 

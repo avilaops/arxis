@@ -879,7 +879,7 @@ async fn team_management_ui() -> impl IntoResponse {
 
 /// List all teams
 async fn list_teams(
-    State(state): State<Arc<ConsoleState>>,
+    State(_state): State<Arc<ConsoleState>>,
 ) -> Result<Json<TeamsResponse>, ConsoleError> {
     // Mock data - in production, load from database
     let teams = vec![
@@ -917,7 +917,7 @@ async fn list_teams(
 
 /// List all users
 async fn list_users(
-    State(state): State<Arc<ConsoleState>>,
+    State(_state): State<Arc<ConsoleState>>,
 ) -> Result<Json<UsersResponse>, ConsoleError> {
     // Mock data - in production, load from database
     let users = vec![
@@ -958,7 +958,7 @@ async fn list_users(
 
 /// Get audit log
 async fn get_audit_log(
-    State(state): State<Arc<ConsoleState>>,
+    State(_state): State<Arc<ConsoleState>>,
 ) -> Result<Json<AuditLogResponse>, ConsoleError> {
     // Mock data - in production, load from database
     let logs = vec![
@@ -993,7 +993,7 @@ async fn get_audit_log(
 
 /// Create a new team
 async fn create_team(
-    State(state): State<Arc<ConsoleState>>,
+    State(_state): State<Arc<ConsoleState>>,
     Json(payload): Json<Team>,
 ) -> Result<Json<Team>, ConsoleError> {
     // In production, save to database
@@ -1002,7 +1002,7 @@ async fn create_team(
 
 /// Invite a user
 async fn invite_user(
-    State(state): State<Arc<ConsoleState>>,
+    State(_state): State<Arc<ConsoleState>>,
     Json(payload): Json<User>,
 ) -> Result<Json<User>, ConsoleError> {
     // In production, send invitation email and save to database

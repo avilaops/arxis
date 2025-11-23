@@ -1,0 +1,148 @@
+name: Performance Issue
+description: Report a performance regression or suggest optimization
+title: "[Performance]: "
+labels: ["performance"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping optimize Arxis! Please provide performance details.
+
+  - type: dropdown
+    id: issue-type
+    attributes:
+      label: Issue Type
+      description: What type of performance issue is this?
+      options:
+        - Performance regression (slower than previous version)
+        - Optimization opportunity (can be faster)
+        - Memory usage issue
+        - Compilation time issue
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe the performance issue
+      placeholder: Function X takes too long when...
+    validations:
+      required: true
+
+  - type: textarea
+    id: benchmark
+    attributes:
+      label: Benchmark Results
+      description: Provide benchmark results or profiling data
+      render: text
+      placeholder: |
+        Current performance:
+        - Operation: 1.2s for 1M items
+        - Memory: 500MB
+
+        Expected performance:
+        - Operation: <100ms
+        - Memory: <50MB
+
+        Benchmark command:
+        cargo bench --bench my_bench
+    validations:
+      required: true
+
+  - type: dropdown
+    id: crate
+    attributes:
+      label: Affected Crate
+      description: Which crate has the performance issue?
+      options:
+        - arxis_quaternions
+        - avila-math
+        - avila-telemetry
+        - avila-compress
+        - avila-tokenizers
+        - aviladb
+        - avx-* (AVL Platform)
+        - Multiple crates
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction Code
+      description: Minimal code that demonstrates the performance issue
+      render: rust
+      placeholder: |
+        use arxis_quaternions::*;
+        use std::time::Instant;
+
+        fn main() {
+            let start = Instant::now();
+            // Your slow code here
+            println!("Time: {:?}", start.elapsed());
+        }
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: What version are you using?
+      placeholder: "0.2.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: comparison
+    attributes:
+      label: Comparison Available?
+      description: Do you have performance comparison with other libraries?
+      options:
+        - "Yes - compared with other Rust library"
+        - "Yes - compared with C/C++ library"
+        - "Yes - compared with Python library"
+        - "Yes - compared with previous version"
+        - "No - just reporting absolute performance"
+
+  - type: textarea
+    id: profiling
+    attributes:
+      label: Profiling Data
+      description: If you have profiling data (flamegraph, perf, etc.), please share
+      placeholder: |
+        Attach profiling output or link to flamegraph...
+
+        Hot spots identified:
+        - Function A: 45% of time
+        - Function B: 30% of time
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Optimization Suggestion
+      description: If you have ideas for optimization, please share
+      placeholder: |
+        Possible optimizations:
+        - Use SIMD for loop at line X
+        - Cache result of computation Y
+        - Avoid allocation in hot path Z
+
+  - type: checkboxes
+    id: contribute
+    attributes:
+      label: Contribution
+      options:
+        - label: I would be willing to contribute a performance improvement PR
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Hardware specs, compilation flags, etc.
+      placeholder: |
+        CPU: AMD Ryzen 9 5950X
+        RAM: 32GB
+        OS: Linux 6.5
+        rustc: 1.75.0
+        RUSTFLAGS: -C target-cpu=native

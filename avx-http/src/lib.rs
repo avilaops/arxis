@@ -73,6 +73,9 @@ pub mod server;
 #[cfg(feature = "server")]
 pub mod middleware;
 
+#[cfg(any(feature = "events", feature = "telemetry"))]
+pub mod events;
+
 mod common;
 
 // Re-exports

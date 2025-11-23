@@ -74,6 +74,8 @@ pub mod query_safety;
 pub mod rate_limiter;
 pub mod vector_persistence;
 pub mod streaming;
+pub mod ml;
+pub mod ml_persistence;
 
 use std::net::SocketAddr;
 use std::sync::Arc;
@@ -146,6 +148,8 @@ impl Console {
             .nest("/teams", teams::router(self.state.clone()))
             // AI Assistant
             .nest("/ai-assistant", ai_assistant::router(self.state.clone()))
+            // Machine Learning (Avila ML Integration)
+            .merge(ml::ml_routes().with_state(self.state.clone()))
             // WebSocket endpoint
             .nest("/ws", websocket::routes(self.state.clone()))
             // Static files
@@ -189,6 +193,7 @@ impl Console {
         tracing::info!("🔬 Advanced Monitoring: http://{}/monitoring", addr);
         tracing::info!("👥 Team Management: http://{}/teams", addr);
         tracing::info!("🤖 AI Assistant: http://{}/ai-assistant", addr);
+        tracing::info!("🧠 Machine Learning: http://{}/ml", addr);
 
         let listener = tokio::net::TcpListener::bind(addr)
             .await

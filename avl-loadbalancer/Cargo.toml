@@ -1,10 +1,10 @@
 [package]
 name = "avl-loadbalancer"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 authors = ["Nicolas Ávila <nicolas@avila.inc>"]
 license = "MIT OR Apache-2.0"
-description = "AVL LoadBalancer - L7 load balancer and reverse proxy for AVL Cloud Platform"
+description = "AVL LoadBalancer - Production-grade L7 load balancer with TLS, sticky sessions, geo-routing, and distributed tracing"
 repository = "https://github.com/avilaops/arxis"
 homepage = "https://avila.cloud"
 documentation = "https://docs.rs/avl-loadbalancer"
@@ -13,30 +13,39 @@ keywords = ["loadbalancer", "proxy", "reverse-proxy", "routing", "networking"]
 categories = ["network-programming", "web-programming"]
 
 [dependencies]
-# AVL Platform Core (wraps external dependencies with AVL API)
-tokio = { version = "1.40", features = ["full"] }  # Wrapped by avl_async module
+# AVL Platform Core
+tokio = { version = "1.40", features = ["full", "signal"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 thiserror = "2.0"
 anyhow = "1.0"
+
+# AVL Platform - Workspace Dependencies
+avila-compress = { version = "0.8", path = "../avila-compress" }
+avx-http = { version = "0.2", path = "../avx-http" }
+avx-config = { version = "0.1", path = "../avx-config" }
+avx-telemetry = { version = "0.1", path = "../avx-telemetry" }
 
 # HTTP/Networking
 axum = { version = "0.7", features = ["ws"] }
 tower = "0.5"
 tower-http = { version = "0.6", features = ["full"] }
 hyper = { version = "1.5", features = ["full"] }
-hyper-util = "0.1"
+hyper-util = { version = "0.1", features = ["tokio"] }
 futures = "0.3"
 reqwest = { version = "0.12", features = ["json", "rustls-tls"] }
 
-# TLS (temporarily disabled for MVP until build deps installed on Windows)
-# rustls = "0.23"
-# tokio-rustls = "0.26"
+# TLS/SSL
+rustls = { version = "0.23", optional = true }
+tokio-rustls = { version = "0.26", optional = true }
+rustls-pemfile = { version = "2.2", optional = true }
 
-# Observability
+# Observability & Tracing
 tracing = "0.1"
-avx-telemetry = { version = "0.1", path = "../avx-telemetry" }
-tracing-subscriber = "0.3"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+opentelemetry = { version = "0.27", features = ["trace"], optional = true }
+opentelemetry_sdk = { version = "0.27", features = ["trace", "rt-tokio"], optional = true }
+opentelemetry-otlp = { version = "0.27", features = ["trace"], optional = true }
 
 # Rate limiting
 governor = "0.7"
@@ -44,20 +53,43 @@ governor = "0.7"
 # Concurrency
 parking_lot = "0.12"
 dashmap = "6.1"
+async-trait = "0.1"
 
-# Hashing
+# Hashing & Crypto
 twox-hash = "2.0"
+sha2 = { version = "0.10", optional = true }
+hmac = { version = "0.12", optional = true }
+base64 = { version = "0.22", optional = true }
 
-# Config (wrapped by avl_config module)
+# Config & Hot Reload
 serde_yaml = "0.9"
 toml = "0.8"
+notify = { version = "7.0", optional = true }
 
 # WebSocket
 tokio-tungstenite = "0.24"
 
-# Compression (wrapped by avl_compress module)
+# Compression (fallback for gzip/brotli)
 flate2 = "1.0"
 brotli = "7.0"
+
+# Geolocation
+maxminddb = { version = "0.24", optional = true }
+
+# Time & UUID
+uuid = { version = "1.11", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+
+# Cookie management for sticky sessions
+cookie = { version = "0.18", optional = true }
+
+[features]
+default = ["sticky-sessions", "geo-routing", "hot-reload"]
+tls = ["rustls", "tokio-rustls", "rustls-pemfile"]
+tracing = ["opentelemetry", "opentelemetry_sdk", "opentelemetry-otlp"]
+sticky-sessions = ["cookie", "hmac", "sha2", "base64"]
+geo-routing = ["maxminddb"]
+hot-reload = ["notify"]
 
 [package.metadata.docs.rs]
 all-features = true

@@ -257,15 +257,15 @@ cargo run --example vector_search
 
 ## 🏆 Competitive Advantages
 
-| Feature | AvilaDB | AWS DynamoDB | Azure Cosmos DB |
-|---------|---------|--------------|-----------------|
-| **Max Document** | 4 MB | 400 KB | 2 MB |
-| **Partition Limit** | 50 GB (+HPK) | 10 GB | 20 GB |
-| **Vector Search** | ✅ Native HNSW | ❌ Requires OpenSearch | ⚠️ Limited |
-| **Multi-region writes** | ✅ Free | ✅ Extra cost | ✅ Extra cost |
-| **Brazil latency** | 5-10ms | 80-120ms | 40-60ms |
-| **Pricing (1M ops)** | R$ 0.50 | USD 1.25 | USD 0.85 |
-| **Pure Rust** | ✅ Yes | ❌ No | ❌ No |
+| Feature                 | AvilaDB       | AWS DynamoDB          | Azure Cosmos DB |
+| ----------------------- | ------------- | --------------------- | --------------- |
+| **Max Document**        | 4 MB          | 400 KB                | 2 MB            |
+| **Partition Limit**     | 50 GB (+HPK)  | 10 GB                 | 20 GB           |
+| **Vector Search**       | ✅ Native HNSW | ❌ Requires OpenSearch | ⚠️ Limited       |
+| **Multi-region writes** | ✅ Free        | ✅ Extra cost          | ✅ Extra cost    |
+| **Brazil latency**      | 5-10ms        | 80-120ms              | 40-60ms         |
+| **Pricing (1M ops)**    | R$ 0.50       | USD 1.25              | USD 0.85        |
+| **Pure Rust**           | ✅ Yes         | ❌ No                  | ❌ No            |
 
 ## 📈 Code Quality
 

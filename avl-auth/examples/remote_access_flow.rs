@@ -116,7 +116,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // 5. Registrar eventos da sessão
     println!("5️⃣  Registrando eventos da sessão");
-    
+
     manager
         .log_session_event(
             session.session_id.clone(),
@@ -175,31 +175,31 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // 8. Demonstrar cálculo de trust level
     println!("8️⃣  Evolução de Trust Level");
-    
+
     let mut evolving_device = support_dev.clone();
-    
+
     println!("   Dispositivo novo:");
-    println!("      Acessos: {}, Trust: {:?}", 
-        evolving_device.access_count, 
+    println!("      Acessos: {}, Trust: {:?}",
+        evolving_device.access_count,
         manager.calculate_trust_level(&evolving_device));
 
     evolving_device.access_count = 15;
     println!("   Após 15 acessos:");
-    println!("      Acessos: {}, Trust: {:?}", 
-        evolving_device.access_count, 
+    println!("      Acessos: {}, Trust: {:?}",
+        evolving_device.access_count,
         manager.calculate_trust_level(&evolving_device));
 
     evolving_device.access_count = 60;
     println!("   Após 60 acessos:");
-    println!("      Acessos: {}, Trust: {:?}", 
-        evolving_device.access_count, 
+    println!("      Acessos: {}, Trust: {:?}",
+        evolving_device.access_count,
         manager.calculate_trust_level(&evolving_device));
 
     evolving_device.access_count = 150;
     evolving_device.certificate = Some("X.509 Certificate".into());
     println!("   Com certificado e 150 acessos:");
-    println!("      Acessos: {}, Trust: {:?}", 
-        evolving_device.access_count, 
+    println!("      Acessos: {}, Trust: {:?}",
+        evolving_device.access_count,
         manager.calculate_trust_level(&evolving_device));
     println!();
 

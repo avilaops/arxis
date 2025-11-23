@@ -20,12 +20,12 @@ use crate::{
     query_history::{QueryHistory, QueryHistoryEntry},
     rate_limiter::RateLimiter,
     vector_persistence::VectorPersistence,
-    streaming::ProgressTracker,
 };
 
 static METRICS: LazyLock<AIMetricsCollector> = LazyLock::new(|| AIMetricsCollector::new());
 static QUERY_HISTORY: LazyLock<QueryHistory> = LazyLock::new(|| QueryHistory::default());
 static RATE_LIMITER: LazyLock<RateLimiter> = LazyLock::new(|| RateLimiter::default());
+#[allow(dead_code)]
 static VECTOR_PERSISTENCE: LazyLock<std::sync::Mutex<VectorPersistence>> = LazyLock::new(|| {
     std::sync::Mutex::new(VectorPersistence::new("ai_knowledge_base".to_string()))
 });

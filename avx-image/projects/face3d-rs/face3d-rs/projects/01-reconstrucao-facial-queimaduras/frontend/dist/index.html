@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Burn Reconstruction System</title>
+    
+<script type="module">
+import init, * as bindings from '/burn-reconstruction-frontend-4cfd6ca6c1f2f8f6.js';
+const wasm = await init({ module_or_path: '/burn-reconstruction-frontend-4cfd6ca6c1f2f8f6_bg.wasm' });
+
+
+window.wasmBindings = bindings;
+
+
+dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
+
+</script>
+    <link rel="stylesheet" href="/style-6e93be01fe3d2b34.css" integrity="sha384-JpZg/94LdiQAYFUZ2peF27lGEo2PC1UACQxwO2ADC18y9kGTKZE6YWvq8Ku5+2F4"/>
+<link rel="modulepreload" href="/burn-reconstruction-frontend-4cfd6ca6c1f2f8f6.js" crossorigin="anonymous" integrity="sha384-aGcAjCOA49oe3VqHXBVGrgdvTPaVb8/Kf89ZuCFABJ+DQo+0Hg3iIdgSudR6BKLf"><link rel="preload" href="/burn-reconstruction-frontend-4cfd6ca6c1f2f8f6_bg.wasm" crossorigin="anonymous" integrity="sha384-qo/6KZNRBoRlpGI0KX6NnH7Nl3xKNX8/fd+HVn8u90MwMCUDquKFecZ8uxr+PvAv" as="fetch" type="application/wasm"></head>
+
+<body>
+</body>
+
+</html>

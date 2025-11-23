@@ -102,19 +102,76 @@ impl AvilaClient {
 
     /// Create a new database
     pub async fn create_database(&self, name: &str) -> Result<Database> {
-        // TODO: Send CREATE DATABASE request
+        // Send CREATE DATABASE HTTP request
+        let token = self.auth_provider.get_token().await?;
+        let url = format!("/v1/databases");
+
+        let mut headers = reqwest::header::HeaderMap::new();
+        headers.insert(
+            reqwest::header::AUTHORIZATION,
+            reqwest::header::HeaderValue::from_str(&format!("Bearer {}", token))?,
+        );
+        headers.insert(
+            reqwest::header::CONTENT_TYPE,
+            reqwest::header::HeaderValue::from_static("application/json"),
+        );
+
+        let payload = serde_json::json!({
+            "name": name,
+            "region": "sa-east-1" // Brazil by default
+        });
+
+        let _response: serde_json::Value = self.http_client
+            .post_with_headers(&url, &payload, headers)
+            .await?;
+
         self.database(name).await
     }
 
     /// List all databases
     pub async fn list_databases(&self) -> Result<Vec<String>> {
-        // TODO: Send LIST DATABASES request
-        Ok(vec![])
+        // Send LIST DATABASES HTTP request
+        let token = self.auth_provider.get_token().await?;
+        let url = format!("/v1/databases");
+
+        let mut headers = reqwest::header::HeaderMap::new();
+        headers.insert(
+            reqwest::header::AUTHORIZATION,
+            reqwest::header::HeaderValue::from_str(&format!("Bearer {}", token))?,
+        );
+
+        let response: serde_json::Value = self.http_client
+            .get_with_headers(&url, headers)
+            .await?;
+
+        let databases = response["databases"]
+            .as_array()
+            .map(|arr| {
+                arr.iter()
+                    .filter_map(|v| v.as_str().map(|s| s.to_string()))
+                    .collect()
+            })
+            .unwrap_or_default();
+
+        Ok(databases)
     }
 
     /// Delete a database
-    pub async fn delete_database(&self, _name: &str) -> Result<()> {
-        // TODO: Send DELETE DATABASE request
+    pub async fn delete_database(&self, name: &str) -> Result<()> {
+        // Send DELETE DATABASE HTTP request
+        let token = self.auth_provider.get_token().await?;
+        let url = format!("/v1/databases/{}", name);
+
+        let mut headers = reqwest::header::HeaderMap::new();
+        headers.insert(
+            reqwest::header::AUTHORIZATION,
+            reqwest::header::HeaderValue::from_str(&format!("Bearer {}", token))?,
+        );
+
+        self.http_client
+            .delete_with_headers(&url, headers)
+            .await?;
+
         Ok(())
     }
 

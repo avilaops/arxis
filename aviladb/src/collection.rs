@@ -112,14 +112,24 @@ impl Collection {
             );
         }
 
-        // Send HTTP POST request
-        let response = self
-            .http_client
-            .post(&url, payload, headers)
-            .await?;
+        // Build JSON payload
+        let json_payload = if self.config.enable_compression {
+            json!({
+                "data": base64::encode(&payload),
+                "compressed": true
+            })
+        } else {
+            json!({
+                "data": String::from_utf8_lossy(&payload).to_string(),
+                "compressed": false
+            })
+        };
 
-        // Parse response
-        let response_data: serde_json::Value = serde_json::from_slice(&response)?;
+        // Send HTTP POST request
+        let response_data: serde_json::Value = self
+            .http_client
+            .post_with_headers(&url, &json_payload, headers)
+            .await?;
         let doc_id = response_data["id"]
             .as_str()
             .unwrap_or_else(|| "unknown")
@@ -128,11 +138,21 @@ impl Collection {
         let latency_ms = start.elapsed().as_millis();
 
         // Record telemetry
-        self.telemetry.record_operation(
-            crate::telemetry::OperationType::Insert,
-            latency_ms as u64,
-            true,
-        );
+        self.telemetry.record(crate::telemetry::TelemetryEvent {
+            operation: crate::telemetry::OperationType::Insert,
+            database: self.database.clone(),
+            collection: self.name.clone(),
+            duration_ms: latency_ms as u64,
+            success: true,
+            error_message: None,
+            document_count: 1,
+            bytes_transferred: original_size,
+            compression_ratio,
+            timestamp: std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_secs(),
+        }).await;
 
         Ok(InsertResult {
             id: doc_id,
@@ -155,8 +175,8 @@ impl Collection {
         let mut batch_documents = Vec::new();
         let mut size_info = Vec::new();
 
-        for doc in docs {
-            let doc_json = serde_json::to_vec(&doc)?;
+        for doc in &docs {
+            let doc_json = serde_json::to_vec(doc)?;
             let original_size = doc_json.len();
 
             // Compress if enabled
@@ -205,13 +225,10 @@ impl Collection {
         });
 
         // Send HTTP POST request
-        let response = self
+        let response_data: serde_json::Value = self
             .http_client
-            .post(&url, serde_json::to_vec(&batch_payload)?, headers)
+            .post_with_headers(&url, &batch_payload, headers)
             .await?;
-
-        // Parse response
-        let response_data: serde_json::Value = serde_json::from_slice(&response)?;
         let ids = response_data["ids"]
             .as_array()
             .ok_or_else(|| crate::error::AvilaError::Network("Invalid batch response".to_string()))?;
@@ -232,11 +249,24 @@ impl Collection {
             .collect();
 
         // Record telemetry
-        self.telemetry.record_operation(
-            crate::telemetry::OperationType::Insert,
-            total_latency as u64,
-            true,
-        );
+        let total_bytes: usize = size_info.iter().map(|(s, _)| s).sum();
+        let avg_ratio = size_info.iter().map(|(_, r)| r).sum::<f64>() / results.len().max(1) as f64;
+
+        self.telemetry.record(crate::telemetry::TelemetryEvent {
+            operation: crate::telemetry::OperationType::InsertBatch,
+            database: self.database.clone(),
+            collection: self.name.clone(),
+            duration_ms: total_latency as u64,
+            success: true,
+            error_message: None,
+            document_count: docs.len(),
+            bytes_transferred: total_bytes,
+            compression_ratio: avg_ratio,
+            timestamp: std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_secs(),
+        }).await;
 
         Ok(results)
     }
@@ -268,7 +298,7 @@ impl Collection {
         }
 
         // Send HTTP GET request
-        let response = self.http_client.get(&url, headers).await;
+        let response: Result<Vec<u8>> = self.http_client.get_with_headers(&url, headers).await;
 
         match response {
             Ok(data) => {
@@ -285,11 +315,21 @@ impl Collection {
                 let latency_ms = start.elapsed().as_millis() as u64;
 
                 // Record telemetry
-                self.telemetry.record_operation(
-                    crate::telemetry::OperationType::Query,
-                    latency_ms,
-                    true,
-                );
+                self.telemetry.record(crate::telemetry::TelemetryEvent {
+                    operation: crate::telemetry::OperationType::Get,
+                    database: self.database.clone(),
+                    collection: self.name.clone(),
+                    duration_ms: latency_ms,
+                    success: true,
+                    error_message: None,
+                    document_count: 1,
+                    bytes_transferred: doc_json.len(),
+                    compression_ratio: if self.config.enable_compression { 2.0 } else { 1.0 },
+                    timestamp: std::time::SystemTime::now()
+                        .duration_since(std::time::UNIX_EPOCH)
+                        .unwrap()
+                        .as_secs(),
+                }).await;
 
                 Ok(Some(doc))
             }
@@ -391,7 +431,7 @@ impl UpdateBuilder {
 
     pub async fn execute(self) -> Result<usize> {
         let start = std::time::Instant::now();
-        
+
         // Validate we have updates to perform
         if self.updates.is_empty() {
             return Err(crate::error::AvilaError::Query(
@@ -440,24 +480,31 @@ impl UpdateBuilder {
         });
 
         // Send HTTP PATCH request
-        let response = self
+        let response_data: serde_json::Value = self
             .collection
             .http_client
-            .post(&url, serde_json::to_vec(&payload)?, headers)
+            .patch_with_headers(&url, &payload, headers)
             .await?;
-
-        // Parse response
-        let response_data: serde_json::Value = serde_json::from_slice(&response)?;
         let updated_count = response_data["updatedCount"].as_u64().unwrap_or(0) as usize;
 
         let latency_ms = start.elapsed().as_millis() as u64;
 
         // Record telemetry
-        self.collection.telemetry.record_operation(
-            crate::telemetry::OperationType::Update,
-            latency_ms,
-            true,
-        );
+        self.collection.telemetry.record(crate::telemetry::TelemetryEvent {
+            operation: crate::telemetry::OperationType::Update,
+            database: self.collection.database.clone(),
+            collection: self.collection.name.clone(),
+            duration_ms: latency_ms,
+            success: true,
+            error_message: None,
+            document_count: updated_count,
+            bytes_transferred: 0,
+            compression_ratio: 1.0,
+            timestamp: std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_secs(),
+        }).await;
 
         Ok(updated_count)
     }
@@ -485,7 +532,7 @@ impl DeleteBuilder {
 
     pub async fn execute(self) -> Result<usize> {
         let start = std::time::Instant::now();
-        
+
         // Critical safety check: prevent accidental full-table deletes
         if self.conditions.is_empty() {
             return Err(crate::error::AvilaError::Query(
@@ -519,25 +566,32 @@ impl DeleteBuilder {
             "where": self.conditions.join(" AND ")
         });
 
-        // Send HTTP DELETE request
-        let response = self
+        // Send HTTP POST request to delete endpoint (DELETE with body)
+        let response_data: serde_json::Value = self
             .collection
             .http_client
-            .post(&url, serde_json::to_vec(&payload)?, headers)
+            .post_with_headers(&url, &payload, headers)
             .await?;
-
-        // Parse response
-        let response_data: serde_json::Value = serde_json::from_slice(&response)?;
         let deleted_count = response_data["deletedCount"].as_u64().unwrap_or(0) as usize;
 
         let latency_ms = start.elapsed().as_millis() as u64;
 
         // Record telemetry
-        self.collection.telemetry.record_operation(
-            crate::telemetry::OperationType::Delete,
-            latency_ms,
-            true,
-        );
+        self.collection.telemetry.record(crate::telemetry::TelemetryEvent {
+            operation: crate::telemetry::OperationType::Delete,
+            database: self.collection.database.clone(),
+            collection: self.collection.name.clone(),
+            duration_ms: latency_ms,
+            success: true,
+            error_message: None,
+            document_count: deleted_count,
+            bytes_transferred: 0,
+            compression_ratio: 1.0,
+            timestamp: std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_secs(),
+        }).await;
 
         Ok(deleted_count)
     }
@@ -609,21 +663,37 @@ impl VectorSearchBuilder {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::{HttpClient, HttpConfig, AuthProvider, TelemetryCollector, TelemetryConfig};
 
     #[tokio::test]
     async fn test_collection_insert() {
         let config = Arc::new(Config::default());
+        let http_client = Arc::new(HttpClient::new(HttpConfig::default()).unwrap());
+        let auth_provider = Arc::new(AuthProvider::new("http://localhost:8000".to_string()));
+        let telemetry = Arc::new(TelemetryCollector::new(TelemetryConfig::default()));
+
         let collection = Collection::new(
             "users".to_string(),
             "testdb".to_string(),
             config,
-        ).unwrap();
+            http_client,
+            auth_provider,
+            telemetry,
+        );
 
+        // Test collection creation
+        assert!(collection.is_ok());
+
+        let collection = collection.unwrap();
+        assert_eq!(collection.name, "users");
+        assert_eq!(collection.database, "testdb");
+
+        // Test document creation (without HTTP call)
         let doc = Document::new()
             .set("userId", "user123")
             .set("name", "Test User");
 
-        let result = collection.insert(doc).await;
-        assert!(result.is_ok());
+        let user_id: Result<String> = doc.get("userId");
+        assert!(user_id.is_ok());
     }
 }

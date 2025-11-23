@@ -66,3 +66,9 @@ impl From<anyhow::Error> for AvilaError {
         AvilaError::Internal(err.to_string())
     }
 }
+
+impl From<reqwest::header::InvalidHeaderValue> for AvilaError {
+    fn from(err: reqwest::header::InvalidHeaderValue) -> Self {
+        AvilaError::Network(format!("Invalid header value: {}", err))
+    }
+}

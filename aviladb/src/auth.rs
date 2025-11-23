@@ -92,17 +92,31 @@ impl AuthProvider {
         let credentials = creds.as_ref()
             .ok_or_else(|| AvilaError::Config("No credentials configured".to_string()))?;
 
-        // TODO: Make actual HTTP request to auth endpoint
-        // For now, create mock token
-        let token = AuthToken {
-            access_token: format!("mock_token_{}", credentials.api_key),
-            refresh_token: None,
-            expires_at: SystemTime::now()
-                .duration_since(UNIX_EPOCH)
-                .unwrap()
-                .as_secs() + 3600, // 1 hour
-            token_type: "Bearer".to_string(),
-        };
+        // Make HTTP request to auth endpoint
+        let auth_url = format!("{}/v1/auth/token", self.endpoint);
+
+        let client = reqwest::Client::new();
+        let response = client
+            .post(&auth_url)
+            .json(&serde_json::json!({
+                "apiKey": credentials.api_key,
+                "apiSecret": credentials.api_secret,
+                "grantType": "client_credentials"
+            }))
+            .send()
+            .await
+            .map_err(|e| AvilaError::Network(format!("Auth request failed: {}", e)))?;
+
+        if !response.status().is_success() {
+            let status = response.status();
+            let error_text = response.text().await.unwrap_or_else(|_| "Unknown error".to_string());
+            return Err(AvilaError::Config(format!("Authentication failed ({}): {}", status, error_text)));
+        }
+
+        let token: AuthToken = response
+            .json()
+            .await
+            .map_err(|e| AvilaError::Serialization(format!("Failed to parse auth response: {}", e)))?;
 
         let access_token = token.access_token.clone();
 
@@ -116,15 +130,41 @@ impl AuthProvider {
     pub async fn refresh_token(&self) -> Result<String> {
         let token = self.token.read().await;
 
-        let _refresh_token = token.as_ref()
+        let refresh_token = token.as_ref()
             .and_then(|t| t.refresh_token.clone())
             .ok_or_else(|| AvilaError::Config("No refresh token available".to_string()))?;
 
         drop(token);
 
-        // TODO: Make actual HTTP request to refresh endpoint
-        // For now, just re-authenticate
-        self.authenticate().await
+        // Make HTTP request to refresh endpoint
+        let refresh_url = format!("{}/v1/auth/refresh", self.endpoint);
+
+        let client = reqwest::Client::new();
+        let response = client
+            .post(&refresh_url)
+            .json(&serde_json::json!({
+                "refreshToken": refresh_token
+            }))
+            .send()
+            .await
+            .map_err(|e| AvilaError::Network(format!("Token refresh failed: {}", e)))?;
+
+        if !response.status().is_success() {
+            // Refresh failed, try full re-authentication
+            return self.authenticate().await;
+        }
+
+        let new_token: AuthToken = response
+            .json()
+            .await
+            .map_err(|e| AvilaError::Serialization(format!("Failed to parse refresh response: {}", e)))?;
+
+        let access_token = new_token.access_token.clone();
+
+        let mut token_lock = self.token.write().await;
+        *token_lock = Some(new_token);
+
+        Ok(access_token)
     }
 
     /// Clear authentication state

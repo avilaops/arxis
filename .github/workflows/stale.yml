@@ -1,0 +1,81 @@
+name: "Close stale issues and PRs"
+on:
+    schedule:
+        - cron: "0 0 * * *" # Run daily at midnight UTC
+
+permissions:
+    issues: write
+    pull-requests: write
+
+jobs:
+    stale:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/stale@v9
+              with:
+                  repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+                  # Issues configuration
+                  stale-issue-message: |
+                      👋 This issue has been automatically marked as stale because it has not had recent activity.
+
+                      It will be closed if no further activity occurs within the next 7 days.
+
+                      If you believe this issue is still relevant, please:
+                      - Add a comment explaining why it should remain open
+                      - Add additional context or information
+                      - Reference it in a related PR
+
+                      Thank you for your contributions to Arxis! 🏛️
+
+                  close-issue-message: |
+                      🔒 This issue has been automatically closed due to inactivity.
+
+                      If you believe this issue should be reopened, please:
+                      - Create a new issue and reference this one
+                      - Provide updated context or information
+                      - Reach out via GitHub Discussions
+
+                      Thank you for understanding!
+
+                  days-before-stale: 60
+                  days-before-close: 7
+                  stale-issue-label: "stale"
+                  exempt-issue-labels: "pinned,security,critical,roadmap,good first issue"
+
+                  # Pull requests configuration
+                  stale-pr-message: |
+                      👋 This pull request has been automatically marked as stale because it has not had recent activity.
+
+                      It will be closed if no further activity occurs within the next 14 days.
+
+                      If you're still working on this PR:
+                      - Rebase on latest main branch
+                      - Respond to review comments
+                      - Request a review
+                      - Add a comment with your progress
+
+                      Thank you for your contribution to Arxis! 🏛️
+
+                  close-pr-message: |
+                      🔒 This pull request has been automatically closed due to inactivity.
+
+                      If you'd like to continue this work:
+                      - Feel free to reopen this PR
+                      - Or create a new PR with updated changes
+
+                      Thank you for your contribution!
+
+                  days-before-pr-stale: 30
+                  days-before-pr-close: 14
+                  stale-pr-label: "stale"
+                  exempt-pr-labels: "pinned,work-in-progress,blocked"
+
+                  # Operations per run (avoid rate limits)
+                  operations-per-run: 100
+
+                  # Remove stale label when issues/PRs are updated
+                  remove-stale-when-updated: true
+
+                  # Enable debug output
+                  debug-only: false

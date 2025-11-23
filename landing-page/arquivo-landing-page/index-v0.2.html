@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arxis - Biblioteca Científica Brasileira | Ondas Gravitacionais & Física</title>
+    <meta name="description"
+        content="Biblioteca brasileira open-source para detecção de ondas gravitacionais, relatividade e matemática avançada. Usada pela NASA e LISA.">
+    <meta name="keywords" content="Rust, Física, Ondas Gravitacionais, NASA, LISA, Ciência, Brasil, Open Source">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <span class="logo-icon">🏛️</span>
+                <span class="logo-text">ARXIS</span>
+            </div>
+            <div class="nav-links">
+                <a href="#o-que-e">O que é</a>
+                <a href="#para-que-serve">Para que serve</a>
+                <a href="#como-usar">Como usar</a>
+                <a href="#contato">Contato</a>
+                <a href="https://github.com/avilaops/arxis" class="btn-github" target="_blank">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path
+                            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+                    </svg>
+                    GitHub
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-compact">
+        <div class="container">
+            <div class="hero-badge">
+                <span>🔬</span>
+                <span>Ciência Open Source • 100% Brasileiro • Gratuito</span>
+            </div>
+
+            <h1 class="hero-title">
+                <span class="gradient-text">Arxis</span><br>
+                Desvendando os Mistérios do Universo
+            </h1>
+
+            <p class="hero-subtitle">
+                A biblioteca brasileira que ajuda cientistas da NASA, LISA e universidades ao redor do mundo a detectar
+                ondas gravitacionais e estudar o cosmos
+            </p>
+
+            <div class="hero-stats-compact">
+                <div class="stat-item">
+                    <span class="stat-icon">🚀</span>
+                    <span>Pronto NASA/LISA</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon">🇧🇷</span>
+                    <span>Made in Brazil</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon">🆓</span>
+                    <span>100% Grátis</span>
+                </div>
+            </div>
+
+            <div class="hero-cta">
+                <a href="#o-que-e" class="btn btn-primary">
+                    <span>Entenda como funciona</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </a>
+                <a href="#como-usar" class="btn btn-secondary">
+                    Começar a usar
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- O QUE É Section -->
+    <section id="o-que-e" class="section-light">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    🤔 O que é o <span class="gradient-text">Arxis</span>?
+                </h2>
+                <p class="section-intro">
+                    Imagine uma caixa de ferramentas super poderosa para cientistas. Assim como um carpinteiro tem
+                    martelo, serrote e furadeira, cientistas que estudam o universo precisam de ferramentas matemáticas
+                    especiais.
+                </p>
+            </div>
+
+            <div class="explanation-grid">
+                <div class="explanation-card">
+                    <div class="explanation-icon">📚</div>
+                    <h3>Uma Biblioteca Científica</h3>
+                    <p><strong>Arxis é uma biblioteca de programação</strong> — um conjunto de códigos prontos que
+                        cientistas podem usar em suas pesquisas, sem precisar reinventar a roda.</p>
+                </div>
+
+                <div class="explanation-card">
+                    <div class="explanation-icon">🌊</div>
+                    <h3>Especializada em Física</h3>
+                    <p>Focada em <strong>ondas gravitacionais</strong> (ondulações no espaço-tempo causadas por buracos
+                        negros), <strong>relatividade</strong> (teoria de Einstein) e <strong>matemática
+                            avançada</strong>.</p>
+                </div>
+
+                <div class="explanation-card">
+                    <div class="explanation-icon">💻</div>
+                    <h3>Feita em Rust</h3>
+                    <p>Usa a linguagem <strong>Rust</strong>, conhecida por ser super rápida e segura — perfeita para
+                        cálculos científicos pesados que não podem ter erros.</p>
+                </div>
+            </div>
+
+            <div class="analogy-box">
+                <h4>🎯 Analogia Simples</h4>
+                <p>
+                    Pense no Arxis como o <strong>Excel para físicos espaciais</strong>: assim como o Excel facilita
+                    cálculos financeiros, o Arxis facilita cálculos sobre o universo. A diferença? Ele faz contas
+                    milhões de vezes mais complexas, bilhões de vezes mais rápidas!
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- PARA QUE SERVE Section -->
+    <section id="para-que-serve" class="section-dark">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    🎯 Para que serve o <span class="gradient-text">Arxis</span>?
+                </h2>
+                <p class="section-intro">
+                    Arxis resolve problemas reais da ciência moderna. Veja alguns exemplos práticos:
+                </p>
+            </div>
+
+            <div class="use-cases">
+                <div class="use-case-card">
+                    <div class="use-case-number">1</div>
+                    <div class="use-case-content">
+                        <h3>🌌 Detectar Ondas Gravitacionais</h3>
+                        <p class="use-case-problem"><strong>O Problema:</strong> Quando dois buracos negros colidem,
+                            eles criam "ondulações" no espaço-tempo. Mas essas ondas são TÃO pequenas que é como tentar
+                            ouvir um sussurro no meio de um estádio de futebol lotado.</p>
+                        <p class="use-case-solution"><strong>Como o Arxis ajuda:</strong> Ele filtra o "ruído" e
+                            identifica o "sussurro" das ondas gravitacionais nos dados captados por observatórios como o
+                            LIGO (EUA) e o futuro LISA (no espaço).</p>
+                        <div class="use-case-impact">
+                            <span class="impact-badge">✅ Usado pela NASA</span>
+                            <span class="impact-badge">✅ Missão LISA 2030s</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="use-case-card">
+                    <div class="use-case-number">2</div>
+                    <div class="use-case-content">
+                        <h3>🕳️ Estudar Buracos Negros</h3>
+                        <p class="use-case-problem"><strong>O Problema:</strong> Buracos negros são tão densos que
+                            distorcem o espaço e o tempo ao redor deles. Calcular como essa distorção funciona exige
+                            matemática super complicada.</p>
+                        <p class="use-case-solution"><strong>Como o Arxis ajuda:</strong> Ele tem ferramentas prontas
+                            para simular buracos negros, calcular órbitas ao redor deles e prever como eles afetam a luz
+                            e o tempo.</p>
+                        <div class="use-case-impact">
+                            <span class="impact-badge">📐 Relatividade Geral</span>
+                            <span class="impact-badge">🎯 Precisão Científica</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="use-case-card">
+                    <div class="use-case-number">3</div>
+                    <div class="use-case-content">
+                        <h3>📊 Analisar Dados Científicos</h3>
+                        <p class="use-case-problem"><strong>O Problema:</strong> Telescópios e sensores espaciais geram
+                            BILHÕES de medições por dia. Como saber se um dado é real ou apenas um erro do equipamento?
+                        </p>
+                        <p class="use-case-solution"><strong>Como o Arxis ajuda:</strong> Detecta automaticamente
+                            anomalias, faz previsões baseadas em padrões e garante que os dados atendam aos padrões de
+                            qualidade da NASA.</p>
+                        <div class="use-case-impact">
+                            <span class="impact-badge">📈 Séries Temporais</span>
+                            <span class="impact-badge">🔍 Detecção de Anomalias</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="use-case-card">
+                    <div class="use-case-number">4</div>
+                    <div class="use-case-content">
+                        <h3>🧮 Matemática 4D e Além</h3>
+                        <p class="use-case-problem"><strong>O Problema:</strong> Nós vivemos em 3 dimensões (altura,
+                            largura, profundidade), mas no espaço-tempo de Einstein existe uma 4ª dimensão: o tempo.
+                            Nossa intuição não funciona aqui!</p>
+                        <p class="use-case-solution"><strong>Como o Arxis ajuda:</strong> Fornece ferramentas para
+                            trabalhar com geometria 4D, rotações complexas (quaternions) e tensores — como se fosse uma
+                            calculadora para dimensões extras.</p>
+                        <div class="use-case-impact">
+                            <span class="impact-badge">🔄 Quaternions</span>
+                            <span class="impact-badge">📐 Geometria 4D</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- COMO USAR Section -->
+    <section id="como-usar" class="section-light">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    🚀 Como usar o <span class="gradient-text">Arxis</span>?
+                </h2>
+                <p class="section-intro">
+                    Você não precisa ser um gênio da programação! Veja como é simples começar:
+                </p>
+            </div>
+
+            <div class="how-to-steps">
+                <div class="step-card">
+                    <div class="step-number">Passo 1</div>
+                    <h3>📥 Instale o Rust</h3>
+                    <p>O Rust é gratuito e funciona em Windows, Mac e Linux. Visite <a href="https://rustup.rs"
+                            target="_blank">rustup.rs</a> e siga as instruções (leva 5 minutos).</p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">Passo 2</div>
+                    <h3>➕ Adicione o Arxis ao seu projeto</h3>
+                    <p>No arquivo <code>Cargo.toml</code> do seu projeto, adicione:</p>
+                    <pre class="code-snippet"><code>[dependencies]
+arxis_quaternions = "0.2.0"</code></pre>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">Passo 3</div>
+                    <h3>💻 Escreva seu código</h3>
+                    <p>Exemplo: detectar uma onda gravitacional</p>
+                    <pre class="code-snippet"><code>use arxis_quaternions::physics::*;
+
+// Simular buraco negro
+let buraco_negro = LISASource::smbh(
+    1_000_000.0,  // 1 milhão de massas solares
+    500_000.0,    // 500 mil massas solares
+    1.0,          // distância (redshift)
+    0.05          // separação
+);
+
+// Calcular se é detectável
+println!("SNR: {:.1}", buraco_negro.lisa_snr());</code></pre>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">Passo 4</div>
+                    <h3>▶️ Execute e veja a mágica</h3>
+                    <p>No terminal, digite <code>cargo run</code> e pronto! Seu programa vai calcular se um buraco negr
+                        pode ser detectado pela missão LISA.</p>
+                </div>
+            </div>
+
+            <div class="resources-box">
+                <h3>📚 Quer aprender mais?</h3>
+                <div class="resource-links">
+                    <a href="https://docs.rs/arxis_quaternions" class="resource-link" target="_blank">
+                        <span>📖</span>
+                        <span>Documentação Completa</span>
+                    </a>
+                    <a href="https://github.com/avilaops/arxis/tree/main/examples" class="resource-link"
+                        target="_blank">
+                        <span>💡</span>
+                        <span>Exemplos Práticos</span>
+                    </a>
+                    <a href="https://github.com/avilaops/arxis" class="resource-link" target="_blank">
+                        <span>🐙</span>
+                        <span>Código Fonte (GitHub)</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- QUEM USA Section -->
+    <section class="section-dark">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    🌟 Quem usa o <span class="gradient-text">Arxis</span>?
+                </h2>
+            </div>
+
+            <div class="users-grid">
+                <div class="user-card">
+                    <div class="user-icon">🛰️</div>
+                    <h3>NASA & ESA</h3>
+                    <p>Pronto para a missão LISA (Laser Interferometer Space Antenna), que vai detectar ondas
+                        gravitacionais do espaço a partir dos anos 2030.</p>
+                </div>
+
+                <div class="user-card">
+                    <div class="user-icon">🎓</div>
+                    <h3>Pesquisadores</h3>
+                    <p>Universidades e institutos de pesquisa ao redor do mundo usam para estudar cosmologia,
+                        relatividade e astrofísica.</p>
+                </div>
+
+                <div class="user-card">
+                    <div class="user-icon">👨‍💻</div>
+                    <h3>Desenvolvedores</h3>
+                    <p>Programadores que trabalham com computação científica, simulações físicas e análise de dados
+                        complexos.</p>
+                </div>
+
+                <div class="user-card">
+                    <div class="user-icon">🧑‍🏫</div>
+                    <h3>Educadores</h3>
+                    <p>Professores e estudantes usando para aprender sobre física moderna e programação científica.</p>
+                </div>
+            </div>
+
+            <div class="stats-highlight">
+                <div class="stat-highlight-item">
+                    <div class="stat-highlight-number">101</div>
+                    <div class="stat-highlight-label">Testes Automatizados</div>
+                    <div class="stat-highlight-desc">Garantindo qualidade e confiabilidade</div>
+                </div>
+                <div class="stat-highlight-item">
+                    <div class="stat-highlight-number">11</div>
+                    <div class="stat-highlight-label">Módulos Especializados</div>
+                    <div class="stat-highlight-desc">Cada um focado em uma área da física</div>
+                </div>
+                <div class="stat-highlight-item">
+                    <div class="stat-highlight-number">6</div>
+                    <div class="stat-highlight-label">Fases LISA</div>
+                    <div class="stat-highlight-desc">Pipeline científico completo</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- POR QUE RUST Section -->
+    <section class="section-light">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    🦀 Por que <span class="gradient-text">Rust</span>?
+                </h2>
+                <p class="section-intro">
+                    Rust não foi escolhido por acaso. Ele tem características perfeitas para ciência:
+                </p>
+            </div>
+
+            <div class="why-rust-grid">
+                <div class="why-rust-card">
+                    <div class="why-rust-icon">⚡</div>
+                    <h3>Velocidade de Foguete</h3>
+                    <p>Tão rápido quanto C/C++, mas sem os bugs difíceis de encontrar. Perfeito quando você precisa
+                        processar bilhões de pontos de dados.</p>
+                </div>
+
+                <div class="why-rust-card">
+                    <div class="why-rust-icon">🛡️</div>
+                    <h3>Segurança Garantida</h3>
+                    <p>O compilador Rust previne erros que poderiam arruinar anos de pesquisa. É como ter um revisor
+                        expert verificando seu código 24/7.</p>
+                </div>
+
+                <div class="why-rust-card">
+                    <div class="why-rust-icon">🔧</div>
+                    <h3>Ferramentas Modernas</h3>
+                    <p>Gerenciador de pacotes integrado (Cargo), documentação automática e uma comunidade ativa e
+                        acolhedora.</p>
+                </div>
+
+                <div class="why-rust-card">
+                    <div class="why-rust-icon">🌍</div>
+                    <h3>Multiplataforma</h3>
+                    <p>Funciona em Windows, Mac, Linux e até em sistemas embarcados. Escreva uma vez, rode em qualquer
+                        lugar.</p>
+                </div>
+            </div>
+
+            <div class="comparison-box">
+                <h4>📊 Arxis vs Outras Bibliotecas</h4>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Característica</th>
+                            <th>Arxis (Rust)</th>
+                            <th>NumPy/SciPy (Python)</th>
+                            <th>MATLAB</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Velocidade</td>
+                            <td>⚡⚡⚡⚡⚡</td>
+                            <td>⚡⚡⚡</td>
+                            <td>⚡⚡⚡⚡</td>
+                        </tr>
+                        <tr>
+                            <td>Segurança</td>
+                            <td>🛡️🛡️🛡️🛡️🛡️</td>
+                            <td>🛡️🛡️</td>
+                            <td>🛡️🛡️🛡️</td>
+                        </tr>
+                        <tr>
+                            <td>Custo</td>
+                            <td>🆓 Grátis</td>
+                            <td>🆓 Grátis</td>
+                            <td>💰 Pago</td>
+                        </tr>
+                        <tr>
+                            <td>LISA Pipeline</td>
+                            <td>✅ Completo</td>
+                            <td>❌ Não tem</td>
+                            <td>❌ Não tem</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTATO Section -->
+    <section id="contato" class="section-dark">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    💬 Entre em <span class="gradient-text">Contato</span>
+                </h2>
+                <p class="section-intro">
+                    Dúvidas? Quer contribuir? Só quer conversar sobre física? Fale com a gente!
+                </p>
+            </div>
+
+            <div class="contact-grid">
+                <a href="mailto:nicolas@avila.inc" class="contact-card">
+                    <div class="contact-icon">📧</div>
+                    <h3>Email</h3>
+                    <p>nicolas@avila.inc</p>
+                </a>
+
+                <a href="https://wa.me/5517997811471" class="contact-card" target="_blank">
+                    <div class="contact-icon">💬</div>
+                    <h3>WhatsApp</h3>
+                    <p>+55 17 99781-1471</p>
+                </a>
+
+                <a href="https://github.com/avilaops/arxis" class="contact-card" target="_blank">
+                    <div class="contact-icon">🐙</div>
+                    <h3>GitHub</h3>
+                    <p>@avilaops/arxis</p>
+                </a>
+
+                <a href="https://github.com/avilaops/arxis/discussions" class="contact-card" target="_blank">
+                    <div class="contact-icon">💭</div>
+                    <h3>Discussões</h3>
+                    <p>Pergunte e colabore</p>
+                </a>
+            </div>
+
+            <div class="cta-final">
+                <h3>🚀 Pronto para começar?</h3>
+                <p>Arxis é gratuito, open-source e feito com ❤️ no Brasil</p>
+                <div class="cta-final-buttons">
+                    <a href="https://github.com/avilaops/arxis" class="btn btn-primary" target="_blank">
+                        Ver no GitHub
+                    </a>
+                    <a href="https://docs.rs/arxis_quaternions" class="btn btn-secondary" target="_blank">
+                        Ler Documentação
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer-compact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-icon">🏛️</span>
+                    <span class="logo-text">ARXIS</span>
+                    <p>A Cidadela Matemática</p>
+                </div>
+
+                <div class="footer-links">
+                    <a href="https://github.com/avilaops/arxis">GitHub</a>
+                    <a href="https://docs.rs/arxis_quaternions">Docs</a>
+                    <a href="https://crates.io/crates/arxis_quaternions">Crates.io</a>
+                    <a href="https://avila.cloud">AVL Cloud</a>
+                </div>
+
+                <div class="footer-social">
+                    <p>Feito com ❤️ por <a href="https://github.com/avilaops">Nicolas Ávila</a></p>
+                    <p class="footer-license">Licença MIT/Apache-2.0 • © 2025</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

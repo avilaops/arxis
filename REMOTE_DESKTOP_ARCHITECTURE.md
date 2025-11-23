@@ -9,7 +9,7 @@
   - Hardware encoding (H.264/H.265/AV1)
   - Frame difference detection
   - Cursor overlay
-  
+
 - **`avx-events`** - Captura de input remoto
   - Keyboard injection
   - Mouse control
@@ -34,7 +34,7 @@
   - Canvas rendering
   - Input capture (keyboard/mouse)
   - Touch gestures (mobile)
-  
+
 - **`avx-cli`** - Cliente CLI para automação
   - Headless connections
   - Scripting support
@@ -58,7 +58,7 @@
   - Session negotiation
   - Device registration
   - Authentication integration
-  
+
 - **`aviladb`** - Persistência
   - Device inventory (hosts disponíveis)
   - Session state
@@ -83,7 +83,7 @@
   - TURN relay para fallback
   - ICE candidate gathering
   - Bandwidth management
-  
+
 - **`avx-http`** - HTTP/3 + QUIC transport
   - Low-latency transport
   - Multiplexing
@@ -101,7 +101,7 @@
   - RTP/RTCP handling
   - Congestion control (GCC)
   - Adaptive bitrate
-  
+
 - **`avila-compress`** - Compressão de frames
   - LZ4 para deltas pequenos
   - Parallel compression
@@ -124,7 +124,7 @@
   - Load balancing entre relays
   - Geographic distribution
   - Session recording
-  
+
 - **`avl-queue`** - Message queue para eventos
   - Pub/sub para input events
   - Session coordination
@@ -142,13 +142,13 @@
   - OAuth2 flows
   - MFA enforcement
   - Session management
-  
+
 - **`avl-secrets`** - Key management
   - Credential storage
   - Certificate management
   - Key rotation
   - Vault integration
-  
+
 - **`avx-telemetry`** - Audit logging
   - Security events
   - Access logs
@@ -167,13 +167,13 @@
   - OpenTelemetry traces
   - Log aggregation
   - Alerting rules
-  
+
 - **`avx-telemetry`** - Application metrics
   - Latency tracking
   - Throughput monitoring
   - Error rates
   - Custom dashboards
-  
+
 - **`avx-config`** - Configuration management
   - Environment configs
   - Feature flags
@@ -191,13 +191,13 @@
   - Permission matrix
   - Session viewer
   - Audit trail UI
-  
+
 - **`avl-auth`** - Granular permissions
   - View-only mode
   - Control permissions
   - File transfer ACL
   - Time-limited sessions
-  
+
 - **`landing-page-leptos`** - User consent flow
   - Permission request UI
   - Accept/Deny workflow

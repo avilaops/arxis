@@ -1,13 +1,25 @@
 use avx_config::AvxConfig;
+use avx_events::{Event, EventBus};
 use avx_telemetry::{self, AvxContext};
 use serde::{Deserialize, Serialize};
 use tokio::time::{sleep, Duration};
 use tracing::info;
 
-#[derive(Debug, Serialize, Deserialize)]
-struct AvxEvent {
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct SystemEvent {
     pub event_type: String,
-    pub payload: String,
+    pub message: String,
+    pub timestamp: i64,
+}
+
+impl Event for SystemEvent {
+    fn event_type(&self) -> &'static str {
+        "avx.system.event"
+    }
+
+    fn aggregate_id(&self) -> String {
+        "avx-events-system".to_string()
+    }
 }
 
 #[tokio::main]
@@ -24,22 +36,50 @@ async fn main() -> anyhow::Result<()> {
 
     avx_telemetry::init_tracing(&ctx);
 
-    info!("avx-events service started");
+    info!("🚀 AVX Events Service Started");
+    info!("📦 Event-driven architecture for Avila Experience Fabric");
 
-    // loop de consumo/produção (placeholder)
+    // Create event bus
+    let bus = EventBus::new();
+
+    // Subscribe to system events
+    let mut subscriber = bus.subscribe::<SystemEvent>().await;
+    tokio::spawn(async move {
+        while let Some(envelope) = subscriber.recv().await {
+            info!(
+                event_id = %envelope.metadata.event_id,
+                event_type = %envelope.event.event_type,
+                message = %envelope.event.message,
+                "📨 Event received"
+            );
+        }
+    });
+
+    // Wait a bit for subscriber to be ready
+    sleep(Duration::from_millis(100)).await;
+
+    // Publish initial event
+    bus.publish(SystemEvent {
+        event_type: "system.started".into(),
+        message: "AVX Events service is running".into(),
+        timestamp: chrono::Utc::now().timestamp_millis(),
+    })
+    .await?;
+
+    info!("✅ System ready. Publishing heartbeat events...");
+
+    // Event loop
+    let mut counter = 0;
     loop {
-        let evt = AvxEvent {
-            event_type: "avx.deep.heartbeat".into(),
-            payload: "ok".into(),
+        sleep(Duration::from_secs(10)).await;
+
+        counter += 1;
+        let evt = SystemEvent {
+            event_type: "system.heartbeat".into(),
+            message: format!("Heartbeat #{}", counter),
+            timestamp: chrono::Utc::now().timestamp_millis(),
         };
 
-        info!(
-            event_type = %evt.event_type,
-            payload = %evt.payload,
-            "sending event (mock - awaiting Kafka/NATS integration)"
-        );
-        // TODO: integração real com Kafka/NATS/Rabbit/etc.
-
-        sleep(Duration::from_secs(5)).await;
+        bus.publish(evt).await?;
     }
 }

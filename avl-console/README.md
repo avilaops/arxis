@@ -46,8 +46,20 @@
 - **🎨 Visual Query Builder**: Drag-and-drop SQL constructor
 - **🔬 ML Monitoring**: Anomaly detection and predictive insights
 - **👥 Team Management**: Enterprise RBAC with granular permissions
+- **🧠 Machine Learning**: Complete ML platform powered by Avila ML v1.0
 
-### 🏆 Level 4.0+ Enhancements (NEW!)
+### 🧠 Avila ML Integration (NEW!)
+
+- **📦 Model Management**: Create, train, deploy, and version ML models
+- **📊 Dataset Management**: Upload, version, and explore training datasets
+- **🔄 Training Jobs**: Submit, monitor, and manage training workflows
+- **⚡ Inference API**: Real-time and batch inference with model versioning
+- **🧪 Experiment Tracking**: MLflow-style experiment management
+- **🌟 4D Convolutions**: Native support for spacetime data (LIGO, climate, medical)
+- **📈 Performance Monitoring**: Track model accuracy, latency, and drift
+- **🎯 AutoML**: Automated hyperparameter tuning (coming soon)
+
+### 🏆 Level 4.0+ Enhancements
 
 - **⚡ Performance Benchmarks**: Criterion.rs with detailed performance tracking
 - **🔄 CI/CD Pipeline**: Automated testing, security audits, and deployments
@@ -59,6 +71,7 @@
 
 > 📖 **Documentation**:
 > - [AI_ASSISTANT.md](AI_ASSISTANT.md) - Natural Language to SQL Guide
+> - [ML_INTEGRATION.md](ML_INTEGRATION.md) - Machine Learning Platform Guide
 > - [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) - Complete Features Documentation
 > - [DEPLOYMENT.md](DEPLOYMENT.md) - Production Deployment Guide
 > - [SECURITY.md](SECURITY.md) - Security Policy and Best Practices
@@ -88,10 +101,10 @@
 │   Auth • Rate Limiting • CORS • Compression • Trace   │
 └───────────────────────────────────────────────────────┘
                            ↓
-┌──────────────┬──────────────┬──────────────┬─────────┐
-│   AvilaDB    │   Storage    │ Observability│ Billing │
-│   Explorer   │   Browser    │   Dashboard  │ Tracker │
-└──────────────┴──────────────┴──────────────┴─────────┘
+┌──────────────┬──────────────┬──────────────┬─────────┬─────────┐
+│   AvilaDB    │   Storage    │ Observability│ Billing │ Avila ML│
+│   Explorer   │   Browser    │   Dashboard  │ Tracker │  Engine │
+└──────────────┴──────────────┴──────────────┴─────────┴─────────┘
 ```
 
 ## 🚀 Quick Start
@@ -140,7 +153,49 @@ AVL_CONSOLE_PORT=3000 cargo run --example basic
 💾 Storage:  http://localhost:8080/storage
 📈 Metrics:  http://localhost:8080/observability
 💰 Billing:  http://localhost:8080/billing
+🧠 ML:       http://localhost:8080/ml
 ```
+
+## 🧠 Machine Learning Features
+
+AVL Console now includes a complete ML platform powered by **Avila ML v1.0**:
+
+### Quick ML Example
+
+```bash
+# Enable ML features
+cargo run --features with-ml
+
+# Access ML Dashboard
+open http://localhost:8080/ml
+```
+
+### Key ML Capabilities
+
+1. **Model Registry** - Version and manage ML models
+2. **Training Jobs** - Submit and monitor training workflows
+3. **Inference API** - Real-time and batch predictions
+4. **Experiment Tracking** - MLflow-style experiment management
+5. **4D Convolutions** - Native spacetime data support (unique!)
+
+### Supported Model Types
+
+- Linear/Dense networks
+- 2D CNNs (images)
+- **4D CNNs (spacetime data)** 🌟
+- Transformers & Attention
+- LSTMs & RNNs
+- Custom architectures
+
+### Use Cases
+
+- 🌌 **Gravitational wave detection** (LIGO/LISA)
+- 🌍 **Climate modeling** (3D space + time)
+- 🧬 **Medical imaging** (CT/MRI sequences)
+- 📸 **Image classification** (MNIST, CIFAR)
+- 💬 **NLP** (transformers)
+
+> 📖 See [ML_INTEGRATION.md](ML_INTEGRATION.md) for complete guide
 
 ## ⚙️ Configuration
 
@@ -331,8 +386,8 @@ cp .env.example .env
 ### Docker Compose Configuration
 
 The `docker-compose.yml` includes:
-- **AVL Console** - Developer portal with AI Assistant
-- **AvilaDB** - Distributed NoSQL database
+- **AVL Console** - Developer portal with AI Assistant & ML Platform
+- **AvilaDB** - Distributed NoSQL database with vector search
 - **AVL Auth** - Identity and access management
 - **AVX Telemetry** - Observability and monitoring
 - **Redis** - Cache and session store
@@ -386,6 +441,11 @@ AI_BACKEND=pattern  # or openai, anthropic
 OPENAI_API_KEY=your-key
 ANTHROPIC_API_KEY=your-key
 
+# Optional - ML Features
+AVL_ML_ENABLED=true
+AVL_ML_MAX_TRAINING_JOBS=5
+AVL_ML_MODEL_CACHE_SIZE_GB=10
+
 # Optional - Performance
 RATE_LIMIT_REQUESTS_PER_MINUTE=60
 WS_MAX_CONNECTIONS=1000
@@ -402,12 +462,13 @@ avl-console = { version = "0.3", features = ["production"] }
 
 Available features:
 - `default` - Basic telemetry
-- `production` - All production integrations (Auth + AvilaDB + Telemetry + Storage)
+- `production` - All production integrations (Auth + AvilaDB + Telemetry + Storage + ML)
 - `with-auth` - AVL Auth integration
 - `with-aviladb` - AvilaDB SDK
 - `with-telemetry` - AVX Telemetry + Avila Telemetry
 - `with-storage` - AVL Storage integration
 - `with-gateway` - AVX Gateway integration
+- `with-ml` - Avila ML integration (machine learning platform)
 
 ### Monitoring & Observability
 

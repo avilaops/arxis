@@ -525,6 +525,7 @@ pub struct MLInsight {
 
 /// Time series data
 #[derive(Debug, Serialize, Deserialize)]
+#[allow(dead_code)]
 struct TimeSeriesData {
     labels: Vec<String>,
     values: Vec<f64>,
@@ -556,7 +557,7 @@ async fn monitoring_ui() -> impl IntoResponse {
 
 /// Get current metrics with anomaly detection
 async fn get_metrics(
-    State(state): State<Arc<ConsoleState>>,
+    State(_state): State<Arc<ConsoleState>>,
 ) -> Result<Json<MetricsResponse>, ConsoleError> {
     // Simulate metrics with ML anomaly detection
     let metrics = vec![
@@ -633,7 +634,7 @@ async fn get_metrics(
 
 /// Get active alerts
 async fn get_alerts(
-    State(state): State<Arc<ConsoleState>>,
+    State(_state): State<Arc<ConsoleState>>,
 ) -> Result<Json<AlertsResponse>, ConsoleError> {
     let alerts = vec![
         Alert {
@@ -676,7 +677,7 @@ async fn get_alerts(
 
 /// Get ML-powered insights
 async fn get_insights(
-    State(state): State<Arc<ConsoleState>>,
+    State(_state): State<Arc<ConsoleState>>,
 ) -> Result<Json<InsightsResponse>, ConsoleError> {
     let insights = vec![
         MLInsight {
@@ -704,7 +705,7 @@ async fn get_insights(
 
 /// Resolve an alert
 async fn resolve_alert(
-    State(state): State<Arc<ConsoleState>>,
+    State(_state): State<Arc<ConsoleState>>,
     axum::extract::Path(alert_id): axum::extract::Path<String>,
 ) -> Result<Json<serde_json::Value>, ConsoleError> {
     // In production, update alert status in database
@@ -716,7 +717,7 @@ async fn resolve_alert(
 
 /// Ignore an alert
 async fn ignore_alert(
-    State(state): State<Arc<ConsoleState>>,
+    State(_state): State<Arc<ConsoleState>>,
     axum::extract::Path(alert_id): axum::extract::Path<String>,
 ) -> Result<Json<serde_json::Value>, ConsoleError> {
     // In production, update alert status in database

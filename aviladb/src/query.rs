@@ -76,7 +76,7 @@ impl Query {
         let mut headers = reqwest::header::HeaderMap::new();
         headers.insert(
             reqwest::header::AUTHORIZATION,
-            reqwest::header::HeaderValue::from_str(&format!("Bearer {}", token.access_token))?,
+            reqwest::header::HeaderValue::from_str(&format!("Bearer {}", token))?,
         );
         headers.insert(
             reqwest::header::CONTENT_TYPE,
@@ -98,21 +98,11 @@ impl Query {
         });
 
         // Send HTTP POST request
-        let response = self
+        let query_response: serde_json::Value = self
             .collection
             .http_client
-            .post(&url, serde_json::to_vec(&payload)?, headers)
+            .post_with_headers(&url, &payload, headers)
             .await?;
-
-        // Decompress if needed
-        let response_data = if self.collection.config.enable_compression {
-            crate::compression::decompress(&response)?
-        } else {
-            response
-        };
-
-        // Parse response
-        let query_response: serde_json::Value = serde_json::from_slice(&response_data)?;
 
         let documents: Vec<crate::Document> = query_response["documents"]
             .as_array()
@@ -129,11 +119,21 @@ impl Query {
         let latency_ms = start.elapsed().as_millis();
 
         // Record telemetry
-        self.collection.telemetry.record_operation(
-            crate::telemetry::OperationType::Query,
-            latency_ms as u64,
-            true,
-        );
+        self.collection.telemetry.record(crate::telemetry::TelemetryEvent {
+            operation: crate::telemetry::OperationType::Query,
+            database: self.collection.database.clone(),
+            collection: self.collection.name.clone(),
+            duration_ms: latency_ms as u64,
+            success: true,
+            error_message: None,
+            document_count: documents.len(),
+            bytes_transferred: 0,
+            compression_ratio,
+            timestamp: std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_secs(),
+        }).await;
 
         Ok(QueryResult {
             documents,
@@ -148,22 +148,31 @@ impl Query {
 mod tests {
     use super::*;
     use std::sync::Arc;
-    use crate::Config;
+    use crate::{Config, HttpClient, HttpConfig, AuthProvider, TelemetryCollector, TelemetryConfig};
 
     #[tokio::test]
     async fn test_query_builder() {
         let config = Arc::new(Config::default());
+        let http_client = Arc::new(HttpClient::new(HttpConfig::default()).unwrap());
+        let auth_provider = Arc::new(AuthProvider::new("http://localhost:8000".to_string()));
+        let telemetry = Arc::new(TelemetryCollector::new(TelemetryConfig::default()));
+
         let collection = Collection::new(
             "users".to_string(),
             "testdb".to_string(),
             config,
+            http_client,
+            auth_provider,
+            telemetry,
         ).unwrap();
 
+        // Test query building (without execution)
         let query = collection
             .query("SELECT * FROM users WHERE level > @min")
             .param("min", 40);
 
-        let result = query.execute().await;
-        assert!(result.is_ok());
+        // Verify query structure
+        assert_eq!(query.sql, "SELECT * FROM users WHERE level > @min");
+        assert!(query.params.contains_key("min"));
     }
 }

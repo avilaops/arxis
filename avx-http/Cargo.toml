@@ -24,6 +24,12 @@ serde_json = "1.0"
 urlencoding = "2.1"
 futures = "0.3"
 async-trait = "0.1"
+tracing = "0.1"
+chrono = "0.4"
+
+# AVX Platform dependencies
+avx-events = { version = "0.1", path = "../avx-events", optional = true }
+avx-telemetry = { version = "0.1", path = "../avx-telemetry", optional = true }
 
 [target.'cfg(unix)'.dependencies]
 libc = "0.2"
@@ -40,8 +46,10 @@ default = ["client", "server"]
 client = []
 server = []
 compression = []
-telemetry = []
+telemetry = ["avx-telemetry"]
 aviladb = []
+events = ["avx-events"]
+full = ["client", "server", "telemetry", "events"]
 
 [[bench]]
 name = "client_bench"

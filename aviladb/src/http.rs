@@ -89,6 +89,24 @@ impl HttpClient {
         }).await
     }
 
+    /// Execute GET request with custom headers
+    pub async fn get_with_headers<T: for<'de> Deserialize<'de>>(
+        &self,
+        path: &str,
+        headers: reqwest::header::HeaderMap,
+    ) -> Result<T> {
+        let url = format!("{}{}", self.config.endpoint, path);
+        self.execute_with_retry(|| async {
+            let response = self.client.get(&url)
+                .headers(headers.clone())
+                .send()
+                .await
+                .map_err(|e| AvilaError::Network(e.to_string()))?;
+
+            Self::handle_response(response).await
+        }).await
+    }
+
     /// Execute POST request with retry logic
     pub async fn post<T: Serialize, R: for<'de> Deserialize<'de>>(
         &self,
@@ -98,6 +116,26 @@ impl HttpClient {
         let url = format!("{}{}", self.config.endpoint, path);
         self.execute_with_retry(|| async {
             let response = self.client.post(&url)
+                .json(body)
+                .send()
+                .await
+                .map_err(|e| AvilaError::Network(e.to_string()))?;
+
+            Self::handle_response(response).await
+        }).await
+    }
+
+    /// Execute POST request with custom headers
+    pub async fn post_with_headers<T: Serialize, R: for<'de> Deserialize<'de>>(
+        &self,
+        path: &str,
+        body: &T,
+        headers: reqwest::header::HeaderMap,
+    ) -> Result<R> {
+        let url = format!("{}{}", self.config.endpoint, path);
+        self.execute_with_retry(|| async {
+            let response = self.client.post(&url)
+                .headers(headers.clone())
                 .json(body)
                 .send()
                 .await
@@ -125,11 +163,53 @@ impl HttpClient {
         }).await
     }
 
+    /// Execute PATCH request with custom headers
+    pub async fn patch_with_headers<T: Serialize, R: for<'de> Deserialize<'de>>(
+        &self,
+        path: &str,
+        body: &T,
+        headers: reqwest::header::HeaderMap,
+    ) -> Result<R> {
+        let url = format!("{}{}", self.config.endpoint, path);
+        self.execute_with_retry(|| async {
+            let response = self.client.patch(&url)
+                .headers(headers.clone())
+                .json(body)
+                .send()
+                .await
+                .map_err(|e| AvilaError::Network(e.to_string()))?;
+
+            Self::handle_response(response).await
+        }).await
+    }
+
     /// Execute DELETE request with retry logic
     pub async fn delete(&self, path: &str) -> Result<()> {
         let url = format!("{}{}", self.config.endpoint, path);
         self.execute_with_retry(|| async {
             let response = self.client.delete(&url)
+                .send()
+                .await
+                .map_err(|e| AvilaError::Network(e.to_string()))?;
+
+            if response.status().is_success() {
+                Ok(())
+            } else {
+                Err(AvilaError::Network(format!("DELETE failed: {}", response.status())))
+            }
+        }).await
+    }
+
+    /// Execute DELETE request with custom headers
+    pub async fn delete_with_headers(
+        &self,
+        path: &str,
+        headers: reqwest::header::HeaderMap,
+    ) -> Result<()> {
+        let url = format!("{}{}", self.config.endpoint, path);
+        self.execute_with_retry(|| async {
+            let response = self.client.delete(&url)
+                .headers(headers.clone())
                 .send()
                 .await
                 .map_err(|e| AvilaError::Network(e.to_string()))?;

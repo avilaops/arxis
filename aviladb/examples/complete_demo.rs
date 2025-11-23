@@ -20,7 +20,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // ═══════════════════════════════════════════════════════════
     println!("⚙️  CONFIGURATION");
     println!("─────────────────────────────────────────────────────");
-    
+
     let config = Config::default();
     // Note: Config is already set up with good defaults:
     // - compression enabled (level 6)
@@ -28,11 +28,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // - timeout: 60s
     // - cache enabled (TTL: 300s, max: 1000 entries)
 
-    println!("✓ Compression: {} (level {})", 
+    println!("✓ Compression: {} (level {})",
         config.enable_compression, config.compression_level);
     println!("✓ Max connections: {}", config.max_connections);
     println!("✓ Timeout: {}s", config.request_timeout);
-    println!("✓ Cache: {} (TTL: {}s, max: {} entries)\n", 
+    println!("✓ Cache: {} (TTL: {}s, max: {} entries)\n",
         if config.enable_cache { "enabled" } else { "disabled" },
         config.cache_ttl, config.max_cache_entries);
 
@@ -41,13 +41,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // ═══════════════════════════════════════════════════════════
     println!("🔌 CLIENT & DATABASE");
     println!("─────────────────────────────────────────────────────");
-    
+
     let client = AvilaClient::connect("http://localhost:8000").await?;
     println!("✓ Connected to AvilaDB");
-    
+
     let db = client.database("demo_db").await?;
     println!("✓ Database: demo_db");
-    
+
     let products = db.collection("products").await?;
     println!("✓ Collection: products\n");
 
@@ -56,7 +56,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // ═══════════════════════════════════════════════════════════
     println!("📄 DOCUMENT OPERATIONS");
     println!("─────────────────────────────────────────────────────");
-    
+
     // Single insert
     let product = Document::new()
         .set("productId", "PROD-001")
@@ -74,7 +74,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let result = products.insert(product).await?;
     println!("✓ Inserted product: {}", result.id);
-    println!("  Size: {} bytes ({:.2} KB)", 
+    println!("  Size: {} bytes ({:.2} KB)",
         result.size_bytes, result.size_bytes as f64 / 1024.0);
     println!("  Compression: {:.2}x", result.compression_ratio);
     println!("  Latency: {}ms", result.latency_ms);
@@ -97,10 +97,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let avg_compression: f64 = batch_results.iter()
         .map(|r| r.compression_ratio)
         .sum::<f64>() / batch_results.len() as f64;
-    
+
     println!("✓ Batch inserted {} products", batch_results.len());
     println!("  Avg compression: {:.2}x", avg_compression);
-    println!("  Avg latency: {}ms", 
+    println!("  Avg latency: {}ms",
         batch_results.iter().map(|r| r.latency_ms).sum::<u128>() / batch_results.len() as u128);
 
     // ═══════════════════════════════════════════════════════════
@@ -108,7 +108,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // ═══════════════════════════════════════════════════════════
     println!("\n🔍 QUERY OPERATIONS");
     println!("─────────────────────────────────────────────────────");
-    
+
     let expensive_products = products
         .query("SELECT * FROM products WHERE price > @min_price AND category = @cat")
         .param("min_price", 500.0)
@@ -126,7 +126,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // ═══════════════════════════════════════════════════════════
     println!("\n✏️  UPDATE & DELETE OPERATIONS");
     println!("─────────────────────────────────────────────────────");
-    
+
     // Update with safety validation
     let updated = products
         .update()
@@ -154,7 +154,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // ═══════════════════════════════════════════════════════════
     println!("\n🎯 VECTOR SEARCH (HNSW Algorithm)");
     println!("─────────────────────────────────────────────────────");
-    
+
     // Create product embeddings (simulated - in production use ML models)
     let mut product_index = HnswIndex::new(4, DistanceMetric::Cosine)
         .with_m(16)
@@ -180,7 +180,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("✓ Top 5 similar products:");
     for (idx, result) in similar.iter().enumerate() {
-        println!("  {}. Product {} (similarity: {:.3})", 
+        println!("  {}. Product {} (similarity: {:.3})",
             idx + 1, result.id, 1.0 - result.distance);
     }
 
@@ -189,7 +189,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // ═══════════════════════════════════════════════════════════
     println!("\n🔑 HIERARCHICAL PARTITION KEYS");
     println!("─────────────────────────────────────────────────────");
-    
+
     // Create multi-level partition key
     let hpk = HierarchicalPartitionKey::triple(
         "store_br_sp",      // Store location
@@ -211,16 +211,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Test partition strategies
     println!("\n📊 Partition Strategies:");
-    
+
     let strategies = vec![
-        ("Single", PartitionStrategy::Single { 
-            field: "productId".to_string() 
+        ("Single", PartitionStrategy::Single {
+            field: "productId".to_string()
         }),
-        ("Hierarchical", PartitionStrategy::Hierarchical { 
-            fields: vec!["store".to_string(), "category".to_string()] 
+        ("Hierarchical", PartitionStrategy::Hierarchical {
+            fields: vec!["store".to_string(), "category".to_string()]
         }),
-        ("Synthetic", PartitionStrategy::Synthetic { 
-            num_partitions: 100 
+        ("Synthetic", PartitionStrategy::Synthetic {
+            num_partitions: 100
         }),
     ];
 
@@ -248,13 +248,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // ═══════════════════════════════════════════════════════════
     println!("\n📈 TELEMETRY & STATISTICS");
     println!("─────────────────────────────────────────────────────");
-    
+
     let stats = client.stats().await;
     println!("Client Statistics:");
-    println!("  HTTP requests: {} (successes: {}, failures: {})", 
+    println!("  HTTP requests: {} (successes: {}, failures: {})",
         stats.http_requests, stats.http_successes, stats.http_failures);
     println!("  Avg latency: {}ms", stats.avg_latency_ms);
-    println!("  Cache hits: {} / misses: {} (hit rate: {:.1}%)", 
+    println!("  Cache hits: {} / misses: {} (hit rate: {:.1}%)",
         stats.cache_hits, stats.cache_misses, stats.cache_hit_rate * 100.0);
 
     // ═══════════════════════════════════════════════════════════
@@ -263,7 +263,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("\n═══════════════════════════════════════════════════════");
     println!("  ✅ DEMO COMPLETE - All Features Demonstrated!");
     println!("═══════════════════════════════════════════════════════");
-    
+
     println!("\n📋 Features Showcased:");
     println!("  ✓ Configuration with production settings");
     println!("  ✓ Single & batch document operations");

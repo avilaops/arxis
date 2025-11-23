@@ -1,0 +1,110 @@
+warning: profiles for the non root package will be ignored, specify profiles at the workspace root:
+package:   C:\Users\nicol\Arxis\avila-ml\Cargo.toml
+workspace: C:\Users\nicol\Arxis\Cargo.toml
+warning: profiles for the non root package will be ignored, specify profiles at the workspace root:
+package:   C:\Users\nicol\Arxis\avila-arrow\Cargo.toml
+workspace: C:\Users\nicol\Arxis\Cargo.toml
+warning: profiles for the non root package will be ignored, specify profiles at the workspace root:
+package:   C:\Users\nicol\Arxis\avila-compress\Cargo.toml
+workspace: C:\Users\nicol\Arxis\Cargo.toml
+warning: profiles for the non root package will be ignored, specify profiles at the workspace root:
+package:   C:\Users\nicol\Arxis\avx-http\Cargo.toml
+workspace: C:\Users\nicol\Arxis\Cargo.toml
+   Compiling avx-events v0.1.0 (C:\Users\nicol\Arxis\avx-events)
+warning: unexpected `cfg` condition value: `opcua`
+  --> avx-events\src\lib.rs:66:11
+   |
+66 | #[cfg(any(feature = "opcua", feature = "mqtt", feature = "timeseries"))]
+   |           ^^^^^^^^^^^^^^^^^
+   |
+   = note: expected values for `feature` are: `default`, `full`, `industry40`, `mqtt`, `redis`, and `timeseries`
+   = help: consider adding `opcua` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: `#[warn(unexpected_cfgs)]` on by default
+
+warning: unexpected `cfg` condition value: `opcua`
+ --> avx-events\src\industry40\mod.rs:6:7
+  |
+6 | #[cfg(feature = "opcua")]
+  |       ^^^^^^^^^^^^^^^^^
+  |
+  = note: expected values for `feature` are: `default`, `full`, `industry40`, `mqtt`, `redis`, and `timeseries`
+  = help: consider adding `opcua` as a feature in `Cargo.toml`
+  = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+error[E0308]: mismatched types
+   --> avx-events\src\industry40\timeseries.rs:118:25
+    |
+118 |             .query(Some(query))
+    |                    ---- ^^^^^ expected `Query`, found `String`
+    |                    |
+    |                    arguments to this enum variant are incorrect
+    |
+help: the type constructed contains `std::string::String` due to the type of the argument passed
+   --> avx-events\src\industry40\timeseries.rs:118:20
+    |
+118 |             .query(Some(query))
+    |                    ^^^^^-----^
+    |                         |
+    |                         this argument influences the type of `Some`
+note: tuple variant defined here
+   --> C:\Users\nicol\.rustup\toolchains\stable-x86_64-pc-windows-msvc\lib/rustlib/src/rust\library\core\src\option.rs:602:5
+    |
+602 |     Some(#[stable(feature = "rust1", since = "1.0.0")] T),
+    |     ^^^^
+
+error[E0308]: mismatched types
+   --> avx-events\src\industry40\timeseries.rs:146:22
+    |
+146 |                 Some(&predicate),
+    |                 ---- ^^^^^^^^^^ expected `String`, found `&String`
+    |                 |
+    |                 arguments to this enum variant are incorrect
+    |
+help: the type constructed contains `&std::string::String` due to the type of the argument passed
+   --> avx-events\src\industry40\timeseries.rs:146:17
+    |
+146 |                 Some(&predicate),
+    |                 ^^^^^----------^
+    |                      |
+    |                      this argument influences the type of `Some`
+note: tuple variant defined here
+   --> C:\Users\nicol\.rustup\toolchains\stable-x86_64-pc-windows-msvc\lib/rustlib/src/rust\library\core\src\option.rs:602:5
+    |
+602 |     Some(#[stable(feature = "rust1", since = "1.0.0")] T),
+    |     ^^^^
+help: consider removing the borrow
+    |
+146 -                 Some(&predicate),
+146 +                 Some(predicate),
+    |
+
+error[E0308]: arguments to this method are incorrect
+   --> avx-events\src\industry40\timeseries.rs:142:14
+    |
+142 |             .delete(
+    |              ^^^^^^
+    |
+note: expected `NaiveDateTime`, found `DateTime<Utc>`
+   --> avx-events\src\industry40\timeseries.rs:144:17
+    |
+144 |                 before,
+    |                 ^^^^^^
+    = note: expected struct `NaiveDateTime`
+               found struct `DateTime<Utc>`
+note: expected `NaiveDateTime`, found `DateTime<Utc>`
+   --> avx-events\src\industry40\timeseries.rs:145:17
+    |
+145 |                 Utc::now(),
+    |                 ^^^^^^^^^^
+    = note: expected struct `NaiveDateTime`
+               found struct `DateTime<Utc>`
+note: method defined here
+   --> C:\Users\nicol\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\influxdb2-0.5.2\src\api\delete.rs:27:18
+    |
+ 27 |     pub async fn delete(
+    |                  ^^^^^^
+
+For more information about this error, try `rustc --explain E0308`.
+warning: `avx-events` (lib) generated 2 warnings
+error: could not compile `avx-events` (lib) due to 3 previous errors; 2 warnings emitted

@@ -134,27 +134,27 @@ impl SignalingState {
     /// Remove um peer
     async fn remove_peer(&self, peer_id: &str) {
         self.peers.write().await.remove(peer_id);
-        
+
         // Remover das sessões
         let mut sessions = self.sessions.write().await;
         for session in sessions.values_mut() {
             session.peers.retain(|id| id != peer_id);
         }
-        
+
         info!("Peer {} desconectado", peer_id);
     }
 
     /// Envia mensagem para um peer específico
     async fn send_to_peer(&self, peer_id: &str, msg: &SignalMessage) -> Result<(), String> {
         let peers = self.peers.read().await;
-        
+
         if let Some(peer) = peers.get(peer_id) {
             let json = serde_json::to_string(msg)
                 .map_err(|e| format!("Erro ao serializar: {}", e))?;
-            
+
             peer.tx.send(Message::Text(json))
                 .map_err(|_| "Peer desconectado".to_string())?;
-            
+
             Ok(())
         } else {
             Err(format!("Peer {} não encontrado", peer_id))
@@ -169,15 +169,15 @@ impl SignalingState {
         exclude_peer: Option<&str>,
     ) {
         let sessions = self.sessions.read().await;
-        
+
         if let Some(session) = sessions.get(session_id) {
             let peers = self.peers.read().await;
-            
+
             for peer_id in &session.peers {
                 if Some(peer_id.as_str()) == exclude_peer {
                     continue;
                 }
-                
+
                 if let Some(peer) = peers.get(peer_id) {
                     if let Ok(json) = serde_json::to_string(msg) {
                         let _ = peer.tx.send(Message::Text(json));
@@ -190,7 +190,7 @@ impl SignalingState {
     /// Adiciona peer a uma sessão
     async fn join_session(&self, session_id: &str, peer_id: &str) -> Result<(), String> {
         let mut sessions = self.sessions.write().await;
-        
+
         // Criar sessão se não existir
         let session = sessions.entry(session_id.to_string()).or_insert_with(|| {
             Session {
@@ -217,10 +217,10 @@ impl SignalingState {
     /// Remove peer de uma sessão
     async fn leave_session(&self, session_id: &str, peer_id: &str) {
         let mut sessions = self.sessions.write().await;
-        
+
         if let Some(session) = sessions.get_mut(session_id) {
             session.peers.retain(|id| id != peer_id);
-            
+
             // Remover sessão se vazia
             if session.peers.is_empty() {
                 sessions.remove(session_id);
@@ -289,13 +289,13 @@ async fn handle_websocket_with_id(
     let send_task = tokio::spawn(async move {
         use futures_util::SinkExt;
         let mut sender = sender;
-        
+
         while let Some(msg) = rx.recv().await {
             if sender.send(msg).await.is_err() {
                 break;
             }
         }
-        
+
         debug!("Send task finalizada para peer {}", peer_id_clone);
     });
 
@@ -312,7 +312,7 @@ async fn handle_websocket_with_id(
                 break;
             }
         }
-        
+
         debug!("Receive task finalizada para peer {}", peer_id_clone);
     });
 
@@ -397,16 +397,16 @@ mod tests {
     #[tokio::test]
     async fn test_signaling_state() {
         let state = SignalingState::new();
-        
+
         let (tx, _rx) = mpsc::unbounded_channel();
         let peer = Peer {
             id: "peer1".to_string(),
             session_id: None,
             tx,
         };
-        
+
         state.add_peer(peer).await;
-        
+
         let peers = state.peers.read().await;
         assert!(peers.contains_key("peer1"));
     }
@@ -414,17 +414,17 @@ mod tests {
     #[tokio::test]
     async fn test_join_session() {
         let state = SignalingState::new();
-        
+
         let (tx, _rx) = mpsc::unbounded_channel();
         let peer = Peer {
             id: "peer1".to_string(),
             session_id: None,
             tx,
         };
-        
+
         state.add_peer(peer).await;
         state.join_session("session1", "peer1").await.unwrap();
-        
+
         let sessions = state.sessions.read().await;
         assert!(sessions.contains_key("session1"));
         assert!(sessions.get("session1").unwrap().peers.contains(&"peer1".to_string()));
