@@ -1,10 +1,10 @@
 [package]
 name = "avila"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 authors = ["Nícolas Ávila <nicolas@avila.cloud>"]
 license = "MIT OR Apache-2.0"
-description = "AVL Platform - High-performance cloud platform for Brazil and LATAM"
+description = "AVL Cloud Platform - Suite completa para computação de alto desempenho, ML, databases e cloud services otimizada para Brasil e LATAM"
 repository = "https://github.com/avilaops/arxis"
 homepage = "https://avila.cloud"
 documentation = "https://docs.avila.cloud"
@@ -13,29 +13,69 @@ categories = ["development-tools", "database", "web-programming", "network-progr
 readme = "README.md"
 
 [dependencies]
-# Core libraries - versões publicadas
+# Core Data Science & ML
 avila-compress = { version = "0.8", path = "../avila-compress", optional = true }
 avila-clustering = { version = "0.1", path = "../avila-clustering", optional = true }
 avila-linalg = { version = "0.1", path = "../avila-linalg", optional = true }
 avila-math = { version = "0.1", path = "../avila-math", optional = true }
 avila-arrow = { version = "0.1", path = "../avila-arrow", optional = true }
 avila-telemetry = { version = "0.1", path = "../avila-telemetry", optional = true }
+avila-tokenizers = { version = "0.1", path = "../avila-tokenizer", optional = true }
 
-# CLI and config
+# Database
+aviladb = { version = "0.1", path = "../aviladb", optional = true }
+
+# AVL Cloud Services
+avl-auth = { version = "0.1", path = "../avl-auth", optional = true }
+avl-console = { version = "0.3", path = "../avl-console", optional = true }
+avl-observability = { version = "0.1", path = "../avl-observability", optional = true }
+avl-queue = { version = "0.1", path = "../avl-queue", optional = true }
+avl-secrets = { version = "0.1", path = "../avl-secrets", optional = true }
+avl-storage = { version = "0.1", path = "../avl-storage", optional = true }
+
+# AVX Runtime & Networking
 avx-cli = { version = "0.1", path = "../avx-cli", optional = true }
 avx-config = { version = "0.1", path = "../avx-config", optional = true }
+avx-events = { version = "0.1", path = "../avx-events", optional = true }
 avx-http = { version = "0.2", path = "../avx-http", optional = true }
+avx-telemetry = { version = "0.1", path = "../avx-telemetry", optional = true }
 
 [features]
-default = ["compression", "math", "http"]
-compression = ["avila-compress"]
+default = ["compress", "math", "http", "db"]
+
+# Core features
+compress = ["avila-compress"]
 clustering = ["avila-clustering"]
-math = ["avila-math", "avila-linalg"]
-data = ["avila-arrow"]
+linalg = ["avila-linalg"]
+math = ["avila-math"]
+arrow = ["avila-arrow"]
 telemetry = ["avila-telemetry"]
-http = ["avx-http"]
+tokenizers = ["avila-tokenizers"]
+
+# Database
+db = ["aviladb"]
+
+# Cloud Services
+auth = ["avl-auth"]
+console = ["avl-console"]
+observability = ["avl-observability"]
+queue = ["avl-queue"]
+secrets = ["avl-secrets"]
+storage = ["avl-storage"]
+
+# Runtime
 cli = ["avx-cli"]
-full = ["compression", "clustering", "math", "data", "telemetry", "http", "cli"]
+config = ["avx-config"]
+events = ["avx-events"]
+http = ["avx-http"]
+avx-telemetry-feature = ["avx-telemetry"]
+
+# Bundles
+science = ["math", "linalg", "arrow", "telemetry"]
+ai = ["clustering", "tokenizers", "math"]
+cloud = ["auth", "console", "observability", "queue", "secrets", "storage"]
+runtime = ["cli", "config", "events", "http", "avx-telemetry-feature"]
+full = ["compress", "clustering", "linalg", "math", "arrow", "telemetry", "tokenizers", "db", "auth", "console", "observability", "queue", "secrets", "storage", "cli", "config", "events", "http", "avx-telemetry-feature"]
 
 [dev-dependencies]
 
