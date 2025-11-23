@@ -126,10 +126,11 @@ impl Gateway {
             .route("/health", get(health_handler))
             .route("/healthz", get(liveness_handler))
             .route("/ready", get(readiness_handler))
-            .route("/metrics", get(metrics_handler))
             // Proxy all other requests
             .fallback(proxy_handler)
-            .with_state(shared_state)
+            .with_state(shared_state.clone())
+            // Metrics in separate router with same state
+            .route("/metrics", get(metrics_handler))
             .layer(ServiceBuilder::new().layer(LoggingLayer::new()));
 
         // Start server
@@ -157,6 +158,7 @@ struct GatewayState {
 }
 
 /// Proxy handler - forwards requests to upstream services
+#[axum::debug_handler]
 async fn proxy_handler(
     State(state): State<Arc<GatewayState>>,
     mut req: Request,
@@ -284,6 +286,7 @@ async fn proxy_handler(
 }
 
 /// Metrics endpoint handler
+#[axum::debug_handler]
 async fn metrics_handler(State(state): State<Arc<GatewayState>>) -> impl IntoResponse {
     let snapshot = state.metrics.snapshot();
     (StatusCode::OK, axum::Json(snapshot))

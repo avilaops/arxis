@@ -40,5 +40,16 @@ tracing-subscriber = "0.3"
 # Rate limiting
 governor = "0.7"
 
+# Concurrency
+parking_lot = "0.12"
+dashmap = "6.1"
+
+# Hashing
+twox-hash = "2.0"
+
+# Config
+serde_yaml = "0.9"
+toml = "0.8"
+
 [package.metadata.docs.rs]
 all-features = true

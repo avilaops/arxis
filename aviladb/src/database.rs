@@ -48,7 +48,7 @@ impl Database {
     }
 
     /// Delete a collection
-    pub async fn delete_collection(&self, name: &str) -> Result<()> {
+    pub async fn delete_collection(&self, _name: &str) -> Result<()> {
         // TODO: Send DELETE COLLECTION request
         Ok(())
     }

@@ -1,6 +1,6 @@
 //! Vector search operations
 
-use crate::Result;
+use crate::error::{AvilaError, Result};
 
 /// Vector index configuration
 #[derive(Debug, Clone)]
@@ -24,7 +24,7 @@ impl DistanceMetric {
             "cosine" => Ok(Self::Cosine),
             "euclidean" => Ok(Self::Euclidean),
             "dot" | "dotproduct" => Ok(Self::DotProduct),
-            _ => Err(crate::Error::InvalidQuery(format!("Unknown distance metric: {}", s))),
+            _ => Err(AvilaError::Query(format!("Unknown distance metric: {}", s))),
         }
     }
 }

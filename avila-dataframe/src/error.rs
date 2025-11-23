@@ -18,6 +18,15 @@ pub enum AvilaError {
     #[error("Type error: {0}")]
     TypeError(String),
 
+    #[error("Invalid operation: {0}")]
+    InvalidOperation(String),
+
+    #[error("Invalid input: {0}")]
+    InvalidInput(String),
+
+    #[error("Not implemented: {0}")]
+    NotImplemented(String),
+
     #[error("I/O error: {0}")]
     IoError(#[from] std::io::Error),
 
@@ -27,11 +36,20 @@ pub enum AvilaError {
     #[error("JSON error: {0}")]
     JsonError(#[from] serde_json::Error),
 
+    #[error("Arrow error: {0}")]
+    ArrowError(String),
+
     #[error("Parse error: {0}")]
     ParseError(String),
 
     #[error("{0}")]
     Generic(String),
+}
+
+impl From<arrow::error::ArrowError> for AvilaError {
+    fn from(err: arrow::error::ArrowError) -> Self {
+        Self::ArrowError(err.to_string())
+    }
 }
 
 impl AvilaError {
@@ -49,6 +67,18 @@ impl AvilaError {
 
     pub fn type_error(msg: impl Into<String>) -> Self {
         Self::TypeError(msg.into())
+    }
+
+    pub fn invalid_operation(msg: impl Into<String>) -> Self {
+        Self::InvalidOperation(msg.into())
+    }
+
+    pub fn invalid_input(msg: impl Into<String>) -> Self {
+        Self::InvalidInput(msg.into())
+    }
+
+    pub fn not_implemented(msg: impl Into<String>) -> Self {
+        Self::NotImplemented(msg.into())
     }
 
     pub fn generic(msg: impl Into<String>) -> Self {

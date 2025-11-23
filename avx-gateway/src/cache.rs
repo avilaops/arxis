@@ -157,14 +157,19 @@ impl ResponseCache {
 
             // If still full, remove oldest entries
             if cache.len() >= self.max_size {
-                let mut entries: Vec<_> = cache.iter().collect();
-                entries.sort_by_key(|(_, entry)| entry.created_at);
+                let keys_to_remove: Vec<_> = {
+                    let mut entries: Vec<_> = cache.iter().collect();
+                    entries.sort_by_key(|(_, entry)| entry.created_at);
 
-                let to_remove = cache.len() - self.max_size + 1;
-                for i in 0..to_remove {
-                    if let Some((key, _)) = entries.get(i) {
-                        cache.remove(*key);
-                    }
+                    let to_remove = cache.len() - self.max_size + 1;
+                    entries.iter()
+                        .take(to_remove)
+                        .map(|(k, _)| k.clone())
+                        .collect()
+                };
+
+                for key in keys_to_remove {
+                    cache.remove(key.as_str());
                 }
             }
         }

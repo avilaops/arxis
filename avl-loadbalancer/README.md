@@ -13,46 +13,88 @@
 ## Features
 
 - **L7 Load Balancing**: HTTP/HTTPS traffic distribution
-- **Health Checks**: Automatic backend health monitoring
-- **TLS Termination**: SSL/TLS offloading
-- **Rate Limiting**: Per-IP, per-user rate limits
-- **Geographic Routing**: Route based on client location
-- **WebSocket Support**: Long-lived connection proxying
+- **Active Health Checks**: Automatic backend health monitoring with configurable intervals
+- **Health Status API**: Built-in `/_health` endpoint for monitoring
+- **TLS Termination**: SSL/TLS offloading (coming soon)
+- **Rate Limiting**: Per-IP, per-user rate limits (planned)
+- **Geographic Routing**: Route based on client location (planned)
+- **WebSocket Support**: Long-lived connection proxying (planned)
 
 ## Quick Start
 
 ```rust
-use avl_loadbalancer::{LoadBalancer, Backend, HealthCheck};
+use avl_loadbalancer::{LoadBalancer, Backend, HealthCheck, Algorithm};
+use std::time::Duration;
 
 #[tokio::main]
 async fn main() {
     let lb = LoadBalancer::builder()
         .add_backend(Backend::new("http://server1:8000"))
         .add_backend(Backend::new("http://server2:8000"))
-        .health_check(HealthCheck::http("/health"))
+        .health_check(
+            HealthCheck::http("/health")
+                .interval(Duration::from_secs(10))
+                .timeout(Duration::from_secs(5))
+        )
         .algorithm(Algorithm::RoundRobin)
         .build();
 
-    lb.listen("0.0.0.0:80").await?;
+    lb.listen("0.0.0.0:80").await.unwrap();
 }
 ```
 
 ## Status
 
-This crate is currently an MVP implementation:
+**Current Implementation:**
 
-- Only the `RoundRobin` algorithm is functionally implemented (others fall back to it).
-- Health checks are passive (no active probing yet).
-- TLS termination is not yet enabled on Windows builds (requires installing build dependencies and re-enabling `rustls`).
-- Rate limiting, geo routing, WebSocket upgrade handling are planned.
+✅ Round-robin load balancing
+✅ Active health checks with configurable intervals
+✅ Automatic unhealthy backend filtering
+✅ Health status monitoring endpoint (`/_health`)
+✅ Graceful fallback when backends fail
 
-Early feedback is welcome. Expect rapid iteration.
+**Coming Soon:**
+
+- Least Connections, IP Hash, and Weighted algorithms
+- TLS termination (requires build dependencies on Windows)
+- Rate limiting integration
+- Geographic routing
+- WebSocket upgrade handling
+
+Early feedback welcome. Expect rapid iteration.
 
 ## Algorithms
 
 - **Round Robin**: Equal distribution
-- **Least Connections**: Route to least busy backend
-- **IP Hash**: Consistent routing per IP
-- **Weighted**: Priority-based routing
+- **Least Connections**: Route to least busy backend (planned)
+- **IP Hash**: Consistent routing per IP (planned)
+- **Weighted**: Priority-based routing (planned)
+
+## Health Monitoring
+
+**Active Health Checks**: The load balancer periodically probes backends at a configured HTTP endpoint. Unhealthy backends are automatically removed from rotation.
+
+**Monitoring Endpoint**: Access `/_health` on the load balancer to view:
+- Overall health status
+- Individual backend health states
+- Healthy/total backend counts
+
+**Example**:
+```bash
+curl http://localhost:8080/_health
+```
+
+**Response**:
+```json
+{
+  "healthy": true,
+  "backends": [
+    {"url": "http://server1:8000", "healthy": true},
+    {"url": "http://server2:8000", "healthy": false}
+  ],
+  "healthy_count": 1,
+  "total_count": 2
+}
+```
 
 🏛️ **Built by Avila** - Part of AVL Cloud Platform

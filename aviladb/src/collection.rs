@@ -1,9 +1,10 @@
 //! Collection operations
 
 use std::sync::Arc;
-use crate::{Config, Document, InsertResult, Query, QueryResult, Result};
+use crate::{Config, Document, InsertResult, Query, Result};
 
 /// Collection handle for document operations
+#[allow(dead_code)]
 #[derive(Debug, Clone)]
 pub struct Collection {
     name: String,
@@ -67,7 +68,7 @@ impl Collection {
     }
 
     /// Get a document by ID
-    pub async fn get(&self, id: &str) -> Result<Option<Document>> {
+    pub async fn get(&self, _id: &str) -> Result<Option<Document>> {
         // TODO: Send GET request
         // TODO: Decompress with avila-compress
         Ok(None)
@@ -115,9 +116,9 @@ impl Collection {
     /// ```
     pub async fn create_vector_index(
         &self,
-        field: &str,
-        dimension: usize,
-        metric: &str,
+        _field: &str,
+        _dimension: usize,
+        _metric: &str,
     ) -> Result<()> {
         // TODO: Send CREATE VECTOR INDEX request
         Ok(())
@@ -134,6 +135,7 @@ impl Collection {
 }
 
 /// Builder for update operations
+#[allow(dead_code)]
 pub struct UpdateBuilder {
     collection: Collection,
     updates: Vec<(String, serde_json::Value)>,
@@ -167,6 +169,7 @@ impl UpdateBuilder {
 }
 
 /// Builder for delete operations
+#[allow(dead_code)]
 pub struct DeleteBuilder {
     collection: Collection,
     conditions: Vec<String>,
@@ -192,6 +195,7 @@ impl DeleteBuilder {
 }
 
 /// Builder for vector search operations
+#[allow(dead_code)]
 pub struct VectorSearchBuilder {
     collection: Collection,
     field: String,

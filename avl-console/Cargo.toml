@@ -32,6 +32,10 @@ tower-http = { version = "0.6", features = ["fs", "trace", "compression-full", "
 # WebSocket
 futures = "0.3"
 
+# Pattern matching
+regex = "1.10"
+lazy_static = "1.4"
+
 # Templates
 askama = { version = "0.12", features = ["with-axum"] }
 

@@ -184,7 +184,7 @@ impl DataFrame {
     pub fn fft_column(&self, column: &str) -> Result<Self> {
         let series = self.column(column)?;
         let magnitude_spectrum = series.magnitude_spectrum().map_err(|e| {
-            crate::error_native::AvilaError::InvalidOperation(format!("FFT falhou: {}", e))
+            AvilaError::InvalidOperation(format!("FFT falhou: {}", e))
         })?;
 
         let mut new_df = DataFrame::new();
@@ -209,7 +209,7 @@ impl DataFrame {
             .collect();
 
         if values.is_empty() {
-            return Err(crate::error_native::AvilaError::InvalidOperation(
+            return Err(AvilaError::InvalidOperation(
                 "Coluna não contém valores numéricos".to_string(),
             ));
         }
@@ -245,7 +245,7 @@ impl DataFrame {
     pub fn power_spectrum_column(&self, column: &str, sample_rate: f64) -> Result<Self> {
         let series = self.column(column)?;
         let power_series = series.power_spectrum(sample_rate).map_err(|e| {
-            crate::error_native::AvilaError::InvalidOperation(format!(
+            AvilaError::InvalidOperation(format!(
                 "Power spectrum falhou: {}",
                 e
             ))
@@ -262,7 +262,7 @@ impl DataFrame {
         let series2 = self.column(col2)?;
 
         let result_series = series1.convolve(series2).map_err(|e| {
-            crate::error_native::AvilaError::InvalidOperation(format!("Convolução falhou: {}", e))
+            AvilaError::InvalidOperation(format!("Convolução falhou: {}", e))
         })?;
 
         let mut new_df = DataFrame::new();
@@ -276,7 +276,7 @@ impl DataFrame {
         let series2 = self.column(col2)?;
 
         let result_series = series1.xcorr(series2).map_err(|e| {
-            crate::error_native::AvilaError::InvalidOperation(format!(
+            AvilaError::InvalidOperation(format!(
                 "Correlação cruzada falhou: {}",
                 e
             ))

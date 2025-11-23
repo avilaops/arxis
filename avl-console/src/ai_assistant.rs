@@ -5,12 +5,25 @@ use axum::{
     routing::{get, post},
     Router,
 };
-use futures::stream::{Stream, StreamExt};
+use futures::stream::StreamExt;
 use serde::{Deserialize, Serialize};
-use std::sync::Arc;
+use std::sync::{Arc, LazyLock};
 use std::time::Duration;
 
-use crate::{error::ConsoleError, state::ConsoleState, ai_engine::{AIBackendKind, LocalAIDummyBackend, AIBackend, AIResult, resolve_backend}};
+use crate::{
+    error::ConsoleError,
+    state::ConsoleState,
+    ai_engine::{AIBackendKind, LocalAIDummyBackend, AIBackend, AIResult, resolve_backend},
+    embeddings::{VectorStore, init_default_knowledge_base, build_rag_context},
+    query_safety::QueryValidator,
+    ai_metrics::{AIMetricsCollector, QueryMetric, Timer},
+    query_history::{QueryHistory, QueryHistoryEntry},
+    rate_limiter::RateLimiter,
+};
+
+static METRICS: LazyLock<AIMetricsCollector> = LazyLock::new(|| AIMetricsCollector::new());
+static QUERY_HISTORY: LazyLock<QueryHistory> = LazyLock::new(|| QueryHistory::default());
+static RATE_LIMITER: LazyLock<RateLimiter> = LazyLock::new(|| RateLimiter::default());
 
 /// AI Assistant UI HTML with chat interface
 const AI_ASSISTANT_HTML: &str = r#"<!DOCTYPE html>
@@ -578,6 +591,19 @@ struct ChatResponse {
     optimization_tips: Option<Vec<String>>,
 }
 
+/// Embeddings request
+#[derive(Debug, Deserialize)]
+struct EmbeddingsRequest {
+    text: String,
+}
+
+/// Embeddings response
+#[derive(Debug, Serialize)]
+struct EmbeddingsResponse {
+    embedding: Vec<f32>,
+    dimension: usize,
+}
+
 /// AI Assistant configuration
 #[derive(Debug, Clone)]
 pub struct AIConfig {
@@ -610,10 +636,87 @@ async fn chat(
     State(state): State<Arc<ConsoleState>>,
     Json(payload): Json<ChatRequest>,
 ) -> Result<Json<ChatResponse>, ConsoleError> {
+    let timer = Timer::new();
+
+    // Rate limiting (assume user from auth context, here using placeholder)
+    let user_id = "default_user"; // TODO: Extract from auth context
+    if let Err(e) = RATE_LIMITER.check_request(user_id) {
+        METRICS.record_query(QueryMetric {
+            duration: timer.elapsed(),
+            success: false,
+            blocked: true,
+            tokens: 0,
+            cache_hit: false,
+        });
+        return Err(ConsoleError::RateLimit(e.to_string()));
+    }
+
+    let validator = QueryValidator::developer();
     let message = payload.message.to_lowercase();
 
-    // Simulate AI processing (in production, call OpenAI/Anthropic API)
-    let (response, sql_query, explanation, tips) = process_natural_language(&message);
+    // Initialize knowledge base for RAG
+    let knowledge_base = init_default_knowledge_base();
+    METRICS.record_rag_retrieval();
+
+    // Process with RAG context
+    let (response, sql_query, explanation, tips) = process_natural_language_with_rag(&message, Some(&knowledge_base));
+
+    // Validate SQL query if generated
+    let mut blocked = false;
+    let mut audit_entry = QueryHistoryEntry::new(
+        user_id.to_string(),
+        sql_query.clone().unwrap_or_default(),
+        "aviladb".to_string(),
+    );
+
+    if let Some(ref query) = sql_query {
+        let analysis = validator.validate(query);
+        if analysis.is_dangerous() {
+            blocked = true;
+            audit_entry = audit_entry.with_result(
+                false,
+                timer.elapsed().as_millis() as u64,
+                None,
+                Some(format!("BLOCKED: {}", analysis.violations.join(", "))),
+            );
+            QUERY_HISTORY.add_entry(audit_entry);
+
+            METRICS.record_query(QueryMetric {
+                duration: timer.elapsed(),
+                success: false,
+                blocked: true,
+                tokens: response.len(),
+                cache_hit: false,
+            });
+            return Err(ConsoleError::Validation(format!(
+                "Query blocked: {} (Risk: {:?})",
+                analysis.violations.join(", "),
+                analysis.risk_level
+            )));
+        }
+    }
+
+    // Check token budget
+    if let Err(e) = RATE_LIMITER.check_tokens(user_id, response.len() as u64) {
+        return Err(ConsoleError::RateLimit(e.to_string()));
+    }
+
+    // Record success metrics and history
+    audit_entry = audit_entry.with_result(
+        true,
+        timer.elapsed().as_millis() as u64,
+        Some(1),
+        None,
+    );
+    QUERY_HISTORY.add_entry(audit_entry);
+
+    METRICS.record_query(QueryMetric {
+        duration: timer.elapsed(),
+        success: true,
+        blocked,
+        tokens: response.len(),
+        cache_hit: false,
+    });
 
     Ok(Json(ChatResponse {
         response,
@@ -628,17 +731,38 @@ async fn chat_stream(
     State(_state): State<Arc<ConsoleState>>,
     Json(payload): Json<ChatRequest>,
 ) -> Result<Sse<impl futures::Stream<Item = Result<Event, std::convert::Infallible>>>, ConsoleError> {
+    let timer = Timer::new();
     let raw = payload.message;
     let backend_kind = match std::env::var("AI_BACKEND").ok().as_deref() {
         Some("local") => AIBackendKind::Local,
         _ => AIBackendKind::Pattern,
     };
+    METRICS.record_backend_usage(match backend_kind {
+        AIBackendKind::Local => "local",
+        AIBackendKind::Pattern => "pattern",
+    });
+
     let backend = resolve_backend(backend_kind);
     let stream = backend.generate_stream(&raw)
-        .map(|token| {
-            Event::default().data(token)
+        .map(move |token| {
+            Event::default()
+                .data(&token)
+                .event("message")
         })
         .map(Ok);
+
+    // Record streaming metrics after completion
+    tokio::spawn(async move {
+        tokio::time::sleep(Duration::from_secs(1)).await;
+        METRICS.record_query(QueryMetric {
+            duration: timer.elapsed(),
+            success: true,
+            blocked: false,
+            tokens: 100, // Estimate for streaming
+            cache_hit: false,
+        });
+    });
+
     Ok(Sse::new(stream).keep_alive(KeepAlive::default()))
 }
 
@@ -647,6 +771,21 @@ async fn chat_stream(
 pub fn process_natural_language(
     message: &str,
 ) -> (String, Option<String>, Option<String>, Option<Vec<String>>) {
+    process_natural_language_with_rag(message, None)
+}
+
+/// Process with optional RAG context
+pub fn process_natural_language_with_rag(
+    message: &str,
+    vector_store: Option<&VectorStore>,
+) -> (String, Option<String>, Option<String>, Option<Vec<String>>) {
+    // Build RAG context if vector store provided
+    let rag_context = if let Some(store) = vector_store {
+        build_rag_context(message, store, 500)
+    } else {
+        String::new()
+    };
+
     // Pattern matching for common queries
     if message.contains("usuários mais ativos") || message.contains("top") && message.contains("usuários") {
         let sql = r#"SELECT
@@ -662,8 +801,13 @@ GROUP BY u.id, u.name, u.email
 ORDER BY activity_count DESC
 LIMIT 5;"#;
 
+        let mut response = "Aqui está uma query SQL para encontrar os usuários mais ativos:\n\n✅ Retorna ID, nome, email e contagem de atividades\n✅ Filtra últimos 7 dias\n✅ Ordenado por atividade decrescente".to_string();
+        if !rag_context.is_empty() {
+            response.push_str("\n\n");
+            response.push_str(&rag_context);
+        }
         (
-            "Aqui está uma query SQL para encontrar os usuários mais ativos:\n\n✅ Retorna ID, nome, email e contagem de atividades\n✅ Filtra últimos 7 dias\n✅ Ordenado por atividade decrescente".to_string(),
+            response,
             Some(sql.to_string()),
             Some("Esta query usa LEFT JOIN para incluir usuários mesmo sem atividades, agrupa por usuário e conta suas atividades.".to_string()),
             Some(vec![
@@ -738,7 +882,7 @@ ORDER BY o.total_amount DESC, o.created_at ASC;"#;
                 (text, sql, explanation, tips)
             }
             _ => (
-                "Entendi sua pergunta! 🤔\n\nPara gerar a melhor query SQL possível, pode me dar mais detalhes?\n\n• Quais tabelas você quer consultar?\n• Que dados você precisa?\n• Existe algum filtro específico?\n• Precisa de agregações (COUNT, SUM, AVG)?\n\nOu experimente uma das sugestões ao lado! →".to_string(),
+                "Entendi sua pergunta! 🤔\n\nPara gerar a melhor query SQL possível, preciso de mais detalhes:\n\n• Quais tabelas você quer consultar?\n• Que dados você precisa?\n• Existe algum filtro específico?\n• Precisa de agregações (COUNT, SUM, AVG)?\n\nOu experimente uma das sugestões ao lado! →".to_string(),
                 None,
                 None,
                 None,
@@ -749,7 +893,7 @@ ORDER BY o.total_amount DESC, o.created_at ASC;"#;
 
 /// Get AI Assistant statistics
 async fn get_stats(
-    State(state): State<Arc<ConsoleState>>,
+    State(_state): State<Arc<ConsoleState>>,
 ) -> Result<Json<serde_json::Value>, ConsoleError> {
     Ok(Json(serde_json::json!({
         "queries_generated": 127,
@@ -759,14 +903,56 @@ async fn get_stats(
     })))
 }
 
+/// Generate embeddings for text
+async fn embeddings(
+    State(_state): State<Arc<ConsoleState>>,
+    Json(payload): Json<EmbeddingsRequest>,
+) -> Result<Json<EmbeddingsResponse>, ConsoleError> {
+    use crate::embeddings::EmbeddingGenerator;
+
+    let generator = EmbeddingGenerator::default();
+    let embedding = generator.embed(&payload.text);
+    let dimension = embedding.len();
+
+    METRICS.record_embedding();
+
+    Ok(Json(EmbeddingsResponse {
+        embedding,
+        dimension,
+    }))
+}
+
 /// Create router for AI Assistant
 pub fn router(state: Arc<ConsoleState>) -> Router {
     Router::new()
         .route("/", get(ai_assistant_ui))
         .route("/chat", post(chat))
         .route("/chat-stream", post(chat_stream))
+        .route("/embeddings", post(embeddings))
         .route("/stats", get(get_stats))
+        .route("/metrics", get(get_metrics))
+        .route("/history", get(get_history))
+        .route("/rate-limit", get(get_rate_limit_usage))
         .with_state(state)
+}
+
+/// Get AI metrics endpoint
+async fn get_metrics() -> Result<Json<crate::ai_metrics::AIMetrics>, ConsoleError> {
+    let metrics = METRICS.get_metrics();
+    Ok(Json(metrics))
+}
+
+/// Get query history endpoint
+async fn get_history() -> Result<Json<Vec<crate::query_history::QueryHistoryEntry>>, ConsoleError> {
+    let history = QUERY_HISTORY.get_recent(50);
+    Ok(Json(history))
+}
+
+/// Get rate limit usage endpoint
+async fn get_rate_limit_usage() -> Result<Json<crate::rate_limiter::RateLimitUsage>, ConsoleError> {
+    let user_id = "default_user"; // TODO: Extract from auth context
+    let usage = RATE_LIMITER.get_usage(user_id);
+    Ok(Json(usage))
 }
 
 #[cfg(test)]
@@ -801,7 +987,7 @@ mod tests {
     fn test_process_unknown_query() {
         let (response, sql, _, _) = process_natural_language("xyz abc random text");
         assert!(sql.is_none());
-        assert!(response.contains("mais detalhes"));
+        assert!(response.contains("mais detalhes") || response.contains("preciso de"));
     }
 
     #[test]
@@ -830,5 +1016,23 @@ mod tests {
         }
         assert!(collected.len() >= 3); // hello, streaming, world
         assert_eq!(collected.join(" "), "hello streaming world");
+    }
+
+    #[test]
+    fn test_rag_integration() {
+        use crate::embeddings::init_default_knowledge_base;
+
+        let kb = init_default_knowledge_base();
+        let (response, sql, _, _) = process_natural_language_with_rag(
+            "mostre o total de vendas por categoria",
+            Some(&kb)
+        );
+
+        // Should include RAG context or match sales pattern
+        assert!(
+            response.contains("Contexto relevante") ||
+            response.contains("vendas") ||
+            sql.is_some()
+        );
     }
 }

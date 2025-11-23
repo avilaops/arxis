@@ -6,11 +6,17 @@ use std::path::PathBuf;
 /// AvilaDB Configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
-    /// Data directory for storage
+    /// AvilaDB endpoint URL
+    pub endpoint: String,
+
+    /// Data directory for local storage
     pub data_dir: PathBuf,
 
-    /// Enable compression (LZ4)
+    /// Enable compression
     pub enable_compression: bool,
+
+    /// Compression level
+    pub compression_level: u8,
 
     /// Enable vector search
     pub enable_vector_search: bool,
@@ -32,13 +38,24 @@ pub struct Config {
 
     /// Replication endpoints
     pub replication_endpoints: Vec<String>,
+
+    /// Enable query cache
+    pub enable_cache: bool,
+
+    /// Cache TTL (seconds)
+    pub cache_ttl: u64,
+
+    /// Max cache entries
+    pub max_cache_entries: usize,
 }
 
 impl Default for Config {
     fn default() -> Self {
         Self {
+            endpoint: "http://localhost:8000".to_string(),
             data_dir: PathBuf::from("./aviladb_data"),
             enable_compression: true,
+            compression_level: 6,
             enable_vector_search: false,
             max_connections: 1000,
             connection_timeout: 30,
@@ -46,6 +63,9 @@ impl Default for Config {
             max_document_size: 4 * 1024 * 1024, // 4 MB
             enable_replication: false,
             replication_endpoints: vec![],
+            enable_cache: true,
+            cache_ttl: 300,
+            max_cache_entries: 1000,
         }
     }
 }
@@ -62,9 +82,21 @@ impl Config {
         self
     }
 
+    /// Set endpoint
+    pub fn with_endpoint(mut self, endpoint: impl Into<String>) -> Self {
+        self.endpoint = endpoint.into();
+        self
+    }
+
     /// Enable compression
     pub fn with_compression(mut self, enabled: bool) -> Self {
         self.enable_compression = enabled;
+        self
+    }
+
+    /// Set compression level (0-11)
+    pub fn with_compression_level(mut self, level: u8) -> Self {
+        self.compression_level = level.min(11);
         self
     }
 
@@ -80,18 +112,30 @@ impl Config {
         self
     }
 
+    /// Enable query cache
+    pub fn with_cache(mut self, enabled: bool) -> Self {
+        self.enable_cache = enabled;
+        self
+    }
+
+    /// Set cache TTL in seconds
+    pub fn with_cache_ttl(mut self, ttl: u64) -> Self {
+        self.cache_ttl = ttl;
+        self
+    }
+
     /// Validate configuration
-    pub fn validate(&self) -> Result<(), String> {
+    pub fn validate(&self) -> crate::error::Result<()> {
         if self.max_connections == 0 {
-            return Err("max_connections must be greater than 0".to_string());
+            return Err(crate::error::AvilaError::Config("max_connections must be greater than 0".to_string()));
         }
 
         if self.connection_timeout == 0 {
-            return Err("connection_timeout must be greater than 0".to_string());
+            return Err(crate::error::AvilaError::Config("connection_timeout must be greater than 0".to_string()));
         }
 
         if self.max_document_size > 4 * 1024 * 1024 {
-            return Err("max_document_size cannot exceed 4 MB".to_string());
+            return Err(crate::error::AvilaError::Config("max_document_size cannot exceed 4 MB".to_string()));
         }
 
         Ok(())

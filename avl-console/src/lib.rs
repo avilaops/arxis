@@ -62,10 +62,15 @@ pub mod templates;
 pub mod websocket;
 pub mod state;
 pub mod query_builder;
+pub mod query_history;
 pub mod monitoring;
 pub mod teams;
 pub mod ai_assistant;
 pub mod ai_engine;
+pub mod ai_metrics;
+pub mod embeddings;
+pub mod query_safety;
+pub mod rate_limiter;
 
 use std::net::SocketAddr;
 use std::sync::Arc;

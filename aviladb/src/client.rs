@@ -3,13 +3,20 @@
 use std::sync::Arc;
 use std::time::Duration;
 
-use crate::{Config, Database, Result};
+use crate::{
+    auth::AuthProvider,
+    cache::{CacheConfig, QueryCache},
+    http::{HttpClient, HttpConfig},
+    Config, Database, Result,
+};
 
 /// AvilaDB client for connecting to the database
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct AvilaClient {
     config: Arc<Config>,
-    // Internal HTTP client would go here
+    http_client: Arc<HttpClient>,
+    auth_provider: Arc<AuthProvider>,
+    query_cache: Arc<QueryCache>,
 }
 
 impl AvilaClient {
@@ -36,9 +43,33 @@ impl AvilaClient {
 
     /// Connect with custom configuration
     pub async fn with_config(config: Config) -> Result<Self> {
-        // TODO: Initialize HTTP client, verify connection
+        config.validate()?;
+
+        let http_config = HttpConfig {
+            endpoint: config.endpoint.clone(),
+            timeout: Duration::from_secs(config.request_timeout),
+            max_connections: config.max_connections,
+            max_retries: 3,
+            retry_backoff_ms: 100,
+            keep_alive: Duration::from_secs(90),
+            compression: config.enable_compression,
+        };
+
+        let http_client = HttpClient::new(http_config)?;
+        let auth_provider = AuthProvider::new(config.endpoint.clone());
+
+        let cache_config = CacheConfig {
+            max_entries: config.max_cache_entries,
+            ttl: Duration::from_secs(config.cache_ttl),
+            track_stats: true,
+        };
+        let query_cache = QueryCache::new(cache_config);
+
         Ok(Self {
             config: Arc::new(config),
+            http_client: Arc::new(http_client),
+            auth_provider: Arc::new(auth_provider),
+            query_cache: Arc::new(query_cache),
         })
     }
 
@@ -70,7 +101,7 @@ impl AvilaClient {
     }
 
     /// Delete a database
-    pub async fn delete_database(&self, name: &str) -> Result<()> {
+    pub async fn delete_database(&self, _name: &str) -> Result<()> {
         // TODO: Send DELETE DATABASE request
         Ok(())
     }
@@ -79,6 +110,49 @@ impl AvilaClient {
     pub fn config(&self) -> &Config {
         &self.config
     }
+
+    /// Get HTTP client
+    pub fn http_client(&self) -> &HttpClient {
+        &self.http_client
+    }
+
+    /// Get authentication provider
+    pub fn auth_provider(&self) -> &AuthProvider {
+        &self.auth_provider
+    }
+
+    /// Get query cache
+    pub fn query_cache(&self) -> &QueryCache {
+        &self.query_cache
+    }
+
+    /// Get client statistics
+    pub async fn stats(&self) -> ClientStats {
+        let http_stats = self.http_client.stats();
+        let cache_stats = self.query_cache.stats().await;
+
+        ClientStats {
+            http_requests: http_stats.requests,
+            http_successes: http_stats.successes,
+            http_failures: http_stats.failures,
+            avg_latency_ms: http_stats.avg_latency_ms,
+            cache_hits: cache_stats.hits,
+            cache_misses: cache_stats.misses,
+            cache_hit_rate: cache_stats.hit_rate(),
+        }
+    }
+}
+
+/// Client statistics snapshot
+#[derive(Debug, Clone)]
+pub struct ClientStats {
+    pub http_requests: u64,
+    pub http_successes: u64,
+    pub http_failures: u64,
+    pub avg_latency_ms: u64,
+    pub cache_hits: u64,
+    pub cache_misses: u64,
+    pub cache_hit_rate: f64,
 }
 
 #[cfg(test)]

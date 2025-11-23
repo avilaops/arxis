@@ -141,19 +141,19 @@ pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 pub mod platform {
     /// Nome da plataforma
     pub const NAME: &str = "AVL Cloud Platform";
-    
+
     /// Website oficial
     pub const WEBSITE: &str = "https://avila.cloud";
-    
+
     /// Documentação
     pub const DOCS: &str = "https://docs.avila.cloud";
-    
+
     /// Região primária
     pub const PRIMARY_REGION: &str = "Brazil (São Paulo)";
-    
+
     /// Latência típica no Brasil
     pub const LATENCY_BRAZIL: &str = "< 10ms";
-    
+
     /// Status
     pub const STATUS: &str = "Production Ready 🚀";
 }

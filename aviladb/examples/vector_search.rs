@@ -57,7 +57,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let query_embedding = vec![0.11, 0.21, 0.32, /* ... 1536 dims */];
 
     let similar = memories
-        .vector_search("embedding", vec![0.0; 1536]) // Placeholder
+        .vector_search("embedding", vec![0.0; 1536]).await // Placeholder
         .top_k(3)
         .execute()
         .await?;

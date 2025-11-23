@@ -21,7 +21,7 @@ exclude = ["target/", "*.swp", ".git*"]
 tokio = { version = "1", features = ["full"] }
 
 # Web framework
-axum = "0.7"
+axum = { version = "0.7", features = ["ws", "macros"] }
 tower = "0.5"
 http = "1"
 http-body-util = "0.1"

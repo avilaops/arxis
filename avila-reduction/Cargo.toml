@@ -20,7 +20,8 @@ categories = ["algorithms", "science"]
 
 [dependencies]
 ndarray = { version = "0.15", features = ["rayon", "serde"] }
-ndarray-linalg = { version = "0.16", features = ["openblas-static"] }
+# Removido ndarray-linalg por problemas com OpenBLAS no Windows
+# ndarray-linalg = { version = "0.16", features = ["openblas-static"] }
 ndarray-stats = "0.5"
 ndarray-rand = "0.14"
 rayon = "1.8"

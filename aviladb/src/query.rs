@@ -3,9 +3,19 @@
 use std::collections::HashMap;
 use serde_json::Value;
 
-use crate::{Collection, Document, QueryResult, Result};
+use crate::{Collection, error::Result};
+
+/// Query result with documents and metadata
+#[derive(Debug, Clone)]
+pub struct QueryResult {
+    pub documents: Vec<crate::Document>,
+    pub total_count: usize,
+    pub latency_ms: u64,
+    pub compression_ratio: f64,
+}
 
 /// SQL-like query builder
+#[allow(dead_code)]
 pub struct Query {
     sql: String,
     collection: Collection,
@@ -52,8 +62,8 @@ impl Query {
         Ok(QueryResult {
             documents: vec![],
             total_count: 0,
-            continuation_token: None,
             latency_ms: 0,
+            compression_ratio: 1.0,
         })
     }
 }

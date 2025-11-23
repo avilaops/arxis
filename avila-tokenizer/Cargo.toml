@@ -9,9 +9,6 @@ repository = "https://github.com/avilaops/arxis"
 keywords = ["tokenizer", "nlp", "llm", "gpt", "bert"]
 categories = ["text-processing", "algorithms"]
 
-[workspace]
-# Empty workspace to avoid being part of parent workspace
-
 [dependencies]
 regex = "1.10"
 unicode-normalization = "0.1"

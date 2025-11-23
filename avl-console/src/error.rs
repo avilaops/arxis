@@ -39,6 +39,12 @@ pub enum ConsoleError {
     #[error("Rate limit exceeded")]
     RateLimitExceeded,
 
+    #[error("Rate limit: {0}")]
+    RateLimit(String),
+
+    #[error("Validation failed: {0}")]
+    Validation(String),
+
     #[error("WebSocket error: {0}")]
     WebSocket(String),
 
@@ -85,10 +91,15 @@ impl IntoResponse for ConsoleError {
                 "not_found",
                 self.to_string(),
             ),
-            ConsoleError::RateLimitExceeded => (
+            ConsoleError::RateLimitExceeded | ConsoleError::RateLimit(_) => (
                 StatusCode::TOO_MANY_REQUESTS,
                 "rate_limit_exceeded",
-                "Too many requests. Please try again later.".to_string(),
+                self.to_string(),
+            ),
+            ConsoleError::Validation(_) => (
+                StatusCode::BAD_REQUEST,
+                "validation_error",
+                self.to_string(),
             ),
             ConsoleError::WebSocket(_) => (
                 StatusCode::BAD_REQUEST,

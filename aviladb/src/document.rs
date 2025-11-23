@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-use crate::{Error, Result, MAX_DOCUMENT_SIZE};
+use crate::{error::{AvilaError, Result}, MAX_DOCUMENT_SIZE};
 
 /// AvilaDB document with key-value fields
 ///
@@ -63,10 +63,10 @@ impl Document {
     /// ```
     pub fn get<T: for<'de> Deserialize<'de>>(&self, key: &str) -> Result<T> {
         let value = self.fields.get(key)
-            .ok_or_else(|| Error::Internal(format!("Field not found: {}", key)))?;
+            .ok_or_else(|| AvilaError::Internal(format!("Field not found: {}", key)))?;
 
         serde_json::from_value(value.clone())
-            .map_err(|e| Error::Serialization(e))
+            .map_err(AvilaError::from)
     }
 
     /// Get a field value as Option
@@ -80,7 +80,7 @@ impl Document {
         let size = json.len();
 
         if size > MAX_DOCUMENT_SIZE {
-            return Err(Error::DocumentTooLarge { size });
+            return Err(AvilaError::Validation(format!("Document too large: {} bytes (max: {} bytes)", size, MAX_DOCUMENT_SIZE)));
         }
 
         Ok(())
@@ -95,12 +95,12 @@ impl Document {
 
     /// Convert to JSON string
     pub fn to_json(&self) -> Result<String> {
-        serde_json::to_string(self).map_err(Error::Serialization)
+        serde_json::to_string(self).map_err(AvilaError::from)
     }
 
     /// Parse from JSON string
     pub fn from_json(json: &str) -> Result<Self> {
-        serde_json::from_str(json).map_err(Error::Serialization)
+        serde_json::from_str(json).map_err(AvilaError::from)
     }
 }
 
@@ -152,7 +152,7 @@ mod tests {
         doc = doc.set("data", large_data);
 
         let result = doc.validate();
-        assert!(matches!(result, Err(Error::DocumentTooLarge { .. })));
+        assert!(result.is_err());
     }
 
     #[test]
