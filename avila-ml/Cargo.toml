@@ -45,7 +45,7 @@ path = "examples/ligo_gravitational_waves.rs"
 # Core numerical computing
 ndarray = { version = "0.16", features = ["rayon", "serde"] }
 num-traits = "0.2"
-rand = "0.8"
+rand = "0.9"
 rand_distr = "0.4"
 
 # Parallel processing
