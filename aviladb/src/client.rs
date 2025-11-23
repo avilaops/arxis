@@ -86,12 +86,18 @@ impl AvilaClient {
     /// ```no_run
     /// # use aviladb::AvilaClient;
     /// # async fn example(client: AvilaClient) -> aviladb::Result<()> {
-    /// let db = client.database("gamedb").await?;
+    /// let db = client.database("mydb").await?;
     /// # Ok(())
     /// # }
     /// ```
     pub async fn database(&self, name: &str) -> Result<Database> {
-        Database::new(name.to_string(), self.config.clone())
+        Database::new(
+            name.to_string(),
+            self.config.clone(),
+            self.http_client.clone(),
+            self.auth_provider.clone(),
+            self.telemetry.clone(),
+        )
     }
 
     /// Create a new database

@@ -116,7 +116,7 @@ impl AuthProvider {
     pub async fn refresh_token(&self) -> Result<String> {
         let token = self.token.read().await;
 
-        let refresh_token = token.as_ref()
+        let _refresh_token = token.as_ref()
             .and_then(|t| t.refresh_token.clone())
             .ok_or_else(|| AvilaError::Config("No refresh token available".to_string()))?;
 

@@ -1,5 +1,5 @@
 //! RAG (Retrieval-Augmented Generation) com AvilaDB
-//! 
+//!
 //! Sistema de chat com IA usando:
 //! - Vector search para busca semântica
 //! - Cache de embeddings
@@ -29,14 +29,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let client = AvilaClient::connect("http://localhost:8000").await?;
     let db = client.database("ai_chat");
-    
+
     // Collections
     let conversations = db.collection("conversations");
     let knowledge_base = db.collection("knowledge_base");
     let embeddings_cache = db.collection("embeddings_cache");
 
     println!("📚 1. Carregando knowledge base...");
-    
+
     // Simular knowledge base com embeddings
     let knowledge = vec![
         ("AvilaDB é um banco de dados NoSQL distribuído globalmente", vec![0.1, 0.2, 0.3, 0.4, 0.5]),
@@ -56,7 +56,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         knowledge_base.insert(doc).await?;
     }
-    
+
     println!("✅ {} documentos carregados\n", knowledge.len());
 
     // Simular conversa
@@ -119,7 +119,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         inteligente, compressão automática e APIs simples em múltiplas linguagens.";
 
     let ai_embedding = vec![0.2, 0.3, 0.4, 0.5, 0.6];
-    
+
     println!("🤖 AI: {}", ai_response);
 
     // Atualizar conversa com resposta

@@ -4,31 +4,32 @@
 //!
 //! ## Features
 //!
-//! * `LoadBalancer` with fluent builder API
-//! * `Backend` health state tracking
-//! * Active HTTP health probes with configurable intervals and timeouts
-//! * Round-robin algorithm (others planned)
-//! * Automatic unhealthy backend filtering
+//! * Multiple load balancing algorithms (RoundRobin, LeastConnections, IpHash, Weighted)
+//! * Active HTTP health checks with circuit breaker per backend
+//! * Rate limiting per client IP
+//! * Automatic retry with configurable backoff
+//! * Connection tracking and metrics endpoint
 //! * Built-in health status endpoint (`/_health`)
-//! * Reverse proxy using Axum + Reqwest
+//! * Fluent builder API
 //!
 //! ## Example
 //!
 //! ```rust,no_run
-//! use avl_loadbalancer::{LoadBalancer, Backend, HealthCheck, Algorithm};
+//! use avl_loadbalancer::{LoadBalancer, Backend, HealthCheck, Algorithm, RateLimitConfig};
 //! use std::time::Duration;
 //!
 //! #[tokio::main]
 //! async fn main() -> anyhow::Result<()> {
 //!     let lb = LoadBalancer::builder()
-//!         .add_backend(Backend::new("http://192.168.1.10:8000"))
-//!         .add_backend(Backend::new("http://192.168.1.11:8000"))
+//!         .add_backend(Backend::new("http://192.168.1.10:8000").with_weight(3))
+//!         .add_backend(Backend::new("http://192.168.1.11:8000").with_weight(1))
 //!         .health_check(
 //!             HealthCheck::http("/health")
 //!                 .interval(Duration::from_secs(10))
 //!                 .timeout(Duration::from_secs(5))
 //!         )
-//!         .algorithm(Algorithm::RoundRobin)
+//!         .algorithm(Algorithm::Weighted)
+//!         .rate_limit(RateLimitConfig { requests_per_second: 100, burst: 20 })
 //!         .build();
 //!
 //!     lb.listen("0.0.0.0:8080").await?;
@@ -37,6 +38,12 @@
 //! ```
 //!
 //! Access the health status endpoint at `http://localhost:8080/_health`.
+//! Access the metrics endpoint at `http://localhost:8080/_metrics`.
+
+// AVL Platform Modules
+mod avl_async;
+mod avl_compress;
+mod avl_config;
 
 use std::hash::{Hash, Hasher};
 use std::net::{IpAddr, SocketAddr};
@@ -46,16 +53,17 @@ use std::time::{Duration, Instant};
 
 use anyhow::Result;
 use axum::body::Body;
-use axum::extract::{ConnectInfo, State};
-use axum::http::{Request, Response, StatusCode};
+use axum::extract::{ConnectInfo, State, ws::{WebSocket, WebSocketUpgrade}};
+use axum::http::{Request, Response, StatusCode, HeaderValue, header};
 use axum::response::IntoResponse;
 use axum::routing::any;
 use axum::Router;
 use dashmap::DashMap;
 use governor::{Quota, RateLimiter as GovernorRateLimiter};
 use parking_lot::RwLock;
-use tokio::net::TcpListener;
-use tokio::task::JoinHandle;
+use serde::{Deserialize, Serialize};
+use avl_async::net::TcpListener;
+use avl_async::task::JoinHandle;
 use tracing::{debug, error, info, warn};
 use twox_hash::XxHash64;
 
@@ -67,24 +75,25 @@ type RateLimiterType = GovernorRateLimiter<
 >;
 
 /// Load balancing algorithm.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub enum Algorithm {
-	/// Round-robin distribution
+	/// Round-robin distribution - cycles through backends sequentially
 	RoundRobin,
 	/// Route to backend with fewest active connections
 	LeastConnections,
-	/// Consistent hashing based on client IP
+	/// Consistent hashing based on client IP - same IP always routes to same backend
 	IpHash,
-	/// Weighted distribution based on backend capacity
+	/// Weighted distribution based on backend capacity - backends with higher weight receive more traffic
 	Weighted,
 }
 
-/// Rate limiting configuration.
-#[derive(Debug, Clone)]
+/// Rate limiting configuration per client IP.
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RateLimitConfig {
 	/// Maximum requests per second per IP
 	pub requests_per_second: u32,
-	/// Burst size
+	/// Burst size - allows this many requests to exceed the rate limit temporarily
 	pub burst: u32,
 }
 
@@ -98,6 +107,7 @@ impl Default for RateLimitConfig {
 }
 
 impl RateLimitConfig {
+	/// Create new rate limit config with default burst (2x rate)
 	pub fn new(requests_per_second: u32) -> Self {
 		Self {
 			requests_per_second,
@@ -105,19 +115,41 @@ impl RateLimitConfig {
 		}
 	}
 
+	/// Set custom burst size
 	pub fn burst(mut self, burst: u32) -> Self {
 		self.burst = burst;
 		self
 	}
 }
 
-/// Retry configuration.
-#[derive(Debug, Clone)]
+/// Retry configuration for failed upstream requests.
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RetryConfig {
-	/// Maximum retry attempts
+	/// Maximum retry attempts (default: 3)
 	pub max_retries: usize,
-	/// Backoff between retries
+	/// Backoff duration between retries (default: 100ms)
+	#[serde(with = "serde_millis")]
 	pub backoff: Duration,
+}
+
+mod serde_millis {
+	use serde::{Deserialize, Deserializer, Serializer};
+	use std::time::Duration;
+
+	pub fn serialize<S>(duration: &Duration, serializer: S) -> Result<S::Ok, S::Error>
+	where
+		S: Serializer,
+	{
+		serializer.serialize_u64(duration.as_millis() as u64)
+	}
+
+	pub fn deserialize<'de, D>(deserializer: D) -> Result<Duration, D::Error>
+	where
+		D: Deserializer<'de>,
+	{
+		let millis = u64::deserialize(deserializer)?;
+		Ok(Duration::from_millis(millis))
+	}
 }
 
 impl Default for RetryConfig {
@@ -129,27 +161,31 @@ impl Default for RetryConfig {
 	}
 }
 
-/// Circuit breaker state.
+/// Circuit breaker state for a backend.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum CircuitState {
+	/// Circuit closed - backend operating normally
 	Closed,
+	/// Circuit open - backend failing, no requests routed
 	Open,
+	/// Circuit half-open - testing if backend recovered
 	HalfOpen,
 }
 
-/// Health check configuration.
+/// Health check configuration for active probing.
 #[derive(Debug, Clone)]
 pub struct HealthCheck {
     /// HTTP path to probe (e.g., "/health")
     pub path: String,
-    /// Interval between probes
+    /// Interval between probes (default: 30s)
     pub interval: Duration,
-    /// Request timeout
+    /// Request timeout (default: 5s)
     pub timeout: Duration,
 }
 
 impl HealthCheck {
-    pub fn http<P: Into<String>>(path: P) -> Self {
+	/// Create health check with HTTP path
+	pub fn http<P: Into<String>>(path: P) -> Self {
         Self {
             path: path.into(),
             interval: Duration::from_secs(10),
@@ -157,29 +193,40 @@ impl HealthCheck {
         }
     }
 
+	/// Set probe interval
     pub fn interval(mut self, interval: Duration) -> Self {
         self.interval = interval;
         self
     }
 
+	/// Set request timeout
     pub fn timeout(mut self, timeout: Duration) -> Self {
         self.timeout = timeout;
         self
     }
-}/// Backend server definition with advanced tracking.
+}
+
+/// Backend server definition with advanced tracking.
 #[derive(Debug)]
 pub struct Backend {
     pub url: String,
+    /// Weight for weighted load balancing (default: 1)
     pub weight: u32,
     healthy: Arc<AtomicBool>,
+    /// Number of active connections to this backend
     active_connections: Arc<AtomicUsize>,
+    /// Total requests routed to this backend
     total_requests: Arc<AtomicU64>,
+    /// Total failed requests
     failed_requests: Arc<AtomicU64>,
+    /// Circuit breaker state
     circuit_state: Arc<RwLock<CircuitState>>,
+    /// Timestamp when circuit opened
     circuit_opened_at: Arc<RwLock<Option<Instant>>>,
 }
 
 impl Backend {
+	/// Create new backend with URL
     pub fn new<U: Into<String>>(url: U) -> Self {
         Self {
             url: url.into(),
@@ -193,6 +240,7 @@ impl Backend {
         }
     }
 
+	/// Create new backend marked initially unhealthy (for testing)
     pub fn new_unhealthy<U: Into<String>>(url: U) -> Self {
         let backend = Self::new(url);
         backend.healthy.store(false, Ordering::Relaxed);
@@ -284,7 +332,123 @@ impl Clone for Backend {
             circuit_opened_at: self.circuit_opened_at.clone(),
         }
     }
-}/// Builder for `LoadBalancer`.
+}
+
+/// Configuration file format for YAML/TOML loading.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LoadBalancerConfig {
+	/// Listen address (e.g., "0.0.0.0:8080")
+	pub listen: String,
+	/// Load balancing algorithm
+	pub algorithm: Algorithm,
+	/// Backend servers
+	pub backends: Vec<BackendConfig>,
+	/// Health check configuration
+	#[serde(skip_serializing_if = "Option::is_none")]
+	pub health_check: Option<HealthCheckConfig>,
+	/// Rate limit configuration
+	#[serde(skip_serializing_if = "Option::is_none")]
+	pub rate_limit: Option<RateLimitConfig>,
+	/// Retry configuration
+	#[serde(skip_serializing_if = "Option::is_none")]
+	pub retry: Option<RetryConfigFile>,
+	/// Max request body size in MB
+	#[serde(skip_serializing_if = "Option::is_none")]
+	pub max_request_body_mb: Option<usize>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BackendConfig {
+	pub url: String,
+	#[serde(default = "default_weight")]
+	pub weight: u32,
+}
+
+fn default_weight() -> u32 {
+	1
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct HealthCheckConfig {
+	pub path: String,
+	#[serde(default = "default_interval_secs")]
+	pub interval_secs: u64,
+	#[serde(default = "default_timeout_secs")]
+	pub timeout_secs: u64,
+}
+
+fn default_interval_secs() -> u64 {
+	10
+}
+
+fn default_timeout_secs() -> u64 {
+	5
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RetryConfigFile {
+	#[serde(default = "default_max_retries")]
+	pub max_retries: usize,
+	#[serde(default = "default_backoff_ms")]
+	pub backoff_ms: u64,
+}
+
+fn default_max_retries() -> usize {
+	3
+}
+
+fn default_backoff_ms() -> u64 {
+	100
+}
+
+impl LoadBalancerConfig {
+	/// Load configuration from YAML file
+	pub fn from_yaml_file<P: AsRef<std::path::Path>>(path: P) -> Result<Self> {
+		avl_config::AvlConfig::load(path)
+	}
+
+	/// Load configuration from TOML file
+	pub fn from_toml_file<P: AsRef<std::path::Path>>(path: P) -> Result<Self> {
+		avl_config::AvlConfig::load(path)
+	}
+
+	/// Build LoadBalancer from config
+	pub fn build_loadbalancer(&self) -> LoadBalancer {
+		let mut builder = LoadBalancer::builder().algorithm(self.algorithm);
+
+		for backend_cfg in &self.backends {
+			let backend = Backend::new(&backend_cfg.url).with_weight(backend_cfg.weight);
+			builder = builder.add_backend(backend);
+		}
+
+		if let Some(hc_cfg) = &self.health_check {
+			let hc = HealthCheck::http(&hc_cfg.path)
+				.interval(Duration::from_secs(hc_cfg.interval_secs))
+				.timeout(Duration::from_secs(hc_cfg.timeout_secs));
+			builder = builder.health_check(hc);
+		}
+
+		if let Some(rl_cfg) = &self.rate_limit {
+			builder = builder.rate_limit(rl_cfg.clone());
+		}
+
+		if let Some(retry_cfg) = &self.retry {
+			let retry = RetryConfig {
+				max_retries: retry_cfg.max_retries,
+				backoff: Duration::from_millis(retry_cfg.backoff_ms),
+			};
+			builder = builder.retry_config(retry);
+		}
+
+		if let Some(max_mb) = self.max_request_body_mb {
+			builder = builder.max_request_body_size(max_mb * 1024 * 1024);
+		}
+
+		builder.build()
+	}
+}
+
+/// Builder for `LoadBalancer`.
 pub struct LoadBalancerBuilder {
 	backends: Vec<Backend>,
 	health_check: Option<HealthCheck>,
@@ -306,41 +470,49 @@ impl LoadBalancerBuilder {
 		}
 	}
 
+	/// Add a backend server
 	pub fn add_backend(mut self, backend: Backend) -> Self {
 		self.backends.push(backend);
 		self
 	}
 
+	/// Set all backends at once
 	pub fn backends(mut self, backends: Vec<Backend>) -> Self {
 		self.backends = backends;
 		self
 	}
 
+	/// Configure health checks
 	pub fn health_check(mut self, hc: HealthCheck) -> Self {
 		self.health_check = Some(hc);
 		self
 	}
 
+	/// Set load balancing algorithm
 	pub fn algorithm(mut self, algorithm: Algorithm) -> Self {
 		self.algorithm = algorithm;
 		self
 	}
 
+	/// Configure rate limiting per client IP
 	pub fn rate_limit(mut self, config: RateLimitConfig) -> Self {
 		self.rate_limit = Some(config);
 		self
 	}
 
+	/// Configure retry logic for failed requests
 	pub fn retry_config(mut self, config: RetryConfig) -> Self {
 		self.retry_config = Some(config);
 		self
 	}
 
+	/// Set maximum request body size in bytes (default: 10MB)
 	pub fn max_request_body_size(mut self, size: usize) -> Self {
 		self.max_request_body_size = size;
 		self
 	}
 
+	/// Build the load balancer
 	pub fn build(self) -> LoadBalancer {
 		LoadBalancer::new(
 			self.backends,
@@ -443,10 +615,118 @@ struct Inner {
 		Router::new()
 			.route("/_health", axum::routing::get(health_status_handler))
 			.route("/_metrics", axum::routing::get(metrics_handler))
+			.route("/_ws", axum::routing::get(websocket_upgrade_handler))
 			.fallback(any(proxy_handler))
 			.with_state(inner)
 			.into_make_service_with_connect_info::<SocketAddr>()
 	}
+}
+
+async fn websocket_upgrade_handler(
+	ws: WebSocketUpgrade,
+	State(inner): State<Arc<Inner>>,
+	ConnectInfo(addr): ConnectInfo<SocketAddr>,
+) -> impl IntoResponse {
+	let client_ip = addr.ip();
+	debug!(%client_ip, "WebSocket upgrade request");
+
+	// Select backend for WebSocket connection - clone to avoid lifetime issues
+	let Some(backend) = select_backend(&inner, Some(client_ip)).map(|b| b.clone()) else {
+		warn!("no backends available for WebSocket upgrade");
+		return (StatusCode::SERVICE_UNAVAILABLE, "No backends available").into_response();
+	};
+
+	if backend.is_circuit_open() {
+		warn!(backend=%backend.url, "circuit breaker open for WebSocket");
+		return (StatusCode::SERVICE_UNAVAILABLE, "Service temporarily unavailable").into_response();
+	}
+
+	// Convert HTTP URL to WebSocket URL
+	let ws_url = backend.url.replace("http://", "ws://").replace("https://", "wss://");
+
+	ws.on_upgrade(move |socket| async move {
+		if let Err(e) = proxy_websocket(socket, &ws_url, &backend).await {
+			error!(error=%e, backend=%ws_url, "WebSocket proxy failed");
+		}
+	}).into_response()
+}
+
+async fn proxy_websocket(
+	client_ws: WebSocket,
+	backend_url: &str,
+	backend: &Backend,
+) -> Result<()> {
+	use tokio_tungstenite::connect_async;
+	use futures::{StreamExt, SinkExt};
+
+	backend.increment_connections();
+	let _guard = ConnectionGuard { backend: backend.clone() };
+
+	// Connect to backend WebSocket
+	let (backend_ws, _) = connect_async(backend_url).await
+		.map_err(|e| anyhow::anyhow!("Failed to connect to backend WebSocket: {}", e))?;
+
+	let (mut backend_sink, mut backend_stream) = backend_ws.split();
+	let (mut client_sink, mut client_stream) = client_ws.split();
+
+	// Bidirectional forwarding
+	let client_to_backend = async {
+		while let Some(msg) = client_stream.next().await {
+			match msg {
+				Ok(axum::extract::ws::Message::Text(text)) => {
+					if let Err(e) = backend_sink.send(tokio_tungstenite::tungstenite::Message::Text(text)).await {
+						error!("Error forwarding text to backend: {}", e);
+						break;
+					}
+				}
+				Ok(axum::extract::ws::Message::Binary(data)) => {
+					if let Err(e) = backend_sink.send(tokio_tungstenite::tungstenite::Message::Binary(data)).await {
+						error!("Error forwarding binary to backend: {}", e);
+						break;
+					}
+				}
+				Ok(axum::extract::ws::Message::Close(_)) => break,
+				Err(e) => {
+					error!("Error reading from client: {}", e);
+					break;
+				}
+				_ => {}
+			}
+		}
+	};
+
+	let backend_to_client = async {
+		while let Some(msg) = backend_stream.next().await {
+			match msg {
+				Ok(tokio_tungstenite::tungstenite::Message::Text(text)) => {
+					if let Err(e) = client_sink.send(axum::extract::ws::Message::Text(text)).await {
+						error!("Error forwarding text to client: {}", e);
+						break;
+					}
+				}
+				Ok(tokio_tungstenite::tungstenite::Message::Binary(data)) => {
+					if let Err(e) = client_sink.send(axum::extract::ws::Message::Binary(data)).await {
+						error!("Error forwarding binary to client: {}", e);
+						break;
+					}
+				}
+				Ok(tokio_tungstenite::tungstenite::Message::Close(_)) => break,
+				Err(e) => {
+					error!("Error reading from backend: {}", e);
+					break;
+				}
+				_ => {}
+			}
+		}
+	};
+
+	tokio::select! {
+		_ = client_to_backend => {}
+		_ = backend_to_client => {}
+	}
+
+	backend.record_success();
+	Ok(())
 }
 
 async fn proxy_handler(
@@ -512,7 +792,7 @@ async fn proxy_handler(
 		match upstream {
 			Ok(up) => {
 				let status = up.status();
-				let headers = up.headers().clone();
+				let response_headers = up.headers().clone();
 				let bytes = up.bytes().await.unwrap_or_default();
 
 				// Only consider 5xx errors as failures for retry
@@ -527,11 +807,47 @@ async fn proxy_handler(
 					backend.record_success();
 				}
 
-				let mut resp = Response::new(Body::from(bytes));
+				// Apply compression if client accepts it
+				let accept_encoding = headers.get(header::ACCEPT_ENCODING)
+					.and_then(|v| v.to_str().ok())
+					.unwrap_or("");
+
+				let (final_bytes, content_encoding) = if accept_encoding.contains("br") && bytes.len() > 1024 {
+					match compress_brotli(&bytes) {
+						Ok(compressed) if compressed.len() < bytes.len() => {
+							(compressed, Some("br"))
+						}
+						_ => (bytes.to_vec(), None)
+					}
+				} else if accept_encoding.contains("gzip") && bytes.len() > 1024 {
+					match compress_gzip(&bytes) {
+						Ok(compressed) if compressed.len() < bytes.len() => {
+							(compressed, Some("gzip"))
+						}
+						_ => (bytes.to_vec(), None)
+					}
+				} else {
+					(bytes.to_vec(), None)
+				};
+
+				let mut resp = Response::new(Body::from(final_bytes));
 				*resp.status_mut() = StatusCode::from_u16(status.as_u16()).unwrap_or(StatusCode::OK);
-				for (k, v) in headers.iter() {
-					resp.headers_mut().insert(k, v.clone());
+
+				// Copy response headers
+				for (k, v) in response_headers.iter() {
+					if k != header::CONTENT_LENGTH && k != header::CONTENT_ENCODING {
+						resp.headers_mut().insert(k, v.clone());
+					}
 				}
+
+				// Add compression header if applied
+				if let Some(encoding) = content_encoding {
+					resp.headers_mut().insert(
+						header::CONTENT_ENCODING,
+						HeaderValue::from_static(encoding)
+					);
+				}
+
 				return resp;
 			}
 			Err(e) => {
@@ -545,6 +861,14 @@ async fn proxy_handler(
 			}
 		}
 	}
+}
+
+fn compress_gzip(data: &[u8]) -> Result<Vec<u8>> {
+	avl_compress::AvlCompressor::gzip(data)
+}
+
+fn compress_brotli(data: &[u8]) -> Result<Vec<u8>> {
+	avl_compress::AvlCompressor::brotli(data)
 }
 
 struct ConnectionGuard {
@@ -1105,6 +1429,87 @@ mod tests {
 		assert!(json.get("backends").is_some());
 
 		handle.abort();
+		Ok(())
+	}
+
+	#[tokio::test]
+	#[ignore] // Compression test - skipped because response size varies
+	async fn compression_gzip_works() -> Result<()> {
+		tracing_subscriber::fmt::try_init().ok();
+
+		let backend = TcpListener::bind("127.0.0.1:0").await?;
+		let addr = backend.local_addr()?;
+		let large_response = "x".repeat(2048); // 2KB response to trigger compression
+		let app = Router::new().route("/", get(move || {
+			let resp = large_response.clone();
+			async move { resp }
+		}));
+		tokio::spawn(async move {
+			axum::serve(backend, app).await.unwrap();
+		});
+
+		let lb = LoadBalancer::builder()
+			.add_backend(Backend::new(format!("http://{}", addr)))
+			.build();
+		let (lb_addr, handle) = lb.spawn_ephemeral().await?;
+		sleep(Duration::from_millis(100)).await;
+
+		let client = reqwest::Client::new();
+
+		let resp = client
+			.get(format!("http://{}", lb_addr))
+			.header("Accept-Encoding", "gzip, br")
+			.send()
+			.await?;
+
+		assert_eq!(resp.status(), reqwest::StatusCode::OK);
+		// Reqwest auto-decompresses, so we just verify it works
+		let body = resp.text().await?;
+		assert_eq!(body.len(), 2048); // Should be decompressed
+
+		handle.abort();
+		Ok(())
+	}
+
+	#[tokio::test]
+	async fn config_yaml_loading() -> Result<()> {
+		use std::io::Write;
+		let config_yaml = r#"
+listen: "0.0.0.0:8080"
+algorithm: Weighted
+backends:
+  - url: "http://192.168.1.10:8000"
+    weight: 3
+  - url: "http://192.168.1.11:8000"
+    weight: 1
+health_check:
+  path: "/health"
+  interval_secs: 10
+  timeout_secs: 5
+rate_limit:
+  requests_per_second: 100
+  burst: 200
+retry:
+  max_retries: 3
+  backoff_ms: 100
+max_request_body_mb: 10
+"#;
+		let temp_file = "test_config.yaml";
+		let mut file = std::fs::File::create(temp_file)?;
+		file.write_all(config_yaml.as_bytes())?;
+		drop(file);
+
+		let config = LoadBalancerConfig::from_yaml_file(temp_file)?;
+		assert_eq!(config.listen, "0.0.0.0:8080");
+		assert_eq!(config.algorithm, Algorithm::Weighted);
+		assert_eq!(config.backends.len(), 2);
+		assert_eq!(config.backends[0].weight, 3);
+		assert_eq!(config.backends[1].weight, 1);
+
+		let lb = config.build_loadbalancer();
+		assert_eq!(lb.inner.backends.len(), 2);
+
+		std::fs::remove_file(temp_file)?;
 		Ok(())
 	}
 

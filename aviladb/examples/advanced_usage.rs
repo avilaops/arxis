@@ -1,5 +1,5 @@
 //! Exemplos avançados do AvilaDB
-//! 
+//!
 //! Este exemplo demonstra:
 //! - Autenticação e segurança
 //! - Cache inteligente
@@ -57,7 +57,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // 3. Queries com cache
     println!("🔍 3. Queries com Cache Inteligente");
-    
+
     // Primeira query (cold cache)
     let start = Instant::now();
     let high_level = players
@@ -88,9 +88,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("Guild Statistics:");
     for stat in guild_stats {
-        println!("  {} - {} members, avg level: {:.1}", 
-            stat["guild"], 
-            stat["members"], 
+        println!("  {} - {} members, avg level: {:.1}",
+            stat["guild"],
+            stat["members"],
             stat["avg_level"]
         );
     }
@@ -100,10 +100,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     #[cfg(feature = "vector-search")]
     {
         println!("🎯 5. Vector Search - Similaridade");
-        
+
         // Criar embedding de exemplo
         let query_embedding = vec![0.1, 0.2, 0.3, 0.4, 0.5];
-        
+
         let similar = players
             .vector_search("embedding", &query_embedding, 10)
             .await?;
@@ -124,7 +124,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 7. Transações e consistência
     println!("💰 7. Transações ACID");
     let start = Instant::now();
-    
+
     // Simular transferência de XP entre players
     let player1 = players
         .query("SELECT * FROM players WHERE playerId = @id")

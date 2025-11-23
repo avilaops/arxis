@@ -71,6 +71,8 @@ pub mod ai_metrics;
 pub mod embeddings;
 pub mod query_safety;
 pub mod rate_limiter;
+pub mod vector_persistence;
+pub mod streaming;
 
 use std::net::SocketAddr;
 use std::sync::Arc;

@@ -122,17 +122,17 @@ impl TelemetryCollector {
         {
             let mut stats = self.stats.write().await;
             stats.total_operations += 1;
-            
+
             if event.success {
                 stats.successful_operations += 1;
             } else {
                 stats.failed_operations += 1;
             }
-            
+
             stats.total_duration_ms += event.duration_ms;
             stats.total_documents += event.document_count as u64;
             stats.total_bytes += event.bytes_transferred as u64;
-            
+
             let op_name = format!("{:?}", event.operation);
             *stats.operations_by_type.entry(op_name).or_insert(0) += 1;
         }
@@ -163,7 +163,7 @@ impl TelemetryCollector {
     pub async fn reset(&self) {
         let mut stats = self.stats.write().await;
         *stats = OperationStats::default();
-        
+
         let mut events = self.events.write().await;
         events.clear();
     }
@@ -227,7 +227,7 @@ impl TelemetrySpan {
     /// Finish span with result
     pub async fn finish_with_result(self, result: Result<(), String>) {
         let duration_ms = self.start.elapsed().as_millis() as u64;
-        
+
         let event = TelemetryEvent {
             operation: self.operation,
             database: self.database,
@@ -243,7 +243,7 @@ impl TelemetrySpan {
                 .unwrap()
                 .as_secs(),
         };
-        
+
         self.collector.record(event).await;
     }
 }
@@ -256,7 +256,7 @@ mod tests {
     async fn test_telemetry_collector() {
         let config = TelemetryConfig::default();
         let collector = TelemetryCollector::new(config);
-        
+
         let event = TelemetryEvent {
             operation: OperationType::Insert,
             database: "test".to_string(),
@@ -269,9 +269,9 @@ mod tests {
             compression_ratio: 2.0,
             timestamp: 0,
         };
-        
+
         collector.record(event).await;
-        
+
         let stats = collector.stats().await;
         assert_eq!(stats.total_operations, 1);
         assert_eq!(stats.successful_operations, 1);
@@ -285,7 +285,7 @@ mod tests {
         stats.failed_operations = 5;
         stats.total_duration_ms = 1000;
         stats.total_documents = 100;
-        
+
         assert_eq!(stats.success_rate(), 0.95);
         assert_eq!(stats.avg_duration_ms(), 10.0);
         assert_eq!(stats.throughput_docs_per_sec(1.0), 100.0);
@@ -295,7 +295,7 @@ mod tests {
     async fn test_telemetry_span() {
         let config = TelemetryConfig::default();
         let collector = Arc::new(TelemetryCollector::new(config));
-        
+
         let span = TelemetrySpan::new(
             collector.clone(),
             OperationType::Query,
@@ -304,9 +304,9 @@ mod tests {
         )
         .with_document_count(10)
         .with_bytes(10240);
-        
+
         span.finish().await;
-        
+
         let stats = collector.stats().await;
         assert_eq!(stats.total_operations, 1);
         assert_eq!(stats.total_documents, 10);

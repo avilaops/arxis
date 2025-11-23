@@ -1,5 +1,5 @@
 //! Game Leaderboard com AvilaDB
-//! 
+//!
 //! Sistema de ranking em tempo real com:
 //! - Inserção de alta performance
 //! - Queries ordenadas otimizadas
@@ -20,11 +20,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let leaderboard = db.collection("leaderboard");
 
     println!("📊 Inicializando leaderboard...");
-    
+
     // Simular 10,000 players
     let start = Instant::now();
     let mut rng = rand::thread_rng();
-    
+
     for i in 0..10_000 {
         let score = rng.gen_range(0..1_000_000);
         let player = Document::new()
@@ -42,13 +42,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .set("lastActive", chrono::Utc::now().to_rfc3339());
 
         leaderboard.insert(player).await?;
-        
+
         if i % 1000 == 0 {
             print!(".");
             std::io::Write::flush(&mut std::io::stdout())?;
         }
     }
-    
+
     let elapsed = start.elapsed();
     println!("\n✅ 10,000 players inseridos em {:?}", elapsed);
     println!("📈 Throughput: {:.0} docs/s\n", 10_000.0 / elapsed.as_secs_f64());
@@ -61,9 +61,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .execute()
         .await?;
     let query_time = start.elapsed();
-    
+
     for (i, player) in top10.iter().enumerate() {
-        println!("  {}. {} - {:>9} pts (Level {})", 
+        println!("  {}. {} - {:>9} pts (Level {})",
             i + 1,
             player["username"],
             player["score"],
@@ -81,9 +81,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .execute()
         .await?;
     let query_time = start.elapsed();
-    
+
     for (i, player) in top10_br.iter().enumerate() {
-        println!("  {}. {} - {:>9} pts", 
+        println!("  {}. {} - {:>9} pts",
             i + 1,
             player["username"],
             player["score"]
@@ -99,7 +99,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await?;
 
     for stat in stats {
-        println!("  {} - {} players | Avg: {:.0} | Max: {}", 
+        println!("  {} - {} players | Avg: {:.0} | Max: {}",
             stat["country"],
             stat["players"],
             stat["avg_score"],
@@ -112,11 +112,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("⚡ Simulando updates em tempo real (5 segundos)...");
     let start_sim = Instant::now();
     let mut updates = 0;
-    
+
     while start_sim.elapsed() < Duration::from_secs(5) {
         let player_id = format!("player_{}", rng.gen_range(0..10_000));
         let new_score = rng.gen_range(0..1_000_000);
-        
+
         leaderboard
             .update(
                 &player_id,
@@ -125,11 +125,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     .set("lastActive", chrono::Utc::now().to_rfc3339())
             )
             .await?;
-        
+
         updates += 1;
         sleep(Duration::from_millis(10)).await;
     }
-    
+
     println!("✅ {} updates executados", updates);
     println!("📈 Update rate: {:.0} updates/s\n", updates as f64 / 5.0);
 
@@ -141,9 +141,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .execute()
         .await?;
     let query_time = start.elapsed();
-    
+
     for (i, player) in top10_updated.iter().enumerate() {
-        println!("  {}. {} - {:>9} pts", 
+        println!("  {}. {} - {:>9} pts",
             i + 1,
             player["username"],
             player["score"]

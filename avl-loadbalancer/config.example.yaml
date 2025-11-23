@@ -1,0 +1,35 @@
+# AVL LoadBalancer Configuration Example
+
+# Listening address for the load balancer
+listen: "0.0.0.0:8080"
+
+# Load balancing algorithm: RoundRobin, LeastConnections, IpHash, Weighted
+algorithm: Weighted
+
+# Backend servers
+backends:
+  - url: "http://192.168.1.10:8000"
+    weight: 3
+  - url: "http://192.168.1.11:8000"
+    weight: 1
+  - url: "http://192.168.1.12:8000"
+    weight: 2
+
+# Health check configuration
+health_check:
+  path: "/health"
+  interval_secs: 10
+  timeout_secs: 5
+
+# Rate limiting per IP
+rate_limit:
+  requests_per_second: 100
+  burst: 200
+
+# Retry configuration
+retry:
+  max_retries: 3
+  backoff_ms: 100
+
+# Max request body size in MB
+max_request_body_mb: 10

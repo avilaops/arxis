@@ -90,7 +90,7 @@ impl Default for EmbeddingGenerator {
 
 /// In-memory vector store (production: use AvilaDB vector index)
 pub struct VectorStore {
-    documents: Vec<EmbeddedDocument>,
+    pub documents: Vec<EmbeddedDocument>,
     generator: EmbeddingGenerator,
 }
 
@@ -111,6 +111,11 @@ impl VectorStore {
             embedding,
             metadata,
         });
+    }
+
+    /// Add pre-embedded document
+    pub fn add_document(&mut self, doc: EmbeddedDocument) {
+        self.documents.push(doc);
     }
 
     /// Search for top-k similar documents

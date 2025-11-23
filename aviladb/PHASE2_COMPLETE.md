@@ -72,14 +72,14 @@
 ## 📊 Métricas de Código
 
 ### Arquivos Novos
-| Arquivo | Linhas | Features |
-|---------|--------|----------|
-| `src/http.rs` | 274 | HTTP client, retry, pooling |
-| `src/auth.rs` | 254 | Authentication, tokens |
-| `src/cache.rs` | 273 | Query cache, LRU |
-| `src/compression.rs` | 142 | Brotli compression |
-| `src/telemetry.rs` | 332 | Metrics, observability |
-| **Total Novo** | **1,275** | **5 módulos** |
+| Arquivo              | Linhas    | Features                    |
+| -------------------- | --------- | --------------------------- |
+| `src/http.rs`        | 274       | HTTP client, retry, pooling |
+| `src/auth.rs`        | 254       | Authentication, tokens      |
+| `src/cache.rs`       | 273       | Query cache, LRU            |
+| `src/compression.rs` | 142       | Brotli compression          |
+| `src/telemetry.rs`   | 332       | Metrics, observability      |
+| **Total Novo**       | **1,275** | **5 módulos**               |
 
 ### Código Total
 - **Antes**: ~1,500 linhas (MVP básico)

@@ -1,20 +1,44 @@
 //! Collection operations
 
 use std::sync::Arc;
-use crate::{Config, Document, InsertResult, Query, Result};
+use crate::{
+    auth::AuthProvider,
+    compression::{compress, CompressionLevel},
+    http::HttpClient,
+    telemetry::TelemetryCollector,
+    Config, Document, InsertResult, Query, Result,
+};
+use serde_json::json;
 
 /// Collection handle for document operations
 #[allow(dead_code)]
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct Collection {
-    name: String,
-    database: String,
-    config: Arc<Config>,
+    pub(crate) name: String,
+    pub(crate) database: String,
+    pub(crate) config: Arc<Config>,
+    pub(crate) http_client: Arc<HttpClient>,
+    pub(crate) auth_provider: Arc<AuthProvider>,
+    pub(crate) telemetry: Arc<TelemetryCollector>,
 }
 
 impl Collection {
-    pub(crate) fn new(name: String, database: String, config: Arc<Config>) -> Result<Self> {
-        Ok(Self { name, database, config })
+    pub(crate) fn new(
+        name: String,
+        database: String,
+        config: Arc<Config>,
+        http_client: Arc<HttpClient>,
+        auth_provider: Arc<AuthProvider>,
+        telemetry: Arc<TelemetryCollector>,
+    ) -> Result<Self> {
+        Ok(Self {
+            name,
+            database,
+            config,
+            http_client,
+            auth_provider,
+            telemetry,
+        })
     }
 
     /// Get collection name
@@ -39,39 +63,242 @@ impl Collection {
     /// # }
     /// ```
     pub async fn insert(&self, doc: Document) -> Result<InsertResult> {
+        let start = std::time::Instant::now();
+
         // Validate document size
         doc.validate()?;
 
-        // TODO: Compress with avila-compress
-        // TODO: Send INSERT request
-        // TODO: Return real result
+        // Serialize document
+        let doc_json = serde_json::to_vec(&doc)?;
+        let original_size = doc_json.len();
+
+        // Compress if enabled
+        let (payload, compression_ratio) = if self.config.enable_compression {
+            let level = match self.config.compression_level {
+                0..=3 => CompressionLevel::Fast,
+                4..=7 => CompressionLevel::Balanced,
+                _ => CompressionLevel::Best,
+            };
+            let compressed = compress(&doc_json, level)?;
+            let ratio = original_size as f64 / compressed.len() as f64;
+            (compressed, ratio)
+        } else {
+            (doc_json, 1.0)
+        };
+
+        // Get authentication token
+        let token = self.auth_provider.get_token().await?;
+
+        // Build HTTP request
+        let url = format!(
+            "{}/v1/databases/{}/collections/{}/documents",
+            self.config.endpoint, self.database, self.name
+        );
+
+        let mut headers = reqwest::header::HeaderMap::new();
+        headers.insert(
+            reqwest::header::AUTHORIZATION,
+            reqwest::header::HeaderValue::from_str(&format!("Bearer {}", token))?,
+        );
+        headers.insert(
+            reqwest::header::CONTENT_TYPE,
+            reqwest::header::HeaderValue::from_static("application/json"),
+        );
+
+        if self.config.enable_compression {
+            headers.insert(
+                reqwest::header::CONTENT_ENCODING,
+                reqwest::header::HeaderValue::from_static("br"),
+            );
+        }
+
+        // Send HTTP POST request
+        let response = self
+            .http_client
+            .post(&url, payload, headers)
+            .await?;
+
+        // Parse response
+        let response_data: serde_json::Value = serde_json::from_slice(&response)?;
+        let doc_id = response_data["id"]
+            .as_str()
+            .unwrap_or_else(|| "unknown")
+            .to_string();
+
+        let latency_ms = start.elapsed().as_millis();
+
+        // Record telemetry
+        self.telemetry.record_operation(
+            crate::telemetry::OperationType::Insert,
+            latency_ms as u64,
+            true,
+        );
 
         Ok(InsertResult {
-            id: uuid::Uuid::new_v4().to_string(),
-            size_bytes: doc.size_bytes(),
-            compression_ratio: 1.0,
-            latency_ms: 0,
+            id: doc_id,
+            size_bytes: original_size,
+            compression_ratio,
+            latency_ms,
         })
     }
 
     /// Insert multiple documents in a batch
     pub async fn insert_batch(&self, docs: Vec<Document>) -> Result<Vec<InsertResult>> {
-        // TODO: Validate all documents
-        // TODO: Compress with avila-compress
-        // TODO: Send BATCH INSERT request
+        let start = std::time::Instant::now();
 
-        let mut results = Vec::new();
-        for doc in docs {
-            results.push(self.insert(doc).await?);
+        // Validate all documents first
+        for doc in &docs {
+            doc.validate()?;
         }
+
+        // Prepare batch payload
+        let mut batch_documents = Vec::new();
+        let mut size_info = Vec::new();
+
+        for doc in docs {
+            let doc_json = serde_json::to_vec(&doc)?;
+            let original_size = doc_json.len();
+
+            // Compress if enabled
+            let (payload, compression_ratio) = if self.config.enable_compression {
+                let level = CompressionLevel::Balanced;
+                let compressed = compress(&doc_json, level)?;
+                let ratio = original_size as f64 / compressed.len() as f64;
+                (compressed, ratio)
+            } else {
+                (doc_json.clone(), 1.0)
+            };
+
+            batch_documents.push(payload);
+            size_info.push((original_size, compression_ratio));
+        }
+
+        // Get authentication token
+        let token = self.auth_provider.get_token().await?;
+
+        // Build batch request
+        let url = format!(
+            "{}/v1/databases/{}/collections/{}/documents/batch",
+            self.config.endpoint, self.database, self.name
+        );
+
+        let mut headers = reqwest::header::HeaderMap::new();
+        headers.insert(
+            reqwest::header::AUTHORIZATION,
+            reqwest::header::HeaderValue::from_str(&format!("Bearer {}", token))?,
+        );
+        headers.insert(
+            reqwest::header::CONTENT_TYPE,
+            reqwest::header::HeaderValue::from_static("application/json"),
+        );
+
+        // Create batch payload
+        let batch_payload = json!({
+            "documents": batch_documents.iter().map(|d| {
+                if self.config.enable_compression {
+                    base64::encode(d)
+                } else {
+                    String::from_utf8_lossy(d).to_string()
+                }
+            }).collect::<Vec<_>>(),
+            "compressed": self.config.enable_compression
+        });
+
+        // Send HTTP POST request
+        let response = self
+            .http_client
+            .post(&url, serde_json::to_vec(&batch_payload)?, headers)
+            .await?;
+
+        // Parse response
+        let response_data: serde_json::Value = serde_json::from_slice(&response)?;
+        let ids = response_data["ids"]
+            .as_array()
+            .ok_or_else(|| crate::error::AvilaError::Network("Invalid batch response".to_string()))?;
+
+        let total_latency = start.elapsed().as_millis();
+        let avg_latency = total_latency / ids.len().max(1) as u128;
+
+        // Build results
+        let results: Vec<InsertResult> = ids
+            .iter()
+            .zip(size_info.iter())
+            .map(|(id, (size, ratio))| InsertResult {
+                id: id.as_str().unwrap_or("unknown").to_string(),
+                size_bytes: *size,
+                compression_ratio: *ratio,
+                latency_ms: avg_latency,
+            })
+            .collect();
+
+        // Record telemetry
+        self.telemetry.record_operation(
+            crate::telemetry::OperationType::Insert,
+            total_latency as u64,
+            true,
+        );
+
         Ok(results)
     }
 
     /// Get a document by ID
-    pub async fn get(&self, _id: &str) -> Result<Option<Document>> {
-        // TODO: Send GET request
-        // TODO: Decompress with avila-compress
-        Ok(None)
+    pub async fn get(&self, id: &str) -> Result<Option<Document>> {
+        let start = std::time::Instant::now();
+
+        // Get authentication token
+        let token = self.auth_provider.get_token().await?;
+
+        // Build HTTP request
+        let url = format!(
+            "{}/v1/databases/{}/collections/{}/documents/{}",
+            self.config.endpoint, self.database, self.name, id
+        );
+
+        let mut headers = reqwest::header::HeaderMap::new();
+        headers.insert(
+            reqwest::header::AUTHORIZATION,
+            reqwest::header::HeaderValue::from_str(&format!("Bearer {}", token))?,
+        );
+
+        if self.config.enable_compression {
+            headers.insert(
+                reqwest::header::ACCEPT_ENCODING,
+                reqwest::header::HeaderValue::from_static("br"),
+            );
+        }
+
+        // Send HTTP GET request
+        let response = self.http_client.get(&url, headers).await;
+
+        match response {
+            Ok(data) => {
+                // Check if response is compressed
+                let doc_json = if self.config.enable_compression {
+                    crate::compression::decompress(&data)?
+                } else {
+                    data
+                };
+
+                // Deserialize document
+                let doc: Document = serde_json::from_slice(&doc_json)?;
+
+                let latency_ms = start.elapsed().as_millis() as u64;
+
+                // Record telemetry
+                self.telemetry.record_operation(
+                    crate::telemetry::OperationType::Query,
+                    latency_ms,
+                    true,
+                );
+
+                Ok(Some(doc))
+            }
+            Err(crate::error::AvilaError::Network(msg)) if msg.contains("404") => {
+                // Document not found
+                Ok(None)
+            }
+            Err(e) => Err(e),
+        }
     }
 
     /// Create a new query
@@ -163,8 +390,76 @@ impl UpdateBuilder {
     }
 
     pub async fn execute(self) -> Result<usize> {
-        // TODO: Send UPDATE request
-        Ok(0)
+        let start = std::time::Instant::now();
+        
+        // Validate we have updates to perform
+        if self.updates.is_empty() {
+            return Err(crate::error::AvilaError::Query(
+                "No fields to update".to_string()
+            ));
+        }
+
+        // Validate we have conditions (prevent accidental full-table updates)
+        if self.conditions.is_empty() {
+            return Err(crate::error::AvilaError::Query(
+                "Update without WHERE clause requires explicit confirmation".to_string()
+            ));
+        }
+
+        // Get authentication token
+        let token = self.collection.auth_provider.get_token().await?;
+
+        // Build update request
+        let url = format!(
+            "{}/v1/databases/{}/collections/{}/update",
+            self.collection.config.endpoint,
+            self.collection.database,
+            self.collection.name
+        );
+
+        let mut headers = reqwest::header::HeaderMap::new();
+        headers.insert(
+            reqwest::header::AUTHORIZATION,
+            reqwest::header::HeaderValue::from_str(&format!("Bearer {}", token))?,
+        );
+        headers.insert(
+            reqwest::header::CONTENT_TYPE,
+            reqwest::header::HeaderValue::from_static("application/json"),
+        );
+
+        // Convert updates to JSON object
+        let mut update_fields = serde_json::Map::new();
+        for (field, value) in self.updates {
+            update_fields.insert(field, value);
+        }
+
+        // Build payload
+        let payload = json!({
+            "updates": update_fields,
+            "where": self.conditions.join(" AND ")
+        });
+
+        // Send HTTP PATCH request
+        let response = self
+            .collection
+            .http_client
+            .post(&url, serde_json::to_vec(&payload)?, headers)
+            .await?;
+
+        // Parse response
+        let response_data: serde_json::Value = serde_json::from_slice(&response)?;
+        let updated_count = response_data["updatedCount"].as_u64().unwrap_or(0) as usize;
+
+        let latency_ms = start.elapsed().as_millis() as u64;
+
+        // Record telemetry
+        self.collection.telemetry.record_operation(
+            crate::telemetry::OperationType::Update,
+            latency_ms,
+            true,
+        );
+
+        Ok(updated_count)
     }
 }
 
@@ -189,8 +484,62 @@ impl DeleteBuilder {
     }
 
     pub async fn execute(self) -> Result<usize> {
-        // TODO: Send DELETE request
-        Ok(0)
+        let start = std::time::Instant::now();
+        
+        // Critical safety check: prevent accidental full-table deletes
+        if self.conditions.is_empty() {
+            return Err(crate::error::AvilaError::Query(
+                "Delete without WHERE clause is dangerous and not allowed. Use explicit method if needed.".to_string()
+            ));
+        }
+
+        // Get authentication token
+        let token = self.collection.auth_provider.get_token().await?;
+
+        // Build delete request
+        let url = format!(
+            "{}/v1/databases/{}/collections/{}/delete",
+            self.collection.config.endpoint,
+            self.collection.database,
+            self.collection.name
+        );
+
+        let mut headers = reqwest::header::HeaderMap::new();
+        headers.insert(
+            reqwest::header::AUTHORIZATION,
+            reqwest::header::HeaderValue::from_str(&format!("Bearer {}", token))?,
+        );
+        headers.insert(
+            reqwest::header::CONTENT_TYPE,
+            reqwest::header::HeaderValue::from_static("application/json"),
+        );
+
+        // Build payload
+        let payload = json!({
+            "where": self.conditions.join(" AND ")
+        });
+
+        // Send HTTP DELETE request
+        let response = self
+            .collection
+            .http_client
+            .post(&url, serde_json::to_vec(&payload)?, headers)
+            .await?;
+
+        // Parse response
+        let response_data: serde_json::Value = serde_json::from_slice(&response)?;
+        let deleted_count = response_data["deletedCount"].as_u64().unwrap_or(0) as usize;
+
+        let latency_ms = start.elapsed().as_millis() as u64;
+
+        // Record telemetry
+        self.collection.telemetry.record_operation(
+            crate::telemetry::OperationType::Delete,
+            latency_ms,
+            true,
+        );
+
+        Ok(deleted_count)
     }
 }
 
@@ -201,6 +550,7 @@ pub struct VectorSearchBuilder {
     field: String,
     query_vector: Vec<f32>,
     top_k: usize,
+    similarity_threshold: Option<f32>,
 }
 
 impl VectorSearchBuilder {
@@ -210,16 +560,48 @@ impl VectorSearchBuilder {
             field,
             query_vector,
             top_k: 10,
+            similarity_threshold: None,
         }
     }
 
+    /// Set the number of results to return
     pub fn top_k(mut self, k: usize) -> Self {
         self.top_k = k;
         self
     }
 
+    /// Set minimum similarity threshold (0.0 - 1.0)
+    pub fn min_similarity(mut self, threshold: f32) -> Self {
+        self.similarity_threshold = Some(threshold.clamp(0.0, 1.0));
+        self
+    }
+
     pub async fn execute(self) -> Result<Vec<Document>> {
-        // TODO: Send VECTOR SEARCH request
+        let start = std::time::Instant::now();
+
+        // Validate vector dimension
+        if self.query_vector.is_empty() {
+            return Err(crate::error::AvilaError::VectorSearch(
+                "Query vector cannot be empty".to_string()
+            ));
+        }
+
+        // Validate top_k
+        if self.top_k == 0 {
+            return Err(crate::error::AvilaError::VectorSearch(
+                "top_k must be greater than 0".to_string()
+            ));
+        }
+
+        // TODO: Implement HNSW-based vector search
+        // 1. Normalize query vector
+        // 2. Use HNSW index for approximate nearest neighbors
+        // 3. Apply similarity threshold if set
+        // 4. Return top-k results with scores
+
+        let _latency_ms = start.elapsed().as_millis() as u64;
+
+        // For now, return empty results
         Ok(vec![])
     }
 }

@@ -1,82 +1,123 @@
 # ⚖️ AVL LoadBalancer
 
-**L7 Load Balancer and Reverse Proxy for AVL Cloud Platform**
+**Production-Ready L7 Load Balancer and Reverse Proxy for AVL Cloud Platform**
 
 [![Crates.io](https://img.shields.io/crates/v/avl-loadbalancer.svg)](https://crates.io/crates/avl-loadbalancer)
 [![Documentation](https://docs.rs/avl-loadbalancer/badge.svg)](https://docs.rs/avl-loadbalancer)
 [![AVL Cloud](https://img.shields.io/badge/AVL-Cloud%20Platform-00d4ff)](https://avila.cloud)
 
-🏛️ **High Availability** | ⚙️ **Smart Routing** | 🚀 **TLS Termination**
+🏛️ **High Availability** | ⚙️ **Smart Routing** | 🔒 **Circuit Breakers** | 📊 **Metrics**
 
 ---
 
 ## Features
 
-- **L7 Load Balancing**: HTTP/HTTPS traffic distribution
+- **Multiple Load Balancing Algorithms**: Round-robin, least connections, IP hash, weighted distribution
 - **Active Health Checks**: Automatic backend health monitoring with configurable intervals
+- **Circuit Breakers**: Per-backend failure detection with automatic recovery
+- **Rate Limiting**: Per-IP token bucket rate limiting with configurable burst
+- **Retry Logic**: Automatic retry with exponential backoff for failed requests
+- **Connection Tracking**: Real-time active connection monitoring per backend
+- **Metrics Endpoint**: Built-in `/_metrics` with request counts, failure rates, and success rates
 - **Health Status API**: Built-in `/_health` endpoint for monitoring
+- **WebSocket Support**: Long-lived connection proxying (coming soon)
 - **TLS Termination**: SSL/TLS offloading (coming soon)
-- **Rate Limiting**: Per-IP, per-user rate limits (planned)
-- **Geographic Routing**: Route based on client location (planned)
-- **WebSocket Support**: Long-lived connection proxying (planned)
 
 ## Quick Start
 
 ```rust
-use avl_loadbalancer::{LoadBalancer, Backend, HealthCheck, Algorithm};
+use avl_loadbalancer::{LoadBalancer, Backend, HealthCheck, Algorithm, RateLimitConfig};
 use std::time::Duration;
 
 #[tokio::main]
 async fn main() {
     let lb = LoadBalancer::builder()
-        .add_backend(Backend::new("http://server1:8000"))
-        .add_backend(Backend::new("http://server2:8000"))
+        .add_backend(Backend::new("http://server1:8000").with_weight(3))
+        .add_backend(Backend::new("http://server2:8000").with_weight(1))
         .health_check(
             HealthCheck::http("/health")
                 .interval(Duration::from_secs(10))
                 .timeout(Duration::from_secs(5))
         )
-        .algorithm(Algorithm::RoundRobin)
+        .algorithm(Algorithm::Weighted)
+        .rate_limit(RateLimitConfig::new(100).burst(200)) // 100 req/s with 200 burst
         .build();
 
     lb.listen("0.0.0.0:80").await.unwrap();
 }
 ```
 
+## Configuration File (YAML)
+
+```yaml
+listen: "0.0.0.0:8080"
+algorithm: Weighted
+
+backends:
+  - url: "http://192.168.1.10:8000"
+    weight: 3
+  - url: "http://192.168.1.11:8000"
+    weight: 1
+
+health_check:
+  path: "/health"
+  interval_secs: 10
+  timeout_secs: 5
+
+rate_limit:
+  requests_per_second: 100
+  burst: 200
+
+retry:
+  max_retries: 3
+  backoff_ms: 100
+
+max_request_body_mb: 10
+```
+
+See `config.example.yaml` for full configuration reference.
+
 ## Status
 
 **Current Implementation:**
 
 ✅ Round-robin load balancing
+✅ Least connections algorithm
+✅ IP hash (consistent hashing)
+✅ Weighted distribution
 ✅ Active health checks with configurable intervals
-✅ Automatic unhealthy backend filtering
+✅ Circuit breakers per backend (opens at >50% failure rate)
+✅ Per-IP rate limiting with token bucket
+✅ Automatic retry with configurable backoff
+✅ Connection tracking per backend
+✅ Metrics endpoint (`/_metrics`)
 ✅ Health status monitoring endpoint (`/_health`)
 ✅ Graceful fallback when backends fail
 
 **Coming Soon:**
 
-- Least Connections, IP Hash, and Weighted algorithms
-- TLS termination (requires build dependencies on Windows)
-- Rate limiting integration
-- Geographic routing
 - WebSocket upgrade handling
-
-Early feedback welcome. Expect rapid iteration.
+- TLS termination (requires build dependencies on Windows)
+- Configuration file hot-reload
+- Geographic routing
+- Request tracing and distributed tracing integration
 
 ## Algorithms
 
-- **Round Robin**: Equal distribution
-- **Least Connections**: Route to least busy backend (planned)
-- **IP Hash**: Consistent routing per IP (planned)
-- **Weighted**: Priority-based routing (planned)
+- **Round Robin**: Equal distribution - cycles through backends sequentially
+- **Least Connections**: Route to backend with fewest active connections
+- **IP Hash**: Consistent hashing based on client IP - same IP always routes to same backend
+- **Weighted**: Priority-based routing - backends with higher weight receive proportionally more traffic
 
 ## Health Monitoring
 
 **Active Health Checks**: The load balancer periodically probes backends at a configured HTTP endpoint. Unhealthy backends are automatically removed from rotation.
 
+**Circuit Breakers**: If a backend exceeds 50% failure rate over 100 requests, the circuit breaker opens for 30 seconds. After the timeout, it enters half-open state to test recovery.
+
 **Monitoring Endpoint**: Access `/_health` on the load balancer to view:
 - Overall health status
-- Individual backend health states
+- Individual backend health states, circuit state, weight, active connections
 - Healthy/total backend counts
 
 **Example**:
@@ -89,12 +130,75 @@ curl http://localhost:8080/_health
 {
   "healthy": true,
   "backends": [
-    {"url": "http://server1:8000", "healthy": true},
-    {"url": "http://server2:8000", "healthy": false}
+    {
+      "url": "http://server1:8000",
+      "healthy": true,
+      "circuit_state": "Closed",
+      "weight": 3,
+      "active_connections": 12
+    },
+    {
+      "url": "http://server2:8000",
+      "healthy": false,
+      "circuit_state": "Open",
+      "weight": 1,
+      "active_connections": 0
+    }
   ],
   "healthy_count": 1,
   "total_count": 2
 }
 ```
+
+## Metrics
+
+Access `/_metrics` for detailed performance statistics:
+
+```bash
+curl http://localhost:8080/_metrics
+```
+
+**Response**:
+```json
+{
+  "total_requests": 15234,
+  "total_failures": 42,
+  "success_rate": 99.72,
+  "backends": [
+    {
+      "url": "http://server1:8000",
+      "total_requests": 11425,
+      "failed_requests": 8,
+      "success_rate": 99.93,
+      "active_connections": 12
+    },
+    {
+      "url": "http://server2:8000",
+      "total_requests": 3809,
+      "failed_requests": 34,
+      "success_rate": 99.11,
+      "active_connections": 3
+    }
+  ]
+}
+```
+
+## Testing
+
+```bash
+cargo test --lib
+```
+
+All tests include:
+- Basic proxy functionality
+- Round-robin algorithm
+- Least connections algorithm
+- IP hash consistency
+- Weighted distribution
+- Health check marking
+- Circuit breaker behavior
+- Rate limiting enforcement
+- Retry logic with exponential backoff
+- Metrics endpoint validation
 
 🏛️ **Built by Avila** - Part of AVL Cloud Platform

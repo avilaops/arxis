@@ -10,7 +10,7 @@ use crate::{Collection, error::Result};
 pub struct QueryResult {
     pub documents: Vec<crate::Document>,
     pub total_count: usize,
-    pub latency_ms: u64,
+    pub latency_ms: u128,
     pub compression_ratio: f64,
 }
 
@@ -55,15 +55,91 @@ impl Query {
 
     /// Execute the query
     pub async fn execute(self) -> Result<QueryResult> {
-        // TODO: Parse SQL
-        // TODO: Send QUERY request
-        // TODO: Decompress results
+        let start = std::time::Instant::now();
+
+        // Validate SQL query
+        if self.sql.trim().is_empty() {
+            return Err(crate::error::AvilaError::Query(
+                "SQL query cannot be empty".to_string()
+            ));
+        }
+
+        // Get authentication token
+        let token = self.collection.auth_provider.get_token().await?;
+
+        // Build query request
+        let url = format!(
+            "{}/v1/databases/{}/query",
+            self.collection.config.endpoint, self.collection.database
+        );
+
+        let mut headers = reqwest::header::HeaderMap::new();
+        headers.insert(
+            reqwest::header::AUTHORIZATION,
+            reqwest::header::HeaderValue::from_str(&format!("Bearer {}", token.access_token))?,
+        );
+        headers.insert(
+            reqwest::header::CONTENT_TYPE,
+            reqwest::header::HeaderValue::from_static("application/json"),
+        );
+
+        if self.collection.config.enable_compression {
+            headers.insert(
+                reqwest::header::ACCEPT_ENCODING,
+                reqwest::header::HeaderValue::from_static("br"),
+            );
+        }
+
+        // Build query payload
+        let payload = serde_json::json!({
+            "query": self.sql,
+            "parameters": self.params,
+            "collection": self.collection.name
+        });
+
+        // Send HTTP POST request
+        let response = self
+            .collection
+            .http_client
+            .post(&url, serde_json::to_vec(&payload)?, headers)
+            .await?;
+
+        // Decompress if needed
+        let response_data = if self.collection.config.enable_compression {
+            crate::compression::decompress(&response)?
+        } else {
+            response
+        };
+
+        // Parse response
+        let query_response: serde_json::Value = serde_json::from_slice(&response_data)?;
+
+        let documents: Vec<crate::Document> = query_response["documents"]
+            .as_array()
+            .map(|arr| {
+                arr.iter()
+                    .filter_map(|v| serde_json::from_value(v.clone()).ok())
+                    .collect()
+            })
+            .unwrap_or_default();
+
+        let total_count = query_response["totalCount"].as_u64().unwrap_or(0) as usize;
+        let compression_ratio = query_response["compressionRatio"].as_f64().unwrap_or(1.0);
+
+        let latency_ms = start.elapsed().as_millis();
+
+        // Record telemetry
+        self.collection.telemetry.record_operation(
+            crate::telemetry::OperationType::Query,
+            latency_ms as u64,
+            true,
+        );
 
         Ok(QueryResult {
-            documents: vec![],
-            total_count: 0,
-            latency_ms: 0,
-            compression_ratio: 1.0,
+            documents,
+            total_count,
+            latency_ms,
+            compression_ratio,
         })
     }
 }

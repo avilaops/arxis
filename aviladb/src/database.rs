@@ -1,18 +1,38 @@
 //! Database operations
 
 use std::sync::Arc;
-use crate::{Collection, Config, Result};
+use crate::{
+    auth::AuthProvider,
+    http::HttpClient,
+    telemetry::TelemetryCollector,
+    Collection, Config, Result,
+};
 
 /// Database handle for collections
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct Database {
     name: String,
     config: Arc<Config>,
+    http_client: Arc<HttpClient>,
+    auth_provider: Arc<AuthProvider>,
+    telemetry: Arc<TelemetryCollector>,
 }
 
 impl Database {
-    pub(crate) fn new(name: String, config: Arc<Config>) -> Result<Self> {
-        Ok(Self { name, config })
+    pub(crate) fn new(
+        name: String,
+        config: Arc<Config>,
+        http_client: Arc<HttpClient>,
+        auth_provider: Arc<AuthProvider>,
+        telemetry: Arc<TelemetryCollector>,
+    ) -> Result<Self> {
+        Ok(Self {
+            name,
+            config,
+            http_client,
+            auth_provider,
+            telemetry,
+        })
     }
 
     /// Get database name
@@ -32,7 +52,14 @@ impl Database {
     /// # }
     /// ```
     pub async fn collection(&self, name: &str) -> Result<Collection> {
-        Collection::new(name.to_string(), self.name.clone(), self.config.clone())
+        Collection::new(
+            name.to_string(),
+            self.name.clone(),
+            self.config.clone(),
+            self.http_client.clone(),
+            self.auth_provider.clone(),
+            self.telemetry.clone(),
+        )
     }
 
     /// Create a new collection

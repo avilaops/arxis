@@ -19,11 +19,16 @@ use crate::{
     ai_metrics::{AIMetricsCollector, QueryMetric, Timer},
     query_history::{QueryHistory, QueryHistoryEntry},
     rate_limiter::RateLimiter,
+    vector_persistence::VectorPersistence,
+    streaming::ProgressTracker,
 };
 
 static METRICS: LazyLock<AIMetricsCollector> = LazyLock::new(|| AIMetricsCollector::new());
 static QUERY_HISTORY: LazyLock<QueryHistory> = LazyLock::new(|| QueryHistory::default());
 static RATE_LIMITER: LazyLock<RateLimiter> = LazyLock::new(|| RateLimiter::default());
+static VECTOR_PERSISTENCE: LazyLock<std::sync::Mutex<VectorPersistence>> = LazyLock::new(|| {
+    std::sync::Mutex::new(VectorPersistence::new("ai_knowledge_base".to_string()))
+});
 
 /// AI Assistant UI HTML with chat interface
 const AI_ASSISTANT_HTML: &str = r#"<!DOCTYPE html>
@@ -633,7 +638,7 @@ async fn ai_assistant_ui() -> impl IntoResponse {
 
 /// Process chat message and generate SQL
 async fn chat(
-    State(state): State<Arc<ConsoleState>>,
+    State(_state): State<Arc<ConsoleState>>,
     Json(payload): Json<ChatRequest>,
 ) -> Result<Json<ChatResponse>, ConsoleError> {
     let timer = Timer::new();
@@ -662,17 +667,15 @@ async fn chat(
     let (response, sql_query, explanation, tips) = process_natural_language_with_rag(&message, Some(&knowledge_base));
 
     // Validate SQL query if generated
-    let mut blocked = false;
     let mut audit_entry = QueryHistoryEntry::new(
         user_id.to_string(),
         sql_query.clone().unwrap_or_default(),
         "aviladb".to_string(),
     );
-
+    
     if let Some(ref query) = sql_query {
         let analysis = validator.validate(query);
         if analysis.is_dangerous() {
-            blocked = true;
             audit_entry = audit_entry.with_result(
                 false,
                 timer.elapsed().as_millis() as u64,
@@ -680,7 +683,7 @@ async fn chat(
                 Some(format!("BLOCKED: {}", analysis.violations.join(", "))),
             );
             QUERY_HISTORY.add_entry(audit_entry);
-
+            
             METRICS.record_query(QueryMetric {
                 duration: timer.elapsed(),
                 success: false,
@@ -694,9 +697,7 @@ async fn chat(
                 analysis.risk_level
             )));
         }
-    }
-
-    // Check token budget
+    }    // Check token budget
     if let Err(e) = RATE_LIMITER.check_tokens(user_id, response.len() as u64) {
         return Err(ConsoleError::RateLimit(e.to_string()));
     }
@@ -713,7 +714,7 @@ async fn chat(
     METRICS.record_query(QueryMetric {
         duration: timer.elapsed(),
         success: true,
-        blocked,
+        blocked: false,
         tokens: response.len(),
         cache_hit: false,
     });
@@ -882,7 +883,7 @@ ORDER BY o.total_amount DESC, o.created_at ASC;"#;
                 (text, sql, explanation, tips)
             }
             _ => (
-                "Entendi sua pergunta! 🤔\n\nPara gerar a melhor query SQL possível, preciso de mais detalhes:\n\n• Quais tabelas você quer consultar?\n• Que dados você precisa?\n• Existe algum filtro específico?\n• Precisa de agregações (COUNT, SUM, AVG)?\n\nOu experimente uma das sugestões ao lado! →".to_string(),
+                "Entendi sua pergunta! 🤔\n\nPara gerar a melhor query SQL possível, **preciso de mais detalhes**:\n\n• Quais tabelas você quer consultar?\n• Que dados você precisa?\n• Existe algum filtro específico?\n• Precisa de agregações (COUNT, SUM, AVG)?\n\nOu experimente uma das sugestões ao lado! →".to_string(),
                 None,
                 None,
                 None,
@@ -933,6 +934,8 @@ pub fn router(state: Arc<ConsoleState>) -> Router {
         .route("/metrics", get(get_metrics))
         .route("/history", get(get_history))
         .route("/rate-limit", get(get_rate_limit_usage))
+        .route("/vector/save", post(save_vector_store))
+        .route("/vector/stats", get(get_vector_stats))
         .with_state(state)
 }
 
@@ -953,6 +956,32 @@ async fn get_rate_limit_usage() -> Result<Json<crate::rate_limiter::RateLimitUsa
     let user_id = "default_user"; // TODO: Extract from auth context
     let usage = RATE_LIMITER.get_usage(user_id);
     Ok(Json(usage))
+}
+
+/// Save current knowledge base to persistent storage
+async fn save_vector_store(
+    State(_state): State<Arc<ConsoleState>>,
+) -> Result<Json<serde_json::Value>, ConsoleError> {
+    let knowledge_base = init_default_knowledge_base();
+    
+    // Create temporary persistence for this request
+    let mut persistence = VectorPersistence::new("ai_knowledge_base".to_string());
+    
+    match persistence.save_vector_store(&knowledge_base).await {
+        Ok(count) => Ok(Json(serde_json::json!({
+            "success": true,
+            "documents_saved": count,
+            "collection": "ai_knowledge_base"
+        }))),
+        Err(e) => Err(ConsoleError::Internal(format!("Failed to save vector store: {}", e))),
+    }
+}/// Get vector store statistics
+async fn get_vector_stats(
+    State(_state): State<Arc<ConsoleState>>,
+) -> Result<Json<crate::vector_persistence::VectorCollectionStats>, ConsoleError> {
+    let persistence = VectorPersistence::new("ai_knowledge_base".to_string());
+    let stats = persistence.get_stats();
+    Ok(Json(stats))
 }
 
 #[cfg(test)]
