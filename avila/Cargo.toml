@@ -1,0 +1,44 @@
+[package]
+name = "avila"
+version = "0.1.0"
+edition = "2021"
+authors = ["Nícolas Ávila <nicolas@avila.cloud>"]
+license = "MIT OR Apache-2.0"
+description = "AVL Platform - High-performance cloud platform for Brazil and LATAM"
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://avila.cloud"
+documentation = "https://docs.avila.cloud"
+keywords = ["cloud", "platform", "brazil", "latam", "distributed"]
+categories = ["development-tools", "database", "web-programming", "network-programming"]
+readme = "README.md"
+
+[dependencies]
+# Core libraries - versões publicadas
+avila-compress = { version = "0.1", optional = true }
+avila-clustering = { version = "0.1", optional = true }
+avila-linalg = { version = "0.1", optional = true }
+avila-math = { version = "0.1", optional = true }
+avila-arrow = { version = "0.1", optional = true }
+avila-telemetry = { version = "0.1", optional = true }
+
+# CLI and config
+avx-cli = { version = "0.1", optional = true }
+avx-config = { version = "0.1", optional = true }
+avx-http = { version = "0.1", optional = true }
+
+[features]
+default = ["compression", "math", "http"]
+compression = ["avila-compress"]
+clustering = ["avila-clustering"]
+math = ["avila-math", "avila-linalg"]
+data = ["avila-arrow"]
+telemetry = ["avila-telemetry"]
+http = ["avx-http"]
+cli = ["avx-cli"]
+full = ["compression", "clustering", "math", "data", "telemetry", "http", "cli"]
+
+[dev-dependencies]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
