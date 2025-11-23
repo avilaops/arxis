@@ -1,6 +1,6 @@
 [package]
 name = "avila"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 authors = ["Nícolas Ávila <nicolas@avila.cloud>"]
 license = "MIT OR Apache-2.0"
@@ -31,7 +31,7 @@ avl-console = { version = "0.3", path = "../avl-console", optional = true }
 avl-observability = { version = "0.1", path = "../avl-observability", optional = true }
 avl-queue = { version = "0.1", path = "../avl-queue", optional = true }
 avl-secrets = { version = "0.1", path = "../avl-secrets", optional = true }
-# avl-storage = { version = "0.1", path = "../avl-storage", optional = true } # Aguardando rate limit
+avl-storage = { version = "0.1", path = "../avl-storage", optional = true }
 
 # AVX Runtime & Networking
 avx-cli = { version = "0.1", path = "../avx-cli", optional = true }
@@ -61,7 +61,7 @@ console = ["avl-console"]
 observability = ["avl-observability"]
 queue = ["avl-queue"]
 secrets = ["avl-secrets"]
-# storage = ["avl-storage"] # Aguardando rate limit
+storage = ["avl-storage"]
 
 # Runtime
 cli = ["avx-cli"]
@@ -73,9 +73,9 @@ avx-telemetry-feature = ["avx-telemetry"]
 # Bundles
 science = ["math", "linalg", "arrow", "telemetry"]
 ai = ["clustering", "tokenizers", "math"]
-cloud = ["auth", "console", "observability", "queue", "secrets"]
+cloud = ["auth", "console", "observability", "queue", "secrets", "storage"]
 runtime = ["cli", "config", "events", "http", "avx-telemetry-feature"]
-full = ["compress", "clustering", "linalg", "math", "arrow", "telemetry", "tokenizers", "db", "auth", "console", "observability", "queue", "secrets", "cli", "config", "events", "http", "avx-telemetry-feature"]
+full = ["compress", "clustering", "linalg", "math", "arrow", "telemetry", "tokenizers", "db", "auth", "console", "observability", "queue", "secrets", "storage", "cli", "config", "events", "http", "avx-telemetry-feature"]
 
 [dev-dependencies]
 
