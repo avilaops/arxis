@@ -14,16 +14,15 @@
 //!
 //! ```rust
 //! use avila_ml::prelude::*;
+//! use avila_ml::tensor::Tensor;
+//! use ndarray::ArrayD;
 //!
-//! // Create a simple neural network
-//! let mut model = Sequential::new(vec![
-//!     Box::new(Linear::new(784, 128)),
-//!     Box::new(ReLU::new()),
-//!     Box::new(Linear::new(128, 10)),
-//! ]);
+//! // Create tensors with autograd
+//! let a = Tensor::new(ArrayD::from_elem(ndarray::IxDyn(&[2, 2]), 2.0_f32)).requires_grad_();
+//! let b = Tensor::new(ArrayD::from_elem(ndarray::IxDyn(&[2, 2]), 3.0_f32)).requires_grad_();
 //!
-//! // Train with optimizer
-//! let mut optimizer = Adam::new(model.parameters(), 0.001);
+//! // Build a simple model
+//! let linear = Linear::<f32>::new(10, 5);
 //! ```
 
 pub mod autograd;

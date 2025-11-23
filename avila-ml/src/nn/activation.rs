@@ -3,7 +3,6 @@
 use crate::autograd::{ComputeNode, Operation};
 use crate::nn::Module;
 use crate::tensor::Tensor;
-use ndarray::ArrayD;
 use num_traits::{Float, NumAssign};
 use std::sync::{Arc, Mutex};
 
@@ -24,7 +23,6 @@ impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Modu
 
         if input.requires_grad {
             output.requires_grad = true;
-            output.grad = Some(ArrayD::zeros(output.data.raw_dim()));
 
             let node = ComputeNode::new(Operation::ReLU, vec![input.clone()]);
             output.grad_fn = Some(Arc::new(Mutex::new(node)));
@@ -51,7 +49,6 @@ impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Modu
 
         if input.requires_grad {
             output.requires_grad = true;
-            output.grad = Some(ArrayD::zeros(output.data.raw_dim()));
 
             let node = ComputeNode::new(Operation::Sigmoid, vec![input.clone()]);
             output.grad_fn = Some(Arc::new(Mutex::new(node)));
@@ -78,7 +75,6 @@ impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Modu
 
         if input.requires_grad {
             output.requires_grad = true;
-            output.grad = Some(ArrayD::zeros(output.data.raw_dim()));
 
             let node = ComputeNode::new(Operation::Tanh, vec![input.clone()]);
             output.grad_fn = Some(Arc::new(Mutex::new(node)));
@@ -88,7 +84,7 @@ impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Modu
     }
 }
 
-/// Softmax activation: exp(x_i) / sum(exp(x_j))
+/// LogSoftmax activation
 pub struct Softmax {
     _dim: isize,
 }
@@ -112,7 +108,6 @@ impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Modu
 
         if input.requires_grad {
             output.requires_grad = true;
-            output.grad = Some(ArrayD::zeros(output.data.raw_dim()));
 
             let node = ComputeNode::new(Operation::Softmax, vec![input.clone()]);
             output.grad_fn = Some(Arc::new(Mutex::new(node)));

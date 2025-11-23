@@ -164,13 +164,83 @@ impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Modu
     for Conv2d<T>
 {
     fn forward(&self, input: &Tensor<T>) -> Tensor<T> {
-        // Simplified conv2d - full implementation would use im2col or FFT
-        // For now, return input (placeholder)
-        // TODO: Implement proper 2D convolution
-        input.clone()
-    }
+        use rayon::prelude::*;
 
-    fn parameters(&self) -> Vec<&Tensor<T>> {
+        // Input shape: (batch, in_channels, height, width)
+        let input_shape = input.shape();
+        let weight_shape = self.weight.shape();
+
+        let batch = input_shape[0];
+        let in_channels = input_shape[1];
+        let height = input_shape[2];
+        let width = input_shape[3];
+
+        let out_channels = weight_shape[0];
+        let kernel_h = weight_shape[2];
+        let kernel_w = weight_shape[3];
+
+        // Calculate output dimensions
+        let out_height = (height + 2 * self.padding.0 - kernel_h) / self.stride.0 + 1;
+        let out_width = (width + 2 * self.padding.1 - kernel_w) / self.stride.1 + 1;
+
+        let output_size = batch * out_channels * out_height * out_width;
+        let mut output_data = vec![T::zero(); output_size];
+
+        // Parallelize over batch and output channels using Rayon
+        let input_slice = input.data.as_slice().unwrap();
+        let weight_slice = self.weight.data.as_slice().unwrap();
+        let bias_slice = self.bias.as_ref().map(|b| b.data.as_slice().unwrap());
+
+        output_data.par_chunks_mut(out_height * out_width)
+            .enumerate()
+            .for_each(|(idx, chunk)| {
+                let b = idx / out_channels;
+                let oc = idx % out_channels;
+
+                if b >= batch { return; }
+
+                for oh in 0..out_height {
+                    for ow in 0..out_width {
+                        let mut sum = T::zero();
+
+                        // Convolve kernel over input
+                        for ic in 0..in_channels {
+                            for kh in 0..kernel_h {
+                                for kw in 0..kernel_w {
+                                    let ih = oh * self.stride.0 + kh;
+                                    let iw = ow * self.stride.1 + kw;
+
+                                    if ih >= self.padding.0 && ih < height + self.padding.0 &&
+                                       iw >= self.padding.1 && iw < width + self.padding.1 {
+                                        let ih_actual = ih - self.padding.0;
+                                        let iw_actual = iw - self.padding.1;
+
+                                        let input_idx = ((b * in_channels + ic) * height + ih_actual) * width + iw_actual;
+                                        let weight_idx = ((oc * in_channels + ic) * kernel_h + kh) * kernel_w + kw;
+
+                                        sum += input_slice[input_idx] * weight_slice[weight_idx];
+                                    }
+                                }
+                            }
+                        }
+
+                        // Add bias if present
+                        if let Some(bias) = bias_slice {
+                            sum += bias[oc];
+                        }
+
+                        chunk[oh * out_width + ow] = sum;
+                    }
+                }
+            });
+
+        let output_array = ndarray::ArrayD::from_shape_vec(
+            ndarray::IxDyn(&[batch, out_channels, out_height, out_width]),
+            output_data
+        ).unwrap();
+
+        Tensor::new(output_array)
+    }    fn parameters(&self) -> Vec<&Tensor<T>> {
         let mut params = vec![&self.weight];
         if let Some(ref bias) = self.bias {
             params.push(bias);
@@ -232,12 +302,96 @@ impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Modu
     for Conv4d<T>
 {
     fn forward(&self, input: &Tensor<T>) -> Tensor<T> {
-        // 4D convolution for scientific data (LISA, gravitational waves)
-        // TODO: Implement proper 4D convolution
-        input.clone()
-    }
+        use rayon::prelude::*;
 
-    fn parameters(&self) -> Vec<&Tensor<T>> {
+        // Input shape: (batch, in_channels, t, x, y, z)
+        let input_shape = input.shape();
+        let weight_shape = self.weight.shape();
+
+        let batch = input_shape[0];
+        let in_channels = input_shape[1];
+        let t = input_shape[2];
+        let x = input_shape[3];
+        let y = input_shape[4];
+        let z = input_shape[5];
+
+        let out_channels = weight_shape[0];
+        let kt = weight_shape[2];
+        let kx = weight_shape[3];
+        let ky = weight_shape[4];
+        let kz = weight_shape[5];
+
+        let out_t = t - kt + 1;
+        let out_x = x - kx + 1;
+        let out_y = y - ky + 1;
+        let out_z = z - kz + 1;
+
+        let output_size = batch * out_channels * out_t * out_x * out_y * out_z;
+        let mut output_data = vec![T::zero(); output_size];
+
+        let input_slice = input.data.as_slice().unwrap();
+        let weight_slice = self.weight.data.as_slice().unwrap();
+        let bias_slice = self.bias.as_ref().map(|b| b.data.as_slice().unwrap());
+
+        // Parallelize 4D convolution over batch and output channels
+        let spatial_size = out_t * out_x * out_y * out_z;
+
+        output_data.par_chunks_mut(spatial_size)
+            .enumerate()
+            .for_each(|(idx, chunk)| {
+                let b = idx / out_channels;
+                let oc = idx % out_channels;
+
+                if b >= batch { return; }
+
+                let mut chunk_idx = 0;
+                for ot in 0..out_t {
+                    for ox in 0..out_x {
+                        for oy in 0..out_y {
+                            for oz in 0..out_z {
+                                let mut sum = T::zero();
+
+                                // 4D convolution kernel
+                                for ic in 0..in_channels {
+                                    for ikt in 0..kt {
+                                        for ikx in 0..kx {
+                                            for iky in 0..ky {
+                                                for ikz in 0..kz {
+                                                    let it = ot + ikt;
+                                                    let ix = ox + ikx;
+                                                    let iy = oy + iky;
+                                                    let iz = oz + ikz;
+
+                                                    let input_idx = ((((b * in_channels + ic) * t + it) * x + ix) * y + iy) * z + iz;
+                                                    let weight_idx = ((((oc * in_channels + ic) * kt + ikt) * kx + ikx) * ky + iky) * kz + ikz;
+
+                                                    sum += input_slice[input_idx] * weight_slice[weight_idx];
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                // Add bias
+                                if let Some(bias) = bias_slice {
+                                    sum += bias[oc];
+                                }
+
+                                chunk[chunk_idx] = sum;
+                                chunk_idx += 1;
+                            }
+                        }
+                    }
+                }
+            });
+
+        let output_array = ndarray::ArrayD::from_shape_vec(
+            ndarray::IxDyn(&[batch, out_channels, out_t, out_x, out_y, out_z]),
+            output_data
+        ).unwrap();
+
+        Tensor::new(output_array)
+    }    fn parameters(&self) -> Vec<&Tensor<T>> {
         let mut params = vec![&self.weight];
         if let Some(ref bias) = self.bias {
             params.push(bias);

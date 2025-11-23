@@ -198,10 +198,21 @@ impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Comp
         }
     }
 
-    fn backward_softmax(&mut self, _grad_output: ArrayD<T>) {
-        // Softmax backward is complex and typically combined with cross-entropy
-        // For now, simplified implementation
-        // TODO: Implement proper softmax backward
+    fn backward_softmax(&mut self, grad_output: ArrayD<T>) {
+        // Softmax backward: grad_input[i] = softmax[i] * (grad_output[i] - sum(grad_output * softmax))
+        if !self.inputs.is_empty() && self.inputs[0].requires_grad {
+            // Compute softmax of input
+            let input = &self.inputs[0].data;
+            let max_val = input.fold(T::neg_infinity(), |a, &b| if b > a { b } else { a });
+            let exp_vals = input.mapv(|x| (x - max_val).exp());
+            let sum_exp = exp_vals.sum();
+            let softmax = exp_vals.mapv(|x| x / sum_exp);
+
+            // Compute gradient
+            let dot_product = (&grad_output * &softmax).sum();
+            let grad = &softmax * (grad_output - dot_product);
+            self.accumulate_grad(0, grad);
+        }
     }
 
     fn backward_log(&mut self, grad_output: ArrayD<T>) {
@@ -231,8 +242,20 @@ impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Comp
     }
 
     fn accumulate_grad(&mut self, input_idx: usize, grad: ArrayD<T>) {
-        if let Some(ref mut input_grad) = self.inputs[input_idx].grad {
-            *input_grad = &*input_grad + &grad;
+        // Initialize gradient if it doesn't exist
+        {
+            let mut grad_borrow = self.inputs[input_idx].grad.lock().unwrap();
+            if grad_borrow.is_none() {
+                *grad_borrow = Some(ArrayD::zeros(self.inputs[input_idx].data.raw_dim()));
+            }
+        }
+
+        // Accumulate gradient
+        {
+            let mut grad_borrow = self.inputs[input_idx].grad.lock().unwrap();
+            if let Some(ref mut input_grad) = *grad_borrow {
+                *input_grad = &*input_grad + &grad;
+            }
         }
 
         // Continue backward pass through the computational graph
@@ -256,8 +279,8 @@ mod tests {
         c.backward();
 
         // Gradient should be 1 for both inputs
-        assert!(a.grad.is_some());
-        assert!(b.grad.is_some());
+        assert!(a.grad.lock().unwrap().is_some());
+        assert!(b.grad.lock().unwrap().is_some());
     }
 
     #[test]
@@ -268,7 +291,7 @@ mod tests {
         let mut c = a.mul(&b);
         c.backward();
 
-        assert!(a.grad.is_some());
-        assert!(b.grad.is_some());
+        assert!(a.grad.lock().unwrap().is_some());
+        assert!(b.grad.lock().unwrap().is_some());
     }
 }

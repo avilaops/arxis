@@ -147,7 +147,8 @@ impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Iter
     }
 }
 
-/// CSV Dataset loader
+/// CSV Dataset loader (requires external dependencies - DISABLED)
+/*
 #[cfg(feature = "data-loading")]
 pub struct CSVDataset<T = f32> {
     data: Vec<Tensor<T>>,
@@ -195,6 +196,7 @@ impl<T: Float + NumAssign> Dataset<T> for CSVDataset<T> {
         self.data.len()
     }
 }
+*/
 
 /// Utility to stack tensors into a batch
 pub fn stack_tensors<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static>(

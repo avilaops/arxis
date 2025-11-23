@@ -65,7 +65,7 @@ impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Opti
             unsafe {
                 let param = &mut **param_ptr;
 
-                if let Some(ref grad) = param.grad {
+                if let Some(ref grad) = *param.grad.lock().unwrap() {
                     let mut update = grad.clone();
 
                     // Add weight decay
@@ -166,7 +166,7 @@ impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Opti
             unsafe {
                 let param = &mut **param_ptr;
 
-                if let Some(ref grad) = param.grad {
+                if let Some(ref grad) = *param.grad.lock().unwrap() {
                     let mut g = grad.clone();
 
                     // Add weight decay
@@ -301,7 +301,7 @@ impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Opti
             unsafe {
                 let param = &mut **param_ptr;
 
-                if let Some(ref grad) = param.grad {
+                if let Some(ref grad) = *param.grad.lock().unwrap() {
                     let mut g = grad.clone();
 
                     if self.weight_decay != T::zero() {

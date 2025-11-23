@@ -18,8 +18,8 @@ pub struct Tensor<T = f32> {
     /// The underlying data array
     pub data: ArrayD<T>,
 
-    /// Gradient accumulated during backpropagation
-    pub grad: Option<ArrayD<T>>,
+    /// Gradient accumulated during backpropagation (shared across clones)
+    pub grad: Arc<Mutex<Option<ArrayD<T>>>>,
 
     /// Whether this tensor requires gradient computation
     pub requires_grad: bool,
@@ -33,7 +33,7 @@ impl<T: Float + NumAssign + ScalarOperand + 'static + Send + Sync> Tensor<T> {
     pub fn new(data: ArrayD<T>) -> Self {
         Self {
             data,
-            grad: None,
+            grad: Arc::new(Mutex::new(None)),
             requires_grad: false,
             grad_fn: None,
         }
@@ -43,7 +43,7 @@ impl<T: Float + NumAssign + ScalarOperand + 'static + Send + Sync> Tensor<T> {
     pub fn with_grad(data: ArrayD<T>) -> Self {
         Self {
             data,
-            grad: Some(ArrayD::zeros(IxDyn(&[]))),
+            grad: Arc::new(Mutex::new(Some(ArrayD::zeros(IxDyn(&[]))))),
             requires_grad: true,
             grad_fn: None,
         }
@@ -116,18 +116,18 @@ impl<T: Float + NumAssign + ScalarOperand + 'static + Send + Sync> Tensor<T> {
         result
     }
 
-    /// Enable gradient computation
+    /// Enable gradient tracking on this tensor
     pub fn requires_grad_(mut self) -> Self {
         self.requires_grad = true;
-        if self.grad.is_none() {
-            self.grad = Some(ArrayD::zeros(self.data.raw_dim()));
+        if self.grad.lock().unwrap().is_none() {
+            *self.grad.lock().unwrap() = Some(ArrayD::zeros(self.data.raw_dim()));
         }
         self
     }
 
-    /// Zero out the gradient
+    /// Zero out the gradients
     pub fn zero_grad(&mut self) {
-        if let Some(ref mut grad) = self.grad {
+        if let Some(ref mut grad) = *self.grad.lock().unwrap() {
             grad.fill(T::zero());
         }
     }
@@ -139,16 +139,14 @@ impl<T: Float + NumAssign + ScalarOperand + 'static + Send + Sync> Tensor<T> {
         }
 
         // Initialize gradient to ones for scalar output
-        if self.grad.is_none() {
-            self.grad = Some(ArrayD::ones(self.data.raw_dim()));
+        if self.grad.lock().unwrap().is_none() {
+            *self.grad.lock().unwrap() = Some(ArrayD::ones(self.data.raw_dim()));
         }
 
         // Perform backward pass through computational graph
         if let Some(ref grad_fn) = self.grad_fn {
-            grad_fn
-                .lock()
-                .unwrap()
-                .backward(self.grad.as_ref().unwrap().clone());
+            let grad_output = self.grad.lock().unwrap().clone().unwrap();
+            grad_fn.lock().unwrap().backward(grad_output);
         }
     }
 
@@ -170,6 +168,54 @@ impl<T: Float + NumAssign + ScalarOperand + 'static + Send + Sync> Tensor<T> {
         self.grad_fn = None; // Break computational graph
         &mut self.data
     }
+
+    /// Divide tensor by a scalar value
+    pub fn div_scalar(&self, scalar: T) -> Self {
+        let data = self.data.mapv(|x| x / scalar);
+        Self::new(data)
+    }
+
+    /// Apply softmax along specified dimension
+    pub fn softmax(&self, _dim: isize) -> Self {
+        // Simplified softmax - applies to last dimension
+        let mut result = self.data.clone();
+        let shape = result.shape();
+        let last_dim = shape[shape.len() - 1];
+
+        // Compute for each element along last dimension
+        let total_size = result.len();
+        let num_groups = total_size / last_dim;
+
+        for group in 0..num_groups {
+            let start_idx = group * last_dim;
+
+            // Find max for numerical stability
+            let mut max_val = T::neg_infinity();
+            for i in 0..last_dim {
+                let val = result.as_slice().unwrap()[start_idx + i];
+                if val > max_val {
+                    max_val = val;
+                }
+            }
+
+            // Compute exp and sum
+            let mut sum = T::zero();
+            for i in 0..last_dim {
+                let val = result.as_slice().unwrap()[start_idx + i];
+                let exp_val = (val - max_val).exp();
+                result.as_slice_mut().unwrap()[start_idx + i] = exp_val;
+                sum += exp_val;
+            }
+
+            // Normalize
+            for i in 0..last_dim {
+                result.as_slice_mut().unwrap()[start_idx + i] =
+                    result.as_slice().unwrap()[start_idx + i] / sum;
+            }
+        }
+
+        Self::new(result)
+    }
 }
 
 /// Trait for tensor-like operations
@@ -190,7 +236,7 @@ impl<T: Float + NumAssign + ScalarOperand + 'static + Send + Sync> TensorLike<T>
 
         if self.requires_grad || other.requires_grad {
             result.requires_grad = true;
-            result.grad = Some(ArrayD::zeros(result.data.raw_dim()));
+            // Note: Don't initialize grad here - let backward() do it
 
             // Create computation node for backprop
             let node = ComputeNode::new(Operation::Add, vec![self.clone(), other.clone()]);
@@ -206,7 +252,6 @@ impl<T: Float + NumAssign + ScalarOperand + 'static + Send + Sync> TensorLike<T>
 
         if self.requires_grad || other.requires_grad {
             result.requires_grad = true;
-            result.grad = Some(ArrayD::zeros(result.data.raw_dim()));
 
             let node = ComputeNode::new(Operation::Sub, vec![self.clone(), other.clone()]);
             result.grad_fn = Some(Arc::new(Mutex::new(node)));
@@ -221,7 +266,6 @@ impl<T: Float + NumAssign + ScalarOperand + 'static + Send + Sync> TensorLike<T>
 
         if self.requires_grad || other.requires_grad {
             result.requires_grad = true;
-            result.grad = Some(ArrayD::zeros(result.data.raw_dim()));
 
             let node = ComputeNode::new(Operation::Mul, vec![self.clone(), other.clone()]);
             result.grad_fn = Some(Arc::new(Mutex::new(node)));
@@ -236,7 +280,6 @@ impl<T: Float + NumAssign + ScalarOperand + 'static + Send + Sync> TensorLike<T>
 
         if self.requires_grad || other.requires_grad {
             result.requires_grad = true;
-            result.grad = Some(ArrayD::zeros(result.data.raw_dim()));
 
             let node = ComputeNode::new(Operation::Div, vec![self.clone(), other.clone()]);
             result.grad_fn = Some(Arc::new(Mutex::new(node)));
@@ -268,7 +311,6 @@ impl<T: Float + NumAssign + ScalarOperand + 'static + Send + Sync> TensorLike<T>
 
         if self.requires_grad || other.requires_grad {
             result.requires_grad = true;
-            result.grad = Some(ArrayD::zeros(result.data.raw_dim()));
 
             let node = ComputeNode::new(Operation::MatMul, vec![self.clone(), other.clone()]);
             result.grad_fn = Some(Arc::new(Mutex::new(node)));
@@ -283,7 +325,6 @@ impl<T: Float + NumAssign + ScalarOperand + 'static + Send + Sync> TensorLike<T>
 
         if self.requires_grad {
             result.requires_grad = true;
-            result.grad = Some(ArrayD::zeros(result.data.raw_dim()));
 
             let node = ComputeNode::new(Operation::Sum, vec![self.clone()]);
             result.grad_fn = Some(Arc::new(Mutex::new(node)));
@@ -299,7 +340,6 @@ impl<T: Float + NumAssign + ScalarOperand + 'static + Send + Sync> TensorLike<T>
 
         if self.requires_grad {
             result.requires_grad = true;
-            result.grad = Some(ArrayD::zeros(result.data.raw_dim()));
 
             let node = ComputeNode::new(Operation::Mean, vec![self.clone()]);
             result.grad_fn = Some(Arc::new(Mutex::new(node)));
@@ -365,6 +405,6 @@ mod tests {
     fn test_requires_grad() {
         let tensor = Tensor::<f32>::zeros(&[2, 2]).requires_grad_();
         assert!(tensor.requires_grad);
-        assert!(tensor.grad.is_some());
+        assert!(tensor.grad.lock().unwrap().is_some());
     }
 }

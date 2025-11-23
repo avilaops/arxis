@@ -21,7 +21,7 @@ fn main() {
     let mut train_labels = Vec::new();
 
     for i in 0..n_train {
-        let x = Tensor::<f32>::randn(&[input_size]);
+        let x = Tensor::<f32>::randn(&[1, input_size]); // Shape: [1, 784] for batch compatibility
         let label = i % n_classes;
         let y = one_hot(label, n_classes);
 
@@ -33,7 +33,7 @@ fn main() {
     let mut test_labels = Vec::new();
 
     for i in 0..n_test {
-        let x = Tensor::<f32>::randn(&[input_size]);
+        let x = Tensor::<f32>::randn(&[1, input_size]); // Shape: [1, 784]
         let label = i % n_classes;
         let y = one_hot(label, n_classes);
 
