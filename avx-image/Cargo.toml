@@ -40,7 +40,7 @@ rayon = { version = "1.10", optional = true }
 # No external SIMD crates needed
 
 [dev-dependencies]
-criterion = "0.5"
+criterion = "0.7"
 
 [features]
 default = []
