@@ -1,6 +1,7 @@
 //! AVL LoadBalancer Library
 //!
 //! Production-ready L7 load balancer with active health checks and multiple distribution algorithms.
+//! Also provides STUN/TURN servers for WebRTC NAT traversal in remote desktop scenarios.
 //!
 //! ## Features
 //!
@@ -10,6 +11,8 @@
 //! * Automatic retry with configurable backoff
 //! * Connection tracking and metrics endpoint
 //! * Built-in health status endpoint (`/_health`)
+//! * **STUN Server** for NAT discovery
+//! * **TURN Server** for WebRTC relay
 //! * Fluent builder API
 //!
 //! ## Example
@@ -40,10 +43,26 @@
 //! Access the health status endpoint at `http://localhost:8080/_health`.
 //! Access the metrics endpoint at `http://localhost:8080/_metrics`.
 
-// AVL Platform Modules
-mod avl_async;
-mod avl_compress;
-mod avl_config;
+// STUN/TURN for WebRTC NAT Traversal
+pub mod stun;
+
+// Advanced Features
+#[cfg(feature = "tls")]
+pub mod tls;
+
+#[cfg(feature = "sticky-sessions")]
+pub mod sticky_sessions;
+
+#[cfg(feature = "geo-routing")]
+pub mod geo;
+
+#[cfg(feature = "hot-reload")]
+pub mod hot_reload;
+
+pub mod middleware;
+
+#[cfg(feature = "tracing")]
+pub mod tracing_otel;
 
 use std::hash::{Hash, Hasher};
 use std::net::{IpAddr, SocketAddr};
@@ -62,8 +81,8 @@ use dashmap::DashMap;
 use governor::{Quota, RateLimiter as GovernorRateLimiter};
 use parking_lot::RwLock;
 use serde::{Deserialize, Serialize};
-use avl_async::net::TcpListener;
-use avl_async::task::JoinHandle;
+use tokio::net::TcpListener;
+use tokio::task::JoinHandle;
 use tracing::{debug, error, info, warn};
 use twox_hash::XxHash64;
 
@@ -404,12 +423,14 @@ fn default_backoff_ms() -> u64 {
 impl LoadBalancerConfig {
 	/// Load configuration from YAML file
 	pub fn from_yaml_file<P: AsRef<std::path::Path>>(path: P) -> Result<Self> {
-		avl_config::AvlConfig::load(path)
+		let content = std::fs::read_to_string(path)?;
+		Ok(serde_yaml::from_str(&content)?)
 	}
 
 	/// Load configuration from TOML file
 	pub fn from_toml_file<P: AsRef<std::path::Path>>(path: P) -> Result<Self> {
-		avl_config::AvlConfig::load(path)
+		let content = std::fs::read_to_string(path)?;
+		Ok(toml::from_str(&content)?)
 	}
 
 	/// Build LoadBalancer from config
@@ -575,6 +596,7 @@ struct Inner {
         }
     }    /// Start listening on the provided address (e.g. `"127.0.0.1:8080"`).
     /// Blocks until server shutdown. Returns an error if binding or serving fails.
+    /// Supports graceful shutdown via SIGTERM/SIGINT signals.
     pub async fn listen(&self, addr: &str) -> Result<()> {
         let listener = TcpListener::bind(addr).await?;
         let local_addr = listener.local_addr()?;
@@ -589,7 +611,13 @@ struct Inner {
         }
 
         let app = self.router();
-        axum::serve(listener, app).await?;
+
+        // Graceful shutdown
+        let graceful = axum::serve(listener, app)
+            .with_graceful_shutdown(shutdown_signal());
+
+        graceful.await?;
+        info!("Load balancer shutdown complete");
         Ok(())
     }    /// Spawn the load balancer on an ephemeral port (useful for tests).
     pub async fn spawn_ephemeral(&self) -> Result<(SocketAddr, JoinHandle<Result<()>>)> {
@@ -864,11 +892,26 @@ async fn proxy_handler(
 }
 
 fn compress_gzip(data: &[u8]) -> Result<Vec<u8>> {
-	avl_compress::AvlCompressor::gzip(data)
+	use flate2::write::GzEncoder;
+	use flate2::Compression;
+	use std::io::Write;
+
+	let mut encoder = GzEncoder::new(Vec::new(), Compression::default());
+	encoder.write_all(data)?;
+	Ok(encoder.finish()?)
 }
 
 fn compress_brotli(data: &[u8]) -> Result<Vec<u8>> {
-	avl_compress::AvlCompressor::brotli(data)
+	use brotli::enc::BrotliEncoderParams;
+
+	let mut output = Vec::new();
+	let params = BrotliEncoderParams::default();
+	brotli::BrotliCompress(
+		&mut std::io::Cursor::new(data),
+		&mut output,
+		&params
+	)?;
+	Ok(output)
 }
 
 struct ConnectionGuard {
@@ -1558,3 +1601,33 @@ max_request_body_mb: 10
 	}
 }
 
+/// Graceful shutdown signal handler
+async fn shutdown_signal() {
+    use tokio::signal;
+
+    let ctrl_c = async {
+        signal::ctrl_c()
+            .await
+            .expect("Failed to install Ctrl+C handler");
+    };
+
+    #[cfg(unix)]
+    let terminate = async {
+        signal::unix::signal(signal::unix::SignalKind::terminate())
+            .expect("Failed to install SIGTERM handler")
+            .recv()
+            .await;
+    };
+
+    #[cfg(not(unix))]
+    let terminate = std::future::pending::<()>();
+
+    tokio::select! {
+        _ = ctrl_c => {
+            info!("Received Ctrl+C signal, initiating graceful shutdown");
+        },
+        _ = terminate => {
+            info!("Received SIGTERM signal, initiating graceful shutdown");
+        },
+    }
+}
