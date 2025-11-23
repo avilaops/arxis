@@ -22,6 +22,7 @@
 //! 6. Persistence of fine-tune deltas
 
 use std::sync::Arc;
+use futures::stream::{self, Stream};
 
 /// Enumeration of backend kinds the assistant can use.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -48,6 +49,11 @@ pub struct AIResult {
 /// Trait every backend must implement.
 pub trait AIBackend: Send + Sync {
     fn generate(&self, prompt: &str) -> AIResult;
+    /// Streaming generation (token or chunk). Default: single chunk from `generate`.
+    fn generate_stream(&self, prompt: &str) -> Box<dyn Stream<Item = String> + Send + Unpin> {
+        let result = self.generate(prompt);
+        Box::new(stream::iter(vec![result.text]))
+    }
 }
 
 /// Dummy local backend. Deterministic and fast.
@@ -85,7 +91,7 @@ impl AIBackend for LocalAIDummyBackend {
             };
         }
         AIResult {
-            text: "🤖 Local AI stub: modelo local ainda não treinado para esta solicitação. Forneça mais contexto ou habilite o backend de padrão (pattern).".to_string(),
+            text: "🤖 Local AI stub: modelo local ainda não treinado para esta solicitação. Forneça mais contexto ou habilite o backend padrão (pattern).".to_string(),
             explanation: Some("Backend local está em modo placeholder. Próximas versões incluirão carregamento de pesos e geração token por token.".to_string()),
             tips: Some(vec![
                 "Defina objetivo claro: ex. 'Gerar SQL para vendas por mês'".to_string(),
@@ -93,5 +99,37 @@ impl AIBackend for LocalAIDummyBackend {
             ]),
             sql: None,
         }
+    }
+    fn generate_stream(&self, prompt: &str) -> Box<dyn Stream<Item = String> + Send + Unpin> {
+        // Split deterministic output into whitespace tokens for demonstration.
+        let text = self.generate(prompt).text;
+        let parts: Vec<String> = text.split_whitespace().map(|s| s.to_string()).collect();
+        Box::new(stream::iter(parts))
+    }
+}
+
+/// Pattern backend (wraps existing heuristic path). Provided here to unify under trait.
+pub struct PatternBackend;
+
+impl PatternBackend {
+    pub fn new() -> Arc<Self> { Arc::new(Self) }
+}
+
+impl AIBackend for PatternBackend {
+    fn generate(&self, prompt: &str) -> AIResult {
+        // Return plain text; actual SQL generation is handled higher up (ai_assistant.rs).
+        AIResult { text: prompt.to_string(), explanation: None, tips: None, sql: None }
+    }
+    fn generate_stream(&self, prompt: &str) -> Box<dyn Stream<Item = String> + Send + Unpin> {
+        let tokens: Vec<String> = prompt.split_whitespace().map(|s| s.to_string()).collect();
+        Box::new(stream::iter(tokens))
+    }
+}
+
+/// Resolve backend based on environment or provided kind.
+pub fn resolve_backend(kind: AIBackendKind) -> Arc<dyn AIBackend> {
+    match kind {
+        AIBackendKind::Pattern => PatternBackend::new(),
+        AIBackendKind::Local => LocalAIDummyBackend::new(),
     }
 }

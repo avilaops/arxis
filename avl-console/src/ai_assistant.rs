@@ -1,6 +1,7 @@
 use axum::{
     extract::State,
     response::{Html, IntoResponse, Json, Sse},
+    response::sse::{Event, KeepAlive},
     routing::{get, post},
     Router,
 };
@@ -9,7 +10,7 @@ use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use std::time::Duration;
 
-use crate::{error::ConsoleError, state::ConsoleState, ai_engine::{AIBackendKind, LocalAIDummyBackend, AIBackend, AIResult}};
+use crate::{error::ConsoleError, state::ConsoleState, ai_engine::{AIBackendKind, LocalAIDummyBackend, AIBackend, AIResult, resolve_backend}};
 
 /// AI Assistant UI HTML with chat interface
 const AI_ASSISTANT_HTML: &str = r#"<!DOCTYPE html>
@@ -622,6 +623,25 @@ async fn chat(
     }))
 }
 
+/// Streaming chat endpoint (Server-Sent Events)
+async fn chat_stream(
+    State(_state): State<Arc<ConsoleState>>,
+    Json(payload): Json<ChatRequest>,
+) -> Result<Sse<impl futures::Stream<Item = Result<Event, std::convert::Infallible>>>, ConsoleError> {
+    let raw = payload.message;
+    let backend_kind = match std::env::var("AI_BACKEND").ok().as_deref() {
+        Some("local") => AIBackendKind::Local,
+        _ => AIBackendKind::Pattern,
+    };
+    let backend = resolve_backend(backend_kind);
+    let stream = backend.generate_stream(&raw)
+        .map(|token| {
+            Event::default().data(token)
+        })
+        .map(Ok);
+    Ok(Sse::new(stream).keep_alive(KeepAlive::default()))
+}
+
 /// Process natural language and generate SQL
 /// In production, this would call OpenAI API
 pub fn process_natural_language(
@@ -744,6 +764,7 @@ pub fn router(state: Arc<ConsoleState>) -> Router {
     Router::new()
         .route("/", get(ai_assistant_ui))
         .route("/chat", post(chat))
+        .route("/chat-stream", post(chat_stream))
         .route("/stats", get(get_stats))
         .with_state(state)
 }
@@ -794,5 +815,20 @@ mod tests {
         assert!(tips.is_some());
         // Cleanup
         std::env::remove_var("AI_BACKEND");
+    }
+
+    #[tokio::test]
+    async fn test_streaming_pattern_backend() {
+        // Ensure pattern backend selected
+        std::env::remove_var("AI_BACKEND");
+        let backend = resolve_backend(AIBackendKind::Pattern);
+        let mut stream = backend.generate_stream("hello streaming world");
+        let mut collected = Vec::new();
+        use futures::StreamExt;
+        while let Some(t) = stream.next().await {
+            collected.push(t);
+        }
+        assert!(collected.len() >= 3); // hello, streaming, world
+        assert_eq!(collected.join(" "), "hello streaming world");
     }
 }
