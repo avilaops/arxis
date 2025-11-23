@@ -23,6 +23,7 @@ pub mod lz4;
 pub mod stream;
 pub mod checksum;
 pub mod metrics;
+pub mod columnar;
 
 #[cfg(feature = "parallel")]
 pub mod parallel;
