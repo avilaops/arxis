@@ -18,7 +18,7 @@
 //! ...
 //! ```
 
-use crate::{Error, Result};
+use crate::{Error, Result, Level};
 
 /// LZ4 constants
 const MIN_MATCH: usize = 4;
@@ -43,6 +43,94 @@ const LAST_LITERALS: usize = 5;
 /// assert!(compressed.len() >= 4); // At least header
 /// ```
 pub fn compress(input: &[u8]) -> Result<Vec<u8>> {
+    compress_with_level(input, Level::default())
+}
+
+/// Compress data with specified compression level
+///
+/// # Arguments
+/// * `input` - Raw data to compress
+/// * `level` - Compression level (Fast/Balanced/Best)
+///
+/// # Returns
+/// Compressed data with 4-byte header
+///
+/// # Example
+/// ```
+/// use avila_compress::{lz4, Level};
+/// let data = b"Hello, World!";
+/// let compressed = lz4::compress_with_level(data, Level::Best).unwrap();
+/// ```
+pub fn compress_with_level(input: &[u8], level: Level) -> Result<Vec<u8>> {
+    match level {
+        Level::Fast => compress_fast(input),
+        Level::Balanced => compress_balanced(input),
+        Level::Best => compress_best(input),
+    }
+}
+
+/// Fast compression - prioritizes speed over ratio
+fn compress_fast(input: &[u8]) -> Result<Vec<u8>> {
+    if input.is_empty() {
+        return Ok(vec![0, 0, 0, 0]);
+    }
+
+    if input.len() > u32::MAX as usize {
+        return Err(Error::InputTooLarge {
+            size: input.len(),
+            max_size: u32::MAX as usize,
+        });
+    }
+
+    let mut output = Vec::with_capacity(input.len() + input.len() / 255 + 16);
+    output.extend_from_slice(&(input.len() as u32).to_le_bytes());
+
+    let mut hash_table: Vec<i32> = vec![-1; HASH_TABLE_SIZE];
+    let mut anchor = 0;
+    let mut pos = 0;
+    let input_end = input.len();
+    let input_limit = if input_end > LAST_LITERALS {
+        input_end - LAST_LITERALS
+    } else {
+        0
+    };
+
+    // Fast mode: hash every 2nd position, accept first match
+    while pos < input_limit {
+        if pos + MIN_MATCH <= input_end {
+            let hash = hash4(&input[pos..]);
+            let candidate = hash_table[hash];
+
+            if candidate >= 0 {
+                let candidate_pos = candidate as usize;
+                let distance = pos - candidate_pos;
+
+                if distance > 0 && distance <= MAX_DISTANCE {
+                    let max_match = input_end - pos;
+                    let len = count_match(&input[candidate_pos..], &input[pos..], max_match);
+
+                    if len >= MIN_MATCH {
+                        // Accept first match immediately
+                        emit_sequence(&mut output, input, &mut anchor, pos, candidate_pos, len);
+                        pos += len;
+                        anchor = pos;
+                        continue;
+                    }
+                }
+            }
+
+            hash_table[hash] = pos as i32;
+        }
+
+        pos += 2; // Skip every other position
+    }
+
+    emit_final_literals(&mut output, input, anchor, input_end);
+    Ok(output)
+}
+
+/// Balanced compression - current implementation
+fn compress_balanced(input: &[u8]) -> Result<Vec<u8>> {
     if input.is_empty() {
         return Ok(vec![0, 0, 0, 0]); // Empty data marker
     }
@@ -174,7 +262,171 @@ pub fn compress(input: &[u8]) -> Result<Vec<u8>> {
     }
 
     Ok(output)
-}/// Decompress LZ4 data
+}
+
+/// Best compression - lazy matching for better ratio
+fn compress_best(input: &[u8]) -> Result<Vec<u8>> {
+    if input.is_empty() {
+        return Ok(vec![0, 0, 0, 0]);
+    }
+
+    if input.len() > u32::MAX as usize {
+        return Err(Error::InputTooLarge {
+            size: input.len(),
+            max_size: u32::MAX as usize,
+        });
+    }
+
+    let mut output = Vec::with_capacity(input.len() + input.len() / 255 + 16);
+    output.extend_from_slice(&(input.len() as u32).to_le_bytes());
+
+    let mut hash_table: Vec<i32> = vec![-1; HASH_TABLE_SIZE];
+    let mut anchor = 0;
+    let mut pos = 0;
+    let input_end = input.len();
+    let input_limit = if input_end > LAST_LITERALS {
+        input_end - LAST_LITERALS
+    } else {
+        0
+    };
+
+    // Best mode: lazy matching - look ahead for better matches
+    while pos < input_limit {
+        let mut best_match_pos = 0;
+        let mut best_match_len = 0;
+
+        // Try current position
+        if pos + MIN_MATCH <= input_end {
+            let hash = hash4(&input[pos..]);
+            let candidate = hash_table[hash];
+
+            if candidate >= 0 {
+                let candidate_pos = candidate as usize;
+                let distance = pos - candidate_pos;
+
+                if distance > 0 && distance <= MAX_DISTANCE {
+                    let max_match = input_end - pos;
+                    let len = count_match(&input[candidate_pos..], &input[pos..], max_match);
+
+                    if len >= MIN_MATCH {
+                        best_match_pos = candidate_pos;
+                        best_match_len = len;
+                    }
+                }
+            }
+
+            hash_table[hash] = pos as i32;
+        }
+
+        // Lazy matching: check next position for better match
+        if best_match_len > 0 && pos + 1 < input_limit {
+            let next_pos = pos + 1;
+            if next_pos + MIN_MATCH <= input_end {
+                let hash = hash4(&input[next_pos..]);
+                let candidate = hash_table[hash];
+
+                if candidate >= 0 {
+                    let candidate_pos = candidate as usize;
+                    let distance = next_pos - candidate_pos;
+
+                    if distance > 0 && distance <= MAX_DISTANCE {
+                        let max_match = input_end - next_pos;
+                        let len = count_match(&input[candidate_pos..], &input[next_pos..], max_match);
+
+                        // Use next match if significantly better
+                        if len > best_match_len + 2 {
+                            pos += 1;
+                            best_match_pos = candidate_pos;
+                            best_match_len = len;
+                        }
+                    }
+                }
+            }
+        }
+
+        if best_match_len >= MIN_MATCH {
+            emit_sequence(&mut output, input, &mut anchor, pos, best_match_pos, best_match_len);
+            pos += best_match_len;
+            anchor = pos;
+        } else {
+            pos += 1;
+        }
+    }
+
+    emit_final_literals(&mut output, input, anchor, input_end);
+    Ok(output)
+}
+
+/// Helper: Emit a literal + match sequence
+fn emit_sequence(
+    output: &mut Vec<u8>,
+    input: &[u8],
+    anchor: &mut usize,
+    pos: usize,
+    match_pos: usize,
+    match_len: usize,
+) {
+    let literal_len = pos - *anchor;
+
+    // Emit token
+    let lit_token = if literal_len >= 15 { 15 } else { literal_len };
+    let match_token = if match_len >= MIN_MATCH + 15 {
+        15
+    } else {
+        match_len - MIN_MATCH
+    };
+    output.push(((lit_token << 4) | match_token) as u8);
+
+    // Extended literal length
+    if literal_len >= 15 {
+        let mut remaining = literal_len - 15;
+        while remaining >= 255 {
+            output.push(255);
+            remaining -= 255;
+        }
+        output.push(remaining as u8);
+    }
+
+    // Copy literals
+    output.extend_from_slice(&input[*anchor..pos]);
+
+    // Emit match offset
+    let offset = (pos - match_pos) as u16;
+    output.extend_from_slice(&offset.to_le_bytes());
+
+    // Extended match length
+    if match_len >= MIN_MATCH + 15 {
+        let mut remaining = match_len - MIN_MATCH - 15;
+        while remaining >= 255 {
+            output.push(255);
+            remaining -= 255;
+        }
+        output.push(remaining as u8);
+    }
+}
+
+/// Helper: Emit final literals
+fn emit_final_literals(output: &mut Vec<u8>, input: &[u8], anchor: usize, input_end: usize) {
+    let final_literals = input_end - anchor;
+    if final_literals > 0 {
+        let lit_token = if final_literals >= 15 { 15 } else { final_literals };
+        output.push((lit_token << 4) as u8);
+
+        // Extended literal length
+        if final_literals >= 15 {
+            let mut remaining = final_literals - 15;
+            while remaining >= 255 {
+                output.push(255);
+                remaining -= 255;
+            }
+            output.push(remaining as u8);
+        }
+
+        output.extend_from_slice(&input[anchor..]);
+    }
+}
+
+/// Decompress LZ4 data
 ///
 /// # Arguments
 /// * `input` - Compressed data (must include 4-byte header)

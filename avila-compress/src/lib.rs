@@ -20,6 +20,14 @@
 
 pub mod error;
 pub mod lz4;
+pub mod stream;
+pub mod checksum;
+
+#[cfg(feature = "parallel")]
+pub mod parallel;
+
+#[cfg(feature = "simd")]
+pub mod simd;
 
 pub use error::{Error, Result};
 
