@@ -20,7 +20,7 @@ thiserror = "2.0"
 anyhow = "1.0"
 
 # Compression
-avila-compress = { version = "0.1", path = "../avila-compress" }
+avila-compress = { version = "0.8", path = "../avila-compress" }
 
 # Networking
 axum = "0.7"
