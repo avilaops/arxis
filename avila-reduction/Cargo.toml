@@ -31,7 +31,7 @@ rand = "0.8"
 rand_xoshiro = "0.6"
 
 # Scientific computing
-nalgebra = "0.32"
+nalgebra = "0.34"
 sprs = "0.11"     # Sparse matrices
 
 # Neural networks (for autoencoders)
