@@ -31,7 +31,7 @@ exclude = ["target/", "*.swp", ".git*", "examples/*.jpg", "examples/*.png"]
 # Only essential crates
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-thiserror = "1"
+thiserror = "2"
 
 # Optional: Multi-threading (using std::thread as fallback)
 rayon = { version = "1.10", optional = true }
