@@ -52,7 +52,7 @@ rand = "0.8"
 num_cpus = "1"
 
 # Configuration
-toml = "0.8"
+toml = "0.9"
 
 # AVX dependencies
 avx-config = { path = "../avx-config" }
