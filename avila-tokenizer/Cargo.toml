@@ -21,7 +21,7 @@ serde_json = "1.0"
 lru = "0.12"
 rayon = "1.10"
 lazy_static = "1.4"
-thiserror = "1.0"
+thiserror = "2.0"
 rand = "0.8"
 
 [dev-dependencies]
