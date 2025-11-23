@@ -1,5 +1,5 @@
 //! Geometria 4D Avançada com avila-math
-//! 
+//!
 //! Tesseracts, rotações 4D, projeções
 
 use avila_math::geometry::{
@@ -11,26 +11,26 @@ fn main() {
 
     // 1. Quaternions - Rotação 3D
     println!("1️⃣  Quaternions (SO(3))");
-    
+
     let axis = [0.0, 0.0, 1.0]; // eixo Z
     let angle = std::f64::consts::PI / 4.0; // 45°
     let q = Quat3D::from_axis_angle(axis, angle);
 
     println!("   Rotação: 45° em torno de Z");
-    println!("   Quaternion: [{:.3}, {:.3}i, {:.3}j, {:.3}k]", 
+    println!("   Quaternion: [{:.3}, {:.3}i, {:.3}j, {:.3}k]",
         q.w, q.x, q.y, q.z);
 
     // Rotar ponto (1, 0, 0)
     let point = [1.0, 0.0, 0.0];
     let rotated = q.rotate_vector(point);
-    println!("   (1,0,0) → ({:.3}, {:.3}, {:.3})", 
+    println!("   (1,0,0) → ({:.3}, {:.3}, {:.3})",
         rotated[0], rotated[1], rotated[2]);
     println!("   ✅ Ponto rotado 45° (esperado: ~0.707, ~0.707, 0)");
     println!();
 
     // 2. Tesseract (Hipercubo 4D)
     println!("2️⃣  Tesseract (Hipercubo 4D)");
-    
+
     let tesseract = Tesseract::new();
     println!("   Tesseract gerado");
 
@@ -38,7 +38,7 @@ fn main() {
     println!("✅ {} vértices", vertices.len());
     println!("   Exemplos:");
     for (i, v) in vertices.iter().take(4).enumerate() {
-        println!("     v{}: [{:.1}, {:.1}, {:.1}, {:.1}]", 
+        println!("     v{}: [{:.1}, {:.1}, {:.1}, {:.1}]",
             i, v.x, v.y, v.z, v.w);
     }
     println!("   {} arestas", tesseract.edges.len());
@@ -48,10 +48,10 @@ fn main() {
 
     // 3. Rotações 4D
     println!("3️⃣  Rotações em 4D");
-    
+
     // Rotação no plano X-Y
     let rot_xy = Matrix4x4::rotation_xy(std::f64::consts::PI / 6.0); // 30°
-    
+
     // Rotação no plano Z-W
     let rot_zw = Matrix4x4::rotation_zw(std::f64::consts::PI / 3.0); // 60°
 
@@ -65,16 +65,16 @@ fn main() {
     // Rotar ponto 4D
     let point_4d = Point4D::new(1.0, 0.0, 0.0, 1.0);
     let rotated_4d = combined.transform(&point_4d);
-    println!("   Ponto: ({:.1}, {:.1}, {:.1}, {:.1})", 
+    println!("   Ponto: ({:.1}, {:.1}, {:.1}, {:.1})",
         point_4d.x, point_4d.y, point_4d.z, point_4d.w);
-    println!("   Rotado: ({:.3}, {:.3}, {:.3}, {:.3})", 
+    println!("   Rotado: ({:.3}, {:.3}, {:.3}, {:.3})",
         rotated_4d.x, rotated_4d.y, rotated_4d.z, rotated_4d.w);
     println!("   ✅ Rotação 4D aplicada");
     println!();
 
     // 4. Projeção 4D → 3D
     println!("4️⃣  Projeção 4D → 3D (Perspectiva)");
-    
+
     let projection = Projection4Dto3D::new(2.0); // distância do observador
     println!("   Projetando tesseract para 3D...");
     println!("   Distância: 2.0");
@@ -86,14 +86,14 @@ fn main() {
     println!("✅ {} pontos projetados", projected_3d.len());
     println!("   Exemplos (3D):");
     for (i, p) in projected_3d.iter().take(4).enumerate() {
-        println!("     p{}: ({:.3}, {:.3}, {:.3})", 
+        println!("     p{}: ({:.3}, {:.3}, {:.3})",
             i, p.0, p.1, p.2);
     }
     println!();
 
     // 5. Visualização Animada (ASCII art simplificado)
     println!("5️⃣  Animação Rotacional");
-    
+
     for frame in 0..8 {
         let angle = (frame as f64 / 8.0) * 2.0 * std::f64::consts::PI;
         let rot = Matrix4x4::rotation_xy(angle);
@@ -111,7 +111,7 @@ fn main() {
         // Encontrar bounds para normalização
         let (mut min_x, mut max_x) = (f64::MAX, f64::MIN);
         let (mut min_y, mut max_y) = (f64::MAX, f64::MIN);
-        
+
         for p in &projected {
             min_x = min_x.min(p.0);
             max_x = max_x.max(p.0);
@@ -121,7 +121,7 @@ fn main() {
 
         // Desenhar frame
         print!("   Frame {}: ", frame);
-        
+
         // Indicador simples de rotação
         let phase = (angle / (2.0 * std::f64::consts::PI) * 8.0) as usize;
         let spinner = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧'];
@@ -130,7 +130,7 @@ fn main() {
         // Mostrar spread dos pontos projetados
         let spread = ((max_x - min_x).powi(2) + (max_y - min_y).powi(2)).sqrt();
         print!("spread={:.2}", spread);
-        
+
         println!();
         std::thread::sleep(std::time::Duration::from_millis(100));
     }
@@ -139,7 +139,7 @@ fn main() {
 
     // 6. Interpolação SLERP (Quaternions)
     println!("6️⃣  SLERP entre quaternions");
-    
+
     let q_start = Quat3D::identity();
     let q_end = Quat3D::from_axis_angle([0.0, 1.0, 0.0], std::f64::consts::PI / 2.0);
 
@@ -147,11 +147,11 @@ fn main() {
     for t in 0..=4 {
         let alpha = t as f64 / 4.0;
         let interpolated = q_start.slerp(&q_end, alpha);
-        
+
         let test_point = [1.0, 0.0, 0.0];
         let result = interpolated.rotate_vector(test_point);
-        
-        println!("     t={:.2}: ({:.3}, {:.3}, {:.3})", 
+
+        println!("     t={:.2}: ({:.3}, {:.3}, {:.3})",
             alpha, result[0], result[1], result[2]);
     }
     println!("   ✅ Interpolação suave (SLERP)");
@@ -159,20 +159,20 @@ fn main() {
 
     // 7. Projeções Ortográfica e Estereográfica
     println!("7️⃣  Tipos de Projeção");
-    
+
     let test_point = Point4D::new(1.0, 1.0, 1.0, 0.5);
-    
+
     let perspective = projection.project(&test_point);
     let orthographic = projection.project_orthographic(&test_point);
     let stereographic = projection.project_stereographic(&test_point);
-    
-    println!("   Ponto 4D: ({:.1}, {:.1}, {:.1}, {:.1})", 
+
+    println!("   Ponto 4D: ({:.1}, {:.1}, {:.1}, {:.1})",
         test_point.x, test_point.y, test_point.z, test_point.w);
-    println!("   Perspectiva: ({:.3}, {:.3}, {:.3})", 
+    println!("   Perspectiva: ({:.3}, {:.3}, {:.3})",
         perspective.0, perspective.1, perspective.2);
-    println!("   Ortográfica: ({:.3}, {:.3}, {:.3})", 
+    println!("   Ortográfica: ({:.3}, {:.3}, {:.3})",
         orthographic.0, orthographic.1, orthographic.2);
-    println!("   Estereográfica: ({:.3}, {:.3}, {:.3})", 
+    println!("   Estereográfica: ({:.3}, {:.3}, {:.3})",
         stereographic.0, stereographic.1, stereographic.2);
     println!("   ✅ Diferentes projeções");
     println!();

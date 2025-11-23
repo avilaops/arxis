@@ -1,5 +1,5 @@
 //! Processamento de Sinais com avila-math
-//! 
+//!
 //! FFT, wavelets, filtros digitais
 
 use avila_math::signal::{fft_1d, ifft_1d, cwt};
@@ -10,12 +10,12 @@ fn main() {
 
     // 1. FFT - Análise de Frequência
     println!("1️⃣  FFT - Fast Fourier Transform");
-    
+
     // Sinal: sin(2π*50*t) + 0.5*sin(2π*120*t)
     let sample_rate = 1000.0; // 1 kHz
     let duration = 1.0;
     let n_samples = (sample_rate * duration) as usize;
-    
+
     let signal: Vec<Complex64> = (0..n_samples)
         .map(|i| {
             let t = i as f64 / sample_rate;
@@ -30,7 +30,7 @@ fn main() {
 
     // Aplicar FFT
     let spectrum = fft_1d(&signal);
-    
+
     // Encontrar picos
     let magnitudes: Vec<f64> = spectrum.iter()
         .take(n_samples / 2)
@@ -55,7 +55,7 @@ fn main() {
     // 2. IFFT - Reconstrução
     println!("2️⃣  IFFT - Reconstrução do Sinal");
     let reconstructed = ifft_1d(&spectrum);
-    
+
     let error: f64 = signal.iter().zip(reconstructed.iter())
         .map(|(s, r)| (s.re - r.re).abs())
         .sum::<f64>() / signal.len() as f64;
@@ -66,7 +66,7 @@ fn main() {
 
     // 3. Wavelet Transform - Análise tempo-frequência
     println!("3️⃣  Wavelet Transform (Morlet CWT)");
-    
+
     // Sinal chirp (frequência variável)
     let chirp: Vec<f64> = (0..128)
         .map(|i| {
@@ -77,12 +77,12 @@ fn main() {
 
     let scales = vec![1.0, 2.0, 4.0, 8.0, 16.0];
     let coeffs = cwt(&chirp, &scales);
-    
+
     println!("   Sinal original: {} pontos", chirp.len());
     println!("✅ CWT aplicado:");
     println!("   Escalas: {:?}", scales);
     println!("   Coeficientes: {}×{}", coeffs.len(), coeffs[0].len());
-    
+
     // Energia por escala
     for (i, scale_coeffs) in coeffs.iter().enumerate() {
         let energy: f64 = scale_coeffs.iter()
@@ -94,7 +94,7 @@ fn main() {
 
     // 4. Filtro Passa-Baixa (média móvel)
     println!("4️⃣  Filtro Passa-Baixa");
-    
+
     // Sinal ruidoso
     let noisy: Vec<f64> = (0..100)
         .map(|i| {
@@ -115,16 +115,16 @@ fn main() {
         .collect();
 
     println!("   Janela: {} pontos", window);
-    println!("   Antes: [{:.3}, {:.3}, {:.3}, ...]", 
+    println!("   Antes: [{:.3}, {:.3}, {:.3}, ...]",
         noisy[10], noisy[11], noisy[12]);
-    println!("   Depois: [{:.3}, {:.3}, {:.3}, ...]", 
+    println!("   Depois: [{:.3}, {:.3}, {:.3}, ...]",
         filtered[10], filtered[11], filtered[12]);
     println!("   ✅ Ruído reduzido");
     println!();
 
     // 5. Detecção de Envelope
     println!("5️⃣  Detecção de Envelope");
-    
+
     let am_signal: Vec<f64> = (0..200)
         .map(|i| {
             let t = i as f64 / 200.0;

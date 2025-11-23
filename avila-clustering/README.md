@@ -4,6 +4,7 @@
 [![Documentation](https://docs.rs/avila-clustering/badge.svg)](https://docs.rs/avila-clustering)
 [![License](https://img.shields.io/badge/license-MIT%2FApache--2.0-blue.svg)](LICENSE)
 [![Build Status](https://github.com/avilaops/arxis/workflows/CI/badge.svg)](https://github.com/avilaops/arxis/actions)
+[![Tests](https://img.shields.io/badge/tests-14%2F16%20passing-yellow)](https://github.com/avilaops/arxis)
 
 **State-of-the-art clustering algorithms for Rust - surpassing scikit-learn, HDBSCAN, and RAPIDS cuML**
 
