@@ -39,31 +39,42 @@ lazy_static = "1.4"
 # Templates
 askama = { version = "0.12", features = ["with-axum"] }
 
-# Authentication (optional)
-# avl-auth = { path = "../avl-auth", optional = true }
+# Authentication
+avl-auth = { path = "../avl-auth", optional = true }
 
-# APIs (optional)
-# aviladb = { path = "../aviladb", optional = true }
-# avl-storage = { path = "../avl-storage", optional = true }
-# avx-gateway = { path = "../avx-gateway", optional = true }
+# APIs
+aviladb = { path = "../aviladb", optional = true }
+avl-storage = { path = "../avl-storage", optional = true }
+avx-gateway = { path = "../avx-gateway", optional = true }
 
 # Observability
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-# avx-telemetry = { path = "../avx-telemetry", optional = true }
+avx-telemetry = { path = "../avx-telemetry", optional = true }
+avila-telemetry = { path = "../avila-telemetry", optional = true }
 
 [[example]]
 name = "basic"
 path = "examples/basic.rs"
 
 [features]
-default = []
-full = ["with-auth", "with-apis"]
-with-auth = []
-with-apis = []
+default = ["with-telemetry"]
+production = ["with-auth", "with-aviladb", "with-telemetry", "with-storage"]
+full = ["production", "with-gateway"]
+with-auth = ["dep:avl-auth"]
+with-aviladb = ["dep:aviladb"]
+with-storage = ["dep:avl-storage"]
+with-gateway = ["dep:avx-gateway"]
+with-telemetry = ["dep:avx-telemetry", "dep:avila-telemetry"]
 
 [dev-dependencies]
 tokio-test = "0.4"
+criterion = { version = "0.5", features = ["html_reports", "async_tokio"] }
+proptest = "1.5"
+
+[[bench]]
+name = "console_bench"
+harness = false
 
 [package.metadata.docs.rs]
 all-features = true

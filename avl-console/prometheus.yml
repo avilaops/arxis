@@ -1,0 +1,54 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: "avl-platform"
+    environment: "production"
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+# Scrape configurations
+scrape_configs:
+  # AVL Console metrics
+  - job_name: "avl-console"
+    static_configs:
+      - targets: ["avl-console:9090"]
+        labels:
+          service: "avl-console"
+          tier: "frontend"
+
+  # AvilaDB metrics
+  - job_name: "aviladb"
+    static_configs:
+      - targets: ["aviladb:9091"]
+        labels:
+          service: "aviladb"
+          tier: "database"
+
+  # AVL Auth metrics
+  - job_name: "avl-auth"
+    static_configs:
+      - targets: ["avl-auth:9092"]
+        labels:
+          service: "avl-auth"
+          tier: "auth"
+
+  # AVX Telemetry metrics
+  - job_name: "avx-telemetry"
+    static_configs:
+      - targets: ["avx-telemetry:8888"]
+        labels:
+          service: "avx-telemetry"
+          tier: "observability"
+
+  # Redis metrics (if redis-exporter is enabled)
+  - job_name: "redis"
+    static_configs:
+      - targets: ["redis:9121"]
+        labels:
+          service: "redis"
+          tier: "cache"

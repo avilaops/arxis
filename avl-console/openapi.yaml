@@ -1,0 +1,445 @@
+# AVL Console - OpenAPI 3.0 Specification
+
+openapi: 3.0.3
+info:
+  title: AVL Console API
+  description: |
+    Complete REST API for AVL Console - Developer Portal for AVL Cloud Platform.
+
+    Features:
+    - AI Assistant with natural language to SQL
+    - Vector search and RAG
+    - Query safety and validation
+    - Real-time monitoring
+    - Team management
+
+  version: 0.3.0
+  contact:
+    name: AVL Cloud Support
+    email: support@avila.cloud
+    url: https://avila.cloud
+  license:
+    name: MIT OR Apache-2.0
+    url: https://github.com/avilaops/arxis/blob/main/LICENSE
+
+servers:
+  - url: https://console.avila.cloud/api
+    description: Production server
+  - url: https://console-staging.avila.cloud/api
+    description: Staging server
+  - url: http://localhost:3000/api
+    description: Local development
+
+tags:
+  - name: AI Assistant
+    description: Natural language to SQL conversion
+  - name: Vector Search
+    description: Semantic search and RAG
+  - name: Query Safety
+    description: SQL validation and safety checks
+  - name: Monitoring
+    description: Metrics and observability
+  - name: Teams
+    description: Team and user management
+  - name: Health
+    description: Health checks and status
+
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check endpoint
+      description: Returns the health status of the service
+      responses:
+        "200":
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+        "503":
+          description: Service is unhealthy
+
+  /ai/chat:
+    post:
+      tags:
+        - AI Assistant
+      summary: Chat with AI Assistant
+      description: Send a natural language query and receive SQL with explanations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChatRequest"
+            examples:
+              active_users:
+                summary: Query for active users
+                value:
+                  message: "usuários mais ativos"
+              sales:
+                summary: Query for sales data
+                value:
+                  message: "vendas por categoria"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "429":
+          $ref: "#/components/responses/RateLimitExceeded"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /ai/chat-stream:
+    post:
+      tags:
+        - AI Assistant
+      summary: Stream AI Assistant response
+      description: Receive streaming response via Server-Sent Events
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChatRequest"
+      responses:
+        "200":
+          description: Streaming response
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                format: binary
+
+  /vector/search:
+    post:
+      tags:
+        - Vector Search
+      summary: Semantic search
+      description: Search for similar documents using vector embeddings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VectorSearchRequest"
+      responses:
+        "200":
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VectorSearchResponse"
+
+  /vector/save:
+    post:
+      tags:
+        - Vector Search
+      summary: Save vector store
+      description: Persist the current vector store to AvilaDB
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Vector store saved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  documents_saved:
+                    type: integer
+                  collection:
+                    type: string
+
+  /vector/stats:
+    get:
+      tags:
+        - Vector Search
+      summary: Get vector store statistics
+      description: Retrieve statistics about the vector collection
+      responses:
+        "200":
+          description: Vector store statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VectorStats"
+
+  /query/validate:
+    post:
+      tags:
+        - Query Safety
+      summary: Validate SQL query
+      description: Check if a SQL query is safe and compliant with policies
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QueryValidationRequest"
+      responses:
+        "200":
+          description: Validation result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueryValidationResponse"
+
+  /monitoring/metrics:
+    get:
+      tags:
+        - Monitoring
+      summary: Get Prometheus metrics
+      description: Returns metrics in Prometheus format
+      responses:
+        "200":
+          description: Metrics data
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /monitoring/anomalies:
+    get:
+      tags:
+        - Monitoring
+      summary: Get anomaly detections
+      description: Retrieve detected anomalies in system metrics
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: List of anomalies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Anomaly"
+
+  /teams/{teamId}/members:
+    get:
+      tags:
+        - Teams
+      summary: Get team members
+      description: Retrieve all members of a team
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of team members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TeamMember"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ok, degraded, error]
+        version:
+          type: string
+        uptime:
+          type: integer
+          description: Uptime in seconds
+
+    ChatRequest:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Natural language query
+          example: "usuários mais ativos"
+
+    ChatResponse:
+      type: object
+      properties:
+        response:
+          type: string
+          description: Human-readable response
+        sql_query:
+          type: string
+          nullable: true
+          description: Generated SQL query
+        explanation:
+          type: string
+          nullable: true
+          description: Explanation of the query
+        optimization_tips:
+          type: array
+          nullable: true
+          items:
+            type: string
+
+    VectorSearchRequest:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          type: string
+        top_k:
+          type: integer
+          default: 5
+          minimum: 1
+          maximum: 100
+
+    VectorSearchResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              content:
+                type: string
+              score:
+                type: number
+                format: float
+              metadata:
+                type: object
+
+    VectorStats:
+      type: object
+      properties:
+        total_documents:
+          type: integer
+        total_size:
+          type: integer
+        embedding_dimension:
+          type: integer
+
+    QueryValidationRequest:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          type: string
+        user_role:
+          type: string
+          enum: [admin, developer, viewer]
+
+    QueryValidationResponse:
+      type: object
+      properties:
+        is_safe:
+          type: boolean
+        warnings:
+          type: array
+          items:
+            type: string
+        sanitized_query:
+          type: string
+
+    Anomaly:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        metric_name:
+          type: string
+        severity:
+          type: string
+          enum: [low, medium, high, critical]
+        description:
+          type: string
+
+    TeamMember:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+        permissions:
+          type: array
+          items:
+            type: string
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+    RateLimitExceeded:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from AVL Auth
+
+security:
+  - BearerAuth: []

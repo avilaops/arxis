@@ -672,7 +672,7 @@ async fn chat(
         sql_query.clone().unwrap_or_default(),
         "aviladb".to_string(),
     );
-    
+
     if let Some(ref query) = sql_query {
         let analysis = validator.validate(query);
         if analysis.is_dangerous() {
@@ -683,7 +683,7 @@ async fn chat(
                 Some(format!("BLOCKED: {}", analysis.violations.join(", "))),
             );
             QUERY_HISTORY.add_entry(audit_entry);
-            
+
             METRICS.record_query(QueryMetric {
                 duration: timer.elapsed(),
                 success: false,
@@ -963,10 +963,10 @@ async fn save_vector_store(
     State(_state): State<Arc<ConsoleState>>,
 ) -> Result<Json<serde_json::Value>, ConsoleError> {
     let knowledge_base = init_default_knowledge_base();
-    
+
     // Create temporary persistence for this request
     let mut persistence = VectorPersistence::new("ai_knowledge_base".to_string());
-    
+
     match persistence.save_vector_store(&knowledge_base).await {
         Ok(count) => Ok(Json(serde_json::json!({
             "success": true,

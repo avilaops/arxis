@@ -51,6 +51,7 @@
 pub mod api;
 pub mod auth;
 pub mod config;
+pub mod config_production;
 pub mod dashboard;
 pub mod database;
 pub mod error;
