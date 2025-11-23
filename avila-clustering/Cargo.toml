@@ -42,7 +42,7 @@ sprs = "0.11"     # Sparse matrices
 
 # Optional GPU support
 [dependencies.cudarc]
-version = "0.9"
+version = "0.18"
 optional = true
 
 [dependencies.wgpu]
