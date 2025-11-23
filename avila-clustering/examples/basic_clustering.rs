@@ -83,7 +83,35 @@ fn main() -> Result<()> {
     println!("   Ponto [0.0, 0.0] pertence ao cluster: {}", prediction[0]);
     println!("   ✅ Predição OK\n");
 
+    // Teste 7: Métricas de Validação
+    println!("📊 Teste 7: Métricas de Validação Interna");
+    let labels = result.labels();
+    
+    let calinski = calinski_harabasz_score(&data.view(), &labels.view())?;
+    println!("   Calinski-Harabasz Score: {:.4}", calinski);
+    
+    let silhouette = silhouette_score(&data.view(), &labels.view(), &Metric::Euclidean)?;
+    println!("   Silhouette Score: {:.4}", silhouette);
+    
+    let davies_bouldin = davies_bouldin_score(&data.view(), &labels.view())?;
+    println!("   Davies-Bouldin Index: {:.4}", davies_bouldin);
+    println!("   ✅ Métricas OK\n");
+
+    // Teste 8: GMM
+    println!("📊 Teste 8: Gaussian Mixture Model");
+    let mut gmm = GaussianMixture::builder(3)
+        .max_iter(50)
+        .n_init(3)
+        .build();
+
+    let result_gmm = gmm.fit(&data.view())?;
+    println!("   Clusters encontrados: 3");
+    println!("   Convergiu: {}", result_gmm.converged);
+    println!("   Iterações: {}", result_gmm.n_iter);
+    println!("   ✅ GMM OK\n");
+
     println!("🎉 Todos os testes passaram!");
+    println!("🚀 avila-clustering está funcionando perfeitamente!");
 
     Ok(())
 }

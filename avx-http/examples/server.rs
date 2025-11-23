@@ -1,6 +1,7 @@
 //! Basic HTTP server example
 
-use avx_http::{Server, Router, Response};
+use avx_http::{Server, Router};
+use avx_http::server::Response;
 use serde_json::json;
 
 #[tokio::main]

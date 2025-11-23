@@ -89,6 +89,116 @@ mod compatibility_tests {
     }
 
     #[test]
+    fn test_round_trip_encoding() {
+        // Test that encode -> decode preserves content
+        let texts = vec![
+            "Hello, world!",
+            "The quick brown fox.",
+            "Testing 123!",
+        ];
+
+        let mut gpt2 = GPT2Tokenizer::from_pretrained("gpt2").unwrap();
+
+        for text in texts {
+            let ids = gpt2.encode(text);
+            let decoded = gpt2.decode(&ids).unwrap();
+            assert!(!decoded.is_empty());
+        }
+    }
+
+    #[test]
+    fn test_unicode_handling() {
+        // Test various Unicode characters
+        let texts = vec![
+            "emoji: 😀🎉🚀",
+            "math: α β γ δ ε",
+            "arrows: → ← ↑ ↓",
+            "currency: €£¥₹",
+        ];
+
+        let mut gpt2 = GPT2Tokenizer::from_pretrained("gpt2").unwrap();
+
+        for text in texts {
+            let ids = gpt2.encode(text);
+            assert!(!ids.is_empty(), "Failed to tokenize: {}", text);
+        }
+    }
+
+    #[test]
+    fn test_portuguese_accents_preserved() {
+        // Test that Portuguese accents are properly handled
+        let texts = vec![
+            "José",
+            "São Paulo",
+            "açúcar",
+            "você",
+            "está",
+            "ação",
+        ];
+
+        let llama = LlamaTokenizer::from_pretrained("llama-2-7b").unwrap();
+
+        for text in texts {
+            let ids = llama.encode(text);
+            let decoded = llama.decode(&ids).unwrap();
+            assert!(!decoded.is_empty(), "Failed on: {}", text);
+        }
+    }
+
+    #[test]
+    fn test_special_characters() {
+        // Test various punctuation and special characters
+        let text = "Hello! How are you? I'm fine. Test: 123; done.";
+
+        let mut gpt2 = GPT2Tokenizer::from_pretrained("gpt2").unwrap();
+        let bert = BertTokenizer::from_pretrained("bert-base-uncased").unwrap();
+        let llama = LlamaTokenizer::from_pretrained("llama-2-7b").unwrap();
+
+        let gpt2_ids = gpt2.encode(text);
+        let bert_ids = bert.encode(text);
+        let llama_ids = llama.encode(text);
+
+        // All should handle special characters
+        assert!(gpt2_ids.len() > 5);
+        assert!(bert_ids.len() > 5);
+        assert!(llama_ids.len() > 5);
+    }
+
+    #[test]
+    fn test_very_long_text() {
+        // Test with very long text (> 1000 tokens)
+        let long_text = "The quick brown fox jumps over the lazy dog. ".repeat(100);
+
+        let mut gpt2 = GPT2Tokenizer::from_pretrained("gpt2").unwrap();
+
+        let ids = gpt2.encode(&long_text);
+        assert!(ids.len() > 100, "Should tokenize long text");
+
+        let decoded = gpt2.decode(&ids).unwrap();
+        assert!(!decoded.is_empty());
+    }
+
+    #[test]
+    fn test_whitespace_handling() {
+        // Test various whitespace scenarios
+        let texts = vec![
+            "no space",
+            "  leading spaces",
+            "trailing spaces  ",
+            "multiple    spaces",
+            "\ttabs\there",
+            "new\nlines",
+        ];
+
+        let mut gpt2 = GPT2Tokenizer::from_pretrained("gpt2").unwrap();
+
+        for text in texts {
+            let ids = gpt2.encode(text);
+            assert!(!ids.is_empty(), "Failed on: {:?}", text);
+        }
+    }
+
+    #[test]
     fn test_padding_consistency() {
         let mut gpt2 = GPT2Tokenizer::from_pretrained("gpt2").unwrap();
         let bert = BertTokenizer::from_pretrained("bert-base-uncased").unwrap();

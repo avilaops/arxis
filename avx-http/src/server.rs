@@ -284,6 +284,21 @@ impl Response {
         self.headers.insert(name, value);
         self
     }
+
+    /// Get response status
+    pub fn status(&self) -> StatusCode {
+        self.status
+    }
+
+    /// Get response headers
+    pub fn headers(&self) -> &HeaderMap {
+        &self.headers
+    }
+
+    /// Get mutable reference to headers
+    pub fn headers_mut(&mut self) -> &mut HeaderMap {
+        &mut self.headers
+    }
 }
 
 type HandlerFn = Arc<dyn Fn(Request) -> Pin<Box<dyn Future<Output = Response> + Send>> + Send + Sync>;

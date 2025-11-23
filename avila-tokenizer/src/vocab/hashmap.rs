@@ -94,8 +94,8 @@ impl VocabHashMap {
     /// Get token by ID or unknown token
     pub fn get_token_or_unk(&self, id: u32) -> Result<&str> {
         self.get_token(id)
-            .or_else(|| self.unk_token.as_deref())
-            .ok_or_else(|| TokenizerError::InvalidTokenId(id))
+            .or(self.unk_token.as_deref())
+            .ok_or(TokenizerError::InvalidTokenId(id))
     }
 
     /// Check if token exists
@@ -169,7 +169,7 @@ impl VocabHashMap {
             .map(|&id| {
                 self.get_token(id)
                     .map(|s| s.to_string())
-                    .ok_or_else(|| TokenizerError::InvalidTokenId(id))
+                    .ok_or(TokenizerError::InvalidTokenId(id))
             })
             .collect()
     }

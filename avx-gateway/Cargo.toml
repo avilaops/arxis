@@ -17,15 +17,75 @@ categories = ["web-programming", "network-programming", "asynchronous"]
 exclude = ["target/", "*.swp", ".git*"]
 
 [dependencies]
-tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# Web framework
 axum = "0.7"
 tower = "0.5"
-uuid = { version = "1", features = ["v4"] }
 http = "1"
+http-body-util = "0.1"
+
+# HTTP client for proxying
+reqwest = { version = "0.12", features = ["json"] }
+
+# WebSocket
+tokio-tungstenite = "0.24"
+futures = "0.3"
+
+# Compression
+flate2 = "1.0"
+
+# Serialization
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-tracing = "0.1"
-anyhow = "1"
 
+# Logging and tracing
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Utilities
+uuid = { version = "1", features = ["v4", "serde"] }
+anyhow = "1"
+thiserror = "1"
+rand = "0.8"
+num_cpus = "1"
+
+# Configuration
+toml = "0.8"
+
+# AVX dependencies
 avx-config = { path = "../avx-config" }
 avx-telemetry = { path = "../avx-telemetry" }
+
+[dev-dependencies]
+tokio-test = "0.4"
+criterion = { version = "0.5", features = ["async_tokio"] }
+
+[[example]]
+name = "basic_gateway"
+path = "examples/basic_gateway.rs"
+
+[[example]]
+name = "with_auth"
+path = "examples/with_auth.rs"
+
+[[example]]
+name = "load_balancing"
+path = "examples/load_balancing.rs"
+
+[[example]]
+name = "advanced_features"
+path = "examples/advanced_features.rs"
+
+[[example]]
+name = "websocket_proxy"
+path = "examples/websocket_proxy.rs"
+
+[[example]]
+name = "with_caching"
+path = "examples/with_caching.rs"
+
+[[bench]]
+name = "gateway_bench"
+harness = false

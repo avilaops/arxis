@@ -26,6 +26,9 @@ pub enum ClusteringError {
     #[error("Invalid parameter: {0}")]
     InvalidParameter(String),
 
+    #[error("Invalid input: {0}")]
+    InvalidInput(String),
+
     #[error("Convergence failed after {0} iterations")]
     ConvergenceFailure(usize),
 

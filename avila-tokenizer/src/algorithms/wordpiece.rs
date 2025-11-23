@@ -9,6 +9,7 @@ pub struct WordPiece {
     /// Vocabulary mapping token to ID
     vocab: HashMap<String, u32>,
     /// Trie for efficient longest-match lookup
+    #[allow(dead_code)]
     trie: Trie,
     /// Unknown token
     unk_token: String,
@@ -115,9 +116,10 @@ impl WordPiece {
     }
 
     /// Tokenize a single word using trie-based lookup (faster)
+    #[allow(dead_code)]
     fn tokenize_word_with_trie(&self, word: &str) -> Vec<String> {
         let mut tokens = Vec::new();
-        let mut chars: Vec<char> = word.chars().collect();
+        let chars: Vec<char> = word.chars().collect();
         let mut pos = 0;
 
         while pos < chars.len() {
@@ -180,7 +182,7 @@ impl WordPiece {
                 id_to_token
                     .get(&id)
                     .cloned()
-                    .ok_or_else(|| TokenizerError::InvalidTokenId(id))
+                    .ok_or(TokenizerError::InvalidTokenId(id))
             })
             .collect()
     }
@@ -257,7 +259,7 @@ impl WordPiece {
             let mut subword_counts: HashMap<String, usize> = HashMap::new();
 
             // Count subword frequencies
-            for (word, splits) in &word_splits {
+            for splits in word_splits.values() {
                 for (i, token) in splits.iter().enumerate() {
                     let subword = if i == 0 {
                         token.clone()
@@ -304,7 +306,7 @@ impl WordPiece {
             .map(|(i, (token, _))| (token, i as u32))
             .collect();
 
-        let unk_token = special_tokens
+        let _unk_token = special_tokens
             .iter()
             .find(|t| t.contains("UNK"))
             .cloned()

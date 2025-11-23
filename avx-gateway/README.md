@@ -10,16 +10,23 @@ Production-ready API gateway built with Axum and Tower. Handles routing, authent
 
 ## Features
 
-- **High Performance**: Built on Tokio + Axum for async I/O
-- **Routing**: Dynamic route configuration with path parameters
-- **Authentication**: JWT, API keys, OAuth2 integration
-- **Rate Limiting**: Token bucket and sliding window algorithms
-- **Load Balancing**: Round-robin, least connections, weighted
-- **Circuit Breaker**: Automatic failure detection and recovery
-- **Observability**: Full integration with `avx-telemetry`
-- **Health Checks**: Automatic service health monitoring
-- **WebSocket Support**: Bidirectional streaming
-- **TLS/HTTPS**: Production-grade security
+### Core Features
+- **High Performance**: Built on Tokio + Axum for async I/O (50,000+ req/s)
+- **Routing**: Dynamic route configuration with path parameters and wildcards
+- **Load Balancing**: Round-robin, least connections, random, weighted strategies
+- **Circuit Breaker**: Automatic failure detection and recovery with half-open state
+- **Rate Limiting**: Token bucket algorithm with configurable burst
+- **Health Checks**: Automatic service health monitoring with readiness probes
+
+### Advanced Features
+- **Response Caching**: In-memory cache with TTL, size limits, and strategies
+- **Request/Response Transformation**: Header manipulation, path rewriting, status mapping
+- **Retry Logic**: Exponential backoff with jitter and customizable policies
+- **Compression**: Gzip compression with content-type filtering
+- **WebSocket Proxying**: Full-duplex WebSocket connection forwarding
+- **Authentication**: JWT validation and API key authentication
+- **Observability**: Prometheus metrics, structured logging, distributed tracing
+- **TLS/HTTPS**: Production-grade security (configurable)
 
 ## Installation
 
@@ -280,11 +287,49 @@ curl http://localhost:8080/metrics
 
 ## Examples
 
+Run the included examples:
+
 ```bash
+# Basic gateway with routing
 cargo run --example basic_gateway
+
+# Gateway with authentication
 cargo run --example with_auth
+
+# Load balancing across multiple upstreams
 cargo run --example load_balancing
-cargo run --example full_featured
+
+# Advanced features (caching, retry, compression)
+cargo run --example advanced_features
+
+# WebSocket proxying
+cargo run --example websocket_proxy
+
+# Response caching
+cargo run --example with_caching
+```
+
+## Benchmarks
+
+Run performance benchmarks:
+
+```bash
+cargo bench
+```
+
+## Testing
+
+Run the test suite:
+
+```bash
+# Unit tests
+cargo test
+
+# Integration tests
+cargo test --test integration_tests
+
+# All tests with coverage
+cargo test --all-features
 ```
 
 ## Performance

@@ -1,8 +1,8 @@
 # Avila Tokenizers - Copilot Instructions
 
-**Projeto**: avila-tokenizers
-**Descrição**: Most Complete Tokenizer Library in Rust - BPE, WordPiece, Unigram for GPT/BERT/Llama
-**Status**: v0.1.0 - Production Ready
+**Projeto**: avila-tokenizers  
+**Descrição**: Most Complete Tokenizer Library in Rust - BPE, WordPiece, Unigram for GPT/BERT/Llama  
+**Status**: v0.1.0 - Production Ready  
 **Filosofia**: Compatibility > Innovation. Correctness > Speed.
 
 ---
@@ -16,10 +16,10 @@ fn test_gpt2_compatibility_huggingface() {
     // ✅ OBRIGATÓRIO: Output idêntico ao HF tokenizers
     let avila = GPT2Tokenizer::from_pretrained("gpt2")?;
     let hf_output = vec![15496, 995, 0]; // "Hello world!"
-
+    
     let avila_output = avila.encode("Hello world!", None)?;
     assert_eq!(avila_output.ids, hf_output);
-
+    
     // Decode também deve ser idêntico
     let decoded = avila.decode(&avila_output.ids, true)?;
     assert_eq!(decoded, "Hello world!");
@@ -34,12 +34,12 @@ fn test_gpt2_compatibility_huggingface() {
 #[test]
 fn test_portuguese_accents() {
     let tokenizer = GPT2Tokenizer::from_pretrained("gpt2")?;
-
+    
     // Deve tokenizar corretamente acentos
     let text = "São Paulo é ótimo! Não há dúvidas.";
     let tokens = tokenizer.encode(text, None)?;
     let decoded = tokenizer.decode(&tokens.ids, true)?;
-
+    
     assert_eq!(decoded, text); // Preservar acentos!
 }
 
@@ -57,7 +57,7 @@ fn test_portuguese_accents() {
 fn bench_gpt2_encode_1mb(b: &mut Bencher) {
     let tokenizer = GPT2Tokenizer::from_pretrained("gpt2").unwrap();
     let text = generate_text_1mb();
-
+    
     b.iter(|| {
         black_box(tokenizer.encode(&text, None).unwrap());
     });
@@ -180,7 +180,7 @@ pub struct BPE {
 
 impl BPE {
     pub fn new(vocab: HashMap<String, u32>, merges: Vec<(String, String)>) -> Self;
-
+    
     pub fn encode(&self, text: &str) -> Vec<u32> {
         // 1. Pre-tokenize (regex split)
         // 2. For each word:
@@ -189,7 +189,7 @@ impl BPE {
         //    c. Cache result
         // 3. Convert tokens → ids
     }
-
+    
     pub fn decode(&self, ids: &[u32]) -> String {
         // 1. ids → tokens (reverse vocab)
         // 2. Join tokens
@@ -218,15 +218,15 @@ impl WordPiece {
     /// Longest-match-first tokenization
     pub fn tokenize(&self, text: &str) -> Vec<String> {
         let mut tokens = vec![];
-
+        
         for word in text.split_whitespace() {
             let mut subwords = vec![];
             let mut start = 0;
-
+            
             while start < word.len() {
                 let mut end = word.len();
                 let mut found = false;
-
+                
                 // Try longest match first
                 while start < end {
                     let substr = if start > 0 {
@@ -234,7 +234,7 @@ impl WordPiece {
                     } else {
                         word[start..end].to_string()
                     };
-
+                    
                     if self.vocab.contains_key(&substr) {
                         subwords.push(substr);
                         start = end;
@@ -243,16 +243,16 @@ impl WordPiece {
                     }
                     end -= 1;
                 }
-
+                
                 if !found {
                     subwords.push(self.unk_token.clone());
                     break;
                 }
             }
-
+            
             tokens.extend(subwords);
         }
-
+        
         tokens
     }
 }
@@ -270,13 +270,13 @@ impl Unigram {
         let mut best_scores = vec![f64::NEG_INFINITY; n + 1];
         let mut best_paths = vec![vec![]; n + 1];
         best_scores[0] = 0.0;
-
+        
         for start in 0..n {
             for (piece, score) in &self.pieces {
                 if text[start..].starts_with(piece) {
                     let end = start + piece.len();
                     let new_score = best_scores[start] + score;
-
+                    
                     if new_score > best_scores[end] {
                         best_scores[end] = new_score;
                         best_paths[end] = best_paths[start].clone();
@@ -285,10 +285,10 @@ impl Unigram {
                 }
             }
         }
-
+        
         best_paths[n].clone()
     }
-
+    
     /// Train via EM algorithm
     pub fn train(corpus: &[&str], vocab_size: usize, iterations: usize) -> Self {
         // 1. Initialize with character bigrams
@@ -397,10 +397,10 @@ impl GPT4Tokenizer {
         // Load cl100k_base vocab (100256 tokens)
         let vocab = load_vocab("models/gpt4/vocab.json")?;
         let merges = load_merges("models/gpt4/merges.txt")?;
-
+        
         // GPT-4 regex pattern (improved from GPT-2)
         let pattern = r"(?i:'s|'t|'re|'ve|'m|'ll|'d)|[^\r\n\p{L}\p{N}]?\p{L}+|\p{N}{1,3}| ?[^\s\p{L}\p{N}]+[\r\n]*|\s*[\r\n]+|\s+(?!\S)|\s+";
-
+        
         Ok(Self {
             bpe: BPE::new(vocab, merges),
             pattern: Regex::new(pattern).unwrap(),
@@ -427,7 +427,7 @@ impl LlamaTokenizer {
         // Load tokenizer.model (SentencePiece protobuf)
         let model_path = format!("models/{}/tokenizer.model", model);
         let pieces = load_sentencepiece_model(&model_path)?;
-
+        
         Ok(Self {
             pieces,
             bos_id: 1,
@@ -435,21 +435,21 @@ impl LlamaTokenizer {
             pad_id: 0,
         })
     }
-
-    pub fn encode_with_special(&self, text: &str, add_bos: bool, add_eos: bool)
+    
+    pub fn encode_with_special(&self, text: &str, add_bos: bool, add_eos: bool) 
         -> Vec<u32> {
         let mut ids = vec![];
-
+        
         if add_bos {
             ids.push(self.bos_id);
         }
-
+        
         ids.extend(self.encode(text));
-
+        
         if add_eos {
             ids.push(self.eos_id);
         }
-
+        
         ids
     }
 }
@@ -478,13 +478,13 @@ pub struct BPETrainer {
 }
 
 impl BPETrainer {
-    pub fn train(&self, corpus: impl Iterator<Item = String>)
+    pub fn train(&self, corpus: impl Iterator<Item = String>) 
         -> BPE {
         // 1. Initialize vocab with bytes (256 tokens)
         let mut vocab: HashMap<Vec<u8>, usize> = (0..256)
             .map(|i| (vec![i as u8], 1))
             .collect();
-
+        
         // 2. Count bigram frequencies
         let mut bigram_counts = HashMap::new();
         for text in corpus {
@@ -493,7 +493,7 @@ impl BPETrainer {
                 *bigram_counts.entry((pair[0], pair[1])).or_insert(0) += 1;
             }
         }
-
+        
         // 3. Merge most frequent pairs until vocab_size
         let mut merges = vec![];
         while vocab.len() < self.vocab_size {
@@ -501,7 +501,7 @@ impl BPETrainer {
                 .iter()
                 .max_by_key(|(_, count)| *count)
                 .unwrap();
-
+            
             // Merge pair in vocab
             let new_token = vec![most_freq_pair.0, most_freq_pair.1];
             vocab.insert(new_token.clone(), vocab.len());
@@ -509,11 +509,11 @@ impl BPETrainer {
                 String::from_utf8(vec![most_freq_pair.0]).unwrap(),
                 String::from_utf8(vec![most_freq_pair.1]).unwrap(),
             ));
-
+            
             // Update bigram counts
             // ...
         }
-
+        
         BPE::new(
             vocab.into_iter()
                 .map(|(k, v)| (String::from_utf8_lossy(&k).to_string(), v as u32))
@@ -524,10 +524,10 @@ impl BPETrainer {
 }
 
 // TODO: Batch processing com Rayon
-pub fn encode_batch(tokenizer: &dyn Tokenizer, texts: &[String])
+pub fn encode_batch(tokenizer: &dyn Tokenizer, texts: &[String]) 
     -> Vec<Encoding> {
     use rayon::prelude::*;
-
+    
     texts.par_iter()
         .map(|text| tokenizer.encode(text, None).unwrap())
         .collect()
@@ -542,17 +542,17 @@ pub fn byte_level_decode_simd(bytes: &[u8]) -> String {
     unsafe {
         // Process 32 bytes at once with AVX2
         let mut result = Vec::with_capacity(bytes.len());
-
+        
         for chunk in bytes.chunks(32) {
             let input = _mm256_loadu_si256(chunk.as_ptr() as *const __m256i);
             // Apply byte mapping...
             let output = byte_mapping_table(input);
             result.extend_from_slice(&output);
         }
-
+        
         String::from_utf8_unchecked(result)
     }
-
+    
     #[cfg(not(target_feature = "avx2"))]
     {
         // Fallback scalar
@@ -573,7 +573,7 @@ use tokenizers::Tokenizer as HFTokenizer;
 fn test_gpt2_exact_match_hf() {
     let avila = GPT2Tokenizer::from_pretrained("gpt2").unwrap();
     let hf = HFTokenizer::from_pretrained("gpt2", None).unwrap();
-
+    
     let test_texts = vec![
         "Hello, world!",
         "The quick brown fox jumps over the lazy dog.",
@@ -581,11 +581,11 @@ fn test_gpt2_exact_match_hf() {
         "GPT-4 is amazing! 🚀",
         "\n\n\tMultiple\n\tlines\n\n",
     ];
-
+    
     for text in test_texts {
         let avila_output = avila.encode(text, None).unwrap();
         let hf_output = hf.encode(text, false).unwrap();
-
+        
         assert_eq!(
             avila_output.ids,
             hf_output.get_ids(),
@@ -599,7 +599,7 @@ fn test_gpt2_exact_match_hf() {
 fn test_bert_exact_match_hf() {
     let avila = BertTokenizer::from_pretrained("bert-base-uncased").unwrap();
     let hf = HFTokenizer::from_pretrained("bert-base-uncased", None).unwrap();
-
+    
     // Similar tests...
 }
 ```
@@ -609,7 +609,7 @@ fn test_bert_exact_match_hf() {
 #[test]
 fn test_portuguese_accents_preservation() {
     let tokenizer = GPT2Tokenizer::from_pretrained("gpt2").unwrap();
-
+    
     let texts = vec![
         "São Paulo",
         "não há dúvida",
@@ -617,11 +617,11 @@ fn test_portuguese_accents_preservation() {
         "José ção",
         "Olá! Tudo bem? Você está ótimo.",
     ];
-
+    
     for text in texts {
         let encoded = tokenizer.encode(text, None).unwrap();
         let decoded = tokenizer.decode(&encoded.ids, true).unwrap();
-
+        
         assert_eq!(decoded, text, "Failed to preserve: {}", text);
     }
 }
@@ -629,10 +629,10 @@ fn test_portuguese_accents_preservation() {
 #[test]
 fn test_portuguese_common_words() {
     let tokenizer = GPT2Tokenizer::from_pretrained("gpt2").unwrap();
-
+    
     // Palavras comuns devem ter IDs únicos (não split)
     let common_words = vec!["você", "não", "está", "muito", "porque"];
-
+    
     for word in common_words {
         let encoded = tokenizer.encode(word, None).unwrap();
         // Idealmente 1 token, no máximo 2
@@ -647,19 +647,19 @@ use criterion::{black_box, criterion_group, criterion_main, Criterion};
 
 fn bench_tokenizers(c: &mut Criterion) {
     let text = include_str!("../test_data/lorem_ipsum_1mb.txt");
-
+    
     let avila = GPT2Tokenizer::from_pretrained("gpt2").unwrap();
     let hf = HFTokenizer::from_pretrained("gpt2", None).unwrap();
     let tiktoken = tiktoken_rs::get_bpe_from_model("gpt2").unwrap();
-
+    
     c.bench_function("avila_gpt2_1mb", |b| {
         b.iter(|| black_box(avila.encode(text, None).unwrap()))
     });
-
+    
     c.bench_function("hf_gpt2_1mb", |b| {
         b.iter(|| black_box(hf.encode(text, false).unwrap()))
     });
-
+    
     c.bench_function("tiktoken_gpt2_1mb", |b| {
         b.iter(|| black_box(tiktoken.encode_with_special_tokens(text)))
     });
@@ -682,14 +682,14 @@ criterion_main!(benches);
 ### Main Tokenizer Trait
 ```rust
 pub trait Tokenizer: Send + Sync {
-    fn encode(&self, text: &str, add_special_tokens: Option<bool>)
+    fn encode(&self, text: &str, add_special_tokens: Option<bool>) 
         -> Result<Encoding>;
-
-    fn decode(&self, ids: &[u32], skip_special_tokens: bool)
+    
+    fn decode(&self, ids: &[u32], skip_special_tokens: bool) 
         -> Result<String>;
-
+    
     fn vocab_size(&self) -> usize;
-
+    
     fn token_to_id(&self, token: &str) -> Option<u32>;
     fn id_to_token(&self, id: u32) -> Option<String>;
 }

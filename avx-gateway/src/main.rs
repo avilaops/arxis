@@ -1,214 +1,84 @@
-use std::net::SocketAddr;
-use std::time::Instant;
+//! AVX Gateway - High-performance API gateway for Avila Experience Fabric
+//!
+//! This is the main entry point for running the gateway as a standalone service.
 
-use avx_config::AvxConfig;
-use avx_telemetry::{self, AvxContext, AvxMetrics};
-use axum::{
-    body::Body,
-    extract::State,
-    http::{HeaderValue, Request},
-    response::Response,
-    routing::get,
-    Router,
-};
-use tower::{Layer, Service};
-use tracing::{info, warn};
-use uuid::Uuid;
-
-#[derive(Clone)]
-struct AppState {
-    ctx: AvxContext,
-    metrics: AvxMetrics,
-}
+use avx_gateway::{Gateway, GatewayConfig};
+use tracing::info;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let cfg = AvxConfig::load().unwrap_or_else(|_| AvxConfig::with_defaults());
+    // Initialize tracing
+    tracing_subscriber::fmt()
+        .with_env_filter(
+            tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| "info,avx_gateway=debug".into()),
+        )
+        .init();
 
-    let ctx = AvxContext {
-        stack: cfg.stack.clone(),
-        layer: cfg.layer.clone(),
-        env: cfg.env.clone(),
-        cluster: cfg.cluster.clone(),
-        mesh: cfg.mesh.clone(),
-    };
+    info!("Starting AVX Gateway");
 
-    avx_telemetry::init_tracing(&ctx);
+    // Try to load configuration from file, otherwise use default
+    let config = load_config().unwrap_or_else(|e| {
+        info!("Using default configuration: {}", e);
+        create_default_config()
+    });
 
-    let metrics = AvxMetrics::new();
-
-    let state = AppState { ctx, metrics };
-
-    let app = Router::new()
-        .route("/health", get(health_check))
-        .route("/deep/info", get(deep_info))
-        .route("/metrics/anomalies", get(check_anomalies))
-        .route("/metrics/quality", get(assess_quality))
-        .with_state(state.clone());
-
-    let addr: SocketAddr = cfg.http.bind_addr.parse()?;
-    info!(%addr, "avx-gateway listening");
-
-    axum::serve(
-        tokio::net::TcpListener::bind(addr).await?,
-        app.into_make_service(),
-    )
-    .await?;
+    // Create and start gateway
+    let gateway = Gateway::from_config(config).await?;
+    gateway.serve().await?;
 
     Ok(())
 }
 
-async fn health_check() -> &'static str {
-    "OK"
+/// Load configuration from file
+fn load_config() -> anyhow::Result<GatewayConfig> {
+    let config_path = std::env::var("GATEWAY_CONFIG")
+        .unwrap_or_else(|_| "config/gateway.toml".to_string());
+
+    let config_str = std::fs::read_to_string(&config_path)?;
+    let config: GatewayConfig = toml::from_str(&config_str)?;
+
+    info!("Loaded configuration from {}", config_path);
+    Ok(config)
 }
 
-async fn deep_info(State(state): State<AppState>) -> axum::Json<AvxContext> {
-    axum::Json(state.ctx.clone())
-}
+/// Create default configuration with example routes
+fn create_default_config() -> GatewayConfig {
+    use avx_gateway::config::*;
 
-async fn check_anomalies(State(state): State<AppState>) -> axum::Json<serde_json::Value> {
-    // Simulate latency data (in production, collect from real metrics)
-    let latencies = vec![
-        10.2, 11.5, 10.8, 12.1, 11.0, 13.2, 10.5, 11.8, 95.3, 12.0, 11.5, 10.9,
-    ];
-
-    match state.metrics.track_latencies(latencies.clone()) {
-        Ok(anomalies) => {
-            if !anomalies.is_empty() {
-                warn!(
-                    count = anomalies.len(),
-                    "Anomalies detected in gateway latencies"
-                );
-            }
-            axum::Json(serde_json::json!({
-                "service": "avx-gateway",
-                "anomalies_detected": anomalies.len(),
-                "anomalies": anomalies,
-                "sample_size": latencies.len()
-            }))
-        }
-        Err(e) => axum::Json(serde_json::json!({
-            "error": e,
-            "service": "avx-gateway"
-        })),
+    GatewayConfig {
+        server: ServerConfig {
+            host: "0.0.0.0".to_string(),
+            port: 8080,
+            workers: num_cpus::get(),
+            timeout_ms: 30_000,
+        },
+        routes: vec![
+            RouteConfig {
+                path: "/api/v1/*".to_string(),
+                upstream: UpstreamConfig::Single("http://localhost:8001".to_string()),
+                methods: vec![
+                    "GET".to_string(),
+                    "POST".to_string(),
+                    "PUT".to_string(),
+                    "DELETE".to_string(),
+                ],
+                strip_path: false,
+                timeout_ms: None,
+                auth_required: false,
+            },
+        ],
+        middleware: MiddlewareConfig {
+            enable_cors: true,
+            enable_compression: true,
+            enable_rate_limiting: false,
+            enable_logging: true,
+            enable_metrics: true,
+        },
+        rate_limiting: None,
+        health_check: HealthCheckConfig::default(),
+        tls: None,
     }
 }
 
-async fn assess_quality(State(state): State<AppState>) -> axum::Json<serde_json::Value> {
-    // Assess system quality metrics
-    let quality = state.metrics.assess_quality(0.98, 0.97, 0.96, 45, 0.99);
 
-    let meets_nasa = quality.meets_nasa_standards();
-
-    if !meets_nasa {
-        warn!(
-            overall_score = quality.overall_score,
-            "Quality below NASA standards"
-        );
-    }
-
-    axum::Json(serde_json::json!({
-        "service": "avx-gateway",
-        "quality": quality,
-        "meets_nasa_standards": meets_nasa
-    }))
-}
-
-// ============= Layer p/ headers Avx ============= //
-
-#[derive(Clone)]
-struct AvxHeaderLayer {
-    ctx: AvxContext,
-}
-
-impl AvxHeaderLayer {
-    fn new(ctx: AvxContext) -> Self {
-        Self { ctx }
-    }
-}
-
-impl<S> Layer<S> for AvxHeaderLayer {
-    type Service = AvxHeaderMiddleware<S>;
-
-    fn layer(&self, inner: S) -> Self::Service {
-        AvxHeaderMiddleware {
-            inner,
-            ctx: self.ctx.clone(),
-        }
-    }
-}
-
-#[derive(Clone)]
-struct AvxHeaderMiddleware<S> {
-    inner: S,
-    ctx: AvxContext,
-}
-
-impl<S> Service<Request<Body>> for AvxHeaderMiddleware<S>
-where
-    S: Service<Request<Body>, Response = Response> + Clone + Send + 'static,
-    S::Future: Send + 'static,
-    S::Error: Into<axum::BoxError> + Send,
-{
-    type Response = S::Response;
-    type Error = S::Error;
-    type Future = S::Future;
-
-    fn poll_ready(
-        &mut self,
-        cx: &mut std::task::Context<'_>,
-    ) -> std::task::Poll<Result<(), Self::Error>> {
-        self.inner.poll_ready(cx)
-    }
-
-    fn call(&mut self, mut req: Request<Body>) -> Self::Future {
-        let start = Instant::now();
-
-        // correlation id
-        let trace_id = Uuid::new_v4().to_string();
-
-        // carimbos Avx
-        let headers = req.headers_mut();
-        headers.insert(
-            "x-avx-stack",
-            HeaderValue::from_str(&self.ctx.stack).unwrap(),
-        );
-        headers.insert(
-            "x-avx-layer",
-            HeaderValue::from_str(&self.ctx.layer).unwrap(),
-        );
-        headers.insert("x-avx-env", HeaderValue::from_str(&self.ctx.env).unwrap());
-        headers.insert(
-            "x-avx-cluster",
-            HeaderValue::from_str(&self.ctx.cluster).unwrap(),
-        );
-        headers.insert("x-avx-mesh", HeaderValue::from_str(&self.ctx.mesh).unwrap());
-        headers.insert("x-avx-trace", HeaderValue::from_str(&trace_id).unwrap());
-
-        let method = req.method().clone();
-        let uri = req.uri().clone();
-
-        tracing::info!(
-            avx_trace = %trace_id,
-            method = %method,
-            uri = %uri,
-            "incoming request"
-        );
-
-        let fut = self.inner.call(req);
-
-        // Log request duration
-        tokio::spawn(async move {
-            let duration = start.elapsed();
-            tracing::info!(
-                avx_trace = %trace_id,
-                method = %method,
-                uri = %uri,
-                duration_ms = duration.as_millis(),
-                "request completed"
-            );
-        });
-
-        fut
-    }
-}

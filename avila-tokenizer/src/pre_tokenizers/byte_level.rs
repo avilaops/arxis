@@ -56,8 +56,10 @@ mod tests {
 
     #[test]
     fn test_byte_level() {
-        let tokenizer = ByteLevel::new();
+        let tokenizer = ByteLevel::new().with_regex(false);
         let result = tokenizer.pre_tokenize("Hello world").unwrap();
         assert!(!result.is_empty());
+        assert_eq!(result.len(), 1);
+        assert!(result[0].contains("Hello"));
     }
 }

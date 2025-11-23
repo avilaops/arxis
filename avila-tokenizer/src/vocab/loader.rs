@@ -131,11 +131,13 @@ pub fn save_vocab_file(vocab_file: &VocabFile, path: impl AsRef<Path>) -> Result
     Ok(())
 }
 
+type VocabWithMerges = (HashMap<String, u32>, Vec<(String, String)>);
+
 /// Load GPT-2 style vocabulary (vocab.json + merges.txt)
 pub fn load_gpt2_vocab(
     vocab_path: impl AsRef<Path>,
     merges_path: impl AsRef<Path>,
-) -> Result<(HashMap<String, u32>, Vec<(String, String)>)> {
+) -> Result<VocabWithMerges> {
     let vocab = load_vocab_json(vocab_path)?;
     let merges = load_merges_txt(merges_path)?;
 
@@ -249,7 +251,6 @@ pub fn validate_vocab(vocab: &HashMap<String, u32>) -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::io::Write;
     use tempfile::NamedTempFile;
 
     #[test]

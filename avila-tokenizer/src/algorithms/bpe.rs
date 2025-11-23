@@ -2,7 +2,6 @@ use std::collections::HashMap;
 use crate::error::{Result, TokenizerError};
 use crate::utils::cache::TokenCache;
 use crate::utils::unicode::{byte_to_unicode, unicode_to_byte};
-use rayon::prelude::*;
 
 /// Byte-Pair Encoding (BPE) tokenizer
 /// Used in GPT-2, GPT-3, GPT-4, and other models
@@ -251,7 +250,7 @@ impl BPE {
                 id_to_token
                     .get(&id)
                     .cloned()
-                    .ok_or_else(|| TokenizerError::InvalidTokenId(id))
+                    .ok_or(TokenizerError::InvalidTokenId(id))
             })
             .collect()
     }
@@ -416,9 +415,7 @@ impl BPE {
     pub fn add_special_tokens(&mut self, tokens: Vec<String>) {
         let start_id = self.vocab.len() as u32;
         for (i, token) in tokens.into_iter().enumerate() {
-            if !self.vocab.contains_key(&token) {
-                self.vocab.insert(token, start_id + i as u32);
-            }
+            self.vocab.entry(token).or_insert(start_id + i as u32);
         }
     }
 }

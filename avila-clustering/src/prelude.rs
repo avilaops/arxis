@@ -3,10 +3,15 @@
 pub use crate::{ClusteringError, Result};
 
 // Algorithms
+pub use crate::algorithms::dbscan::*;
+pub use crate::algorithms::fuzzy_cmeans::*;
 pub use crate::algorithms::gmm::*;
 pub use crate::algorithms::hdbscan::*;
 pub use crate::algorithms::hierarchical::*;
 pub use crate::algorithms::kmeans::*;
+pub use crate::algorithms::kmedoids::*;
+pub use crate::algorithms::mean_shift::*;
+pub use crate::algorithms::optics::*;
 pub use crate::algorithms::spectral::*;
 pub use crate::algorithms::streaming::*;
 

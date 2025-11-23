@@ -203,7 +203,7 @@ impl Unigram {
                 id_to_token
                     .get(&id)
                     .cloned()
-                    .ok_or_else(|| TokenizerError::InvalidTokenId(id))
+                    .ok_or(TokenizerError::InvalidTokenId(id))
             })
             .collect()
     }
@@ -273,7 +273,7 @@ impl Unigram {
         // Combine and sort by frequency
         let mut all_candidates: Vec<(String, usize)> = char_counts
             .into_iter()
-            .chain(substring_counts.into_iter())
+            .chain(substring_counts)
             .collect();
 
         all_candidates.sort_by(|a, b| b.1.cmp(&a.1));
@@ -390,7 +390,6 @@ impl Unigram {
 
     /// Sample tokenization (using scores as probabilities)
     pub fn sample(&self, text: &str, temperature: f64) -> Vec<String> {
-        use rand::Rng;
         use rand::distributions::WeightedIndex;
         use rand::prelude::*;
 

@@ -2,9 +2,12 @@
 
 use crate::error::{Error, Result};
 use crate::common;
+use crate::pool::{ConnectionPool, PoolConfig};
+use crate::interceptors::{Interceptors, RequestData, ResponseData};
 use bytes::Bytes;
 use http::{HeaderMap, HeaderName, HeaderValue, Method, StatusCode};
-use std::time::Duration;
+use std::sync::Arc;
+use std::time::{Duration, Instant};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpStream;
 
@@ -13,6 +16,10 @@ use tokio::net::TcpStream;
 pub struct Client {
     /// Client configuration
     pub config: ClientConfig,
+    /// Connection pool
+    pool: Arc<ConnectionPool>,
+    /// Request and response interceptors
+    interceptors: Arc<Interceptors>,
 }
 
 /// Client configuration
@@ -30,6 +37,8 @@ pub struct ClientConfig {
     pub compression: bool,
     /// Maximum redirects
     pub max_redirects: usize,
+    /// Connection pool configuration
+    pub pool_config: PoolConfig,
 }
 
 impl Default for ClientConfig {
@@ -41,6 +50,7 @@ impl Default for ClientConfig {
             region: None,
             compression: false,
             max_redirects: 5,
+            pool_config: PoolConfig::default(),
         }
     }
 }
@@ -48,8 +58,12 @@ impl Default for ClientConfig {
 impl Client {
     /// Create a new client with default configuration
     pub fn new() -> Self {
+        let config = ClientConfig::default();
+        let pool = Arc::new(ConnectionPool::with_config(config.pool_config.clone()));
         Self {
-            config: ClientConfig::default(),
+            config,
+            pool,
+            interceptors: Arc::new(Interceptors::new()),
         }
     }
 
@@ -100,6 +114,40 @@ impl Client {
             timeout: Some(self.config.timeout),
         }
     }
+
+    /// Get connection pool statistics
+    pub async fn pool_stats(&self) -> crate::pool::PoolStats {
+        self.pool.stats().await
+    }
+
+    /// Clean up expired connections from the pool
+    pub async fn cleanup_pool(&self) {
+        self.pool.cleanup_expired().await
+    }
+
+    /// Add a request interceptor
+    ///
+    /// The interceptor will be called before each request is sent
+    pub fn on_request<F>(&mut self, interceptor: F)
+    where
+        F: Fn(&mut RequestData) + Send + Sync + 'static,
+    {
+        Arc::get_mut(&mut self.interceptors)
+            .expect("Cannot modify interceptors while client is cloned")
+            .add_request(interceptor);
+    }
+
+    /// Add a response interceptor
+    ///
+    /// The interceptor will be called after each response is received
+    pub fn on_response<F>(&mut self, interceptor: F)
+    where
+        F: Fn(&ResponseData) + Send + Sync + 'static,
+    {
+        Arc::get_mut(&mut self.interceptors)
+            .expect("Cannot modify interceptors while client is cloned")
+            .add_response(interceptor);
+    }
 }
 
 impl Default for Client {
@@ -111,6 +159,7 @@ impl Default for Client {
 /// Builder for configuring HTTP client
 pub struct ClientBuilder {
     config: ClientConfig,
+    interceptors: Interceptors,
 }
 
 impl ClientBuilder {
@@ -118,6 +167,7 @@ impl ClientBuilder {
     pub fn new() -> Self {
         Self {
             config: ClientConfig::default(),
+            interceptors: Interceptors::new(),
         }
     }
 
@@ -167,9 +217,56 @@ impl ClientBuilder {
         self
     }
 
+    /// Set connection pool max connections per host
+    pub fn pool_max_connections(mut self, max: usize) -> Self {
+        self.config.pool_config.max_connections_per_host = max;
+        self
+    }
+
+    /// Set connection pool idle timeout
+    pub fn pool_idle_timeout(mut self, timeout: Duration) -> Self {
+        self.config.pool_config.idle_timeout = timeout;
+        self
+    }
+
+    /// Set connection pool connection timeout
+    pub fn pool_connection_timeout(mut self, timeout: Duration) -> Self {
+        self.config.pool_config.connection_timeout = timeout;
+        self
+    }
+
+    /// Enable or disable connection keep-alive
+    pub fn pool_keep_alive(mut self, enabled: bool) -> Self {
+        self.config.pool_config.keep_alive = enabled;
+        self
+    }
+
     /// Build the client
     pub fn build(self) -> Result<Client> {
-        Ok(Client { config: self.config })
+        let pool = Arc::new(ConnectionPool::with_config(self.config.pool_config.clone()));
+        Ok(Client {
+            config: self.config,
+            pool,
+            interceptors: Arc::new(self.interceptors),
+        })
+    }
+
+    /// Add a request interceptor
+    pub fn on_request<F>(mut self, interceptor: F) -> Self
+    where
+        F: Fn(&mut RequestData) + Send + Sync + 'static,
+    {
+        self.interceptors.add_request(interceptor);
+        self
+    }
+
+    /// Add a response interceptor
+    pub fn on_response<F>(mut self, interceptor: F) -> Self
+    where
+        F: Fn(&ResponseData) + Send + Sync + 'static,
+    {
+        self.interceptors.add_response(interceptor);
+        self
     }
 }
 
@@ -236,7 +333,9 @@ impl RequestBuilder {
     }
 
     /// Send the request
-    pub async fn send(self) -> Result<Response> {
+    pub async fn send(mut self) -> Result<Response> {
+        let start_time = Instant::now();
+
         // Build full URL with query params
         let mut full_url = self.url.clone();
         if !self.query_params.is_empty() {
@@ -248,18 +347,24 @@ impl RequestBuilder {
             full_url = format!("{}?{}", full_url, query_string);
         }
 
+        // Apply request interceptors
+        let mut request_data = RequestData::new(
+            self.method.clone(),
+            full_url.clone(),
+            self.headers.clone(),
+            self.body.clone(),
+        );
+        self.client.interceptors.apply_request(&mut request_data);
+
+        // Update request with interceptor changes
+        self.headers = request_data.headers;
+        self.body = request_data.body;
+
         // Parse URL
         let (host, port, _is_https) = common::parse_url(&full_url)?;
 
-        // Connect to server
-        let addr = format!("{}:{}", host, port);
-        let mut stream = tokio::time::timeout(
-            self.timeout.unwrap_or(common::DEFAULT_TIMEOUT),
-            TcpStream::connect(&addr)
-        )
-        .await
-        .map_err(|_| Error::Timeout { duration: self.timeout.unwrap_or(common::DEFAULT_TIMEOUT) })?
-        .map_err(|e| Error::ConnectionFailed { addr: addr.clone(), source: e })?;
+        // Get connection from pool
+        let mut stream = self.client.pool.get_connection(&host, port).await?;
 
         // Build HTTP request
         let path = full_url
@@ -270,7 +375,7 @@ impl RequestBuilder {
 
         let mut request = format!("{} {} HTTP/1.1\r\n", self.method, path);
         request.push_str(&format!("Host: {}\r\n", host));
-        request.push_str("Connection: close\r\n");
+        request.push_str("Connection: keep-alive\r\n");
 
         // Add headers
         for (name, value) in self.headers.iter() {
@@ -296,12 +401,23 @@ impl RequestBuilder {
             stream.write_all(body).await?;
         }
 
-        // Read response
-        let mut response_data = Vec::new();
-        stream.read_to_end(&mut response_data).await?;
+        // Read response with connection pooling support
+        let response = read_response_with_pool(&mut stream).await?;
 
-        // Parse response
-        parse_response(response_data)
+        // Return connection to pool for reuse
+        self.client.pool.return_connection(&host, port, stream).await;
+
+        // Apply response interceptors
+        let duration_ms = start_time.elapsed().as_millis() as u64;
+        let response_data = ResponseData::new(
+            response.status.as_u16(),
+            response.headers.clone(),
+            response.body.len(),
+            duration_ms,
+        );
+        self.client.interceptors.apply_response(&response_data);
+
+        Ok(response)
     }
 }
 
@@ -346,26 +462,33 @@ impl Response {
     }
 }
 
-fn parse_response(data: Vec<u8>) -> Result<Response> {
-    // Find the separator between headers and body
-    let separator = b"\r\n\r\n";
-    let mut header_end = 0;
+async fn read_response_with_pool(stream: &mut TcpStream) -> Result<Response> {
+    // Read status line and headers
+    let mut headers_buf = Vec::new();
+    let mut byte_buf = [0u8; 1];
 
-    for i in 0..data.len().saturating_sub(3) {
-        if &data[i..i + 4] == separator {
-            header_end = i + 4;
-            break;
+    // Read until we find \r\n\r\n (end of headers)
+    loop {
+        stream.read_exact(&mut byte_buf).await?;
+        headers_buf.push(byte_buf[0]);
+
+        // Check for \r\n\r\n pattern
+        let len = headers_buf.len();
+        if len >= 4 {
+            if &headers_buf[len - 4..] == b"\r\n\r\n" {
+                break;
+            }
+        }
+
+        // Prevent infinite loop
+        if headers_buf.len() > 8192 {
+            return Err(Error::Internal {
+                message: "Headers too large".to_string(),
+            });
         }
     }
 
-    if header_end == 0 {
-        return Err(Error::Internal {
-            message: "Invalid HTTP response: no header/body separator found".to_string(),
-        });
-    }
-
-    let header_data = &data[..header_end - 4];
-    let header_str = String::from_utf8_lossy(header_data);
+    let header_str = String::from_utf8_lossy(&headers_buf[..headers_buf.len() - 4]);
     let mut lines = header_str.lines();
 
     // Parse status line
@@ -381,13 +504,13 @@ fn parse_response(data: Vec<u8>) -> Result<Response> {
             message: format!("Invalid status line: {}", status_line),
         })?;
 
-    let status = StatusCode::from_u16(status_code)
-        .map_err(|_| Error::Internal {
-            message: format!("Invalid status code: {}", status_code),
-        })?;
+    let status = StatusCode::from_u16(status_code).map_err(|_| Error::Internal {
+        message: format!("Invalid status code: {}", status_code),
+    })?;
 
     // Parse headers
     let mut headers = HeaderMap::new();
+    let mut content_length: Option<usize> = None;
 
     for line in lines {
         if line.is_empty() {
@@ -395,8 +518,13 @@ fn parse_response(data: Vec<u8>) -> Result<Response> {
         }
 
         if let Some(pos) = line.find(':') {
-            let name = &line[..pos].trim();
-            let value = &line[pos + 1..].trim();
+            let name = line[..pos].trim();
+            let value = line[pos + 1..].trim();
+
+            // Check for Content-Length
+            if name.eq_ignore_ascii_case("content-length") {
+                content_length = value.parse().ok();
+            }
 
             if let (Ok(name), Ok(value)) = (
                 HeaderName::from_bytes(name.as_bytes()),
@@ -407,11 +535,20 @@ fn parse_response(data: Vec<u8>) -> Result<Response> {
         }
     }
 
-    // Extract body
-    let body = if header_end < data.len() {
-        Bytes::copy_from_slice(&data[header_end..])
+    // Read body based on Content-Length
+    let body = if let Some(length) = content_length {
+        if length > 0 {
+            let mut body_buf = vec![0u8; length];
+            stream.read_exact(&mut body_buf).await?;
+            Bytes::from(body_buf)
+        } else {
+            Bytes::new()
+        }
     } else {
-        Bytes::new()
+        // No Content-Length, read until connection closes (fallback)
+        let mut body_buf = Vec::new();
+        let _ = stream.read_to_end(&mut body_buf).await;
+        Bytes::from(body_buf)
     };
 
     Ok(Response {
@@ -420,6 +557,8 @@ fn parse_response(data: Vec<u8>) -> Result<Response> {
         body,
     })
 }
+
+
 
 /// Request type (re-export for convenience)
 pub type Request = RequestBuilder;
@@ -467,13 +606,4 @@ mod tests {
         assert_eq!(req.query_params[0], ("limit".to_string(), "100".to_string()));
     }
 
-    #[tokio::test]
-    async fn test_parse_response() {
-        let response_data = b"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 5\r\n\r\nHello";
-        let response = parse_response(response_data.to_vec()).unwrap();
-
-        assert_eq!(response.status(), StatusCode::OK);
-        assert!(response.is_success());
-        assert_eq!(response.body.len(), 5);
-    }
 }

@@ -1,0 +1,57 @@
+# AVX Gateway Configuration
+# This is an example configuration file for the AVX Gateway
+
+[server]
+host = "0.0.0.0"
+port = 8080
+workers = 4
+timeout_ms = 30000
+
+[[routes]]
+path = "/api/users/*"
+strip_path = true
+methods = ["GET", "POST", "PUT", "DELETE", "PATCH"]
+auth_required = false
+
+[routes.upstream]
+urls = ["http://user-service:8001", "http://user-service-2:8001"]
+strategy = "round_robin"
+
+[[routes]]
+path = "/api/products/*"
+strip_path = true
+methods = ["GET", "POST", "PUT", "DELETE"]
+timeout_ms = 5000
+
+[routes.upstream]
+Single = "http://product-service:8002"
+
+[[routes]]
+path = "/api/orders/*"
+strip_path = false
+auth_required = true
+
+[routes.upstream]
+Single = "http://order-service:8003"
+
+[middleware]
+enable_cors = true
+enable_compression = true
+enable_rate_limiting = true
+enable_logging = true
+enable_metrics = true
+
+[rate_limiting]
+requests_per_second = 100
+burst_size = 200
+
+[health_check]
+enabled = true
+interval_seconds = 30
+timeout_ms = 3000
+path = "/health"
+
+# Uncomment to enable TLS
+# [tls]
+# cert_path = "certs/cert.pem"
+# key_path = "certs/key.pem"

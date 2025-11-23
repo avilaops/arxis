@@ -9,37 +9,92 @@ pub type Result<T> = std::result::Result<T, Error>;
 #[derive(Debug)]
 pub enum Error {
     /// Invalid URL provided
-    InvalidUrl { url: String, reason: String },
+    InvalidUrl {
+        /// The invalid URL
+        url: String,
+        /// Reason why it's invalid
+        reason: String,
+    },
 
     /// Connection failed
-    ConnectionFailed { addr: String, source: std::io::Error },
+    ConnectionFailed {
+        /// Host that failed to connect
+        host: String,
+        /// Underlying IO error
+        source: std::io::Error,
+    },
+
+    /// Connection timeout
+    ConnectionTimeout {
+        /// Host that timed out
+        host: String,
+    },
+
+    /// Too many connections
+    TooManyConnections {
+        /// Host with too many connections
+        host: String,
+        /// Maximum allowed connections
+        max: usize,
+    },
 
     /// Request timeout
-    Timeout { duration: std::time::Duration },
+    Timeout {
+        /// Duration that was exceeded
+        duration: std::time::Duration,
+    },
 
     /// Invalid HTTP method
-    InvalidMethod { method: String },
+    InvalidMethod {
+        /// The invalid method
+        method: String,
+    },
 
     /// Invalid header
-    InvalidHeader { name: String, value: String },
+    InvalidHeader {
+        /// Header name
+        name: String,
+        /// Header value
+        value: String,
+    },
 
     /// HTTP status error
-    StatusError { status: u16, body: String },
+    StatusError {
+        /// HTTP status code
+        status: u16,
+        /// Response body
+        body: String,
+    },
 
     /// Body read error
-    BodyReadError { source: std::io::Error },
+    BodyReadError {
+        /// Underlying IO error
+        source: std::io::Error,
+    },
 
     /// JSON serialization/deserialization error
-    JsonError { source: String },
+    JsonError {
+        /// Error message
+        source: String,
+    },
 
     /// Invalid configuration
-    InvalidConfig { message: String },
+    InvalidConfig {
+        /// Error message
+        message: String,
+    },
 
     /// Authentication error
-    AuthError { message: String },
+    AuthError {
+        /// Error message
+        message: String,
+    },
 
     /// Internal error
-    Internal { message: String },
+    Internal {
+        /// Error message
+        message: String,
+    },
 }
 
 impl fmt::Display for Error {
@@ -48,8 +103,14 @@ impl fmt::Display for Error {
             Error::InvalidUrl { url, reason } => {
                 write!(f, "Invalid URL '{}': {}", url, reason)
             }
-            Error::ConnectionFailed { addr, source } => {
-                write!(f, "Failed to connect to {}: {}", addr, source)
+            Error::ConnectionFailed { host, source } => {
+                write!(f, "Failed to connect to {}: {}", host, source)
+            }
+            Error::ConnectionTimeout { host } => {
+                write!(f, "Connection to {} timed out", host)
+            }
+            Error::TooManyConnections { host, max } => {
+                write!(f, "Too many connections to {} (max: {})", host, max)
             }
             Error::Timeout { duration } => {
                 write!(f, "Request timed out after {:?}", duration)

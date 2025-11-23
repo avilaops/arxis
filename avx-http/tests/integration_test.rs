@@ -1,6 +1,7 @@
 //! Integration tests for avx-http client
 
-use avx_http::{Client, Server, Router, Response};
+use avx_http::{Client, Server, Router};
+use avx_http::server::Response;
 use std::time::Duration;
 use tokio::time::sleep;
 

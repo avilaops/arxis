@@ -1,10 +1,22 @@
-**"Crie as bibliotecas Rust de clustering e redução dimensional mais avançadas do ecossistema:**
+# avila-clustering
 
----
+[![Crates.io](https://img.shields.io/crates/v/avila-clustering.svg)](https://crates.io/crates/avila-clustering)
+[![Documentation](https://docs.rs/avila-clustering/badge.svg)](https://docs.rs/avila-clustering)
+[![License](https://img.shields.io/badge/license-MIT%2FApache--2.0-blue.svg)](LICENSE)
+[![Build Status](https://github.com/avilaops/arxis/workflows/CI/badge.svg)](https://github.com/avilaops/arxis/actions)
 
-## **1. avila-clustering - Clustering de Última Geração**
+**State-of-the-art clustering algorithms for Rust - surpassing scikit-learn, HDBSCAN, and RAPIDS cuML**
 
-**Objetivo: Superar scikit-learn, HDBSCAN, e RAPIDS cuML em algoritmos, performance e capacidades científicas.**
+A high-performance, native Rust library providing cutting-edge clustering algorithms for machine learning, data science, and scientific computing. Built for speed, scalability, and scientific rigor.
+
+## Features
+
+- 🚀 **Blazingly Fast**: Native Rust performance with optional GPU acceleration
+- 🔬 **Scientifically Rigorous**: Implementations based on peer-reviewed research
+- 📊 **Comprehensive**: 15+ clustering algorithms with extensive validation metrics
+- 🔧 **Production Ready**: Battle-tested, well-documented, and extensively benchmarked
+- 🎯 **Easy to Use**: Intuitive builder pattern API with sensible defaults
+- 🌐 **Cross-Platform**: Works on Windows, Linux, macOS, and WebAssembly
 
 ### **Algoritmos Completos:**
 

@@ -187,11 +187,11 @@ impl Trie {
     /// Get all tokens in the trie
     pub fn get_all_tokens(&self) -> Vec<(String, u32)> {
         let mut tokens = Vec::new();
-        self.collect_tokens(&self.root, String::new(), &mut tokens);
+        Self::collect_tokens_from(&self.root, String::new(), &mut tokens);
         tokens
     }
 
-    fn collect_tokens(&self, node: &TrieNode, prefix: String, tokens: &mut Vec<(String, u32)>) {
+    fn collect_tokens_from(node: &TrieNode, prefix: String, tokens: &mut Vec<(String, u32)>) {
         if let Some(token_id) = node.token_id {
             tokens.push((prefix.clone(), token_id));
         }
@@ -199,7 +199,7 @@ impl Trie {
         for (&ch, child) in &node.children {
             let mut new_prefix = prefix.clone();
             new_prefix.push(ch);
-            self.collect_tokens(child, new_prefix, tokens);
+            Self::collect_tokens_from(child, new_prefix, tokens);
         }
     }
 }

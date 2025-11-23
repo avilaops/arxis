@@ -58,8 +58,20 @@ pub mod error;
 #[cfg(feature = "client")]
 pub mod client;
 
+#[cfg(feature = "client")]
+pub mod pool;
+
+#[cfg(feature = "client")]
+pub mod streaming;
+
+#[cfg(feature = "client")]
+pub mod interceptors;
+
 #[cfg(feature = "server")]
 pub mod server;
+
+#[cfg(feature = "server")]
+pub mod middleware;
 
 mod common;
 
@@ -69,8 +81,20 @@ pub use error::{Error, Result};
 #[cfg(feature = "client")]
 pub use client::{Client, ClientBuilder, Request, Response as ClientResponse};
 
+#[cfg(feature = "client")]
+pub use pool::{ConnectionPool, PoolConfig, PoolStats};
+
+#[cfg(feature = "client")]
+pub use streaming::{StreamingBody, ChunkedEncoder, SseStream};
+
+#[cfg(feature = "client")]
+pub use interceptors::{Interceptors, RequestData, ResponseData, RequestInterceptor, ResponseInterceptor};
+
 #[cfg(feature = "server")]
 pub use server::{Server, Router, Response as ServerResponse};
+
+#[cfg(feature = "server")]
+pub use middleware::{Middleware, Next, Handler, Logger, Cors, RateLimit, Auth};
 
 pub use http::{Method, StatusCode, HeaderMap, HeaderValue, Uri};
 

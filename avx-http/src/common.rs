@@ -5,12 +5,6 @@ use std::time::Duration;
 /// Default timeout for requests
 pub const DEFAULT_TIMEOUT: Duration = Duration::from_secs(30);
 
-/// Default maximum connections in pool
-pub const DEFAULT_MAX_CONNECTIONS: usize = 100;
-
-/// Default idle timeout for pooled connections
-pub const DEFAULT_IDLE_TIMEOUT: Duration = Duration::from_secs(90);
-
 /// Parse URL into host and port
 pub fn parse_url(url: &str) -> crate::Result<(String, u16, bool)> {
     if !url.starts_with("http://") && !url.starts_with("https://") {
