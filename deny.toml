@@ -1,0 +1,82 @@
+# cargo-deny configuration
+# Documentation: https://embarkstudios.github.io/cargo-deny/
+
+[advisories]
+version = 2
+db-path = "~/.cargo/advisory-db"
+db-urls = ["https://github.com/rustsec/advisory-db"]
+
+# Severity threshold for failing the check
+vulnerability = "deny"
+unmaintained = "warn"
+yanked = "deny"
+notice = "warn"
+
+# Ignore specific advisories (use with caution)
+ignore = [
+    # Example: "RUSTSEC-2020-0001"
+]
+
+[licenses]
+version = 2
+
+# We use MIT OR Apache-2.0 for all projects
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Unicode-DFS-2016",
+]
+
+# Licenses we explicitly deny
+deny = [
+    "GPL-3.0",
+    "AGPL-3.0",
+]
+
+# We prefer clarity over copyleft
+copyleft = "deny"
+
+# Allow license files to be missing for certain crates
+allow-osi-fsf-free = "both"
+confidence-threshold = 0.8
+
+exceptions = [
+    # ring uses a custom license
+    { allow = ["OpenSSL"], name = "ring", version = "*" },
+]
+
+[bans]
+multiple-versions = "warn"
+wildcards = "allow"
+highlight = "all"
+
+# Deny specific crates
+deny = [
+    # Example: deny old versions with known issues
+    # { name = "old-crate", version = "<0.5.0" }
+]
+
+# Skip certain crates from duplicate version checks
+skip = [
+    # Allow multiple versions of these crates
+    # { name = "windows-sys", version = "*" },
+]
+
+skip-tree = [
+    # Skip entire dependency trees
+    # { name = "dev-dependency", version = "*" },
+]
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+
+# Allow crates from these git sources
+allow-git = []
+
+[sources.allow-org]
+github = ["avilaops"]
