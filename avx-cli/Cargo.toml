@@ -27,7 +27,7 @@ tabled = "0.15"
 colored_json = "4"
 console = "0.15"
 indicatif = "0.17"
-dialoguer = "0.11"
+dialoguer = "0.12"
 
 # Async runtime
 tokio = { version = "1", features = ["full"] }
