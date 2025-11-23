@@ -14,17 +14,17 @@ readme = "README.md"
 
 [dependencies]
 # Core libraries - versões publicadas
-avila-compress = { version = "0.8", optional = true }
-avila-clustering = { version = "0.1", optional = true }
-avila-linalg = { version = "0.1", optional = true }
-avila-math = { version = "0.1", optional = true }
-avila-arrow = { version = "0.1", optional = true }
-avila-telemetry = { version = "0.1", optional = true }
+avila-compress = { version = "0.1", path = "../avila-compress", optional = true }
+avila-clustering = { version = "0.1", path = "../avila-clustering", optional = true }
+avila-linalg = { version = "0.1", path = "../avila-linalg", optional = true }
+avila-math = { version = "0.1", path = "../avila-math", optional = true }
+avila-arrow = { version = "0.1", path = "../avila-arrow", optional = true }
+avila-telemetry = { version = "0.1", path = "../avila-telemetry", optional = true }
 
 # CLI and config
-avx-cli = { version = "0.1", optional = true }
-avx-config = { version = "0.1", optional = true }
-avx-http = { version = "0.1", optional = true }
+avx-cli = { version = "0.1", path = "../avx-cli", optional = true }
+avx-config = { version = "0.1", path = "../avx-config", optional = true }
+avx-http = { version = "0.2", path = "../avx-http", optional = true }
 
 [features]
 default = ["compression", "math", "http"]
