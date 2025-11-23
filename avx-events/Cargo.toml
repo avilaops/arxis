@@ -22,5 +22,5 @@ tracing = "0.1"
 serde = { version = "1", features = ["derive"] }
 anyhow = "1"
 
-avx-config = { path = "../avx-config" }
-avx-telemetry = { path = "../avx-telemetry" }
+avx-config = { version = "0.1", path = "../avx-config" }
+avx-telemetry = { version = "0.1", path = "../avx-telemetry" }
