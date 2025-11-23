@@ -37,6 +37,17 @@ async fn main() {
 }
 ```
 
+## Status
+
+This crate is currently an MVP implementation:
+
+- Only the `RoundRobin` algorithm is functionally implemented (others fall back to it).
+- Health checks are passive (no active probing yet).
+- TLS termination is not yet enabled on Windows builds (requires installing build dependencies and re-enabling `rustls`).
+- Rate limiting, geo routing, WebSocket upgrade handling are planned.
+
+Early feedback is welcome. Expect rapid iteration.
+
 ## Algorithms
 
 - **Round Robin**: Equal distribution

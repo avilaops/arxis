@@ -7,7 +7,7 @@ use std::sync::Arc;
 use crate::error::{AvilaError, Result};
 
 /// Storage backend for AvilaDB
-/// 
+///
 /// Uses Sled - a pure Rust embedded database with:
 /// - No external dependencies (no LLVM/Clang needed)
 /// - ACID transactions
@@ -37,7 +37,7 @@ impl Storage {
     pub fn get(&self, key: &[u8]) -> Result<Option<Vec<u8>>> {
         let result = self.db.get(key)
             .map_err(|e| AvilaError::Storage(e.to_string()))?;
-        
+
         Ok(result.map(|v| v.to_vec()))
     }
 

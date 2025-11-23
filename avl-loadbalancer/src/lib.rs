@@ -17,14 +17,14 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 
 use anyhow::Result;
-use hyper::{Body, Client, Request, Response};
-use hyper::client::HttpConnector;
-use hyper::http::uri::Authority;
-use hyper::service::Service;
+use axum::body::Body;
+use axum::extract::State;
+use axum::http::{Request, Response, StatusCode};
+use axum::response::IntoResponse;
+use axum::routing::any;
+use axum::Router;
 use tokio::net::TcpListener;
 use tokio::task::JoinHandle;
-use tower::util::BoxCloneService;
-use tower::{Layer, ServiceBuilder};
 use tracing::{debug, error, info};
 
 /// Load balancing algorithm.
@@ -93,14 +93,14 @@ struct Inner {
 	algorithm: Algorithm,
 	rr_counter: AtomicUsize,
 	_health_check: Option<HealthCheck>, // reserved for future active probing
-	client: Client<HttpConnector>,
+	client: reqwest::Client,
 }
 
 impl LoadBalancer {
 	pub fn builder() -> LoadBalancerBuilder { LoadBalancerBuilder::new() }
 
 	fn new(backends: Vec<Backend>, health_check: Option<HealthCheck>, algorithm: Algorithm) -> Self {
-		let client = Client::new();
+		let client = reqwest::Client::new();
 		Self { inner: Arc::new(Inner { backends, algorithm, rr_counter: AtomicUsize::new(0), _health_check: health_check, client }) }
 	}
 
@@ -110,20 +110,8 @@ impl LoadBalancer {
 		let listener = TcpListener::bind(addr).await?;
 		let local_addr = listener.local_addr()?;
 		info!(%local_addr, "load balancer listening");
-
-		let svc = ProxyService { inner: self.inner.clone() };
-		let make_svc = tower::service_fn(move |req: Request<Body>| {
-			let mut svc_clone = svc.clone();
-			async move { svc_clone.call(req).await }
-		});
-
-		// Hyper server
-		let server = hyper::Server::from_tcp(listener.into_std()?)
-			.tcp_nodelay(true)
-			.serve(tower::make::Shared::new(make_svc));
-
-		info!("server running");
-		server.await?;
+		let app = self.router();
+		axum::serve(listener, app).await?;
 		Ok(())
 	}
 
@@ -131,73 +119,48 @@ impl LoadBalancer {
 	pub async fn spawn_ephemeral(&self) -> Result<(SocketAddr, JoinHandle<Result<()>>)> {
 		let listener = TcpListener::bind("127.0.0.1:0").await?;
 		let addr = listener.local_addr()?;
-		let inner = self.inner.clone();
+		let app = self.router();
 		let handle = tokio::spawn(async move {
-			let svc = ProxyService { inner };
-			let make_svc = tower::service_fn(move |req: Request<Body>| {
-				let mut svc_clone = svc.clone();
-				async move { svc_clone.call(req).await }
-			});
-			hyper::Server::from_tcp(listener.into_std()?)
-				.tcp_nodelay(true)
-				.serve(tower::make::Shared::new(make_svc))
-				.await?;
+			axum::serve(listener, app).await?;
 			Ok(())
 		});
 		Ok((addr, handle))
 	}
-}
 
-#[derive(Clone)]
-struct ProxyService {
-	inner: Arc<Inner>,
-}
-
-impl Service<Request<Body>> for ProxyService {
-	type Response = Response<Body>;
-	type Error = hyper::Error;
-	type Future = futures::future::BoxFuture<'static, Result<Self::Response, Self::Error>>;
-
-	fn poll_ready(&mut self, _cx: &mut std::task::Context<'_>) -> std::task::Poll<Result<(), Self::Error>> {
-		std::task::Poll::Ready(Ok(()))
-	}
-
-	fn call(&mut self, req: Request<Body>) -> Self::Future {
+	fn router(&self) -> Router {
 		let inner = self.inner.clone();
-		let mut new_req = Request::builder()
-			.method(req.method())
-			.uri(rewrite_uri(&inner, req.uri()))
-			.version(req.version());
-		// Copy headers
-		for (k, v) in req.headers().iter() { new_req = new_req.header(k, v); }
-		let body = req.into_body();
-		let final_req = match new_req.body(body) { Ok(r) => r, Err(e) => return Box::pin(async move { Err(hyper::Error::new(e)) }) };
-		Box::pin(async move {
-			let resp = inner.client.request(final_req).await;
-			match resp {
-				Ok(r) => Ok(r),
-				Err(e) => {
-					error!(error=%e, "proxy request failed");
-					let mut r = Response::new(Body::from("Upstream error"));
-					*r.status_mut() = hyper::StatusCode::BAD_GATEWAY;
-					Ok(r)
-				}
-			}
-		})
+		Router::new()
+			.fallback(any(proxy_handler))
+			.with_state(inner)
 	}
 }
 
-fn rewrite_uri(inner: &Inner, incoming: &hyper::Uri) -> hyper::Uri {
-	let backend = select_backend(inner);
-	let base = &backend.url;
-	let mut parts = incoming.clone().into_parts();
-	// Parse backend base URL
-	let parsed = base.parse::<hyper::Uri>().expect("backend url must be valid");
-	let authority = parsed.authority().cloned();
-	let scheme = parsed.scheme_str().map(|s| s.to_string());
-	if let Some(auth) = authority { parts.authority = Some(auth); }
-	if let Some(s) = scheme { parts.scheme = Some(hyper::http::uri::Scheme::from_static(Box::leak(s.into_boxed_str()))); }
-	hyper::Uri::from_parts(parts).expect("failed to build uri")
+async fn proxy_handler(State(inner): State<Arc<Inner>>, req: Request<Body>) -> impl IntoResponse {
+	let backend = select_backend(&inner);
+	let path_and_query = req.uri().path_and_query().map(|pq| pq.as_str()).unwrap_or("/");
+	let target = format!("{}{}", backend.url.trim_end_matches('/'), path_and_query);
+	debug!(%target, "proxying request");
+
+	let mut builder = inner.client.request(req.method().clone(), &target);
+	// headers
+	for (k, v) in req.headers().iter() { builder = builder.header(k, v); }
+	let body_bytes = axum::body::to_bytes(req.into_body(), 1 * 1024 * 1024).await.unwrap_or_default();
+	let upstream = builder.body(body_bytes.to_vec()).send().await;
+	match upstream {
+		Ok(up) => {
+			let status = up.status();
+			let headers = up.headers().clone();
+			let bytes = up.bytes().await.unwrap_or_default();
+			let mut resp = Response::new(Body::from(bytes));
+			*resp.status_mut() = StatusCode::from_u16(status.as_u16()).unwrap_or(StatusCode::OK);
+			for (k, v) in headers.iter() { resp.headers_mut().insert(k, v.clone()); }
+			resp
+		}
+		Err(e) => {
+			error!(error=%e, "upstream request failed");
+			(StatusCode::BAD_GATEWAY, "Bad Gateway").into_response()
+		}
+	}
 }
 
 fn select_backend(inner: &Inner) -> &Backend {
@@ -234,13 +197,12 @@ mod tests {
 			.build();
 		let (lb_addr, handle) = lb.spawn_ephemeral().await?;
 		// Wait briefly for server to start
-		sleep(Duration::from_millis(50)).await;
-		let client = Client::new();
-		let uri: hyper::Uri = format!("http://{}", lb_addr).parse().unwrap();
-		let resp = client.get(uri).await.unwrap();
-		assert_eq!(resp.status(), hyper::StatusCode::OK);
-		let body_bytes = hyper::body::to_bytes(resp.into_body()).await.unwrap();
-		assert_eq!(&body_bytes[..], b"OK");
+		sleep(Duration::from_millis(150)).await; // allow backend & LB to initialize
+		let client = reqwest::Client::new();
+		let resp = client.get(format!("http://{}", lb_addr)).send().await.unwrap();
+		assert_eq!(resp.status(), reqwest::StatusCode::OK);
+		let body_text = resp.text().await.unwrap();
+		assert_eq!(body_text, "OK");
 		handle.abort();
 		Ok(())
 	}

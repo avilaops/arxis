@@ -49,22 +49,22 @@ use aviladb::{AvilaClient, Document};
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Conectar
     let client = AvilaClient::new(Config::default()).await?;
-    
+
     // Obter database e collection
     let db = client.database("gamedb").await?;
     let players = db.collection("players").await?;
-    
+
     // Inserir documento
     let player = Document::new()
         .set("userId", "player123")
         .set("username", "CoolGamer")
         .set("level", 42);
-    
+
     let id = players.insert(player).await?;
-    
+
     // Buscar documento
     let doc = players.get(&id).await?;
-    
+
     Ok(())
 }
 ```
@@ -132,7 +132,7 @@ cargo publish
 
 ### Novos Arquivos
 - ✅ `src/error.rs` - Sistema de erros completo
-- ✅ `src/config.rs` - Configuração com validação  
+- ✅ `src/config.rs` - Configuração com validação
 - ✅ `src/storage.rs` - Camada RocksDB
 - ✅ `benches/database_ops.rs` - 757 linhas, 50+ benchmarks
 - ✅ `benches/README.md` - Documentação (9.6 KB)

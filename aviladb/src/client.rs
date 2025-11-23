@@ -3,7 +3,7 @@
 use std::sync::Arc;
 use std::time::Duration;
 
-use crate::{Config, Database, Error, Result};
+use crate::{Config, Database, Result};
 
 /// AvilaDB client for connecting to the database
 #[derive(Debug, Clone)]
