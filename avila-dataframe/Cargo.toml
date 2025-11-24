@@ -23,7 +23,7 @@ arrow-array = "53"
 arrow-schema = "53"
 arrow-csv = "53"
 arrow-json = "53"
-parquet = { version = "53", features = ["arrow"], optional = true }
+parquet = { version = "57", features = ["arrow"], optional = true }
 
 # I/O básico
 csv = "1.3"
