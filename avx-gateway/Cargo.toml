@@ -61,7 +61,7 @@ avx-telemetry = { version = "0.1", path = "../avx-telemetry" }
 
 [dev-dependencies]
 tokio-test = "0.4"
-criterion = { version = "0.5", features = ["async_tokio"] }
+criterion = { version = "0.7", features = ["async_tokio"] }
 
 [[example]]
 name = "basic_gateway"
