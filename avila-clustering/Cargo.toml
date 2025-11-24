@@ -33,7 +33,7 @@ thiserror = "1.0"
 rand = "0.8"
 rand_xoshiro = "0.6"
 petgraph = "0.6"
-kiddo = "4.0"                                      # KD-tree
+kiddo = "5.2"                                      # KD-tree
 approx = "0.5"
 
 # Scientific computing
