@@ -71,7 +71,7 @@ tokio-tungstenite = "0.24"
 
 # Compression (fallback for gzip/brotli)
 flate2 = "1.0"
-brotli = "7.0"
+brotli = "8.0"
 
 # Geolocation
 maxminddb = { version = "0.24", optional = true }
