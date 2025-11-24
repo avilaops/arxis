@@ -24,7 +24,7 @@ avx-telemetry = { version = "0.1", path = "../avx-telemetry" }
 avila-telemetry = { version = "0.1", path = "../avila-telemetry" }
 
 # Metrics
-prometheus = "0.13"
+prometheus = "0.14"
 
 # Logging
 tracing = "0.1"
