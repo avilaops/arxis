@@ -21,7 +21,7 @@ serde_json = "1"
 arrow = { version = "53", features = ["prettyprint"] }
 arrow-array = "53"
 arrow-schema = "53"
-arrow-csv = "53"
+arrow-csv = "57"
 arrow-json = "53"
 parquet = { version = "53", features = ["arrow"], optional = true }
 
