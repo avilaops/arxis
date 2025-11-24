@@ -17,7 +17,7 @@ categories = ["mathematics", "science", "algorithms", "game-development"]
 exclude = ["target/", "*.swp", ".git*"]
 
 [dependencies]
-rand = "0.8"
+rand = "0.9"
 rayon = "1.10"      # Paralelização para Conv4D
 rustfft = "6.2"     # FFT para análise espectral
 num-complex = "0.4" # Números complexos para FFT
