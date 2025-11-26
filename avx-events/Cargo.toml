@@ -37,7 +37,7 @@ avx-telemetry = { version = "0.1", path = "../avx-telemetry" }
 # opcua = { version = "0.12", optional = true }
 
 # MQTT support (optional)
-rumqttc = { version = "0.24", optional = true, default-features = false, features = ["use-rustls"] }
+rumqttc = { version = "0.25", optional = true, default-features = false, features = ["use-rustls"] }
 
 # Time-series support (optional)
 influxdb2 = { version = "0.5", optional = true, default-features = false, features = ["rustls"] }
