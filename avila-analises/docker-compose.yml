@@ -1,0 +1,111 @@
+version: '3.8'
+
+services:
+  # AvilaDB Emulator
+  aviladb:
+    image: avilacloud/aviladb-emulator:latest
+    container_name: avila-analytics-db
+    ports:
+      - "8000:8000"
+    environment:
+      - AVILA_EMULATOR_MODE=true
+      - AVILA_PARTITION_COUNT=10
+    volumes:
+      - aviladb-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - avila-network
+
+  # Redis Cache (opcional, para rate limiting e cache)
+  redis:
+    image: redis:7-alpine
+    container_name: avila-analytics-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - avila-network
+
+  # Avila Analytics API
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: avila-analytics-api
+    ports:
+      - "3000:3000"
+    environment:
+      - RUST_LOG=info
+      - HOST=0.0.0.0
+      - PORT=3000
+      - USE_AVILADB=true
+      - AVILADB_ENDPOINT=http://aviladb:8000
+      - AVILADB_KEY=development-key
+      - AVILADB_DATABASE=analytics
+      - AVILADB_COLLECTION=events
+      - AVILADB_THROUGHPUT=10
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      aviladb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - avila-network
+    restart: unless-stopped
+
+  # Prometheus (opcional, para métricas)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: avila-analytics-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - avila-network
+    profiles:
+      - monitoring
+
+  # Grafana (opcional, para dashboards)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: avila-analytics-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - avila-network
+    profiles:
+      - monitoring
+
+volumes:
+  aviladb-data:
+  redis-data:
+  prometheus-data:
+  grafana-data:
+
+networks:
+  avila-network:
+    driver: bridge

@@ -1,0 +1,17 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'avila-analytics'
+    static_configs:
+      - targets: ['api:3000']
+    metrics_path: '/metrics'
+
+  - job_name: 'aviladb'
+    static_configs:
+      - targets: ['aviladb:8000']
+
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']

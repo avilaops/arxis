@@ -1,0 +1,49 @@
+[scraper]
+# Rate limiting
+rate_limit_per_second = 10
+max_concurrent_requests = 5
+request_timeout_seconds = 30
+max_retries = 3
+
+[proxy]
+enabled = false
+rotation = "round_robin"  # or "random"
+proxies = []
+# proxies = [
+#     "http://proxy1.example.com:8080",
+#     "http://proxy2.example.com:8080",
+# ]
+
+[aviladb]
+connection_string = "http://localhost:8000"
+database = "market_intelligence"
+collection_companies = "companies"
+collection_jobs = "jobs"
+collection_places = "places"
+
+[anti_detection]
+randomize_delays = true
+min_delay_ms = 500
+max_delay_ms = 2000
+rotate_user_agents = true
+
+[sources.linkedin]
+enabled = true
+rate_limit = 5  # Lower for LinkedIn to avoid detection
+
+[sources.itjobs]
+enabled = true
+base_url = "https://www.itjobs.pt"
+
+[sources.google_maps]
+enabled = false
+api_key = ""  # Set via GOOGLE_PLACES_API_KEY env var
+
+[sources.idealista]
+enabled = false
+base_url = "https://www.idealista.pt"
+
+[monitoring]
+enabled = true
+alert_on_low_success_rate = 0.8  # Alert if success rate drops below 80%
+alert_on_high_response_time = 5000  # Alert if avg response time > 5000ms

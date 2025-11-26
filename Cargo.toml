@@ -6,12 +6,14 @@ members = [
     "avila-arrow",  # Native columnar format with scientific types
     "avila-clustering",
     "avila-dataframe",
+    "avila-geo",    # Geographic cartography and mapping
     "avila-linalg",
     "avila-math",
     "avila-ml",
     "avila-reduction",
     "avila-telemetry",
     "avila-compress",  # Native compression library (LZ4, Zstd)
+    "avila-tokenizer", # Text tokenization
 
     # AVL Cloud Platform - Data & Storage
     "aviladb",         # NoSQL database (4MB docs, vector search, multi-region)

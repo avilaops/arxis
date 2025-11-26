@@ -1,0 +1,106 @@
+[package]
+name = "avila-geo"
+version = "0.1.0"
+edition = "2021"
+authors = ["AVL Platform <team@avila.cloud>"]
+license = "MIT OR Apache-2.0"
+description = "Geographic cartography and mapping library with zero external dependencies"
+repository = "https://github.com/avila-cloud/arxis"
+keywords = ["geography", "cartography", "maps", "gis", "projection"]
+categories = ["science::geo", "graphics", "rendering"]
+readme = "README.md"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"], optional = true }
+serde_json = { version = "1.0", optional = true }
+
+# Performance
+rayon = { version = "1.10", optional = true }
+wide = { version = "0.7", optional = true }
+
+# Spatial indexing
+rstar = { version = "0.12", optional = true }
+
+# Image formats
+image = { version = "0.25", optional = true, default-features = false, features = ["png", "jpeg"] }
+svg = { version = "0.17", optional = true }
+
+# Geoprocessing dependencies
+geo = { version = "0.28", optional = true }
+geo-types = { version = "0.7", optional = true }
+petgraph = { version = "0.6", optional = true }
+nalgebra = { version = "0.33", optional = true }
+num-traits = { version = "0.2", optional = true }
+
+[dev-dependencies]
+criterion = "0.5"
+
+[features]
+default = ["geojson", "parallel"]
+geojson = ["serde", "serde_json"]
+parallel = ["rayon"]
+simd = ["wide"]
+spatial-index = ["rstar"]
+export-svg = ["svg"]
+export-png = ["image"]
+geoprocessing = ["geo", "geo-types", "petgraph", "nalgebra", "num-traits"]
+full = ["geojson", "parallel", "simd", "spatial-index", "export-svg", "export-png", "geoprocessing"]
+
+[[bench]]
+name = "projections"
+harness = false
+
+[[bench]]
+name = "rendering"
+harness = false
+
+[[example]]
+name = "world_map"
+path = "examples/world_map.rs"
+
+[[example]]
+name = "brazil_map"
+path = "examples/brazil_map.rs"
+
+[[example]]
+name = "europe_map"
+path = "examples/europe_map.rs"
+
+[[example]]
+name = "dubai_gulf_map"
+path = "examples/dubai_gulf_map.rs"
+
+[[example]]
+name = "custom_projection"
+path = "examples/custom_projection.rs"
+
+[[example]]
+name = "tiles_example"
+path = "examples/tiles_example.rs"
+
+[[example]]
+name = "spatial_index"
+path = "examples/spatial_index.rs"
+required-features = ["spatial-index"]
+
+[[example]]
+name = "advanced_projections"
+path = "examples/advanced_projections.rs"
+
+[[example]]
+name = "simd_performance"
+path = "examples/simd_performance.rs"
+required-features = ["simd"]
+
+[[example]]
+name = "export_formats"
+path = "examples/export_formats.rs"
+
+[[example]]
+name = "topology_operations"
+path = "examples/topology_operations.rs"
+
+[[example]]
+name = "aviladb_integration"
+path = "examples/aviladb_integration.rs"
+required-features = ["geojson"]

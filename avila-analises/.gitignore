@@ -1,0 +1,34 @@
+# Arquivo .gitignore para projeto Rust
+
+# Build artifacts
+/target/
+**/*.rs.bk
+*.pdb
+
+# Cargo lock file (incluir em bibliotecas, excluir em binários)
+# Cargo.lock
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test coverage
+tarpaulin-report.html
+cobertura.xml
+
+# Benchmarks
+/benches/target/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp

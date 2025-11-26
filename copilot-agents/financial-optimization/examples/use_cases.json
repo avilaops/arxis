@@ -1,0 +1,124 @@
+{
+    "startup_portugal_interior": {
+        "description": "Startup launching in Portugal interior region with R&D activities",
+        "endpoint": "/api/tax/effective-rate",
+        "request": {
+            "taxable_income": 500000,
+            "location": "interior",
+            "rd_expenses": 200000,
+            "ip_income": 0,
+            "nexus_ratio": 0
+        },
+        "expected_outcome": {
+            "current_effective_rate": 0.235,
+            "optimized_rate": 0.098,
+            "annual_savings": 68500,
+            "notes": "Interior location (12.5% IRC) + SIFIDE credit = 9.8% effective rate"
+        }
+    },
+    "saas_eu_expansion": {
+        "description": "SaaS company selling to EU B2B customers",
+        "endpoint": "/api/vat/cross-border",
+        "request": {
+            "revenue": 1000000,
+            "customer_location": {
+                "EU": "France"
+            },
+            "service_type": "Software",
+            "is_business_customer": true
+        },
+        "expected_outcome": {
+            "strategy": "Reverse Charge",
+            "vat_amount": 0,
+            "savings_vs_french_vat": 200000
+        }
+    },
+    "tech_company_patent_box": {
+        "description": "Tech company with substantial IP portfolio",
+        "endpoint": "/api/tax/portugal/patent-box",
+        "request": {
+            "ip_income": 5000000,
+            "nexus_ratio": 0.9
+        },
+        "expected_outcome": {
+            "qualified_income": 4500000,
+            "exempt_income": 2250000,
+            "tax_saving": 472500
+        }
+    },
+    "investment_decision": {
+        "description": "Evaluate €5M investment with 5-year cash flows",
+        "endpoint": "/api/valuation/irr",
+        "request": {
+            "cash_flows": [
+                -5000000,
+                1200000,
+                1500000,
+                1800000,
+                2000000,
+                2200000
+            ]
+        },
+        "expected_outcome": {
+            "irr": 0.185,
+            "decision": "Invest if WACC < 18.5%"
+        }
+    },
+    "break_even_product": {
+        "description": "New product break-even analysis",
+        "endpoint": "/api/optimization/break-even",
+        "request": {
+            "fixed_costs": 500000,
+            "variable_cost_per_unit": 50,
+            "price_per_unit": 150
+        },
+        "expected_outcome": {
+            "break_even_units": 5000,
+            "break_even_revenue": 750000,
+            "contribution_margin_ratio": 0.6667
+        }
+    },
+    "risk_analysis": {
+        "description": "Financial risk analysis for volatile revenue",
+        "endpoint": "/api/simulation/monte-carlo",
+        "request": {
+            "base_revenue": 10000000,
+            "base_costs": 6000000,
+            "revenue_volatility": 1000000,
+            "cost_volatility": 500000,
+            "iterations": 10000
+        },
+        "expected_outcome": {
+            "mean": 4000000,
+            "percentile_5": 2500000,
+            "percentile_95": 5500000,
+            "probability_loss": 0.0012
+        }
+    },
+    "corporate_structure": {
+        "description": "Optimize corporate structure for multi-country operations",
+        "endpoint": "/api/structure/optimize",
+        "request": {
+            "revenue_by_country": {
+                "Portugal": 2000000,
+                "Spain": 1000000,
+                "France": 500000
+            },
+            "objectives": {
+                "minimize_tax": true,
+                "minimize_compliance_cost": true,
+                "maximize_flexibility": true,
+                "weights": {
+                    "tax": 0.5,
+                    "compliance": 0.3,
+                    "flexibility": 0.2
+                }
+            }
+        },
+        "expected_outcome": {
+            "top_structure": "Holding",
+            "effective_tax_rate": 0.145,
+            "compliance_cost": 25000
+        }
+    }
+}

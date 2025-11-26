@@ -1,0 +1,62 @@
+[package]
+name = "geospatial-analysis"
+version = "0.1.0"
+edition = "2021"
+authors = ["Avelan Team"]
+description = "High-performance geospatial analysis and location intelligence engine"
+license = "MIT"
+
+[dependencies]
+# Core geospatial libraries
+geo = "0.28"
+geo-types = "0.7"
+rstar = "0.12"
+proj = "0.27"
+geojson = { version = "0.24", features = ["geo-types"] }
+
+# Numerical computing
+nalgebra = "0.33"
+ndarray = "0.16"
+
+# Performance & parallelization
+rayon = "1.10"
+parking_lot = "0.12"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Error handling
+thiserror = "1.0"
+anyhow = "1.0"
+
+# Async runtime (for AvilaDB integration)
+tokio = { version = "1.40", features = ["full"] }
+
+# Utilities
+itertools = "0.13"
+ordered-float = "4.2"
+
+[dev-dependencies]
+# Benchmarking
+criterion = { version = "0.5", features = ["html_reports"] }
+# Testing
+approx = "0.5"
+proptest = "1.5"
+
+[[bench]]
+name = "spatial_indexing"
+harness = false
+
+[[bench]]
+name = "distance_calculations"
+harness = false
+
+[[bench]]
+name = "optimization_algorithms"
+harness = false
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1

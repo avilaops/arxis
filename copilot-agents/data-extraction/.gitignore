@@ -1,0 +1,35 @@
+# Rust
+/target/
+**/*.rs.bk
+*.pdb
+Cargo.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+config/local.toml
+
+# Data
+data/
+scraped/
+*.csv
+*.json
+!examples/**/*.json
+
+# Logs
+logs/
+*.log
+
+# Cache
+.cache/

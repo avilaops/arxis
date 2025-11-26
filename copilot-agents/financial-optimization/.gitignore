@@ -1,0 +1,12 @@
+.env
+.env.local
+target/
+*.db
+*.db-shm
+*.db-wal
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
