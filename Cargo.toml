@@ -65,6 +65,10 @@ members = [
     # "avx-quantum-render",  # Depende de avx-gpu
     # "avx-runtime",  # Nested workspace - excluded
     "avx-telemetry",
+
+    # Dark Net / Deep Web
+    "avila-darknet",
+    "avila-browser",
 ]
 resolver = "2"
 
