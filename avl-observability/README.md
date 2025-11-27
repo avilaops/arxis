@@ -4,7 +4,7 @@
 
 [![Crates.io](https://img.shields.io/crates/v/avl-observability.svg)](https://crates.io/crates/avl-observability)
 [![Documentation](https://docs.rs/avl-observability/badge.svg)](https://docs.rs/avl-observability)
-[![AVL Cloud](https://img.shields.io/badge/AVL-Cloud%20Platform-00d4ff)](https://avila.cloud)
+[![AVL Cloud](https://img.shields.io/badge/AVL-Cloud%20Platform-00d4ff)](https://avila.inc)
 
 🏛️ **Complete Visibility** | ⚙️ **Real-Time Monitoring** | 📈 **Metrics, Logs, Traces**
 

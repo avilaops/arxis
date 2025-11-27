@@ -390,4 +390,5 @@ See [LICENSE-MIT](../LICENSE-MIT) and [LICENSE-APACHE](../LICENSE-APACHE) for de
 - **Repository**: https://github.com/avilaops/arxis
 - **Documentation**: https://docs.rs/avx-api-core
 - **Crates.io**: https://crates.io/crates/avx-api-core
-- **AVX Platform**: https://avila.cloud
+- **AVX Platform**: https://avila.inc
+- **Documentation**: https://docs.avila.inc

@@ -15,7 +15,7 @@
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Rust](https://img.shields.io/badge/rust-1.70%2B-CE422B.svg)](https://www.rust-lang.org/)
 [![Tests](https://img.shields.io/badge/tests-101%20passing-00C853.svg)](https://github.com/avilaops/arxis)
-[![AVL Cloud](https://img.shields.io/badge/AVL-Cloud%20Platform-00d4ff)](https://avilaops.com)
+[![AVL Cloud](https://img.shields.io/badge/AVL-Cloud%20Platform-00d4ff)](https://avila.inc)
 
 **🌌 NASA/LISA Mission Ready** | **🏛️ Research-Grade** | **📚 [Documentation](https://docs.rs/arxis_quaternions)** | **💬 [Discussions](https://github.com/avilaops/arxis/discussions)**
 
@@ -51,9 +51,10 @@ The name combines:
 
 ## 📞 Contact
 
-**Project Lead**: Nicolas Ávila
+**Project Lead**: Nícolas Ávila
 **Email**: nicolas@avila.inc
-**WhatsApp**: +55 17 99781-1471
+**Website**: https://avila.inc
+**Documentation**: https://docs.avila.inc
 **GitHub**: https://github.com/avilaops/arxis
 
 ---

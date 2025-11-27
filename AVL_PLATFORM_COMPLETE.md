@@ -254,9 +254,9 @@ avl deploy --config avl.yml
 
 ## 📚 Documentation
 
-- **[Platform Docs](https://docs.avila.cloud)** - Complete guide
-- **[API Reference](https://api.avila.cloud/docs)** - REST/gRPC APIs
-- **[CLI Reference](https://docs.avila.cloud/cli)** - Command-line tools
+- **[Platform Docs](https://docs.avila.inc)** - Complete guide
+- **[API Reference](https://api.avila.inc/docs)** - REST/gRPC APIs
+- **[CLI Reference](https://docs.avila.inc/cli)** - Command-line tools
 - **[SDKs](https://github.com/avilaops/avl-sdks)** - Rust, Python, Node.js
 - **[Examples](https://github.com/avilaops/avl-examples)** - Code samples
 
@@ -367,7 +367,8 @@ cargo test --workspace
 **Email**: nicolas@avila.inc
 **WhatsApp**: +55 17 99781-1471
 **GitHub**: https://github.com/avilaops/arxis
-**Website**: https://avila.cloud
+**Website**: https://avila.inc
+**Documentation**: https://docs.avila.inc
 
 ---
 

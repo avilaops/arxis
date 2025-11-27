@@ -11,7 +11,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Rust](https://img.shields.io/badge/rust-1.70%2B-CE422B.svg)](https://www.rust-lang.org/)
-[![AVL Cloud](https://img.shields.io/badge/AVL-Cloud%20Platform-00d4ff)](https://avila.cloud)
+[![AVL Cloud](https://img.shields.io/badge/AVL-Cloud%20Platform-00d4ff)](https://avila.inc)
 
 **🇧🇷 Latency 3-8ms in Brazil** | **💰 50% cheaper than S3** | **🔄 S3-compatible API**
 
@@ -470,7 +470,7 @@ Contributions are welcome! Please:
 **Email**: nicolas@avila.inc
 **WhatsApp**: +55 17 99781-1471
 **GitHub**: https://github.com/avilaops/arxis
-**Docs**: https://docs.avila.cloud/storage
+**Docs**: https://docs.avila.inc/storage
 
 ---
 

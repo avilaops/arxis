@@ -4,7 +4,7 @@
 
 [![Crates.io](https://img.shields.io/crates/v/avl-queue.svg)](https://crates.io/crates/avl-queue)
 [![Documentation](https://docs.rs/avl-queue/badge.svg)](https://docs.rs/avl-queue)
-[![AVL Cloud](https://img.shields.io/badge/AVL-Cloud%20Platform-00d4ff)](https://avila.cloud)
+[![AVL Cloud](https://img.shields.io/badge/AVL-Cloud%20Platform-00d4ff)](https://avila.inc)
 
 🏛️ **Reliable Messaging** | ⚙️ **High Throughput** | 🇧🇷 **Low Latency in Brazil**
 

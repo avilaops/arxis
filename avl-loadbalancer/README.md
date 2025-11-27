@@ -4,7 +4,7 @@
 
 [![Crates.io](https://img.shields.io/crates/v/avl-loadbalancer.svg)](https://crates.io/crates/avl-loadbalancer)
 [![Documentation](https://docs.rs/avl-loadbalancer/badge.svg)](https://docs.rs/avl-loadbalancer)
-[![AVL Cloud](https://img.shields.io/badge/AVL-Cloud%20Platform-00d4ff)](https://avila.cloud)
+[![AVL Cloud](https://img.shields.io/badge/AVL-Cloud%20Platform-00d4ff)](https://avila.inc)
 
 🏛️ **High Availability** | ⚙️ **Smart Routing** | 🔒 **TLS/Circuit Breakers** | 📊 **Distributed Tracing** | 🌍 **Geo-Routing** | 🍪 **Sticky Sessions**
 

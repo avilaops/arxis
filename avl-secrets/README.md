@@ -4,7 +4,7 @@
 
 [![Crates.io](https://img.shields.io/crates/v/avl-secrets.svg)](https://crates.io/crates/avl-secrets)
 [![Documentation](https://docs.rs/avl-secrets/badge.svg)](https://docs.rs/avl-secrets)
-[![AVL Cloud](https://img.shields.io/badge/AVL-Cloud%20Platform-00d4ff)](https://avila.cloud)
+[![AVL Cloud](https://img.shields.io/badge/AVL-Cloud%20Platform-00d4ff)](https://avila.inc)
 
 🏛️ **Vault-Like Security** | ⚙️ **Fast Retrieval** | 🔐 **AES-256 Encryption**
 
