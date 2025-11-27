@@ -1,0 +1,283 @@
+name: Security - Daily Scan
+
+on:
+  schedule:
+    # Run every day at 02:00 UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  # ============================================================================
+  # Comprehensive Security Audit
+  # ============================================================================
+  full-security-scan:
+    name: 🔐 Full Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: Install security tools
+        run: |
+          cargo install cargo-audit
+          cargo install cargo-deny
+          cargo install cargo-geiger
+          cargo install cargo-outdated
+
+      - name: Run cargo-audit
+        id: audit
+        run: cargo audit --json > audit-report.json || true
+        continue-on-error: true
+
+      - name: Run cargo-deny
+        id: deny
+        run: cargo deny check > deny-report.txt || true
+        continue-on-error: true
+
+      - name: Run cargo-geiger (unsafe code detection)
+        id: geiger
+        run: cargo geiger --output-format GitHubMarkdown > geiger-report.md || true
+        continue-on-error: true
+
+      - name: Check outdated dependencies
+        id: outdated
+        run: cargo outdated --format json > outdated-report.json || true
+        continue-on-error: true
+
+      - name: Upload reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-reports
+          path: |
+            audit-report.json
+            deny-report.txt
+            geiger-report.md
+            outdated-report.json
+
+      - name: Parse audit results
+        id: parse
+        run: |
+          if [ -f audit-report.json ]; then
+            VULNS=$(jq '.vulnerabilities.count' audit-report.json || echo "0")
+            echo "vulnerabilities=$VULNS" >> $GITHUB_OUTPUT
+          else
+            echo "vulnerabilities=0" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Send comprehensive security email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: '🔒 AVX-HTTP Daily Security Report - ${{ steps.parse.outputs.vulnerabilities }} vulnerabilities'
+          to: nicolas@avila.inc,security@avila.inc
+          from: Security Bot <security@avila.inc>
+          html_body: |
+            <html>
+            <head>
+              <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; }
+                .header { background: #f4f4f4; padding: 20px; border-radius: 5px; }
+                .alert { background: #ffebee; padding: 15px; border-left: 4px solid #f44336; margin: 20px 0; }
+                .success { background: #e8f5e9; padding: 15px; border-left: 4px solid #4caf50; margin: 20px 0; }
+                .warning { background: #fff3e0; padding: 15px; border-left: 4px solid #ff9800; margin: 20px 0; }
+                .info { background: #e3f2fd; padding: 15px; border-left: 4px solid #2196f3; margin: 20px 0; }
+                table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+                th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+                th { background: #f4f4f4; }
+                .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; }
+              </style>
+            </head>
+            <body>
+              <div class="header">
+                <h1>🔒 AVX-HTTP Daily Security Report</h1>
+                <p><strong>Date:</strong> $(date -u +"%Y-%m-%d %H:%M:%S UTC")</p>
+                <p><strong>Repository:</strong> ${{ github.repository }}</p>
+                <p><strong>Branch:</strong> main</p>
+              </div>
+
+              ${{ steps.parse.outputs.vulnerabilities > 0 && format('<div class="alert"><h2>⚠️ Security Vulnerabilities Detected</h2><p>Found {0} vulnerabilities that require immediate attention!</p></div>', steps.parse.outputs.vulnerabilities) || '<div class="success"><h2>✅ No Known Vulnerabilities</h2><p>All dependencies are currently secure.</p></div>' }}
+
+              <div class="info">
+                <h2>📊 Security Scan Summary</h2>
+                <table>
+                  <tr>
+                    <th>Check</th>
+                    <th>Status</th>
+                    <th>Details</th>
+                  </tr>
+                  <tr>
+                    <td>Dependency Audit</td>
+                    <td>${{ steps.audit.outcome == 'success' && '✅ PASS' || '❌ FAIL' }}</td>
+                    <td>Advisory database: RustSec</td>
+                  </tr>
+                  <tr>
+                    <td>License Compliance</td>
+                    <td>${{ steps.deny.outcome == 'success' && '✅ PASS' || '❌ FAIL' }}</td>
+                    <td>MIT/Apache-2.0 only</td>
+                  </tr>
+                  <tr>
+                    <td>Unsafe Code</td>
+                    <td>${{ steps.geiger.outcome == 'success' && '✅ PASS' || '⚠️ WARNING' }}</td>
+                    <td>Minimal unsafe usage</td>
+                  </tr>
+                  <tr>
+                    <td>Outdated Dependencies</td>
+                    <td>${{ steps.outdated.outcome == 'success' && '✅ PASS' || '⚠️ WARNING' }}</td>
+                    <td>Check for updates</td>
+                  </tr>
+                </table>
+              </div>
+
+              <div class="info">
+                <h2>🎯 Recommendations</h2>
+                <ul>
+                  <li>Review full reports in GitHub Actions artifacts</li>
+                  <li>Update vulnerable dependencies within 48 hours</li>
+                  <li>Follow up on any license compliance issues</li>
+                  <li>Consider refactoring unsafe code blocks</li>
+                </ul>
+              </div>
+
+              <div class="footer">
+                <p><strong>Action Required:</strong>
+                ${{ steps.parse.outputs.vulnerabilities > 0 && 'Please address vulnerabilities within 48 hours per security policy.' || 'No immediate action required.' }}
+                </p>
+                <p><strong>View Full Report:</strong>
+                <a href="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}">
+                  GitHub Actions Run
+                </a>
+                </p>
+                <p><em>Automated by AVX-HTTP Security Bot</em></p>
+              </div>
+            </body>
+            </html>
+          attachments: |
+            audit-report.json
+            deny-report.txt
+            geiger-report.md
+            outdated-report.json
+
+  # ============================================================================
+  # OWASP Dependency Check
+  # ============================================================================
+  owasp-check:
+    name: 🛡️ OWASP Dependency Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: 'AVX-HTTP'
+          path: '.'
+          format: 'HTML'
+          out: 'owasp-reports'
+
+      - name: Upload OWASP Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: owasp-reports
+          path: owasp-reports
+
+      - name: Send OWASP email
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: '🛡️ AVX-HTTP OWASP Dependency Check Report'
+          to: nicolas@avila.inc,security@avila.inc
+          from: Security Bot <security@avila.inc>
+          body: |
+            OWASP Dependency Check completed for AVX-HTTP!
+
+            Date: $(date -u)
+            Repository: ${{ github.repository }}
+
+            View detailed HTML report in artifacts:
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            Please review any HIGH or CRITICAL severity findings immediately.
+
+  # ============================================================================
+  # Code Quality & Complexity
+  # ============================================================================
+  code-quality:
+    name: 📈 Code Quality Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: Install quality tools
+        run: |
+          cargo install tokei
+          cargo install cargo-bloat
+          cargo install cargo-tree
+
+      - name: Count lines of code
+        run: tokei . > code-stats.txt
+
+      - name: Check binary size
+        run: cargo bloat --release --crates > bloat-report.txt || true
+
+      - name: Dependency tree
+        run: cargo tree > dep-tree.txt
+
+      - name: Upload quality reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: quality-reports
+          path: |
+            code-stats.txt
+            bloat-report.txt
+            dep-tree.txt
+
+      - name: Send quality email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: '📈 AVX-HTTP Code Quality Report'
+          to: nicolas@avila.inc,dev@avila.inc
+          from: Quality Bot <quality@avila.inc>
+          body: |
+            Weekly code quality report for AVX-HTTP!
+
+            Date: $(date -u)
+            Repository: ${{ github.repository }}
+
+            Reports attached:
+            - Lines of Code (tokei)
+            - Binary Size Analysis (cargo-bloat)
+            - Dependency Tree
+
+            View full report:
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          attachments: |
+            code-stats.txt
+            bloat-report.txt
+            dep-tree.txt

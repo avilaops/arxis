@@ -1,6 +1,7 @@
 //! Compression utilities using avila-compress
 
 use crate::error::{AvilaError, Result};
+use avila_compress;
 
 /// Compression level
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -16,13 +17,13 @@ pub enum CompressionLevel {
 }
 
 impl CompressionLevel {
-    /// Convert to Brotli quality level (0-11)
-    pub fn to_brotli_quality(&self) -> u32 {
+    /// Convert to avila-compress Level
+    pub fn to_avila_level(&self) -> avila_compress::Level {
         match self {
-            CompressionLevel::None => 0,
-            CompressionLevel::Fast => 3,
-            CompressionLevel::Balanced => 6,
-            CompressionLevel::Best => 11,
+            CompressionLevel::None => avila_compress::Level::Fast,
+            CompressionLevel::Fast => avila_compress::Level::Fast,
+            CompressionLevel::Balanced => avila_compress::Level::Balanced,
+            CompressionLevel::Best => avila_compress::Level::Best,
         }
     }
 }
@@ -33,40 +34,21 @@ impl Default for CompressionLevel {
     }
 }
 
-/// Compress data using Brotli
+/// Compress data using avila-compress (LZ4)
 pub fn compress(data: &[u8], level: CompressionLevel) -> Result<Vec<u8>> {
     if level == CompressionLevel::None {
         return Ok(data.to_vec());
     }
 
-    let quality = level.to_brotli_quality();
-
-    let mut output = Vec::new();
-    let mut compressor = brotli::CompressorReader::new(
-        data,
-        4096, // buffer size
-        quality,
-        22, // lgwin (window size)
-    );
-
-    std::io::copy(&mut compressor, &mut output)
-        .map_err(|e| AvilaError::Compression(e.to_string()))?;
-
-    Ok(output)
+    // Use avila-compress LZ4 for maximum performance
+    avila_compress::compress(data)
+        .map_err(|e| AvilaError::Compression(e.to_string()))
 }
 
-/// Decompress Brotli data
+/// Decompress avila-compress (LZ4) data
 pub fn decompress(data: &[u8]) -> Result<Vec<u8>> {
-    let mut output = Vec::new();
-    let mut decompressor = brotli::Decompressor::new(
-        data,
-        4096, // buffer size
-    );
-
-    std::io::copy(&mut decompressor, &mut output)
-        .map_err(|e| AvilaError::Compression(e.to_string()))?;
-
-    Ok(output)
+    avila_compress::decompress(data)
+        .map_err(|e| AvilaError::Compression(e.to_string()))
 }
 
 /// Calculate compression ratio

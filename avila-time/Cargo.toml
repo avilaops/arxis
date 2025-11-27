@@ -1,0 +1,22 @@
+[package]
+name = "avila-time"
+version = "0.1.0"
+edition = "2021"
+authors = ["Nícolas Ávila <nicolas@avila.inc>"]
+license = "MIT OR Apache-2.0"
+description = "AVL Platform date and time handling - replacement for chrono"
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://avila.inc"
+keywords = ["time", "date", "datetime", "avila", "avl"]
+
+[dependencies]
+# Zero dependências - Rust std apenas
+serde = { version = "1.0", features = ["derive"], optional = true }
+
+[features]
+default = []
+serde = ["dep:serde"]
+
+[lib]
+name = "avila_time"
+path = "src/lib.rs"

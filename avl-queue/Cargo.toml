@@ -2,50 +2,90 @@
 name = "avl-queue"
 version = "0.1.0"
 edition = "2021"
-authors = ["Nicolas Ávila <nicolas@avila.inc>"]
+authors = [
+    "Nícolas Ávila <nicolas@avila.inc>",
+    "Avila Development Team <dev@avila.inc>",
+]
 license = "MIT OR Apache-2.0"
-description = "AVL Queue - High-performance message queue and event streaming for AVL Cloud"
+description = "Message queue and event streaming (Pub/Sub, FIFO) for AVL Cloud Platform"
 repository = "https://github.com/avilaops/arxis"
-homepage = "https://avila.cloud"
+homepage = "https://avila.inc"
 documentation = "https://docs.rs/avl-queue"
 readme = "README.md"
-keywords = ["queue", "messaging", "streaming", "events", "pubsub"]
-categories = ["network-programming", "asynchronous", "data-structures"]
+keywords = [
+    "message-queue",
+    "pub-sub",
+    "event-streaming",
+    "fifo",
+    "distributed",
+]
+categories = ["asynchronous", "web-programming", "network-programming"]
+rust-version = "1.70"
+
+[lib]
+name = "avl_queue"
+path = "src/lib.rs"
+
+[features]
+default = ["compression"]
+compression = ["avila-compress"]
+full = ["compression"]
 
 [dependencies]
-tokio = { version = "1.40", features = ["full"] }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-thiserror = "2.0"
-anyhow = "1.0"
+# AVL Cloud Platform integration
+avila-compress = { version = "0.1.0", path = "../avila-compress", optional = true }
+aviladb = { version = "0.1.0", path = "../aviladb" }
 
-# Compression
-avila-compress = { path = "../avila-compress" }
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+futures = "0.3"
 
-# Networking
+# HTTP client/server
 axum = "0.7"
 tower = "0.5"
 
-# Storage
-aviladb = { path = "../aviladb" }
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
 
-# Time
-chrono = "0.4"
-uuid = { version = "1.11", features = ["v4"] }
+# Time handling
+chrono = { version = "0.4", features = ["serde"] }
 
-# Observability
+# UUID generation
+uuid = { version = "1.11", features = ["v4", "serde"] }
+
+# Error handling
+thiserror = "2.0"
+anyhow = "1.0"
+
+# Logging
 tracing = "0.1"
-avx-telemetry = { path = "../avx-telemetry" }
+
+# Concurrency
+parking_lot = "0.12"
 
 [dev-dependencies]
+tokio-test = "0.4"
 criterion = "0.5"
-tracing-subscriber = "0.3"
 
-[features]
-default = ["pubsub"]
-pubsub = []
-streaming = []
-full = ["pubsub", "streaming"]
+# [[bench]]
+# name = "queue_bench"
+# harness = false
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+strip = true
+
+[profile.bench]
+inherits = "release"
+
+[profile.dev]
+opt-level = 0
+debug = true
+incremental = true
 
 [package.metadata.docs.rs]
 all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

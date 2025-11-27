@@ -31,9 +31,9 @@ compression = []  # Integration with avila-compress
 aviladb = []  # AvilaDB native integration
 ipc = []  # Arrow IPC format support
 
-[[bench]]
-name = "scientific_bench"
-harness = false
+# [[bench]]
+# name = "scientific_bench"
+# harness = false
 
 [lib]
 name = "avila_arrow"

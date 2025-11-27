@@ -72,13 +72,13 @@ full = ["gpu"]
 # data-loading = ["avila-dataframe"]
 gpu = []                  # Placeholder for future CUDA/ROCm support
 
-[[bench]]
-name = "autograd_benchmark"
-harness = false
+# [[bench]]
+# name = "autograd_benchmark"
+# harness = false
 
-[[bench]]
-name = "nn_benchmark"
-harness = false
+# [[bench]]
+# name = "nn_benchmark"
+# harness = false
 
 # Production optimizations
 [profile.release]

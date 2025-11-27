@@ -1,90 +1,100 @@
 [package]
 name = "avl-console"
-version = "0.3.0"
+version = "0.1.0"
 edition = "2021"
-authors = ["Nicolas Ávila <nicolas@avila.inc>"]
+authors = [
+    "Nícolas Ávila <nicolas@avila.inc>",
+    "Avila Development Team <dev@avila.inc>",
+]
 license = "MIT OR Apache-2.0"
-description = "AVL Console - Advanced developer portal with AI Assistant, ML-powered monitoring and visual query builder"
+description = "Web-based developer portal and dashboard for AVL Cloud Platform"
 repository = "https://github.com/avilaops/arxis"
-homepage = "https://avila.cloud"
+homepage = "https://avila.inc"
 documentation = "https://docs.rs/avl-console"
 readme = "README.md"
-keywords = ["console", "dashboard", "portal", "monitoring", "rbac"]
-categories = ["web-programming", "gui", "database"]
+keywords = [
+    "dashboard",
+    "web-console",
+    "developer-portal",
+    "ui",
+    "management",
+]
+categories = ["web-programming", "asynchronous", "visualization"]
+rust-version = "1.70"
+
+[lib]
+name = "avl_console"
+path = "src/lib.rs"
+
+[features]
+default = ["full-stack"]
+full-stack = ["templates", "websocket"]
+templates = ["dep:askama", "dep:askama_axum"]
+websocket = ["dep:tokio-tungstenite"]
+full = ["full-stack"]
 
 [dependencies]
+# AVL Cloud Platform integration
+aviladb = { version = "0.1.0", path = "../aviladb" }
+avl-auth = { version = "0.1.0", path = "../avl-auth" }
+avl-storage = { version = "0.1.0", path = "../avl-storage" }
+avl-queue = { version = "0.1.0", path = "../avl-queue" }
+avl-observability = { version = "0.1.0", path = "../avl-observability" }
+
 # Async runtime
-tokio = { version = "1.40", features = ["full"] }
+tokio = { version = "1", features = ["full"] }
+futures = "0.3"
+
+# HTTP server
+axum = "0.7"
+tower = "0.5"
+tower-http = { version = "0.6", features = ["full", "fs"] }
+
+# Templates
+askama = { version = "0.12", optional = true }
+askama_axum = { version = "0.4", optional = true }
+
+# WebSocket
+tokio-tungstenite = { version = "0.24", optional = true }
 
 # Serialization
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
+# Time handling
+chrono = { version = "0.4", features = ["serde"] }
+
+# UUID generation
+uuid = { version = "1.11", features = ["v4", "serde"] }
+
 # Error handling
 thiserror = "2.0"
 anyhow = "1.0"
 
-# Web framework
-axum = { version = "0.7", features = ["ws", "macros"] }
-tower = { version = "0.5", features = ["full"] }
-tower-http = { version = "0.6", features = ["fs", "trace", "compression-full", "cors"] }
-
-# WebSocket
-futures = "0.3"
-
-# Pattern matching
-regex = "1.10"
-lazy_static = "1.4"
-
-# Templates
-askama = { version = "0.12", features = ["with-axum"] }
-
-# Authentication
-avl-auth = { path = "../avl-auth", optional = true }
-
-# APIs
-aviladb = { path = "../aviladb", optional = true }
-avl-storage = { path = "../avl-storage", optional = true }
-avx-gateway = { path = "../avx-gateway", optional = true }
-
-# Observability
+# Logging
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-avx-telemetry = { path = "../avx-telemetry", optional = true }
-avila-telemetry = { path = "../avila-telemetry", optional = true }
 
-# Machine Learning
-avila-ml = { path = "../avila-ml", optional = true }
-uuid = { version = "1.10", features = ["v4", "serde"] }
-chrono = "0.4"
+# Session management
+tower-sessions = "0.13"
 
-[[bin]]
-name = "avl-console"
-path = "src/main.rs"
-
-[[example]]
-name = "basic"
-path = "examples/basic.rs"
-
-[features]
-default = ["with-telemetry"]
-production = ["with-auth", "with-aviladb", "with-telemetry", "with-storage", "with-ml"]
-full = ["production", "with-gateway"]
-with-auth = ["dep:avl-auth"]
-with-aviladb = ["dep:aviladb"]
-with-storage = ["dep:avl-storage"]
-with-gateway = ["dep:avx-gateway"]
-with-telemetry = ["dep:avx-telemetry", "dep:avila-telemetry"]
-with-ml = ["dep:avila-ml"]
+# Password hashing
+argon2 = "0.5"
 
 [dev-dependencies]
 tokio-test = "0.4"
-criterion = { version = "0.5", features = ["html_reports", "async_tokio"] }
-proptest = "1.5"
 
-[[bench]]
-name = "console_bench"
-harness = false
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+strip = true
+
+[profile.dev]
+opt-level = 0
+debug = true
+incremental = true
 
 [package.metadata.docs.rs]
 all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

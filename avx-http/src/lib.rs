@@ -1,50 +1,55 @@
-//! # avx-http - AVL Platform HTTP Client/Server
+//! # avx-http - Pure Rust HTTP/1.1 + HTTP/2 Library
 //!
-//! Native HTTP library optimized for Brazilian infrastructure and AVL Platform services.
+//! **ZERO external dependencies** - No tokio, no serde, no hyper, 100% proprietary!
 //!
-//! ## Features
+//! Everything implemented from scratch using only `std::*`:
+//! - HTTP/1.1 parser (finite state machine)
+//! - HTTP/2 frame parser, HPACK compression, multiplexing
+//! - Custom async runtime (thread pool + I/O reactor)
+//! - Zero-copy bytes buffer
+//! - Pure Rust JSON parser
+//! - Connection pooling
 //!
-//! - **High Performance**: < 500µs request overhead, 100k+ req/s
-//! - **Brazilian Optimized**: Regional routing, smart retries
-//! - **AVL Platform Native**: Built-in auth, telemetry, AvilaDB integration
-//! - **Developer Friendly**: Simple async/await API
+//! ## Philosophy
+//!
+//! - **Zero Dependencies**: Full control, no supply chain attacks
+//! - **Predictable Performance**: No hidden allocations or async overhead
+//! - **Readable Code**: Algorithms you can understand and audit
+//! - **Brazilian Latency**: Optimized for São Paulo DC (5-10ms)
 //!
 //! ## Quick Start
 //!
-//! ### Client
+//! ### HTTP/1.1 Client
 //!
 //! ```rust,no_run
 //! use avx_http::Client;
 //!
-//! #[tokio::main]
-//! async fn main() -> Result<(), Box<dyn std::error::Error>> {
-//!     let client = Client::builder()
-//!         .build()?;
-//!
-//!     let response = client
-//!         .get("https://api.avila.cloud/data")
-//!         .send()
-//!         .await?;
-//!
+//! fn main() -> Result<(), Box<dyn std::error::Error>> {
+//!     let client = Client::new();
+//!     let response = client.get("http://api.avila.cloud/data")?;
 //!     println!("Status: {}", response.status());
+//!     println!("Body: {}", response.text()?);
 //!     Ok(())
 //! }
 //! ```
 //!
-//! ### Server
+//! ### HTTP/2 Client
 //!
 //! ```rust,no_run
-//! use avx_http::{Server, Router, Response};
+//! use avx_http::http2::Http2Connection;
+//! use avx_http::net::TcpStream;
 //!
-//! #[tokio::main]
-//! async fn main() -> Result<(), Box<dyn std::error::Error>> {
-//!     let router = Router::new()
-//!         .get("/", || async { Response::text("Hello!") });
+//! fn main() -> Result<(), Box<dyn std::error::Error>> {
+//!     let stream = TcpStream::connect("api.avila.cloud:443")?;
+//!     let mut conn = Http2Connection::new_client(stream)?;
 //!
-//!     Server::bind("0.0.0.0:3000")
-//!         .router(router)
-//!         .run()
-//!         .await?;
+//!     let stream_id = conn.request(
+//!         "GET",
+//!         "/data",
+//!         "api.avila.cloud",
+//!         vec![],
+//!         None,
+//!     )?;
 //!
 //!     Ok(())
 //! }
@@ -52,57 +57,40 @@
 
 #![warn(missing_docs)]
 #![warn(clippy::all)]
+#![cfg_attr(not(feature = "std"), no_std)]
 
+#[cfg(feature = "alloc")]
+extern crate alloc;
+
+// Core modules - pure std implementation
 pub mod error;
+pub mod http;
+pub mod bytes;
+pub mod json;
+pub mod runtime;
+pub mod net;
+pub mod reactor;
+pub mod timer;
+pub mod async_net;
 
-#[cfg(feature = "client")]
-pub mod client;
+// TLS support (optional)
+#[cfg(feature = "tls")]
+pub mod tls;
 
-#[cfg(feature = "client")]
-pub mod pool;
-
-#[cfg(feature = "client")]
-pub mod streaming;
-
-#[cfg(feature = "client")]
-pub mod interceptors;
-
-#[cfg(feature = "server")]
-pub mod server;
-
-#[cfg(feature = "server")]
-pub mod middleware;
-
-#[cfg(any(feature = "events", feature = "telemetry"))]
-pub mod events;
-
-mod common;
+// HTTP/2 implementation
+pub mod http2;
 
 // Re-exports
 pub use error::{Error, Result};
-
-#[cfg(feature = "client")]
-pub use client::{Client, ClientBuilder, Request, Response as ClientResponse};
-
-#[cfg(feature = "client")]
-pub use pool::{ConnectionPool, PoolConfig, PoolStats};
-
-#[cfg(feature = "client")]
-pub use streaming::{StreamingBody, ChunkedEncoder, SseStream};
-
-#[cfg(feature = "client")]
-pub use interceptors::{Interceptors, RequestData, ResponseData, RequestInterceptor, ResponseInterceptor};
-
-#[cfg(feature = "server")]
-pub use server::{Server, Router, Response as ServerResponse};
-
-#[cfg(feature = "server")]
-pub use middleware::{Middleware, Next, Handler, Logger, Cors, RateLimit, Auth};
-
-pub use http::{Method, StatusCode, HeaderMap, HeaderValue, Uri};
+pub use http::{Method, StatusCode, Headers, Request, Response};
+pub use bytes::Bytes;
+pub use json::JsonValue;
 
 /// Library version
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
+
+/// User agent string
+pub const USER_AGENT: &str = concat!("avx-http/", env!("CARGO_PKG_VERSION"));
 
 #[cfg(test)]
 mod tests {
@@ -112,5 +100,11 @@ mod tests {
     fn test_version() {
         assert!(!VERSION.is_empty());
         assert!(VERSION.starts_with("0."));
+    }
+
+    #[test]
+    fn test_user_agent() {
+        assert!(USER_AGENT.contains("avx-http"));
+        assert!(USER_AGENT.contains(VERSION));
     }
 }

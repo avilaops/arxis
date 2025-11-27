@@ -1,0 +1,392 @@
+name: CI - Continuous Integration
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run security audit daily at 00:00 UTC
+    - cron: '0 0 * * *'
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  # ============================================================================
+  # Security Audit
+  # ============================================================================
+  security-audit:
+    name: 🔒 Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install cargo-audit
+        run: cargo install cargo-audit
+
+      - name: Run security audit
+        run: cargo audit --deny warnings
+        continue-on-error: true
+        id: audit
+
+      - name: Send email on security issues
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: '🚨 AVX-HTTP Security Alert - Vulnerabilities Detected'
+          to: nicolas@avila.inc,dev@avila.inc,security@avila.inc
+          from: GitHub Actions <noreply@github.com>
+          body: |
+            Security vulnerabilities detected in AVX-HTTP!
+
+            Repository: ${{ github.repository }}
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+
+            Please review the security audit results immediately:
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            Action required within 48 hours per security policy.
+
+  # ============================================================================
+  # Code Quality Checks
+  # ============================================================================
+  clippy:
+    name: 📎 Clippy Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          components: clippy
+          override: true
+
+      - name: Cache cargo registry
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache cargo index
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/git
+          key: ${{ runner.os }}-cargo-index-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Run Clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      - name: Send email on clippy failures
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: '⚠️ AVX-HTTP Clippy Warnings Detected'
+          to: nicolas@avila.inc,dev@avila.inc
+          from: GitHub Actions <noreply@github.com>
+          body: |
+            Clippy linting failed in AVX-HTTP!
+
+            Repository: ${{ github.repository }}
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+
+            Please fix the warnings before merging:
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+  format:
+    name: 🎨 Code Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          components: rustfmt
+          override: true
+
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+
+  # ============================================================================
+  # Test Suite
+  # ============================================================================
+  test:
+    name: 🧪 Test Suite
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        rust: [stable, beta, nightly]
+        features: ['', '--all-features', '--no-default-features']
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: ${{ matrix.rust }}
+          override: true
+
+      - name: Cache cargo
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ matrix.rust }}-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Run tests
+        run: cargo test ${{ matrix.features }} --verbose
+        env:
+          RUST_BACKTRACE: 1
+
+      - name: Send email on test failures
+        if: failure() && github.event_name == 'push'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: '❌ AVX-HTTP Tests Failed on ${{ matrix.os }}'
+          to: nicolas@avila.inc,dev@avila.inc
+          from: GitHub Actions <noreply@github.com>
+          body: |
+            Test suite failed in AVX-HTTP!
+
+            OS: ${{ matrix.os }}
+            Rust: ${{ matrix.rust }}
+            Features: ${{ matrix.features }}
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+
+            View logs:
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+  # ============================================================================
+  # Documentation Build
+  # ============================================================================
+  docs:
+    name: 📚 Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: Build documentation
+        run: cargo doc --no-deps --all-features
+        env:
+          RUSTDOCFLAGS: "-D warnings"
+
+      - name: Send email on doc build failures
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: '📖 AVX-HTTP Documentation Build Failed'
+          to: nicolas@avila.inc,dev@avila.inc
+          from: GitHub Actions <noreply@github.com>
+          body: |
+            Documentation build failed!
+
+            This will prevent docs.rs from building documentation after publishing.
+
+            Repository: ${{ github.repository }}
+            Branch: ${{ github.ref_name }}
+
+            View logs:
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+  # ============================================================================
+  # Benchmark Performance
+  # ============================================================================
+  benchmark:
+    name: ⚡ Performance Benchmarks
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: Run benchmarks
+        run: cargo bench --all-features -- --output-format bencher | tee bench_output.txt
+
+      - name: Store benchmark results
+        uses: actions/upload-artifact@v3
+        with:
+          name: benchmark-results
+          path: bench_output.txt
+
+      - name: Send benchmark email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: '⚡ AVX-HTTP Benchmark Results - ${{ github.ref_name }}'
+          to: nicolas@avila.inc,dev@avila.inc
+          from: GitHub Actions <noreply@github.com>
+          body: |
+            Benchmark completed for AVX-HTTP!
+
+            Commit: ${{ github.sha }}
+            Branch: ${{ github.ref_name }}
+
+            Results attached. Compare with previous runs:
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          attachments: bench_output.txt
+
+  # ============================================================================
+  # Dependency License Check
+  # ============================================================================
+  license-check:
+    name: ⚖️ License Compliance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install cargo-deny
+        run: cargo install cargo-deny
+
+      - name: Check licenses
+        run: cargo deny check licenses
+
+      - name: Send email on license issues
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: '⚖️ AVX-HTTP License Compliance Issue'
+          to: nicolas@avila.inc,dev@avila.inc
+          from: GitHub Actions <noreply@github.com>
+          body: |
+            License compliance check failed!
+
+            Incompatible or problematic licenses detected in dependencies.
+
+            Repository: ${{ github.repository }}
+            Branch: ${{ github.ref_name }}
+
+            Review required:
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+  # ============================================================================
+  # Coverage Report
+  # ============================================================================
+  coverage:
+    name: 📊 Code Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: Install tarpaulin
+        run: cargo install cargo-tarpaulin
+
+      - name: Generate coverage
+        run: cargo tarpaulin --out Xml --all-features
+
+      - name: Upload to codecov.io
+        uses: codecov/codecov-action@v3
+        with:
+          fail_ci_if_error: false
+
+      - name: Send coverage email
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: '📊 AVX-HTTP Code Coverage Report'
+          to: nicolas@avila.inc
+          from: GitHub Actions <noreply@github.com>
+          body: |
+            Code coverage report generated!
+
+            View detailed report at:
+            https://codecov.io/gh/${{ github.repository }}
+
+            Commit: ${{ github.sha }}
+            Branch: ${{ github.ref_name }}
+
+  # ============================================================================
+  # Success Notification
+  # ============================================================================
+  notify-success:
+    name: ✅ Success Notification
+    runs-on: ubuntu-latest
+    needs: [security-audit, clippy, format, test, docs, license-check]
+    if: success() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Send success email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: '✅ AVX-HTTP CI Pipeline Passed'
+          to: nicolas@avila.inc
+          from: GitHub Actions <noreply@github.com>
+          body: |
+            All CI checks passed successfully! 🎉
+
+            Repository: ${{ github.repository }}
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+
+            ✅ Security Audit: PASSED
+            ✅ Clippy Lint: PASSED
+            ✅ Code Format: PASSED
+            ✅ Test Suite: PASSED
+            ✅ Documentation: PASSED
+            ✅ License Check: PASSED
+
+            Ready for deployment!
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}

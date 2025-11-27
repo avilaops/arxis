@@ -1,0 +1,23 @@
+[package]
+name = "avila-fungi"
+version = "0.1.0"
+edition = "2021"
+authors = ["Ávila Development Team"]
+description = "🍄 Fungi - Sistema distribuído que se espalha entre átomos"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/Avilaops/arxis"
+
+[dependencies]
+# AVL Platform - Hierarquia biológica (ZERO dependências externas!)
+avila-error = { path = "../avila-error" }
+avila-id = { path = "../avila-id" }
+avila-time = { path = "../avila-time" }
+avila-atom = { path = "../avila-atom" }
+avila-molecule = { path = "../avila-molecule" }
+avila-serde = { path = "../avila-serde" }  # Replacement para serde/serde_json
+
+# Async runtime (única dependência externa permitida para async)
+tokio = { version = "1", features = ["full"] }
+
+[dev-dependencies]
+tokio-test = "0.4"

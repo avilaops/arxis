@@ -1,6 +1,7 @@
-//! Error types for avx-http
+//! Error types for avx-http (pure std, no dependencies)
 
 use std::fmt;
+use std::io;
 
 /// Result type alias for avx-http operations
 pub type Result<T> = std::result::Result<T, Error>;
@@ -8,6 +9,9 @@ pub type Result<T> = std::result::Result<T, Error>;
 /// Error types for HTTP operations
 #[derive(Debug)]
 pub enum Error {
+    /// IO error
+    Io(io::Error),
+
     /// Invalid URL provided
     InvalidUrl {
         /// The invalid URL
@@ -20,28 +24,14 @@ pub enum Error {
     ConnectionFailed {
         /// Host that failed to connect
         host: String,
-        /// Underlying IO error
-        source: std::io::Error,
+        /// Error message
+        reason: String,
     },
 
     /// Connection timeout
-    ConnectionTimeout {
-        /// Host that timed out
-        host: String,
-    },
-
-    /// Too many connections
-    TooManyConnections {
-        /// Host with too many connections
-        host: String,
-        /// Maximum allowed connections
-        max: usize,
-    },
-
-    /// Request timeout
     Timeout {
-        /// Duration that was exceeded
-        duration: std::time::Duration,
+        /// Duration that was exceeded in seconds
+        seconds: u64,
     },
 
     /// Invalid HTTP method
@@ -50,42 +40,23 @@ pub enum Error {
         method: String,
     },
 
-    /// Invalid header
-    InvalidHeader {
-        /// Header name
-        name: String,
-        /// Header value
-        value: String,
+    /// Invalid status code
+    InvalidStatusCode {
+        /// The invalid code
+        code: u16,
     },
 
-    /// HTTP status error
-    StatusError {
-        /// HTTP status code
-        status: u16,
-        /// Response body
-        body: String,
-    },
-
-    /// Body read error
-    BodyReadError {
-        /// Underlying IO error
-        source: std::io::Error,
-    },
-
-    /// JSON serialization/deserialization error
-    JsonError {
-        /// Error message
-        source: String,
-    },
-
-    /// Invalid configuration
-    InvalidConfig {
+    /// Parse error
+    ParseError {
         /// Error message
         message: String,
     },
 
-    /// Authentication error
-    AuthError {
+    /// Unexpected end of file
+    UnexpectedEof,
+
+    /// Invalid UTF-8
+    InvalidUtf8 {
         /// Error message
         message: String,
     },
@@ -95,49 +66,47 @@ pub enum Error {
         /// Error message
         message: String,
     },
+
+    /// JSON parsing error
+    JsonError {
+        /// Error message
+        message: String,
+    },
 }
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Error::Io(e) => write!(f, "IO error: {}", e),
             Error::InvalidUrl { url, reason } => {
                 write!(f, "Invalid URL '{}': {}", url, reason)
             }
-            Error::ConnectionFailed { host, source } => {
-                write!(f, "Failed to connect to {}: {}", host, source)
+            Error::ConnectionFailed { host, reason } => {
+                write!(f, "Failed to connect to {}: {}", host, reason)
             }
-            Error::ConnectionTimeout { host } => {
-                write!(f, "Connection to {} timed out", host)
-            }
-            Error::TooManyConnections { host, max } => {
-                write!(f, "Too many connections to {} (max: {})", host, max)
-            }
-            Error::Timeout { duration } => {
-                write!(f, "Request timed out after {:?}", duration)
+            Error::Timeout { seconds } => {
+                write!(f, "Operation timed out after {}s", seconds)
             }
             Error::InvalidMethod { method } => {
                 write!(f, "Invalid HTTP method: {}", method)
             }
-            Error::InvalidHeader { name, value } => {
-                write!(f, "Invalid header '{}': {}", name, value)
+            Error::InvalidStatusCode { code } => {
+                write!(f, "Invalid status code: {}", code)
             }
-            Error::StatusError { status, body } => {
-                write!(f, "HTTP error {}: {}", status, body)
+            Error::ParseError { message } => {
+                write!(f, "Parse error: {}", message)
             }
-            Error::BodyReadError { source } => {
-                write!(f, "Failed to read response body: {}", source)
+            Error::UnexpectedEof => {
+                write!(f, "Unexpected end of file")
             }
-            Error::JsonError { source } => {
-                write!(f, "JSON error: {}", source)
-            }
-            Error::InvalidConfig { message } => {
-                write!(f, "Invalid configuration: {}", message)
-            }
-            Error::AuthError { message } => {
-                write!(f, "Authentication error: {}", message)
+            Error::InvalidUtf8 { message } => {
+                write!(f, "Invalid UTF-8: {}", message)
             }
             Error::Internal { message } => {
                 write!(f, "Internal error: {}", message)
+            }
+            Error::JsonError { message } => {
+                write!(f, "JSON error: {}", message)
             }
         }
     }
@@ -146,16 +115,15 @@ impl fmt::Display for Error {
 impl std::error::Error for Error {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         match self {
-            Error::ConnectionFailed { source, .. } => Some(source),
-            Error::BodyReadError { source } => Some(source),
+            Error::Io(e) => Some(e),
             _ => None,
         }
     }
 }
 
-impl From<std::io::Error> for Error {
-    fn from(err: std::io::Error) -> Self {
-        Error::BodyReadError { source: err }
+impl From<io::Error> for Error {
+    fn from(err: io::Error) -> Self {
+        Error::Io(err)
     }
 }
 
@@ -175,17 +143,15 @@ mod tests {
 
     #[test]
     fn test_error_from_io() {
-        let io_err = std::io::Error::new(std::io::ErrorKind::NotFound, "file not found");
+        let io_err = io::Error::new(io::ErrorKind::NotFound, "file not found");
         let err: Error = io_err.into();
-        assert!(matches!(err, Error::BodyReadError { .. }));
+        assert!(matches!(err, Error::Io(_)));
     }
 
     #[test]
     fn test_timeout_error() {
-        let err = Error::Timeout {
-            duration: std::time::Duration::from_secs(30),
-        };
+        let err = Error::Timeout { seconds: 30 };
         assert!(err.to_string().contains("timed out"));
-        assert!(err.to_string().contains("30s"));
+        assert!(err.to_string().contains("30"));
     }
 }

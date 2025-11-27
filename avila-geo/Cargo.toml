@@ -2,111 +2,129 @@
 name = "avila-geo"
 version = "0.1.0"
 edition = "2021"
-rust-version = "1.70"
 authors = [
     "Nícolas Ávila <nicolas@avila.inc>",
     "Avila Development Team <dev@avila.inc>",
 ]
-license = "MIT OR Apache-2.0"
-description = "Geographic cartography and mapping library with zero external dependencies"
+license = "MIT"
+description = "Geographic cartography, mapping, and geospatial analysis for Avila ecosystem"
 repository = "https://github.com/avilaops/arxis"
 homepage = "https://avila.inc"
 documentation = "https://docs.rs/avila-geo"
-keywords = ["geography", "cartography", "maps", "gis", "projection"]
-categories = ["science::geo", "graphics", "rendering"]
 readme = "README.md"
+keywords = [
+    "geospatial",
+    "gis",
+    "mapping",
+    "cartography",
+    "geography",
+]
+categories = ["science", "algorithms", "visualization"]
+rust-version = "1.70"
+
+[lib]
+name = "avila_geo"
+path = "src/lib.rs"
+
+[features]
+default = ["spatial-native", "parallel-native"]
+
+# Core features (100% Rust nativo)
+spatial-native = []
+parallel-native = ["dep:avila-parallel"]
+imaging = ["dep:avila-image"]
+compression = ["avila-compress"]
+
+# 30 Advanced GIS Features (Nivel Esri ArcGIS)
+gis-buffer = []
+gis-overlay = []
+gis-proximity = []
+gis-density = []
+gis-hotspot = []
+gis-clustering = []
+gis-interpolation = []
+gis-surface = []
+gis-hydrology = []
+gis-visibility = []
+gis-network = []
+gis-service-area = []
+gis-closest-facility = []
+gis-od-matrix = []
+gis-vehicle-routing = []
+gis-raster-calc = []
+gis-zonal-stats = []
+gis-focal-stats = []
+gis-reclassify = []
+gis-cost-distance = []
+gis-geocoding = []
+gis-reverse-geocoding = []
+gis-batch-geocoding = []
+gis-turn-by-turn = []
+gis-multimodal = []
+gis-terrain-3d = []
+gis-viewshed-3d = []
+gis-space-time = []
+gis-temporal-agg = []
+gis-emerging-hotspots = []
+
+# Feature bundles
+gis-analysis = ["gis-buffer", "gis-overlay", "gis-proximity", "gis-density", "gis-hotspot"]
+gis-network-analysis = ["gis-network", "gis-service-area", "gis-closest-facility", "gis-od-matrix", "gis-vehicle-routing"]
+gis-raster = ["gis-raster-calc", "gis-zonal-stats", "gis-focal-stats", "gis-reclassify", "gis-cost-distance"]
+gis-geocoding-suite = ["gis-geocoding", "gis-reverse-geocoding", "gis-batch-geocoding", "gis-turn-by-turn", "gis-multimodal"]
+gis-3d = ["gis-terrain-3d", "gis-viewshed-3d"]
+gis-temporal = ["gis-space-time", "gis-temporal-agg", "gis-emerging-hotspots"]
+
+# All GIS features
+gis-full = [
+    "gis-analysis",
+    "gis-network-analysis",
+    "gis-raster",
+    "gis-geocoding-suite",
+    "gis-3d",
+    "gis-temporal",
+    "gis-clustering",
+    "gis-interpolation",
+    "gis-surface",
+    "gis-hydrology",
+    "gis-visibility"
+]
+
+# Complete package
+full = ["imaging", "compression", "spatial-native", "parallel-native", "gis-full"]
 
 [dependencies]
-serde = { version = "1.0", features = ["derive"], optional = true }
-serde_json = { version = "1.0", optional = true }
+# Core dependencies from Avila ecosystem (100% Rust Nativo!)
+avila-math = { version = "0.1.0", path = "../avila-math" }
+avila-linalg = { version = "0.1.1", path = "../avila-linalg" }
+avila-compress = { version = "0.1.0", path = "../avila-compress", optional = true }
+avila-image = { version = "0.1.0", path = "../avila-image", optional = true }
+avila-parallel = { version = "0.1.0", path = "../avila-parallel", optional = true }
+avila-serde = { version = "0.1.0", path = "../avila-serde" }
+avila-error = { version = "0.1.0", path = "../avila-error" }
+avila-numeric = { version = "0.1.0", path = "../avila-numeric" }
 
-# Performance
-rayon = { version = "1.10", optional = true }
-wide = { version = "0.7", optional = true }
-
-# Spatial indexing
-rstar = { version = "0.12", optional = true }
-
-# Image formats
-image = { version = "0.25", optional = true, default-features = false, features = ["png", "jpeg"] }
-svg = { version = "0.17", optional = true }
-
-# Geoprocessing dependencies
-geo = { version = "0.28", optional = true }
-geo-types = { version = "0.7", optional = true }
-petgraph = { version = "0.6", optional = true }
-nalgebra = { version = "0.33", optional = true }
-num-traits = { version = "0.2", optional = true }
+# ZERO external dependencies críticas!
+# Todas as funcionalidades implementadas 100% em Rust nativo pela Ávila
 
 [dev-dependencies]
 criterion = "0.5"
+approx = "0.5"
 
-[features]
-default = ["geojson", "parallel"]
-geojson = ["serde", "serde_json"]
-parallel = ["rayon"]
-simd = ["wide"]
-spatial-index = ["rstar"]
-export-svg = ["svg"]
-export-png = ["image"]
-geoprocessing = ["geo", "geo-types", "petgraph", "nalgebra", "num-traits"]
-full = ["geojson", "parallel", "simd", "spatial-index", "export-svg", "export-png", "geoprocessing"]
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+strip = true
 
-[[bench]]
-name = "projections"
-harness = false
+[profile.bench]
+inherits = "release"
 
-[[bench]]
-name = "rendering"
-harness = false
+[profile.dev]
+opt-level = 0
+debug = true
+incremental = true
 
-[[example]]
-name = "world_map"
-path = "examples/world_map.rs"
-
-[[example]]
-name = "brazil_map"
-path = "examples/brazil_map.rs"
-
-[[example]]
-name = "europe_map"
-path = "examples/europe_map.rs"
-
-[[example]]
-name = "dubai_gulf_map"
-path = "examples/dubai_gulf_map.rs"
-
-[[example]]
-name = "custom_projection"
-path = "examples/custom_projection.rs"
-
-[[example]]
-name = "tiles_example"
-path = "examples/tiles_example.rs"
-
-[[example]]
-name = "spatial_index"
-path = "examples/spatial_index.rs"
-required-features = ["spatial-index"]
-
-[[example]]
-name = "advanced_projections"
-path = "examples/advanced_projections.rs"
-
-[[example]]
-name = "simd_performance"
-path = "examples/simd_performance.rs"
-required-features = ["simd"]
-
-[[example]]
-name = "export_formats"
-path = "examples/export_formats.rs"
-
-[[example]]
-name = "topology_operations"
-path = "examples/topology_operations.rs"
-
-[[example]]
-name = "aviladb_integration"
-path = "examples/aviladb_integration.rs"
-required-features = ["geojson"]
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

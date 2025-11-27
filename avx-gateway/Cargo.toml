@@ -7,90 +7,76 @@ authors = [
     "Avila Development Team <dev@avila.inc>",
 ]
 license = "MIT OR Apache-2.0"
-description = "High-performance API gateway for Avila Experience Fabric - Routing, auth, rate limiting, load balancing"
+description = "API Gateway for AVL Cloud Platform with routing, auth, and rate limiting"
 repository = "https://github.com/avilaops/arxis"
-homepage = "https://arxis.avilaops.com"
+homepage = "https://avila.inc"
 documentation = "https://docs.rs/avx-gateway"
 readme = "README.md"
-keywords = ["gateway", "api", "proxy", "microservices", "router"]
-categories = ["web-programming", "network-programming", "asynchronous"]
-exclude = ["target/", "*.swp", ".git*"]
+keywords = [
+    "api-gateway",
+    "routing",
+    "proxy",
+    "rate-limiting",
+]
+categories = ["web-programming", "asynchronous", "network-programming"]
+rust-version = "1.70"
+
+[lib]
+name = "avx_gateway"
+path = "src/lib.rs"
+
+[features]
+default = ["auth", "rate-limiting"]
+auth = ["avl-auth"]
+rate-limiting = ["dep:governor"]
+full = ["auth", "rate-limiting"]
 
 [dependencies]
+# AVL Cloud Platform integration
+aviladb = { version = "0.1.0", path = "../aviladb" }
+avl-auth = { version = "0.1.0", path = "../avl-auth", optional = true }
+avl-loadbalancer = { version = "0.2.0", path = "../avl-loadbalancer" }
+avx-http = { version = "0.4.0", path = "../avx-http" }
+avx-config = { version = "0.1.0", path = "../avx-config" }
+avx-events = { version = "0.1.0", path = "../avx-events" }
+
 # Async runtime
 tokio = { version = "1", features = ["full"] }
-
-# Web framework
-axum = { version = "0.7", features = ["ws", "macros"] }
-tower = "0.5"
-http = "1"
-http-body-util = "0.1"
-
-# HTTP client for proxying
-reqwest = { version = "0.12", features = ["json"] }
-
-# WebSocket
-tokio-tungstenite = "0.24"
 futures = "0.3"
-futures-util = "0.3"
 
-# Compression
-flate2 = "1.0"
+# HTTP server
+axum = "0.7"
+tower = "0.5"
+tower-http = { version = "0.6", features = ["full"] }
+
+# Rate limiting
+governor = { version = "0.6", optional = true }
 
 # Serialization
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
 
-# Logging and tracing
+# Error handling
+thiserror = "2.0"
+anyhow = "1.0"
+
+# Logging
 tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-
-# Utilities
-uuid = { version = "1", features = ["v4", "serde"] }
-anyhow = "1"
-thiserror = "1"
-rand = "0.8"
-num_cpus = "1"
-
-# Configuration
-toml = "0.8"
-
-# AVX dependencies
-avx-config = { version = "0.1", path = "../avx-config" }
-avx-telemetry = { version = "0.1", path = "../avx-telemetry" }
 
 [dev-dependencies]
 tokio-test = "0.4"
-criterion = { version = "0.5", features = ["async_tokio"] }
 
-[[example]]
-name = "basic_gateway"
-path = "examples/basic_gateway.rs"
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+strip = true
 
-[[example]]
-name = "with_auth"
-path = "examples/with_auth.rs"
+[profile.dev]
+opt-level = 0
+debug = true
+incremental = true
 
-[[example]]
-name = "load_balancing"
-path = "examples/load_balancing.rs"
-
-[[example]]
-name = "advanced_features"
-path = "examples/advanced_features.rs"
-
-[[example]]
-name = "websocket_proxy"
-path = "examples/websocket_proxy.rs"
-
-[[example]]
-name = "with_caching"
-path = "examples/with_caching.rs"
-
-[[example]]
-name = "webrtc_signaling"
-path = "examples/webrtc_signaling.rs"
-
-[[bench]]
-name = "gateway_bench"
-harness = false
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

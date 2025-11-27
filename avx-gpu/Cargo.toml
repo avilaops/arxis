@@ -1,64 +1,42 @@
 [workspace]
 members = [
     "avx-gpu-core",
-    "avx-gpu-compiler",
-    "avx-gpu-runtime",
-    "avx-gpu-backends/wgpu",
-    "avx-gpu-backends/vulkan",
-    "avx-gpu-backends/cuda",
-    "avx-gpu-backends/metal",
-    "avx-gpu-backends/rocm",
     "avx-gpu-std",
     "avx-gpu-macros",
-    "examples",
+    "avx-gpu-compiler",
+    "avx-gpu-runtime",
+    "avx-gpu-backends/cuda",
+    "avx-gpu-backends/rocm",
+    "avx-gpu-backends/vulkan",
+    "avx-gpu-backends/metal",
+    "avx-gpu-backends/wgpu",
 ]
 resolver = "2"
 
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
+authors = [
+    "Nícolas Ávila <nicolas@avila.inc>",
+    "Avila Development Team <dev@avila.inc>",
+]
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/avila-cloud/avx-gpu"
-authors = ["Avila Cloud <dev@avila.cloud>"]
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://avila.inc"
+rust-version = "1.70"
 
 [workspace.dependencies]
-# Core dependencies
-bytemuck = { version = "1.14", features = ["derive"] }
-thiserror = "1.0"
-anyhow = "1.0"
-tracing = "0.1"
+# Internal dependencies
+avx-gpu-core = { path = "avx-gpu-core", version = "0.1.0" }
+avx-gpu-std = { path = "avx-gpu-std", version = "0.1.0" }
+avx-gpu-macros = { path = "avx-gpu-macros", version = "0.1.0" }
+avx-gpu-compiler = { path = "avx-gpu-compiler", version = "0.1.0" }
+avx-gpu-runtime = { path = "avx-gpu-runtime", version = "0.1.0" }
 
-# GPU backends
-wgpu = { version = "22.0", features = ["spirv"] }
-pollster = "0.3"
-naga = { version = "22.0", features = ["wgsl-in", "spv-out"] }
-futures-intrusive = "0.5"
-
-# Vulkan backend (nosso próprio!)
-ash = "0.37"
-gpu-allocator = "0.26"
-
-# CUDA backend (opcional)
-cudarc = "0.11"
-
-# Metal backend (opcional)
-metal = "0.29"
-
-# ROCm/HIP backend (optional)
-# hip-sys = { version = "0.3", optional = true }
-
-# Utilities
-rayon = "1.8"
-parking_lot = "0.12"
-dashmap = "5.5"
-
-# Serialization
+# External dependencies
 serde = { version = "1.0", features = ["derive"] }
-bincode = "1.3"
-
-# Testing & Benchmarking
-criterion = { version = "0.5", features = ["html_reports"] }
-proptest = "1.4"
+thiserror = "2.0"
+tracing = "0.1"
 
 [profile.release]
 opt-level = 3
@@ -66,5 +44,7 @@ lto = "fat"
 codegen-units = 1
 strip = true
 
-[profile.bench]
-inherits = "release"
+[profile.dev]
+opt-level = 0
+debug = true
+incremental = true

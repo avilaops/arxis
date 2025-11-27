@@ -1,0 +1,35 @@
+[package]
+name = "avila-organism"
+version = "0.1.0"
+edition = "2021"
+authors = ["Nícolas Ávila <nicolas@avila.inc>"]
+license = "MIT OR Apache-2.0"
+description = "Email organism - Complete platform with webmail, API, and integrations"
+repository = "https://github.com/avilaops/arxis"
+keywords = ["email", "platform", "webmail", "api"]
+
+[[bin]]
+name = "avila-mail-server"
+path = "src/bin/server.rs"
+
+[[bin]]
+name = "avila-mail-cli"
+path = "src/bin/cli.rs"
+
+[dependencies]
+# avila-nucleus (excluded)
+avila-atom = { path = "../avila-atom" }
+avila-molecule = { path = "../avila-molecule" }
+avila-cell = { path = "../avila-cell" }
+avila-tissue = { path = "../avila-tissue" }
+avila-organ = { path = "../avila-organ" }
+avila-error = { path = "../avila-error" }
+avila-id = { path = "../avila-id" }
+avila-time = { path = "../avila-time" }
+avila-terminal = { path = "../avila-terminal" }
+tokio = { version = "1", features = ["full"] }
+axum = "0.7" # Web framework
+tower = "0.5"
+tower-http = { version = "0.6", features = ["fs", "cors"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

@@ -1,7 +1,7 @@
 //! Telemetry and observability
 
 use std::sync::Arc;
-use std::time::{Duration, Instant};
+use std::time::Instant;
 use tokio::sync::RwLock;
 use serde::{Deserialize, Serialize};
 

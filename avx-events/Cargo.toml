@@ -7,54 +7,66 @@ authors = [
     "Avila Development Team <dev@avila.inc>",
 ]
 license = "MIT OR Apache-2.0"
-description = "Event-driven architecture for Avila Experience Fabric - Pub/sub, event bus, and message patterns"
+description = "Event system and pub/sub for AVX API Gateway and AVL Platform"
 repository = "https://github.com/avilaops/arxis"
-homepage = "https://arxis.avilaops.com"
+homepage = "https://avila.inc"
 documentation = "https://docs.rs/avx-events"
 readme = "README.md"
-keywords = ["events", "pubsub", "event-bus", "messaging", "async"]
-categories = ["asynchronous", "network-programming"]
-exclude = ["target/", "*.swp", ".git*"]
-
-[dependencies]
-tokio = { version = "1", features = ["macros", "rt-multi-thread", "time", "sync"] }
-tracing = "0.1"
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
-anyhow = "1"
-thiserror = "1"
-uuid = { version = "1", features = ["v4", "serde"] }
-chrono = { version = "0.4", features = ["serde"] }
-async-trait = "0.1"
-bytes = "1"
-url = "2"
-futures = "0.3"
-
-avx-config = { version = "0.1", path = "../avx-config" }
-avx-telemetry = { version = "0.1", path = "../avx-telemetry" }
-
-# OPC UA support (optional) - Requires OpenSSL, enable manually if needed
-# opcua = { version = "0.12", optional = true }
-
-# MQTT support (optional)
-rumqttc = { version = "0.24", optional = true, default-features = false, features = ["use-rustls"] }
-
-# Time-series support (optional)
-influxdb2 = { version = "0.5", optional = true, default-features = false, features = ["rustls"] }
-
-[dev-dependencies]
-tokio-test = "0.4"
-tracing-subscriber = "0.3"
-
-[features]
-default = []
-redis = []
-# opcua = ["dep:opcua"]  # Commented out - requires OpenSSL setup
-mqtt = ["dep:rumqttc"]
-timeseries = ["dep:influxdb2"]
-industry40 = ["mqtt", "timeseries"]  # Removed opcua for now
-full = ["redis", "mqtt", "timeseries"]
+keywords = [
+    "events",
+    "pub-sub",
+    "event-driven",
+    "messaging",
+]
+categories = ["asynchronous", "web-programming"]
+rust-version = "1.70"
 
 [lib]
 name = "avx_events"
 path = "src/lib.rs"
+
+[features]
+default = ["queue"]
+queue = ["avl-queue"]
+full = ["queue"]
+
+[dependencies]
+# AVL Cloud Platform integration
+avl-queue = { version = "0.1.0", path = "../avl-queue", optional = true }
+
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+futures = "0.3"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Time handling
+chrono = { version = "0.4", features = ["serde"] }
+
+# UUID generation
+uuid = { version = "1.11", features = ["v4", "serde"] }
+
+# Error handling
+thiserror = "2.0"
+
+# Logging
+tracing = "0.1"
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+
+[profile.dev]
+opt-level = 0
+debug = true
+incremental = true
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

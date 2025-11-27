@@ -56,6 +56,8 @@ pub mod aviladb;
 pub mod parallel;
 pub mod export;
 pub mod image_export;
+pub mod spatial_native; // Native R-Tree implementation
+pub mod advanced_gis_features; // 30 Advanced GIS features
 
 #[cfg(feature = "simd")]
 pub mod simd;
@@ -83,6 +85,7 @@ pub use parallel::*;
 pub use cache::*;
 pub use topology::*;
 pub use aviladb::*;
+pub use spatial_native::*;
 
 #[cfg(feature = "export-svg")]
 pub use export::{MapSvgExt, SvgExporter};

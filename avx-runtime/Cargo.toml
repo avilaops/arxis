@@ -1,0 +1,46 @@
+[workspace]
+# Standalone workspace - não faz parte do workspace pai
+
+[package]
+name = "avx-runtime"
+version = "0.1.1"
+edition = "2021"
+authors = [
+    "Nícolas Ávila <nicolas@avila.inc>",
+    "Avila Development Team <dev@avila.inc>",
+]
+license = "MIT OR Apache-2.0"
+description = "AVX Runtime - Native async runtime built from scratch to replace Tokio with work-stealing scheduler, epoll/kqueue/IOCP, and zero-overhead futures"
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://avila.inc"
+documentation = "https://docs.rs/avx-runtime"
+readme = "README.md"
+keywords = ["async", "runtime", "futures", "work-stealing", "executor"]
+categories = ["asynchronous", "concurrency", "network-programming"]
+
+[dependencies]
+# 100% RUST PURO - ZERO DEPENDÊNCIAS EXTERNAS! 🦀
+# Implementamos TUDO do zero: epoll, kqueue, IOCP, work-stealing, lock-free queues
+
+[dev-dependencies]
+# Apenas para testes comparativos (opcional)
+# criterion = "0.5"
+
+[features]
+default = ["net", "fs", "time", "sync"]
+full = ["net", "fs", "time", "sync", "process", "signal"]
+net = []
+fs = []
+time = []
+sync = []
+process = []
+signal = []
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+strip = true
+
+[profile.bench]
+inherits = "release"

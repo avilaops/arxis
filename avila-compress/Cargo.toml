@@ -1,64 +1,74 @@
 [package]
 name = "avila-compress"
-version = "0.8.0"
+version = "0.1.0"
 edition = "2021"
 authors = [
     "Nícolas Ávila <nicolas@avila.inc>",
     "Avila Development Team <dev@avila.inc>",
 ]
 license = "MIT OR Apache-2.0"
-description = "High-performance compression library for AvilaDB with LZ4, Zstandard, and columnar algorithms. Zero external dependencies"
+description = "Native compression library (LZ4, Zstd) for Avila ecosystem"
 repository = "https://github.com/avilaops/arxis"
 homepage = "https://avila.inc"
-rust-version = "1.70"
 documentation = "https://docs.rs/avila-compress"
 readme = "README.md"
-keywords = ["compression", "lz4", "aviladb", "scientific-computing", "columnar"]
-categories = ["compression", "algorithms", "database-implementations"]
-exclude = ["target/", "*.swp", ".git*", "benches/*.txt"]
-
-[dependencies]
-# Zero external dependencies - 100% native Rust implementation
-
-# Optional: Parallel compression support
-rayon = { version = "1.8", optional = true }
-
-[dev-dependencies]
-criterion = { version = "0.5", features = ["html_reports"] }
-
-[features]
-default = []
-simd = []  # AVX2/AVX-512 optimizations
-parallel = ["rayon"]  # Parallel compression
-dictionary = []  # Dictionary compression
-
-[[bench]]
-name = "lz4_bench"
-harness = false
-
-[[bench]]
-name = "compression_benchmark"
-harness = false
-
-[[bench]]
-name = "simd_bench"
-harness = false
-required-features = ["simd"]
-
-[[bench]]
-name = "dictionary_bench"
-harness = false
-required-features = ["dictionary"]
+keywords = [
+    "compression",
+    "lz4",
+    "zstd",
+    "performance",
+    "streaming",
+]
+categories = ["compression", "algorithms"]
+rust-version = "1.70"
 
 [lib]
 name = "avila_compress"
 path = "src/lib.rs"
 
+[features]
+default = ["lz4", "zstd"]
+lz4 = ["dep:lz4"]
+zstd = ["dep:zstd"]
+full = ["lz4", "zstd"]
+
+[dependencies]
+# LZ4 compression (fast, moderate ratio)
+lz4 = { version = "1.28", optional = true }
+
+# Zstd compression (slower, better ratio)
+zstd = { version = "0.13", optional = true }
+
+# Async support
+tokio = { version = "1", features = ["io-util"], optional = true }
+futures = { version = "0.3", optional = true }
+
+# Error handling
+thiserror = "2.0"
+
+[dev-dependencies]
+tokio = { version = "1", features = ["full"] }
+criterion = "0.5"
+rand = "0.8"
+
+# [[bench]]
+# name = "compression_bench"
+# harness = false
+
 [profile.release]
 opt-level = 3
-lto = true
+lto = "fat"
 codegen-units = 1
+strip = true
 
 [profile.bench]
-opt-level = 3
-lto = true
+inherits = "release"
+
+[profile.dev]
+opt-level = 0
+debug = true
+incremental = true
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

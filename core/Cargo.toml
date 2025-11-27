@@ -1,0 +1,26 @@
+[workspace]
+members = [
+    "../avila-arrow",
+    "../avila-compress",
+    "../avila-linalg",
+    "../avila-math",
+    "../avila-reduction",
+    "../avila-telemetry"
+]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+version = "0.0.0"
+publish = ["crates-io"]
+authors = [
+    "Nícolas Ávila <nicolas@avila.inc>",
+    "Avila Development Team <dev@avila.inc>"
+]
+rust-version = "1.70"
+
+[workspace.metadata.avila]
+domain = "core"
+release_tag_prefix = "core-"
+summary = "Bibliotecas fundamentais de matemática, colunas e telemetria para toda a plataforma AVL"

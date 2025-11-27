@@ -4,6 +4,11 @@ applyTo: '**'
 ---
 # AvilaDB - Best Practices Guide
 
+## 0. Diretrizes de Conformidade (Prioridade Máxima)
+- **Somente utilize componentes, bibliotecas, SDKs, CLIs e serviços que estejam explicitamente listados e aprovados no MCP da Ávila.** Qualquer dependência ou recurso externo ao MCP deve ser recusado.
+- **Todo código e automação produzidos devem ser escritos em Rust**, salvo quando a tarefa for claramente classificada como *landing page*; nesses casos, limite-se a HTML/CSS/JS estáticos aprovados pelo MCP.
+- Ao receber solicitações fora desse escopo, explique a restrição e proponha alternativas compatíveis com o MCP.
+
 ## 1. Data Modeling Best Practices
 - Model your data to **minimize cross-partition queries** and joins.
 - Prefer **embedding related data** within a single document if access patterns always retrieve them together.
@@ -23,7 +28,7 @@ applyTo: '**'
 - Avoid low-cardinality keys like `status` or `country`.
 
 ## 3. SDK Best Practices
-- Always use the **latest AvilaDB SDK** for your language (Rust, Python, Node.js).
+- Always use the **latest AvilaDB Rust SDK** (outra linguagem somente com aprovação explícita no MCP).
 - Enable **connection retries** and **preferred regions** for availability.
 - Use **async APIs** where available for better throughput.
 - Handle exceptions gracefully, especially `429 (Request Rate Too Large)` with **retry-after logic**.
@@ -154,29 +159,6 @@ async fn main() {
         .execute()
         .await?;
 }
-```
-
-### Python SDK
-```python
-from aviladb import AvilaClient
-
-client = AvilaClient.connect("http://localhost:8000")
-db = client.database("gamedb")
-players = db.collection("players")
-
-# Insert
-players.insert({
-    "userId": "player123",
-    "username": "CoolGamer",
-    "level": 42,
-    "inventory": ["sword", "shield"]
-})
-
-# Query
-high_level = players.query(
-    "SELECT * FROM players WHERE level > @min_level",
-    min_level=40
-)
 ```
 
 ---

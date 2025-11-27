@@ -1,0 +1,25 @@
+[package]
+name = "avila-darknet"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "avila_darknet"
+path = "src/lib.rs"
+
+[dependencies]
+# Zero dependencies - 100% Rust nativo
+
+[dev-dependencies]
+
+[[example]]
+name = "tor_circuit"
+path = "examples/tor_circuit.rs"
+
+[[example]]
+name = "onion_routing"
+path = "examples/onion_routing.rs"
+
+[[example]]
+name = "deepweb_mapper"
+path = "examples/deepweb_mapper.rs"

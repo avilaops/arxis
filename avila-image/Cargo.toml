@@ -1,0 +1,38 @@
+[package]
+name = "avila-image"
+version = "0.1.0"
+edition = "2021"
+authors = [
+    "Nícolas Ávila <nicolas@avila.inc>",
+    "Avila Development Team <dev@avila.inc>",
+]
+license = "MIT"
+description = "Image processing library for AVL Platform with codecs and basic operations"
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://avila.inc"
+documentation = "https://docs.rs/avila-image"
+readme = "README.md"
+keywords = ["image", "graphics", "png", "jpeg", "codec"]
+categories = ["multimedia::images", "encoding"]
+rust-version = "1.70"
+
+[lib]
+name = "avila_image"
+path = "src/lib.rs"
+
+[features]
+default = ["png", "jpeg"]
+png = []
+jpeg = []
+bmp = []
+all = ["png", "jpeg", "bmp"]
+
+[dependencies]
+
+[dev-dependencies]
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+strip = true

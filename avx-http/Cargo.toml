@@ -1,73 +1,58 @@
 [package]
 name = "avx-http"
-version = "0.2.0"
+version = "0.4.0"
 edition = "2021"
 authors = [
     "Nícolas Ávila <nicolas@avila.inc>",
     "Avila Development Team <dev@avila.inc>",
 ]
 license = "MIT OR Apache-2.0"
-description = "Native HTTP client/server optimized for AVL Platform - Low latency for Brazilian infrastructure, built-in telemetry, AvilaDB integration"
+description = "Pure Rust HTTP/1.1 + HTTP/2 implementation with ZERO dependencies - no tokio, no serde, no hyper, 100% proprietary"
 repository = "https://github.com/avilaops/arxis"
-homepage = "https://avila.cloud"
+homepage = "https://avila.inc"
 documentation = "https://docs.rs/avx-http"
 readme = "README.md"
-keywords = ["http", "client", "server", "avila", "latam"]
-categories = ["network-programming", "web-programming", "asynchronous"]
-
-[dependencies]
-tokio = { version = "1.48", features = ["full"] }
-bytes = "1.7"
-http = "1.2"
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-urlencoding = "2.1"
-futures = "0.3"
-async-trait = "0.1"
-tracing = "0.1"
-chrono = "0.4"
-
-# AVX Platform dependencies
-avx-events = { version = "0.1", path = "../avx-events", optional = true }
-avx-telemetry = { version = "0.1", path = "../avx-telemetry", optional = true }
-
-[target.'cfg(unix)'.dependencies]
-libc = "0.2"
-
-[target.'cfg(windows)'.dependencies]
-windows-sys = { version = "0.59", features = ["Win32_Networking_WinSock"] }
-
-[dev-dependencies]
-tokio-test = "0.4"
-criterion = { version = "0.5", features = ["html_reports", "async_tokio"] }
-
-[features]
-default = ["client", "server"]
-client = []
-server = []
-compression = []
-telemetry = ["avx-telemetry"]
-aviladb = []
-events = ["avx-events"]
-full = ["client", "server", "telemetry", "events"]
-
-[[bench]]
-name = "client_bench"
-harness = false
-
-[[bench]]
-name = "server_bench"
-harness = false
+keywords = ["http", "http2", "no-std", "zero-deps", "pure-rust"]
+categories = ["web-programming", "web-programming::http-client", "web-programming::http-server", "network-programming", "no-std"]
+exclude = ["target/", "*.swp", ".git*", "benches/results/"]
 
 [lib]
 name = "avx_http"
 path = "src/lib.rs"
 
+[features]
+default = ["std", "client", "server"]
+std = []
+client = []
+server = ["std"]
+alloc = []
+tls = ["rustls", "rustls-pemfile", "rustls-native-certs"]
+
+[dependencies]
+# ZERO dependencies for core functionality!
+# TLS is optional feature - only needed for HTTPS
+rustls = { version = "0.23", optional = true, default-features = false, features = ["std"] }
+rustls-pemfile = { version = "2.0", optional = true }
+rustls-native-certs = { version = "0.7", optional = true }
+
+[dev-dependencies]
+# Only for benchmarks - not required for library usage
+criterion = "0.5"
+
+# For benchmark comparisons with Tokio (always available in dev builds)
+tokio = { version = "1.35", features = ["full"] }
+
 [profile.release]
 opt-level = 3
-lto = true
+lto = "fat"
 codegen-units = 1
+strip = true
+panic = "abort"
+
+[profile.dev]
+opt-level = 0
+debug = true
+incremental = true
 
 [profile.bench]
-opt-level = 3
-lto = true
+inherits = "release"

@@ -7,22 +7,67 @@ authors = [
     "Avila Development Team <dev@avila.inc>",
 ]
 license = "MIT OR Apache-2.0"
-description = "Core API types and business logic for Avila Experience Fabric - Shared models, traits, and utilities"
+description = "Core API types and utilities for AVX Gateway and AVL Cloud Platform"
 repository = "https://github.com/avilaops/arxis"
-homepage = "https://arxis.avilaops.com"
+homepage = "https://avila.inc"
 documentation = "https://docs.rs/avx-api-core"
 readme = "README.md"
-keywords = ["api", "core", "types", "models", "utilities"]
-categories = ["web-programming", "api-bindings"]
-exclude = ["target/", "*.swp", ".git*"]
+keywords = [
+    "api",
+    "core",
+    "gateway",
+    "types",
+]
+categories = ["web-programming", "asynchronous"]
+rust-version = "1.70"
+
+[lib]
+name = "avx_api_core"
+path = "src/lib.rs"
+
+[features]
+default = []
+full = []
 
 [dependencies]
-tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
-axum = "0.7"
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
-tracing = "0.1"
-anyhow = "1"
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+futures = "0.3"
 
-avx-config = { version = "0.1", path = "../avx-config" }
-avx-telemetry = { version = "0.1", path = "../avx-telemetry" }
+# HTTP types
+axum = "0.7"
+tower = "0.5"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Time handling
+chrono = { version = "0.4", features = ["serde"] }
+
+# UUID generation
+uuid = { version = "1.11", features = ["v4", "serde"] }
+
+# Error handling
+thiserror = "2.0"
+anyhow = "1.0"
+
+# Logging
+tracing = "0.1"
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+
+[profile.dev]
+opt-level = 0
+debug = true
+incremental = true
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

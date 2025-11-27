@@ -1,0 +1,20 @@
+[package]
+name = "avila-organ"
+version = "0.1.0"
+edition = "2021"
+authors = ["Nícolas Ávila <nicolas@avila.inc>"]
+license = "MIT OR Apache-2.0"
+description = "Email organ - Complete server and client system"
+repository = "https://github.com/avilaops/arxis"
+keywords = ["email", "server", "client", "smtp", "imap"]
+
+[dependencies]
+# avila-nucleus (excluded)
+avila-atom = { path = "../avila-atom" }
+avila-molecule = { path = "../avila-molecule" }
+avila-cell = { path = "../avila-cell" }
+avila-tissue = { path = "../avila-tissue" }
+avila-error = { path = "../avila-error" }
+avila-id = { path = "../avila-id" }
+avila-time = { path = "../avila-time" }
+tokio = { version = "1", features = ["full"] }

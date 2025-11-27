@@ -114,8 +114,9 @@ impl Collection {
 
         // Build JSON payload
         let json_payload = if self.config.enable_compression {
+            use base64::Engine;
             json!({
-                "data": base64::encode(&payload),
+                "data": base64::engine::general_purpose::STANDARD.encode(&payload),
                 "compressed": true
             })
         } else {
@@ -215,8 +216,9 @@ impl Collection {
         // Create batch payload
         let batch_payload = json!({
             "documents": batch_documents.iter().map(|d| {
+                use base64::Engine;
                 if self.config.enable_compression {
-                    base64::encode(d)
+                    base64::engine::general_purpose::STANDARD.encode(d)
                 } else {
                     String::from_utf8_lossy(d).to_string()
                 }

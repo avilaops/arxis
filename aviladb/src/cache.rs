@@ -7,7 +7,7 @@ use std::time::{Duration, Instant};
 use tokio::sync::RwLock;
 use serde::{Deserialize, Serialize};
 
-use crate::{Document, query::QueryResult};
+use crate::query::QueryResult;
 
 /// Cache key for queries
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]

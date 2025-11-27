@@ -1,0 +1,37 @@
+[package]
+name = "avila-tissue"
+version = "0.1.0"
+edition = "2021"
+authors = [
+    "Nícolas Ávila <nicolas@avila.inc>",
+    "Avila Development Team <dev@avila.inc>",
+]
+license = "MIT OR Apache-2.0"
+description = "Email tissue layer - Storage, indexing, searching, and organization"
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://avila.inc"
+keywords = ["email", "storage", "indexing", "search", "database"]
+categories = ["email", "database"]
+
+[lib]
+name = "avila_tissue"
+path = "src/lib.rs"
+
+[dependencies]
+# avila-nucleus (excluded)
+avila-atom = { path = "../avila-atom", version = "0.1.0" }
+avila-molecule = { path = "../avila-molecule", version = "0.1.0" }
+avila-cell = { path = "../avila-cell", version = "0.1.0" }
+avila-error = { path = "../avila-error", version = "0.1.0" }
+avila-id = { path = "../avila-id", version = "0.1.0" }
+avila-time = { path = "../avila-time", version = "0.1.0", features = ["serde"] }
+tokio = { version = "1", features = ["full"] }
+# sled = "0.34" # Embedded database (TODO: readd later)
+tantivy = "0.22" # Full-text search
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1

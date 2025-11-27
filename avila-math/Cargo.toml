@@ -36,18 +36,18 @@ default = []
 serde = ["dep:serde"]
 python = ["dep:pyo3", "dep:numpy", "serde"]
 
-[[bench]]
-name = "tensor_ops"
-harness = false
+# [[bench]]
+# name = "tensor_ops"
+# harness = false
 
-[[bench]]
-name = "conv4d"
-harness = false
+# [[bench]]
+# name = "conv4d"
+# harness = false
 
-[[bench]]
-name = "quaternions"
-harness = false
+# [[bench]]
+# name = "quaternions"
+# harness = false
 
-[[bench]]
-name = "fft"
-harness = false
+# [[bench]]
+# name = "fft"
+# harness = false

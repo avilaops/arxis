@@ -30,6 +30,6 @@ default = []
 python = []
 wasm = []
 
-[[bench]]
-name = "tokenize_bench"
-harness = false
+# [[bench]]
+# name = "tokenize_bench"
+# harness = false

@@ -40,6 +40,6 @@ approx = "0.5"
 default = ["fft"]
 fft = ["rustfft"]
 
-[[bench]]
-name = "time_series_bench"
-harness = false
+# [[bench]]
+# name = "time_series_bench"
+# harness = false

@@ -7,16 +7,54 @@ authors = [
     "Avila Development Team <dev@avila.inc>",
 ]
 license = "MIT OR Apache-2.0"
-description = "Configuration management for Avila Experience Fabric - Type-safe config loading from multiple sources"
+description = "Configuration management for AVX API Gateway and AVL Platform"
 repository = "https://github.com/avilaops/arxis"
-homepage = "https://arxis.avilaops.com"
+homepage = "https://avila.inc"
 documentation = "https://docs.rs/avx-config"
 readme = "README.md"
-keywords = ["config", "configuration", "settings", "environment", "avx"]
-categories = ["config", "development-tools"]
-exclude = ["target/", "*.swp", ".git*"]
+keywords = [
+    "configuration",
+    "settings",
+    "config-management",
+    "environment",
+]
+categories = ["config", "web-programming"]
+rust-version = "1.70"
+
+[lib]
+name = "avx_config"
+path = "src/lib.rs"
+
+[features]
+default = ["env"]
+env = ["dep:dotenvy"]
+full = ["env"]
 
 [dependencies]
-serde = { version = "1", features = ["derive"] }
-config = "0.14"
-thiserror = "1"
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+toml = "0.8"
+
+# Environment variables
+dotenvy = { version = "0.15", optional = true }
+
+# Error handling
+thiserror = "2.0"
+
+[dev-dependencies]
+# None
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+
+[profile.dev]
+opt-level = 0
+debug = true
+incremental = true
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

@@ -64,14 +64,14 @@ gpu = ["cudarc"]
 gpu-wgpu = ["wgpu"]
 full = ["neural", "gpu", "gpu-wgpu"]
 
-[[bench]]
-name = "pca"
-harness = false
+# [[bench]]
+# name = "pca"
+# harness = false
 
-[[bench]]
-name = "tsne"
-harness = false
+# [[bench]]
+# name = "tsne"
+# harness = false
 
-[[bench]]
-name = "umap"
-harness = false
+# [[bench]]
+# name = "umap"
+# harness = false

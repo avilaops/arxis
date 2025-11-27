@@ -1,0 +1,34 @@
+[package]
+name = "avila-parallel"
+version = "0.1.0"
+edition = "2021"
+authors = [
+    "Nícolas Ávila <nicolas@avila.inc>",
+    "Avila Development Team <dev@avila.inc>",
+]
+license = "MIT"
+description = "Data parallelism library for AVL Platform with thread pools and parallel iterators"
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://avila.inc"
+documentation = "https://docs.rs/avila-parallel"
+readme = "README.md"
+keywords = ["parallel", "concurrency", "threading", "iterator", "avila"]
+categories = ["concurrency", "algorithms"]
+rust-version = "1.70"
+
+[lib]
+name = "avila_parallel"
+path = "src/lib.rs"
+
+[features]
+default = []
+
+[dependencies]
+
+[dev-dependencies]
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+strip = true

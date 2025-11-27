@@ -2,87 +2,100 @@
 name = "avl-auth"
 version = "0.1.0"
 edition = "2021"
-authors = ["Nicolas Ávila <nicolas@avila.inc>"]
+authors = [
+    "Nícolas Ávila <nicolas@avila.inc>",
+    "Avila Development Team <dev@avila.inc>",
+]
 license = "MIT OR Apache-2.0"
-description = "AVL Auth - Identity and Access Management for AVL Cloud Platform"
+description = "Identity and Access Management (IAM) with JWT, OAuth2, RBAC for AVL Cloud Platform"
 repository = "https://github.com/avilaops/arxis"
-homepage = "https://avila.cloud"
+homepage = "https://avila.inc"
 documentation = "https://docs.rs/avl-auth"
 readme = "README.md"
-keywords = ["authentication", "authorization", "iam", "oauth", "security"]
-categories = ["authentication", "web-programming", "cryptography"]
+keywords = [
+    "authentication",
+    "authorization",
+    "jwt",
+    "oauth2",
+    "rbac",
+]
+categories = ["authentication", "web-programming", "asynchronous"]
+rust-version = "1.70"
+
+[lib]
+name = "avl_auth"
+path = "src/lib.rs"
+
+[features]
+default = ["database", "mfa"]
+database = ["aviladb"]
+mfa = ["dep:totp-lite", "dep:data-encoding"]
+oauth2 = ["dep:oauth2"]
+full = ["database", "mfa", "oauth2"]
 
 [dependencies]
-tokio = { version = "1.40", features = ["full"] }
+# AVL Cloud Platform integration
+aviladb = { version = "0.1.0", path = "../aviladb", optional = true }
+
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+futures = "0.3"
+
+# HTTP server
+axum = "0.7"
+tower = "0.5"
+tower-http = { version = "0.6", features = ["full"] }
+
+# JWT
+jsonwebtoken = "9.3"
+
+# Password hashing (Argon2id)
+argon2 = "0.5"
+
+# Cryptography
+sha2 = "0.10"
+hmac = "0.12"
+rand = "0.8"
+
+# MFA/TOTP
+totp-lite = { version = "2.0", optional = true }
+data-encoding = { version = "2.6", optional = true }
+
+# OAuth2
+oauth2 = { version = "4.4", optional = true }
+
+# Serialization
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+
+# Time handling
+chrono = { version = "0.4", features = ["serde"] }
+
+# UUID generation
+uuid = { version = "1.11", features = ["v4", "serde"] }
+
+# Error handling
 thiserror = "2.0"
 anyhow = "1.0"
 
-# Authentication
-jsonwebtoken = "9.3"
-argon2 = "0.5"
-rand = "0.8"
-
-# OAuth2/OIDC
-oauth2 = "4.4"
-reqwest = { version = "0.12", features = ["json"] }
-
-# Networking
-axum = "0.7"
-tower = "0.5"
-tower-http = { version = "0.6", features = ["cors", "trace"] }
-
-# Time
-chrono = { version = "0.4", features = ["serde"] }
-uuid = { version = "1.11", features = ["v4", "serde"] }
-humantime-serde = "1.1"
-
-# Cryptography
-base64 = "0.22"
-base32 = "0.5"
-hmac = "0.12"
-sha1 = "0.10"
-sha2 = "0.10"
-rsa = { version = "0.9", features = ["sha2"] }
-p256 = { version = "0.13", features = ["pkcs8"] }
-aes-gcm = "0.10"
-subtle = "2.5"
-
-# Utilities
-regex = "1.10"
-urlencoding = "2.1"
-
-# Database - AvilaDB for distributed user storage (coming soon on crates.io)
-# aviladb = { version = "0.1", optional = true }
-
-# Observability - AVX Telemetry for structured logging and metrics
+# Logging
 tracing = "0.1"
-tracing-subscriber = "0.3"
-# avx-telemetry = { version = "0.1", optional = true }
-
-# Compression - For efficient token/session storage (coming soon on crates.io)
-# avila-compress = { version = "0.1", optional = true }
-
-# Time Series - For behavioral analysis and risk scoring (coming soon on crates.io)
-# avila-telemetry = { version = "0.1", optional = true }
 
 [dev-dependencies]
-criterion = "0.5"
+tokio-test = "0.4"
+mockito = "1.6"
 
-[features]
-default = []
-# Full production feature set (enable when AVL libraries are published)
-# full = ["database", "telemetry", "compression", "analytics"]
-# Individual features
-# database = ["aviladb"]
-# telemetry = ["avx-telemetry"]
-# compression = ["avila-compress"]
-# analytics = ["avila-telemetry"]
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+strip = true
 
-[[bench]]
-name = "auth_ops"
-harness = false
+[profile.dev]
+opt-level = 0
+debug = true
+incremental = true
 
 [package.metadata.docs.rs]
 all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

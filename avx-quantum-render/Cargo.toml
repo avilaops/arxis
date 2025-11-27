@@ -7,44 +7,83 @@ authors = [
     "Avila Development Team <dev@avila.inc>",
 ]
 license = "MIT OR Apache-2.0"
-description = "Quantum Electrodynamics (QED) renderer using Path Integral formulation for physically-accurate photon transport"
+description = "Quantum Electrodynamics (QED) renderer using Path Integral formulation"
 repository = "https://github.com/avilaops/arxis"
-homepage = "https://arxis.avilaops.com"
+homepage = "https://avila.inc"
 documentation = "https://docs.rs/avx-quantum-render"
 readme = "README.md"
-keywords = ["quantum", "rendering", "qed", "physics", "photon"]
-categories = ["rendering", "science", "graphics"]
-exclude = ["target/", "*.swp", ".git*", "examples/*.ppm", "output_*.ppm"]
+keywords = [
+    "rendering",
+    "qed",
+    "path-integral",
+    "quantum",
+    "physics",
+]
+categories = ["rendering", "graphics", "science", "simulation"]
+rust-version = "1.70"
+
+[lib]
+name = "avx_quantum_render"
+path = "src/lib.rs"
+
+[features]
+default = ["std"]
+std = []
+gpu = ["avx-gpu"]
+full = ["std", "gpu"]
 
 [dependencies]
-# Core Avila ecosystem
-avila-math = { version = "0.1", path = "../avila-math" }
-avx-config = { version = "0.1", path = "../avx-config" }
+# AVL ecosystem
+avila-math = { version = "0.1.0", path = "../avila-math" }
+avila-linalg = { version = "0.1.1", path = "../avila-linalg" }
+avx-gpu = { version = "0.1.0", path = "../avx-gpu", optional = true }
 
-# Numerical computing
+# N-dimensional arrays
+ndarray = { version = "0.16", features = ["rayon"] }
+
+# Parallel processing
+rayon = "1.10"
+
+# Random number generation
 rand = "0.8"
 rand_distr = "0.4"
-num-complex = "0.4"
 
-# Parallelism
-rayon = "1.8"
+# FFT for spectral methods
+rustfft = "6.2"
 
-# Serialization (always enabled for diagnostics)
+# Image output
+image = "0.25"
+
+# Serialization
 serde = { version = "1.0", features = ["derive"] }
-serde_json = { version = "1.0" }
 
-# Image export (optional)
-image = { version = "0.24", optional = true }
+# Error handling
+thiserror = "2.0"
+
+# Complex numbers
+num-complex = "0.4"
 
 [dev-dependencies]
 criterion = "0.5"
-approx = "0.5"
-
-[features]
-default = ["diagnostics"]
-diagnostics = ["num-complex/serde"]
-image-export = ["dep:image"]
 
 [[bench]]
-name = "render_bench"
+name = "path_integral"
 harness = false
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+strip = true
+
+[profile.bench]
+inherits = "release"
+
+[profile.dev]
+opt-level = 0
+debug = true
+incremental = true
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
