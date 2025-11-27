@@ -7,9 +7,10 @@ authors = [
     "Avila Development Team <dev@avila.inc>",
 ]
 license = "MIT OR Apache-2.0"
+rust-version = "1.70"
 description = "Avila ML - High-performance Machine Learning library for scientific computing, with autograd, neural networks, and 4D convolutions for astrophysical data"
 repository = "https://github.com/avilaops/arxis"
-homepage = "https://arxis.avilaops.com"
+homepage = "https://avila.inc"
 documentation = "https://docs.rs/avila-ml"
 readme = "README.md"
 keywords = [

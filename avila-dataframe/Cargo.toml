@@ -3,9 +3,15 @@ name = "avila-dataframe"
 version = "0.2.0"
 edition = "2021"
 rust-version = "1.70"
-authors = ["Nícolas Ávila <nicolas@avila.inc>"]
+authors = [
+    "Nícolas Ávila <nicolas@avila.inc>",
+    "Avila Development Team <dev@avila.inc>",
+]
 description = "DataFrame 100% Rust nativo - Zero overhead, máxima performance"
-license = "Apache-2.0"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://avila.inc"
+documentation = "https://docs.rs/avila-dataframe"
 keywords = ["dataframe", "rust", "native", "aviladb", "brasil"]
 
 [lib]

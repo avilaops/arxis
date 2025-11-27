@@ -35,7 +35,7 @@ members = [
     "avx-gateway",
     # "avx-gpu", # Nested workspace - has its own sub-crates
     "avx-http",  # Native HTTP client/server for AVL Platform
-    "avx-image",
+    # "avx-image", # Located in avila-geo/avx-image
     "avx-quantum-render",
     "avx-telemetry",
 ]
@@ -50,9 +50,9 @@ authors = [
     "Avila Development Team <dev@avila.inc>",
 ]
 license = "MIT OR Apache-2.0"
-description = "Arxis: The Mathematical Citadel - Research-grade physics engine with quaternions, tensors, 4D geometry, gravitational waves, and General Relativity. ARX (fortress) + AXIS (engine). | Arxis: A Cidadela Matemática - Motor de física para pesquisa com quaternions, tensores, geometria 4D, ondas gravitacionais e Relatividade Geral."
+description = "Research-grade physics engine with quaternions, tensors, 4D geometry, gravitational waves, and General Relativity for NASA LISA mission"
 repository = "https://github.com/avilaops/arxis"
-homepage = "https://arxis.avilaops.com"
+homepage = "https://avila.inc"
 documentation = "https://docs.rs/arxis_quaternions"
 readme = "README.md"
 keywords = [
@@ -129,9 +129,9 @@ llm-chain = "0.13"  # LLM chaining framework
 tiktoken-rs = "0.5" # OpenAI tokenizer
 
 # Computer Vision (USING OUR OWN TOOLS! 🚀)
-avx-image = { path = "avx-image" }
-# image = "0.25"        # Replaced by avx-image
-# imageproc = "0.25"    # Replaced by avx-image
+# avx-image = { path = "avx-image" }  # Located in avila-geo/avx-image
+image = "0.25"        # External image library for now
+# imageproc = "0.25"    # Optional image processing
 rustfft = "6.2"    # FFT (já usado em avila-telemetry)
 
 # Graph Analytics & Network Science

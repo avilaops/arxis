@@ -7,9 +7,10 @@ authors = [
     "Avila Development Team <dev@avila.inc>",
 ]
 license = "MIT OR Apache-2.0"
+rust-version = "1.70"
 description = "Arxis Foundation: The ARX (fortress) - Mathematical kernel with quaternions, tensors, 4D geometry, Conv4D, differential operators"
 repository = "https://github.com/avilaops/arxis"
-homepage = "https://arxis.avilaops.com"
+homepage = "https://avila.inc"
 documentation = "https://docs.rs/avila-math"
 readme = "README.md"
 keywords = ["arxis", "quaternions", "tensors", "4d-geometry", "fortress"]

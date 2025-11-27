@@ -2,10 +2,16 @@
 name = "avila-geo"
 version = "0.1.0"
 edition = "2021"
-authors = ["AVL Platform <team@avila.cloud>"]
+rust-version = "1.70"
+authors = [
+    "Nícolas Ávila <nicolas@avila.inc>",
+    "Avila Development Team <dev@avila.inc>",
+]
 license = "MIT OR Apache-2.0"
 description = "Geographic cartography and mapping library with zero external dependencies"
-repository = "https://github.com/avila-cloud/arxis"
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://avila.inc"
+documentation = "https://docs.rs/avila-geo"
 keywords = ["geography", "cartography", "maps", "gis", "projection"]
 categories = ["science::geo", "graphics", "rendering"]
 readme = "README.md"

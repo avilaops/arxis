@@ -7,9 +7,10 @@ authors = [
     "Avila Development Team <dev@avila.inc>",
 ]
 license = "MIT OR Apache-2.0"
-description = "Native compression library optimized for AvilaDB - LZ4, Zstandard, and custom columnar algorithms. Zero external dependencies."
+description = "High-performance compression library for AvilaDB with LZ4, Zstandard, and columnar algorithms. Zero external dependencies"
 repository = "https://github.com/avilaops/arxis"
-homepage = "https://avila.cloud"
+homepage = "https://avila.inc"
+rust-version = "1.70"
 documentation = "https://docs.rs/avila-compress"
 readme = "README.md"
 keywords = ["compression", "lz4", "aviladb", "scientific-computing", "columnar"]
