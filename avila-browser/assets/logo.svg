@@ -1,0 +1,53 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Shield outline (7 layers) -->
+  <defs>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f3460;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="innerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#16213e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f3460;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Outer shield -->
+  <path d="M 256 32 L 96 96 L 96 256 Q 96 416 256 480 Q 416 416 416 256 L 416 96 Z" 
+        fill="url(#shieldGrad)" stroke="#e94560" stroke-width="8"/>
+  
+  <!-- Layer 7 - Outermost -->
+  <path d="M 256 80 L 120 128 L 120 256 Q 120 384 256 432 Q 392 384 392 256 L 392 128 Z" 
+        fill="none" stroke="#e94560" stroke-width="2" opacity="0.3"/>
+  
+  <!-- Layer 6 -->
+  <path d="M 256 96 L 136 136 L 136 256 Q 136 368 256 408 Q 376 368 376 256 L 376 136 Z" 
+        fill="none" stroke="#e94560" stroke-width="2" opacity="0.4"/>
+  
+  <!-- Layer 5 -->
+  <path d="M 256 112 L 152 144 L 152 256 Q 152 352 256 384 Q 360 352 360 256 L 360 144 Z" 
+        fill="none" stroke="#e94560" stroke-width="2" opacity="0.5"/>
+  
+  <!-- Layer 4 -->
+  <path d="M 256 128 L 168 152 L 168 256 Q 168 336 256 360 Q 344 336 344 256 L 344 152 Z" 
+        fill="none" stroke="#e94560" stroke-width="2" opacity="0.6"/>
+  
+  <!-- Layer 3 -->
+  <path d="M 256 144 L 184 160 L 184 256 Q 184 320 256 336 Q 328 320 328 256 L 328 160 Z" 
+        fill="none" stroke="#e94560" stroke-width="2" opacity="0.7"/>
+  
+  <!-- Layer 2 -->
+  <path d="M 256 160 L 200 168 L 200 256 Q 200 304 256 312 Q 312 304 312 256 L 312 168 Z" 
+        fill="none" stroke="#e94560" stroke-width="2" opacity="0.8"/>
+  
+  <!-- Layer 1 - Core -->
+  <circle cx="256" cy="256" r="48" fill="url(#innerGrad)" stroke="#e94560" stroke-width="3"/>
+  
+  <!-- Lock symbol in center -->
+  <rect x="244" y="256" width="24" height="20" rx="2" fill="#e94560"/>
+  <path d="M 244 256 L 244 246 Q 244 238 256 238 Q 268 238 268 246 L 268 256" 
+        fill="none" stroke="#e94560" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- "7" indicator -->
+  <text x="256" y="440" font-family="monospace" font-size="48" font-weight="bold" 
+        fill="#e94560" text-anchor="middle">7</text>
+</svg>

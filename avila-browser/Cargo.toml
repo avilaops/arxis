@@ -1,0 +1,24 @@
+[package]
+name = "avila-browser"
+version = "0.1.0"
+edition = "2021"
+authors = ["Nícolas Ávila <nicolas@avila.inc>"]
+description = "Ultra-secure browser with 7-layer anonymity protection (Tor + VPN + I2P + Garlic + Obfuscation)"
+license = "MIT OR Apache-2.0"
+
+[lib]
+name = "avila_browser"
+path = "src/lib.rs"
+
+[dependencies]
+# Zero external dependencies - 100% Rust nativo
+
+[dev-dependencies]
+
+[[example]]
+name = "browser_demo"
+path = "examples/browser_demo.rs"
+
+[[example]]
+name = "seven_layers"
+path = "examples/seven_layers.rs"
