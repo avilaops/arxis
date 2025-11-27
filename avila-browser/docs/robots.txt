@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://browser.avila.inc/sitemap.xml
