@@ -1,6 +1,6 @@
 [package]
 name = "avila-arrow"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = [
     "Nícolas Ávila <nicolas@avila.inc>",
@@ -20,7 +20,7 @@ categories = ["science", "database-implementations", "data-structures"]
 byteorder = "1.5"
 
 # Optional features
-avila-serde = { path = "../avila-serde", optional = true }
+avila-serde = { version = "0.2", path = "../avila-serde", optional = true }
 flatbuffers = { version = "24.3", optional = true }
 
 [dev-dependencies]
