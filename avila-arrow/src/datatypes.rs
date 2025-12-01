@@ -1,10 +1,9 @@
 //! Data types for avila-arrow
 
-use serde::{Deserialize, Serialize};
 use std::fmt;
 
 /// Arrow data type
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum DataType {
     /// Boolean (true/false)
     Boolean,
@@ -70,7 +69,7 @@ impl fmt::Display for DataType {
 }
 
 /// Field in a schema
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Field {
     name: String,
     data_type: DataType,
@@ -113,7 +112,7 @@ impl Field {
 }
 
 /// Schema defining structure of data
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Schema {
     fields: Vec<Field>,
 }

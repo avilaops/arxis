@@ -1,13 +1,12 @@
 //! Scientific types for physics and astrophysics
 
-use serde::{Deserialize, Serialize};
 use std::ops::{Add, Mul, Sub};
 
 /// Quaternion for 4D rotations
 ///
 /// Used in physics simulations, spacecraft orientation, and 3D graphics.
 /// Components: w (scalar), x, y, z (vector)
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Quaternion {
     /// Scalar component (real part)
     pub w: f64,
@@ -143,7 +142,7 @@ impl Sub for Quaternion {
 }
 
 /// Complex number (for FFT, quantum mechanics)
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Complex64 {
     /// Real part
     pub re: f64,
@@ -207,7 +206,7 @@ impl Add for Complex64 {
 }
 
 /// Tensor4D for General Relativity (4x4 spacetime tensor)
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Tensor4D {
     /// 4x4 matrix components [row][col]
     pub components: [[f64; 4]; 4],
@@ -306,7 +305,7 @@ impl Tensor4D {
 }
 
 /// Spinor for particle physics (Dirac spinor)
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Spinor {
     /// Upper component (spin up)
     pub up: Complex64,
