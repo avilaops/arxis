@@ -1,11 +1,16 @@
-//! Avila CLI - AVL Platform CLI framework
-//! Replacement for clap - 100% Rust std
-//! Simple command-line argument parsing
+//! Ávila CLI Parser
+//!
+//! Zero-dependency command-line argument parser with stack-allocated data structures.
+//! Provides compile-time type safety and constant-time argument lookups via HashMap.
 
 use std::collections::HashMap;
 use std::env;
 
-/// CLI Application
+/// Command-line application parser
+///
+/// Stack-allocated structure that defines the command-line interface schema.
+/// All fields use heap-allocated collections for dynamic argument counts,
+/// but the parser itself is deterministic and type-safe.
 pub struct App {
     name: String,
     version: String,
@@ -108,7 +113,10 @@ impl App {
     }
 }
 
-/// Command
+/// Subcommand definition
+///
+/// Represents a distinct command with its own argument schema.
+/// Commands are parsed from the first positional argument.
 pub struct Command {
     name: String,
     about: String,
@@ -135,7 +143,10 @@ impl Command {
     }
 }
 
-/// Argument
+/// Command-line argument specification
+///
+/// Defines a flag or option with optional short/long forms.
+/// Can be boolean (flag) or value-taking (option).
 pub struct Arg {
     name: String,
     long: String,
@@ -184,7 +195,10 @@ impl Arg {
     }
 }
 
-/// Parsed matches
+/// Parse result containing matched arguments
+///
+/// Uses HashMap for O(1) argument lookups.
+/// Stores the active subcommand and all parsed argument values.
 pub struct Matches {
     command: Option<String>,
     args: HashMap<String, Option<String>>,
