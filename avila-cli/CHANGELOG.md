@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2025-12-02
+
+### Added
+- `default_value()` method for arguments - automatically applied if not provided
+  ```rust
+  Arg::new("port")
+      .takes_value(true)
+      .default_value("8080")
+  ```
+- `possible_values()` method - restrict and validate argument values
+  ```rust
+  Arg::new("format")
+      .takes_value(true)
+      .possible_values(&["json", "yaml", "toml"])
+  ```
+- Automatic validation of required arguments with helpful error messages
+- Automatic validation of possible values with error messages showing valid options
+
+### Improved
+- Better error messages showing which argument is missing
+- Error messages show possible values when validation fails
+- Defaults are applied before validation
+
+### Changed
+- `Arg` struct now includes `default_value` and `possible_values` fields
+
 ## [0.2.0] - 2025-12-02
 
 ### Added

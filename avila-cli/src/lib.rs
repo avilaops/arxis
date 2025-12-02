@@ -23,7 +23,7 @@ impl App {
     pub fn new(name: impl Into<String>) -> Self {
         Self {
             name: name.into(),
-            version: "0.2.0".to_string(),
+            version: "0.3.0".to_string(),
             about: String::new(),
             commands: Vec::new(),
             global_args: Vec::new(),
@@ -84,7 +84,42 @@ impl App {
             matches.parse_args_list(&self.global_args, args);
         }
 
+        // Apply defaults and validate
+        self.apply_defaults_and_validate(&mut matches);
+
         matches
+    }
+
+    fn apply_defaults_and_validate(&self, matches: &mut Matches) {
+        for arg in &self.global_args {
+            // Apply default value if not provided
+            if !matches.is_present(&arg.name) && arg.default_value.is_some() {
+                matches.args.insert(
+                    arg.name.clone(),
+                    arg.default_value.clone(),
+                );
+            }
+
+            // Check required
+            if arg.required && !matches.is_present(&arg.name) {
+                eprintln!("Error: --{} is required", arg.long);
+                std::process::exit(1);
+            }
+
+            // Validate possible values
+            if !arg.possible_values.is_empty() {
+                if let Some(value) = matches.value_of(&arg.name) {
+                    if !arg.possible_values.iter().any(|v| v == value) {
+                        eprintln!(
+                            "Error: invalid value '{}' for --{}",
+                            value, arg.long
+                        );
+                        eprintln!("Possible values: {}", arg.possible_values.join(", "));
+                        std::process::exit(1);
+                    }
+                }
+            }
+        }
     }
 
     fn print_help(&self) {
@@ -154,6 +189,8 @@ pub struct Arg {
     help: String,
     takes_value: bool,
     required: bool,
+    default_value: Option<String>,
+    possible_values: Vec<String>,
 }
 
 impl Arg {
@@ -166,6 +203,8 @@ impl Arg {
             help: String::new(),
             takes_value: false,
             required: false,
+            default_value: None,
+            possible_values: Vec::new(),
         }
     }
 
@@ -191,6 +230,32 @@ impl Arg {
 
     pub fn required(mut self, req: bool) -> Self {
         self.required = req;
+        self
+    }
+
+    /// Set a default value for the argument
+    /// 
+    /// # Example
+    /// ```
+    /// Arg::new("port")
+    ///     .takes_value(true)
+    ///     .default_value("8080")
+    /// ```
+    pub fn default_value(mut self, value: impl Into<String>) -> Self {
+        self.default_value = Some(value.into());
+        self
+    }
+
+    /// Restrict possible values
+    /// 
+    /// # Example
+    /// ```
+    /// Arg::new("format")
+    ///     .takes_value(true)
+    ///     .possible_values(&["json", "yaml", "toml"])
+    /// ```
+    pub fn possible_values(mut self, values: &[&str]) -> Self {
+        self.possible_values = values.iter().map(|s| s.to_string()).collect();
         self
     }
 }
