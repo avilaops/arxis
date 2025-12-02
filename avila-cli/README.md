@@ -4,6 +4,419 @@
 
 Built on pure Rust `std` without external dependencies. Designed for performance-critical systems requiring predictable parsing behavior.
 
+---
+
+## 📚 Table of Contents
+
+**For Normal Users:**
+- [🚀 Quick Start](#-quick-start-for-normal-users) - Start here!
+- [Installation](#installation)
+- [Basic Example](#basic-example---just-copy--paste)
+- [Example with Commands](#example-with-commands-like-gitcargo)
+- [Common Patterns](#common-patterns)
+- [Complete Real-World Example](#complete-real-world-example)
+
+**For Advanced Users:**
+- [Architecture Philosophy](#architecture-philosophy)
+- [Advanced Usage](#advanced-usage)
+- [Implementation Deep Dive](#implementation-deep-dive)
+- [Comparison with Alternative Parsers](#comparison-with-alternative-parsers)
+- [Security Considerations](#security-considerations)
+- [Testing Strategies](#testing-strategies)
+
+---
+
+## 🚀 Quick Start (For Normal Users)
+
+### Installation
+
+Add to your `Cargo.toml`:
+
+```toml
+[dependencies]
+avila-cli = "0.1.0"
+```
+
+Or using cargo:
+
+```bash
+cargo add avila-cli
+```
+
+### Basic Example - Just Copy & Paste!
+
+Create a simple CLI app in 30 seconds:
+
+```rust
+use avila_cli::{App, Arg};
+
+fn main() {
+    // Define your command-line interface
+    let matches = App::new("myapp")
+        .version("1.0.0")
+        .about("My awesome application")
+
+        // Add a simple flag (true/false)
+        .arg(Arg::new("verbose")
+            .short('v')              // -v
+            .long("verbose")         // --verbose
+            .help("Show detailed output"))
+
+        // Add an option that takes a value
+        .arg(Arg::new("output")
+            .short('o')              // -o
+            .long("output")          // --output
+            .takes_value(true)       // Requires a value
+            .help("Output file path"))
+
+        .parse();  // Parse the arguments!
+
+    // Check if a flag was provided
+    if matches.is_present("verbose") {
+        println!("✓ Verbose mode is ON");
+    }
+
+    // Get a value if provided
+    if let Some(output) = matches.value_of("output") {
+        println!("✓ Will save to: {}", output);
+    }
+
+    println!("✓ App is running!");
+}
+```
+
+**Run it:**
+
+```bash
+# With no arguments
+cargo run
+
+# With verbose flag
+cargo run -- --verbose
+
+# With output option
+cargo run -- --output result.txt
+
+# Combine both
+cargo run -- -v -o result.txt
+
+# Or use long forms
+cargo run -- --verbose --output result.txt
+
+# Get help automatically
+cargo run -- --help
+```
+
+### Example with Commands (Like git/cargo)
+
+```rust
+use avila_cli::{App, Command, Arg};
+
+fn main() {
+    let matches = App::new("mytool")
+        .version("1.0.0")
+        .about("Tool with multiple commands")
+
+        // Add a command (like "git clone" or "cargo build")
+        .command(Command::new("create")
+            .about("Create a new project")
+            .arg(Arg::new("name")
+                .long("name")
+                .takes_value(true)
+                .help("Project name")))
+
+        .command(Command::new("delete")
+            .about("Delete a project")
+            .arg(Arg::new("force")
+                .short('f')
+                .long("force")
+                .help("Force deletion")))
+
+        .parse();
+
+    // Check which command was used
+    match matches.subcommand() {
+        Some("create") => {
+            let name = matches.value_of("name").unwrap_or("myproject");
+            println!("Creating project: {}", name);
+        }
+
+        Some("delete") => {
+            if matches.is_present("force") {
+                println!("Force deleting...");
+            } else {
+                println!("Deleting...");
+            }
+        }
+
+        _ => {
+            println!("Please specify a command. Use --help to see options.");
+        }
+    }
+}
+```
+
+**Run it:**
+
+```bash
+# Create command
+cargo run -- create --name myproject
+
+# Delete command
+cargo run -- delete --force
+```
+
+### Common Patterns
+
+#### 1. Required Arguments
+
+```rust
+.arg(Arg::new("config")
+    .long("config")
+    .takes_value(true)
+    .required(true)  // User MUST provide this
+    .help("Config file path"))
+```
+
+#### 2. Get Value or Use Default
+
+```rust
+let port = matches.value_of("port")
+    .unwrap_or("8080");  // Default to 8080 if not provided
+
+println!("Using port: {}", port);
+```
+
+#### 3. Parse to Numbers
+
+```rust
+let threads: usize = matches.value_of("threads")
+    .unwrap_or("4")
+    .parse()
+    .expect("Invalid number");
+
+println!("Using {} threads", threads);
+```
+
+#### 4. Check Multiple Flags
+
+```rust
+let verbose = matches.is_present("verbose");
+let debug = matches.is_present("debug");
+let quiet = matches.is_present("quiet");
+
+if verbose {
+    println!("Verbose output enabled");
+}
+if debug {
+    println!("Debug mode enabled");
+}
+```
+
+### Complete Real-World Example
+
+```rust
+use avila_cli::{App, Command, Arg};
+use std::fs;
+
+fn main() {
+    let matches = App::new("filemanager")
+        .version("1.0.0")
+        .about("Simple file manager CLI")
+
+        .command(Command::new("list")
+            .about("List files in directory")
+            .arg(Arg::new("path")
+                .long("path")
+                .takes_value(true)
+                .help("Directory path (default: current)")))
+
+        .command(Command::new("copy")
+            .about("Copy a file")
+            .arg(Arg::new("from")
+                .long("from")
+                .takes_value(true)
+                .required(true)
+                .help("Source file"))
+            .arg(Arg::new("to")
+                .long("to")
+                .takes_value(true)
+                .required(true)
+                .help("Destination file")))
+
+        .parse();
+
+    match matches.subcommand() {
+        Some("list") => {
+            let path = matches.value_of("path").unwrap_or(".");
+            println!("Listing files in: {}", path);
+
+            match fs::read_dir(path) {
+                Ok(entries) => {
+                    for entry in entries {
+                        if let Ok(entry) = entry {
+                            println!("  📄 {}", entry.file_name().to_string_lossy());
+                        }
+                    }
+                }
+                Err(e) => eprintln!("Error: {}", e),
+            }
+        }
+
+        Some("copy") => {
+            let from = matches.value_of("from").unwrap();
+            let to = matches.value_of("to").unwrap();
+
+            println!("Copying {} → {}", from, to);
+
+            match fs::copy(from, to) {
+                Ok(bytes) => println!("✓ Copied {} bytes", bytes),
+                Err(e) => eprintln!("Error: {}", e),
+            }
+        }
+
+        _ => {
+            println!("Please specify a command:");
+            println!("  list   - List files");
+            println!("  copy   - Copy files");
+            println!("\nUse --help for more information");
+        }
+    }
+}
+```
+
+**Use it:**
+
+```bash
+# List current directory
+cargo run -- list
+
+# List specific directory
+cargo run -- list --path /tmp
+
+# Copy file
+cargo run -- copy --from file1.txt --to file2.txt
+
+# See all options
+cargo run -- --help
+```
+
+### ❓ Troubleshooting Common Issues
+
+#### Problem: "Cannot find `avila_cli` in the crate root"
+
+**Solution:** Make sure you added the dependency correctly:
+
+```toml
+[dependencies]
+avila-cli = "0.1.0"
+```
+
+Then run:
+```bash
+cargo build
+```
+
+#### Problem: "My arguments aren't being recognized"
+
+**Solution:** Check these common mistakes:
+
+```rust
+// ❌ WRONG - forgot .parse()
+let matches = App::new("app")
+    .arg(Arg::new("verbose"));  // Missing .parse()!
+
+// ✅ CORRECT
+let matches = App::new("app")
+    .arg(Arg::new("verbose"))
+    .parse();  // Don't forget this!
+```
+
+#### Problem: "How do I pass arguments when testing?"
+
+**Solution:** Use `--` to separate cargo args from your app args:
+
+```bash
+# Wrong (cargo sees --verbose)
+cargo run --verbose
+
+# Correct (your app sees --verbose)
+cargo run -- --verbose
+```
+
+#### Problem: "value_of() returns None but I provided the argument"
+
+**Solution:** Make sure you set `.takes_value(true)`:
+
+```rust
+// ❌ WRONG - flag only (no value)
+.arg(Arg::new("output").long("output"))
+
+// ✅ CORRECT - accepts value
+.arg(Arg::new("output").long("output").takes_value(true))
+```
+
+#### Problem: "How do I make an argument required?"
+
+**Solution:** Use `.required(true)`:
+
+```rust
+.arg(Arg::new("config")
+    .long("config")
+    .takes_value(true)
+    .required(true))  // User MUST provide this
+```
+
+Then handle it without unwrap:
+
+```rust
+let config = matches.value_of("config")
+    .expect("Config is required!");  // Shows error if missing
+```
+
+### 💡 How It Works (Simple Explanation)
+
+Think of `avila-cli` as a menu system for your program:
+
+```
+Your Program
+     ↓
+┌─────────────────────────────┐
+│   App::new("myapp")         │  ← Define your app name
+├─────────────────────────────┤
+│   .arg("verbose")           │  ← Add menu options
+│   .arg("output")            │
+│   .command("create")        │  ← Add subcommands
+├─────────────────────────────┤
+│   .parse()                  │  ← Read what user typed
+└─────────────────────────────┘
+     ↓
+   Matches  ← Results you can check
+     ↓
+┌─────────────────────────────┐
+│ is_present("verbose")?      │  ← Was flag used?
+│ value_of("output")?         │  ← What value did they give?
+│ subcommand()?               │  ← Which command?
+└─────────────────────────────┘
+```
+
+**Real example flow:**
+
+```bash
+$ myapp --verbose --output result.txt create --name project1
+```
+
+This becomes:
+
+```rust
+matches.is_present("verbose")    // true ✓
+matches.value_of("output")       // Some("result.txt") ✓
+matches.subcommand()             // Some("create") ✓
+matches.value_of("name")         // Some("project1") ✓
+```
+
+---
+
 ## Architecture Philosophy
 
 ### Core Principles
@@ -85,7 +498,7 @@ fn main() {
                 .expect("iterations is required")
                 .parse::<u64>()
                 .expect("Invalid iteration count");
-            
+
             let output_path = matches.value_of("output");
             run_benchmark(iterations, output_path);
         }
@@ -110,19 +523,19 @@ fn main() {
     let app = App::new("avila-db")
         .version("0.1.0")
         .about("Ávila Database - Zero-allocation command interface")
-        
+
         // Global flags available to all subcommands
         .arg(Arg::new("config")
             .short('c')
             .long("config")
             .takes_value(true)
             .help("Configuration file path"))
-        
+
         .arg(Arg::new("log-level")
             .long("log-level")
             .takes_value(true)
             .help("Log level: trace|debug|info|warn|error"))
-        
+
         // Database operations
         .command(Command::new("start")
             .about("Start database server")
@@ -141,7 +554,7 @@ fn main() {
                 .long("memory")
                 .takes_value(true)
                 .help("Memory limit in GB")))
-        
+
         .command(Command::new("query")
             .about("Execute SQL query")
             .arg(Arg::new("sql")
@@ -154,7 +567,7 @@ fn main() {
                 .long("format")
                 .takes_value(true)
                 .help("Output format: json|table|csv")))
-        
+
         .command(Command::new("backup")
             .about("Backup database")
             .arg(Arg::new("output")
@@ -180,26 +593,26 @@ fn main() {
             let port = matches.value_of("port")
                 .and_then(|p| p.parse::<u16>().ok())
                 .unwrap_or(5432);
-            
+
             let workers = matches.value_of("workers")
                 .and_then(|w| w.parse::<usize>().ok())
                 .unwrap_or_else(|| num_cpus::get());
-            
+
             println!("Starting server on port {} with {} workers", port, workers);
         }
-        
+
         Some("query") => {
             let sql = matches.value_of("sql").unwrap();
             let format = matches.value_of("format").unwrap_or("table");
             println!("Executing: {} (format: {})", sql, format);
         }
-        
+
         Some("backup") => {
             let output = matches.value_of("output").unwrap();
             let compressed = matches.is_present("compress");
             println!("Backing up to {} (compressed: {})", output, compressed);
         }
-        
+
         _ => {
             eprintln!("Error: No command specified");
             eprintln!("Use --help to see available commands");
@@ -221,7 +634,7 @@ The parser implements a single-pass finite state machine:
 fn parse(args: &[String]) -> Matches {
     let mut state = ParserState::ExpectingCommand;
     let mut matches = Matches::new();
-    
+
     for token in args {
         state = match (state, token) {
             // State transitions
@@ -229,7 +642,7 @@ fn parse(args: &[String]) -> Matches {
                 matches.command = Some(cmd);
                 ParserState::ParsingCommandArgs
             }
-            
+
             (_, flag) if flag.starts_with("--") => {
                 let key = &flag[2..];
                 if arg_takes_value(key) {
@@ -239,24 +652,24 @@ fn parse(args: &[String]) -> Matches {
                     state
                 }
             }
-            
+
             (_, flag) if flag.starts_with('-') && flag.len() == 2 => {
                 let short = flag.chars().nth(1).unwrap();
                 handle_short_flag(short, &mut matches, &mut state)
             }
-            
+
             (ExpectingValue(key), value) => {
                 matches.insert(key, Some(value));
                 ParserState::ParsingArgs
             }
-            
+
             (_, positional) => {
                 matches.values.push(positional);
                 state
             }
         };
     }
-    
+
     matches
 }
 ```
@@ -432,15 +845,15 @@ struct Port(u16);
 
 impl FromStr for Port {
     type Err = String;
-    
+
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let port = s.parse::<u16>()
             .map_err(|_| format!("Invalid port: {}", s))?;
-        
+
         if port < 1024 {
             return Err("Port must be >= 1024 (non-privileged)".into());
         }
-        
+
         Ok(Port(port))
     }
 }
@@ -453,7 +866,7 @@ fn main() {
             .takes_value(true)
             .required(true))
         .parse();
-    
+
     let port = matches.value_of("port")
         .unwrap()
         .parse::<Port>()
@@ -461,7 +874,7 @@ fn main() {
             eprintln!("Error: {}", e);
             std::process::exit(1);
         });
-    
+
     println!("Starting on port {}", port.0);
 }
 ```
@@ -483,10 +896,10 @@ fn main() {
             .long("token")
             .takes_value(true))
         .parse();
-    
+
     let token = get_arg_or_env(&matches, "token", "API_TOKEN")
         .expect("Token required via --token or API_TOKEN env");
-    
+
     println!("Using token: {}...{}", &token[..4], &token[token.len()-4..]);
 }
 ```
@@ -512,7 +925,7 @@ fn main() {
         output: Arg::new("output").short('o').long("output").takes_value(true),
         threads: Arg::new("threads").short('t').long("threads").takes_value(true),
     });
-    
+
     let matches = app.parse();
 }
 ```
@@ -555,20 +968,20 @@ Always validate user input before use:
 ```rust
 fn validate_path(path: &str) -> Result<PathBuf, String> {
     let path = PathBuf::from(path);
-    
+
     // Prevent path traversal
     if path.components().any(|c| matches!(c, std::path::Component::ParentDir)) {
         return Err("Path traversal detected".into());
     }
-    
+
     // Ensure within allowed directory
     let canonical = path.canonicalize()
         .map_err(|_| "Invalid path".to_string())?;
-    
+
     if !canonical.starts_with("/opt/data") {
         return Err("Path outside allowed directory".into());
     }
-    
+
     Ok(canonical)
 }
 ```
@@ -580,16 +993,16 @@ Prevent denial-of-service via excessive arguments:
 ```rust
 fn parse_with_limits() -> Result<Matches, String> {
     let args: Vec<String> = std::env::args().skip(1).collect();
-    
+
     if args.len() > 1000 {
         return Err("Too many arguments (max 1000)".into());
     }
-    
+
     let total_size: usize = args.iter().map(|s| s.len()).sum();
     if total_size > 100_000 {
         return Err("Arguments too large (max 100KB)".into());
     }
-    
+
     Ok(App::new("app").parse())
 }
 ```
@@ -607,26 +1020,26 @@ mod tests {
     fn test_short_flag_parsing() {
         let app = App::new("test")
             .arg(Arg::new("verbose").short('v'));
-        
+
         let matches = app.parse_args(&["-v".to_string()]);
         assert!(matches.is_present("verbose"));
     }
-    
+
     #[test]
     fn test_value_argument() {
         let app = App::new("test")
             .arg(Arg::new("output").long("output").takes_value(true));
-        
+
         let matches = app.parse_args(&["--output".to_string(), "file.txt".to_string()]);
         assert_eq!(matches.value_of("output"), Some("file.txt"));
     }
-    
+
     #[test]
     fn test_subcommand_dispatch() {
         let app = App::new("test")
             .command(Command::new("build")
                 .arg(Arg::new("release").long("release")));
-        
+
         let matches = app.parse_args(&["build".to_string(), "--release".to_string()]);
         assert_eq!(matches.subcommand(), Some("build"));
         assert!(matches.is_present("release"));
@@ -640,13 +1053,13 @@ mod tests {
 #[test]
 fn test_cli_integration() {
     use std::process::{Command, Stdio};
-    
+
     let output = Command::new("target/debug/myapp")
         .args(&["--config", "test.toml", "process", "--input", "data.csv"])
         .stdout(Stdio::piped())
         .output()
         .expect("Failed to execute");
-    
+
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
     assert!(stdout.contains("Processing complete"));
@@ -689,7 +1102,7 @@ let matches = App::new("app")
 struct Cli {
     #[structopt(short, long)]
     verbose: bool,
-    
+
     #[structopt(short, long)]
     output: PathBuf,
 }
