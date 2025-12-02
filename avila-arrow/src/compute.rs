@@ -4,9 +4,14 @@
 //! - Aggregations (sum, mean, min, max)
 //! - Filters (filter by boolean mask)
 //! - Sorting
+//! - SIMD-accelerated operations
 
 use crate::array::*;
 use crate::error::{ArrowError, Result};
+use crate::simd;
+
+#[cfg(target_arch = "x86_64")]
+use std::arch::x86_64::*;
 
 // ==================== AGGREGATIONS ====================
 
@@ -15,8 +20,14 @@ pub fn sum_i64(array: &Int64Array) -> i64 {
     array.values().iter().sum()
 }
 
-/// Sum of all elements in a Float64Array
+/// Sum of all elements in a Float64Array (SIMD-accelerated)
 pub fn sum_f64(array: &Float64Array) -> f64 {
+    #[cfg(target_arch = "x86_64")]
+    {
+        if is_x86_feature_detected!("avx2") {
+            return unsafe { simd::sum_f64_simd(array.values()) };
+        }
+    }
     array.values().iter().sum()
 }
 
@@ -136,9 +147,21 @@ pub fn eq_i64(array: &Int64Array, scalar: i64) -> BooleanArray {
     BooleanArray::new(mask)
 }
 
-/// Greater than comparison for Float64Array
+/// Greater than comparison for Float64Array (SIMD-accelerated)
 pub fn gt_f64(array: &Float64Array, scalar: f64) -> BooleanArray {
-    let mask: Vec<bool> = array.values().iter().map(|&x| x > scalar).collect();
+    let mut mask = vec![false; array.len()];
+
+    #[cfg(target_arch = "x86_64")]
+    {
+        if is_x86_feature_detected!("avx2") {
+            unsafe { simd::gt_f64_simd(array.values(), scalar, &mut mask) };
+            return BooleanArray::new(mask);
+        }
+    }
+
+    for i in 0..array.len() {
+        mask[i] = array.values()[i] > scalar;
+    }
     BooleanArray::new(mask)
 }
 
@@ -191,7 +214,7 @@ pub fn add_i64(left: &Int64Array, right: &Int64Array) -> Result<Int64Array> {
     Ok(Int64Array::new(result))
 }
 
-/// Add two Float64Arrays element-wise
+/// Add two Float64Arrays element-wise (SIMD-accelerated)
 pub fn add_f64(left: &Float64Array, right: &Float64Array) -> Result<Float64Array> {
     if left.len() != right.len() {
         return Err(ArrowError::SchemaMismatch {
@@ -200,11 +223,19 @@ pub fn add_f64(left: &Float64Array, right: &Float64Array) -> Result<Float64Array
         });
     }
 
-    let result: Vec<f64> = left.values()
-        .iter()
-        .zip(right.values().iter())
-        .map(|(&a, &b)| a + b)
-        .collect();
+    let mut result = vec![0.0; left.len()];
+
+    #[cfg(target_arch = "x86_64")]
+    {
+        if is_x86_feature_detected!("avx2") {
+            unsafe { simd::add_f64_simd(left.values(), right.values(), &mut result) };
+            return Ok(Float64Array::new(result));
+        }
+    }
+
+    for i in 0..left.len() {
+        result[i] = left.values()[i] + right.values()[i];
+    }
 
     Ok(Float64Array::new(result))
 }
@@ -227,7 +258,7 @@ pub fn sub_i64(left: &Int64Array, right: &Int64Array) -> Result<Int64Array> {
     Ok(Int64Array::new(result))
 }
 
-/// Multiply two Float64Arrays element-wise
+/// Multiply two Float64Arrays element-wise (SIMD-accelerated)
 pub fn mul_f64(left: &Float64Array, right: &Float64Array) -> Result<Float64Array> {
     if left.len() != right.len() {
         return Err(ArrowError::SchemaMismatch {
@@ -236,11 +267,116 @@ pub fn mul_f64(left: &Float64Array, right: &Float64Array) -> Result<Float64Array
         });
     }
 
-    let result: Vec<f64> = left.values()
-        .iter()
-        .zip(right.values().iter())
-        .map(|(&a, &b)| a * b)
-        .collect();
+    let mut result = vec![0.0; left.len()];
+
+    #[cfg(target_arch = "x86_64")]
+    {
+        if is_x86_feature_detected!("avx2") {
+            unsafe { simd::mul_f64_simd(left.values(), right.values(), &mut result) };
+            return Ok(Float64Array::new(result));
+        }
+    }
+
+    for i in 0..left.len() {
+        result[i] = left.values()[i] * right.values()[i];
+    }
+
+    Ok(Float64Array::new(result))
+}
+
+/// Subtract two Float64Arrays element-wise (SIMD-accelerated)
+pub fn sub_f64(left: &Float64Array, right: &Float64Array) -> Result<Float64Array> {
+    if left.len() != right.len() {
+        return Err(ArrowError::SchemaMismatch {
+            expected: format!("array length {}", left.len()),
+            actual: format!("array length {}", right.len()),
+        });
+    }
+
+    let mut result = vec![0.0; left.len()];
+
+    #[cfg(target_arch = "x86_64")]
+    {
+        if is_x86_feature_detected!("avx2") {
+            unsafe { simd::sub_f64_simd(left.values(), right.values(), &mut result) };
+            return Ok(Float64Array::new(result));
+        }
+    }
+
+    for i in 0..left.len() {
+        result[i] = left.values()[i] - right.values()[i];
+    }
+
+    Ok(Float64Array::new(result))
+}
+
+/// Divide two Float64Arrays element-wise (SIMD-accelerated)
+pub fn div_f64(left: &Float64Array, right: &Float64Array) -> Result<Float64Array> {
+    if left.len() != right.len() {
+        return Err(ArrowError::SchemaMismatch {
+            expected: format!("array length {}", left.len()),
+            actual: format!("array length {}", right.len()),
+        });
+    }
+
+    let mut result = vec![0.0; left.len()];
+
+    #[cfg(target_arch = "x86_64")]
+    {
+        if is_x86_feature_detected!("avx2") {
+            unsafe { simd::div_f64_simd(left.values(), right.values(), &mut result) };
+            return Ok(Float64Array::new(result));
+        }
+    }
+
+    for i in 0..left.len() {
+        result[i] = left.values()[i] / right.values()[i];
+    }
+
+    Ok(Float64Array::new(result))
+}
+
+/// Square root of Float64Array element-wise (SIMD-accelerated)
+pub fn sqrt_f64(array: &Float64Array) -> Float64Array {
+    let mut result = vec![0.0; array.len()];
+
+    #[cfg(target_arch = "x86_64")]
+    {
+        if is_x86_feature_detected!("avx2") {
+            unsafe { simd::sqrt_f64_simd(array.values(), &mut result) };
+            return Float64Array::new(result);
+        }
+    }
+
+    for i in 0..array.len() {
+        result[i] = array.values()[i].sqrt();
+    }
+
+    Float64Array::new(result)
+}
+
+/// Fused multiply-add: result = a * b + c (SIMD-accelerated with FMA)
+pub fn fma_f64(a: &Float64Array, b: &Float64Array, c: &Float64Array) -> Result<Float64Array> {
+    if a.len() != b.len() || a.len() != c.len() {
+        return Err(ArrowError::SchemaMismatch {
+            expected: format!("array length {}", a.len()),
+            actual: format!("arrays with lengths {}, {}", b.len(), c.len()),
+        });
+    }
+
+    let mut result = vec![0.0; a.len()];
+
+    #[cfg(target_arch = "x86_64")]
+    {
+        if is_x86_feature_detected!("avx2") && is_x86_feature_detected!("fma") {
+            unsafe { simd::fma_f64_simd(a.values(), b.values(), c.values(), &mut result) };
+            return Ok(Float64Array::new(result));
+        }
+    }
+
+    for i in 0..a.len() {
+        result[i] = a.values()[i] * b.values()[i] + c.values()[i];
+    }
 
     Ok(Float64Array::new(result))
 }
