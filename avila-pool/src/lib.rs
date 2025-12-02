@@ -14,10 +14,10 @@ use avila_sync::AtomicCounter;
 pub trait Pool<T> {
     /// Acquires resource from pool
     fn acquire(&mut self) -> Result<T>;
-    
+
     /// Returns resource to pool
     fn release(&mut self, item: T);
-    
+
     /// Current pool size
     fn size(&self) -> usize;
 }
@@ -37,7 +37,7 @@ impl<T, F: FnMut() -> T> SimplePool<T, F> {
         for _ in 0..capacity {
             items.push(None);
         }
-        
+
         Self {
             items,
             factory,
@@ -45,7 +45,7 @@ impl<T, F: FnMut() -> T> SimplePool<T, F> {
             active: AtomicCounter::new(0),
         }
     }
-    
+
     /// Gets available count
     pub fn available(&self) -> usize {
         self.capacity.saturating_sub(self.active.get() as usize)
@@ -61,17 +61,17 @@ impl<T, F: FnMut() -> T> Pool<T> for SimplePool<T, F> {
                 return Ok(value);
             }
         }
-        
+
         // Check capacity
         if self.active.get() >= self.capacity as u64 {
             return Err(Error::new(ErrorKind::InvalidState, "Pool exhausted"));
         }
-        
+
         // Create new
         self.active.increment();
         Ok((self.factory)())
     }
-    
+
     fn release(&mut self, item: T) {
         // Find empty slot
         for slot in &mut self.items {
@@ -81,11 +81,11 @@ impl<T, F: FnMut() -> T> Pool<T> for SimplePool<T, F> {
                 return;
             }
         }
-        
+
         // Pool full, drop item
         self.active.decrement();
     }
-    
+
     fn size(&self) -> usize {
         self.active.get() as usize
     }
@@ -101,7 +101,7 @@ impl<T> Pooled<T> {
     pub fn new(item: T) -> Self {
         Self { item: Some(item) }
     }
-    
+
     /// Takes the inner value
     pub fn take(&mut self) -> Option<T> {
         self.item.take()

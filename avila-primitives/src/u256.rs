@@ -57,6 +57,12 @@ impl U256 {
         leading_zeros256(&self.0)
     }
 
+    /// Check if zero
+    #[inline]
+    pub const fn is_zero(&self) -> bool {
+        self.0[0] == 0 && self.0[1] == 0 && self.0[2] == 0 && self.0[3] == 0
+    }
+
     /// Count trailing zeros
     pub fn trailing_zeros(&self) -> u32 {
         for (i, &word) in self.0.iter().enumerate() {

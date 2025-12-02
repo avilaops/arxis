@@ -203,10 +203,10 @@ impl Arena {
     pub fn alloc_slice<T>(&mut self, count: usize) -> &mut [T] {
         let size = count * mem::size_of::<T>();
         let align = mem::align_of::<T>();
-        
+
         // Align offset
         let offset = (self.current_offset + align - 1) & !(align - 1);
-        
+
         if offset + size > self.chunk_size {
             // Need new chunk
             self.chunks.push(vec![0u8; self.chunk_size.max(size)]);
@@ -218,7 +218,7 @@ impl Arena {
         let chunk = &mut self.chunks[self.current_chunk];
         let ptr = unsafe { chunk.as_mut_ptr().add(offset) as *mut T };
         self.current_offset = offset + size;
-        
+
         unsafe { slice::from_raw_parts_mut(ptr, count) }
     }
 
@@ -361,7 +361,7 @@ mod tests {
         let mut s = StackString::<16>::new();
         s.push_str("Hello").unwrap();
         assert_eq!(s.as_str(), "Hello");
-        
+
         s.push_str(" World").unwrap();
         assert_eq!(s.as_str(), "Hello World");
     }
@@ -370,7 +370,7 @@ mod tests {
     #[cfg(feature = "std")]
     fn test_arena() {
         let mut arena = Arena::with_chunk_size(64);
-        
+
         let slice1 = arena.alloc_slice::<u64>(4);
         slice1[0] = 42;
         assert_eq!(slice1[0], 42);

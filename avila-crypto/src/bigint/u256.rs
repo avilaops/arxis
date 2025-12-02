@@ -2,7 +2,7 @@
 //!
 //! Used for secp256k1, P-256, Curve25519
 
-use super::BigInt;
+use super::{BigInt, U512};
 
 /// 256-bit unsigned integer (4 x u64 limbs)
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -53,10 +53,10 @@ impl BigInt for U256 {
         }
     }
 
-    fn mul_mod(&self, other: &Self, _modulus: &Self) -> Self {
-        // Placeholder - proper implementation uses Montgomery multiplication
-        let product = self.mul(other);
-        product
+    fn mul_mod(&self, other: &Self, modulus: &Self) -> Self {
+        // Full 512-bit multiplication then reduce
+        let product = self.mul_wide(other);
+        product.reduce(modulus)
     }
 
     fn pow_mod(&self, exp: &Self, modulus: &Self) -> Self {
@@ -76,13 +76,58 @@ impl BigInt for U256 {
     }
 
     fn inv_mod(&self, modulus: &Self) -> Option<Self> {
-        // Extended Euclidean algorithm
-        if self.is_zero() {
+        // Extended Euclidean algorithm for modular inverse
+        if self.is_zero() || modulus.is_zero() {
             return None;
         }
 
-        // Simplified - full implementation needed
-        Some(*self)
+        // Binary extended GCD (more efficient for binary computers)
+        let mut u = *self;
+        let mut v = *modulus;
+        let mut x1 = Self::ONE;
+        let mut x2 = Self::ZERO;
+
+        while !u.is_zero() {
+            while u.is_even() {
+                u = u.shr(1);
+                if x1.is_even() {
+                    x1 = x1.shr(1);
+                } else {
+                    x1 = x1.add(modulus).shr(1);
+                }
+            }
+
+            while v.is_even() {
+                v = v.shr(1);
+                if x2.is_even() {
+                    x2 = x2.shr(1);
+                } else {
+                    x2 = x2.add(modulus).shr(1);
+                }
+            }
+
+            if u.cmp(&v) != core::cmp::Ordering::Less {
+                u = u.sub(&v);
+                if x1.cmp(&x2) != core::cmp::Ordering::Less {
+                    x1 = x1.sub(&x2);
+                } else {
+                    x1 = modulus.sub(&x2.sub(&x1));
+                }
+            } else {
+                v = v.sub(&u);
+                if x2.cmp(&x1) != core::cmp::Ordering::Less {
+                    x2 = x2.sub(&x1);
+                } else {
+                    x2 = modulus.sub(&x1.sub(&x2));
+                }
+            }
+        }
+
+        if v.limbs[0] == 1 && v.limbs[1..].iter().all(|&x| x == 0) {
+            Some(x2)
+        } else {
+            None
+        }
     }
 }
 
@@ -167,6 +212,52 @@ impl U256 {
     /// Check if zero
     pub fn is_zero(&self) -> bool {
         self.limbs.iter().all(|&x| x == 0)
+    }
+
+    /// Check if even
+    pub fn is_even(&self) -> bool {
+        (self.limbs[0] & 1) == 0
+    }
+
+    /// Left shift
+    pub fn shl(&self, bits: u32) -> Self {
+        if bits >= 256 {
+            return Self::ZERO;
+        }
+
+        let limb_shift = (bits / 64) as usize;
+        let bit_shift = bits % 64;
+        let mut result = Self::ZERO;
+
+        for i in limb_shift..4 {
+            result.limbs[i] = self.limbs[i - limb_shift] << bit_shift;
+            if bit_shift > 0 && i > limb_shift {
+                result.limbs[i] |= self.limbs[i - limb_shift - 1] >> (64 - bit_shift);
+            }
+        }
+
+        result
+    }
+
+    /// Wide multiplication (returns full 512 bits as U512)
+    fn mul_wide(&self, other: &Self) -> U512 {
+        let mut result = [0u64; 8];
+
+        for i in 0..4 {
+            let mut carry = 0u128;
+            for j in 0..4 {
+                let product = (self.limbs[i] as u128) * (other.limbs[j] as u128)
+                            + (result[i + j] as u128)
+                            + carry;
+                result[i + j] = product as u64;
+                carry = product >> 64;
+            }
+            if i + 4 < 8 {
+                result[i + 4] = carry as u64;
+            }
+        }
+
+        U512 { limbs: result }
     }
 
     /// Comparison

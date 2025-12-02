@@ -10,6 +10,7 @@ pub mod u1024_ops;
 pub mod u2048_ops;
 pub mod u4096_ops;
 pub mod bitwise;
+pub mod constant_time;
 
 pub use u64_ops::*;
 pub use u128_ops::*;
@@ -19,3 +20,4 @@ pub use u1024_ops::*;
 pub use u2048_ops::*;
 pub use u4096_ops::*;
 pub use bitwise::*;
+pub use constant_time::*;

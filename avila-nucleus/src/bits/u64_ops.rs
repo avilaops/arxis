@@ -292,43 +292,6 @@ pub const fn rotr(x: u64, n: u32) -> u64 {
     x.rotate_right(n)
 }
 
-/// Constant-time comparison: a == b
-///
-/// Retorna 0xFFFFFFFFFFFFFFFF se igual, 0 se diferente.
-/// Constant-time para evitar timing attacks.
-///
-/// # Exemplos
-///
-/// ```
-/// use avila_nucleus::bits::ct_eq;
-///
-/// assert_eq!(ct_eq(5, 5), u64::MAX);
-/// assert_eq!(ct_eq(5, 6), 0);
-/// ```
-#[inline(always)]
-pub const fn ct_eq(a: u64, b: u64) -> u64 {
-    let diff = a ^ b;
-    let combined = diff | diff.wrapping_neg();
-    (combined >> 63).wrapping_sub(1)
-}
-
-/// Constant-time less than: a < b
-///
-/// Retorna 0xFFFFFFFFFFFFFFFF se a < b, 0 caso contrário.
-/// Constant-time para evitar timing attacks.
-#[inline(always)]
-pub const fn ct_lt(a: u64, b: u64) -> u64 {
-    let diff = a ^ b;
-    let borrow = (!a & b) | ((!a | b) & diff);
-    (borrow >> 63).wrapping_neg()
-}
-
-/// Constant-time greater than: a > b
-#[inline(always)]
-pub const fn ct_gt(a: u64, b: u64) -> u64 {
-    ct_lt(b, a)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -379,12 +342,5 @@ mod tests {
         let (x, y) = cswap(false, 5, 10);
         assert_eq!(x, 5);
         assert_eq!(y, 10);
-    }
-
-    #[test]
-    fn test_ct_eq() {
-        assert_eq!(ct_eq(5, 5), u64::MAX);
-        assert_eq!(ct_eq(5, 6), 0);
-        assert_eq!(ct_eq(0, 0), u64::MAX);
     }
 }

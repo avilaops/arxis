@@ -94,7 +94,7 @@ impl<T: Copy> SeqLock<T> {
             }
 
             let value = unsafe { *self.data.get() };
-            
+
             let seq2 = self.seq.load(Ordering::Acquire);
             if seq1 == seq2 {
                 return value;
@@ -106,11 +106,11 @@ impl<T: Copy> SeqLock<T> {
     pub fn write(&self, value: T) {
         let seq = self.seq.load(Ordering::Relaxed);
         self.seq.store(seq + 1, Ordering::Release);
-        
+
         unsafe {
             *self.data.get() = value;
         }
-        
+
         self.seq.store(seq + 2, Ordering::Release);
     }
 }
@@ -269,7 +269,7 @@ mod tests {
     #[test]
     fn test_spinlock() {
         let lock = SpinLock::new(42);
-        
+
         {
             let mut guard = lock.lock();
             assert_eq!(*guard, 42);
@@ -283,11 +283,11 @@ mod tests {
     #[test]
     fn test_atomic_counter() {
         let counter = AtomicCounter::new(0);
-        
+
         assert_eq!(counter.increment(), 1);
         assert_eq!(counter.increment(), 2);
         assert_eq!(counter.get(), 2);
-        
+
         assert_eq!(counter.decrement(), 1);
         assert_eq!(counter.get(), 1);
     }
@@ -295,10 +295,10 @@ mod tests {
     #[test]
     fn test_counter_cas() {
         let counter = AtomicCounter::new(10);
-        
+
         assert!(counter.compare_and_swap(10, 20).is_ok());
         assert_eq!(counter.get(), 20);
-        
+
         assert!(counter.compare_and_swap(10, 30).is_err());
         assert_eq!(counter.get(), 20);
     }

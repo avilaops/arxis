@@ -24,12 +24,12 @@ impl<T: PartialOrd + Copy> Range<T> {
     pub const fn new(min: T, max: T) -> Self {
         Self { min, max }
     }
-    
+
     /// Checks if value is in range
     pub fn contains(&self, value: T) -> bool {
         value >= self.min && value <= self.max
     }
-    
+
     /// Validates value
     pub fn validate(&self, value: T) -> Result<()> {
         if self.contains(value) {
@@ -51,7 +51,7 @@ impl Length {
     pub const fn new(min: usize, max: usize) -> Self {
         Self { min, max }
     }
-    
+
     /// Validates length
     pub fn validate(&self, len: usize) -> Result<()> {
         if len >= self.min && len <= self.max {
@@ -78,7 +78,7 @@ impl Pattern {
             allow_special: false,
         }
     }
-    
+
     /// Alpha-only pattern
     pub const fn alpha() -> Self {
         Self {
@@ -87,7 +87,7 @@ impl Pattern {
             allow_special: false,
         }
     }
-    
+
     /// Numeric-only pattern
     pub const fn numeric() -> Self {
         Self {
@@ -96,14 +96,14 @@ impl Pattern {
             allow_special: false,
         }
     }
-    
+
     /// Validates string against pattern
     pub fn validate(&self, s: &str) -> Result<()> {
         for c in s.chars() {
             let valid = (self.allow_alpha && c.is_alphabetic())
                 || (self.allow_numeric && c.is_numeric())
                 || (self.allow_special && !c.is_alphanumeric());
-                
+
             if !valid {
                 return Err(Error::new(ErrorKind::InvalidInput, "Invalid character"));
             }
@@ -120,7 +120,7 @@ impl EmailValidator {
     pub const fn new() -> Self {
         Self
     }
-    
+
     /// Validates email format
     pub fn validate(&self, email: &str) -> Result<()> {
         if email.contains('@') && email.contains('.') {

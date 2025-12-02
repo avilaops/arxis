@@ -127,7 +127,7 @@ pub mod base64 {
     /// Encodes bytes to base64 string
     pub fn encode(data: &[u8]) -> String {
         let mut result = String::with_capacity((data.len() + 2) / 3 * 4);
-        
+
         for chunk in data.chunks(3) {
             let mut buf = [0u8; 3];
             buf[..chunk.len()].copy_from_slice(chunk);

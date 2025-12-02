@@ -37,6 +37,13 @@ impl U512 {
         leading_zeros512(&self.0)
     }
 
+    /// Check if zero
+    #[inline]
+    pub const fn is_zero(&self) -> bool {
+        self.0[0] == 0 && self.0[1] == 0 && self.0[2] == 0 && self.0[3] == 0
+            && self.0[4] == 0 && self.0[5] == 0 && self.0[6] == 0 && self.0[7] == 0
+    }
+
     /// Constant-time equality
     #[inline]
     pub fn ct_eq(&self, other: &Self) -> bool {

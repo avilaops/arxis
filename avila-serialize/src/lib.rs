@@ -11,7 +11,7 @@ use avila_error::{Error, ErrorKind, Result};
 pub trait Serialize {
     /// Serializes to bytes
     fn serialize(&self, buf: &mut [u8]) -> Result<usize>;
-    
+
     /// Returns serialized size
     fn size(&self) -> usize;
 }
@@ -30,7 +30,7 @@ impl Serialize for u8 {
         buf[0] = *self;
         Ok(1)
     }
-    
+
     fn size(&self) -> usize { 1 }
 }
 
@@ -51,7 +51,7 @@ impl Serialize for u16 {
         buf[..2].copy_from_slice(&self.to_le_bytes());
         Ok(2)
     }
-    
+
     fn size(&self) -> usize { 2 }
 }
 
@@ -72,7 +72,7 @@ impl Serialize for u32 {
         buf[..4].copy_from_slice(&self.to_le_bytes());
         Ok(4)
     }
-    
+
     fn size(&self) -> usize { 4 }
 }
 
@@ -93,7 +93,7 @@ impl Serialize for u64 {
         buf[..8].copy_from_slice(&self.to_le_bytes());
         Ok(8)
     }
-    
+
     fn size(&self) -> usize { 8 }
 }
 

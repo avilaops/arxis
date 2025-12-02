@@ -42,11 +42,11 @@ impl ByteBuffer {
         if space < bytes.len() {
             self.data.reserve(bytes.len() - space);
         }
-        
+
         if self.write_pos + bytes.len() > self.data.len() {
             self.data.resize(self.write_pos + bytes.len(), 0);
         }
-        
+
         self.data[self.write_pos..self.write_pos + bytes.len()].copy_from_slice(bytes);
         self.write_pos += bytes.len();
         Ok(bytes.len())
@@ -56,11 +56,11 @@ impl ByteBuffer {
     pub fn read(&mut self, buf: &mut [u8]) -> Result<usize> {
         let available = self.write_pos - self.read_pos;
         let to_read = available.min(buf.len());
-        
+
         if to_read == 0 {
             return Ok(0);
         }
-        
+
         buf[..to_read].copy_from_slice(&self.data[self.read_pos..self.read_pos + to_read]);
         self.read_pos += to_read;
         Ok(to_read)
@@ -181,7 +181,7 @@ mod tests {
     fn test_byte_buffer() {
         let mut buf = ByteBuffer::with_capacity(16);
         buf.write(b"Hello").unwrap();
-        
+
         let mut read_buf = [0u8; 5];
         let n = buf.read(&mut read_buf).unwrap();
         assert_eq!(n, 5);
@@ -192,18 +192,18 @@ mod tests {
     fn test_ring_buffer() {
         let mut ring = RingBuffer::<i32, 4>::new();
         assert!(ring.is_empty());
-        
+
         ring.push(1).unwrap();
         ring.push(2).unwrap();
         ring.push(3).unwrap();
-        
+
         assert_eq!(ring.len(), 3);
         assert_eq!(ring.pop(), Some(1));
         assert_eq!(ring.pop(), Some(2));
-        
+
         ring.push(4).unwrap();
         ring.push(5).unwrap();
-        
+
         assert_eq!(ring.len(), 3);
     }
 }

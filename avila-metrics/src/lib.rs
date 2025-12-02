@@ -174,7 +174,7 @@ mod tests {
         hist.observe(10);
         hist.observe(20);
         hist.observe(30);
-        
+
         assert_eq!(hist.count(), 3);
         assert_eq!(hist.sum(), 60);
         assert_eq!(hist.avg(), 20.0);

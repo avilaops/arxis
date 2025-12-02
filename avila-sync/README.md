@@ -116,7 +116,7 @@ static ERRORS: AtomicCounter = AtomicCounter::new(0);
 
 fn process_request() {
     REQUESTS.increment();
-    
+
     if let Err(_) = handle() {
         ERRORS.increment();
     }
@@ -136,7 +136,7 @@ impl<T> ConcurrentQueue<T> {
     fn push(&self, item: T) {
         self.items.lock().push(item);
     }
-    
+
     fn pop(&self) -> Option<T> {
         self.items.lock().pop()
     }

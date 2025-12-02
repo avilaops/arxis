@@ -228,13 +228,13 @@ pub mod prelude {
 └─ avila-future:       0 testes (pendente)
 ```
 
-**Compilação:** ✅ 0 erros em todos os 10 projetos  
-**Warnings:** Apenas documentação faltante (não-crítico)  
+**Compilação:** ✅ 0 erros em todos os 10 projetos
+**Warnings:** Apenas documentação faltante (não-crítico)
 **Dependências:** ✅ Grafo limpo, ZERO circular deps
 
 ### 🎯 **Nova Adequação: 85% → PRONTO PARA PRODUÇÃO**
 
-**Antes:** 70% (U256 + U512 parcial)  
+**Antes:** 70% (U256 + U512 parcial)
 **Agora:** 85% (U256→U4096 completos)
 
 #### O que foi entregue:
@@ -292,6 +292,6 @@ A fundação está **85% completa** e **FUNCIONAL**. Os 15% restantes são:
 ---
 
 **Atualizado:** 2 de dezembro de 2025 (Sprint Completo)
-**Versão:** avila-primitives v0.1.0  
-**Testes:** 153 passing (+35 desde análise inicial)  
+**Versão:** avila-primitives v0.1.0
+**Testes:** 153 passing (+35 desde análise inicial)
 **Autor:** Análise crítica baseada nos Manifestos NOTEBOOK4/5/6

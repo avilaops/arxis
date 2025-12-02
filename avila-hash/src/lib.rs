@@ -13,10 +13,10 @@ use avila_primitives::{Bytes32, Bytes64};
 pub trait Hasher {
     /// Updates hash with data
     fn update(&mut self, data: &[u8]);
-    
+
     /// Finalizes and returns hash
     fn finalize(self) -> Bytes32;
-    
+
     /// Resets hasher
     fn reset(&mut self);
 }
@@ -108,11 +108,11 @@ impl Sha256 {
     /// Updates hash with data
     pub fn update(&mut self, data: &[u8]) {
         self.total_len += data.len() as u64;
-        
+
         for &byte in data {
             self.buffer[self.buffer_len] = byte;
             self.buffer_len += 1;
-            
+
             if self.buffer_len == 64 {
                 self.process_block();
                 self.buffer_len = 0;
@@ -123,7 +123,7 @@ impl Sha256 {
     fn process_block(&mut self) {
         // Simplified block processing
         let mut w = [0u32; 64];
-        
+
         for i in 0..16 {
             w[i] = u32::from_be_bytes([
                 self.buffer[i * 4],
