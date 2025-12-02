@@ -354,6 +354,285 @@ impl Spinor {
     }
 }
 
+// ==================== SCIENTIFIC ARRAYS ====================
+
+/// Quaternion array for columnar storage
+#[derive(Debug, Clone)]
+pub struct QuaternionArray {
+    data: Vec<Quaternion>,
+}
+
+impl QuaternionArray {
+    /// Create new QuaternionArray
+    pub fn new(data: Vec<Quaternion>) -> Self {
+        Self { data }
+    }
+
+    /// Create from iterator
+    pub fn from_iter<I: IntoIterator<Item = Quaternion>>(iter: I) -> Self {
+        Self {
+            data: iter.into_iter().collect(),
+        }
+    }
+
+    /// Get value at index
+    pub fn value(&self, index: usize) -> Option<Quaternion> {
+        self.data.get(index).copied()
+    }
+
+    /// Get all values
+    pub fn values(&self) -> &[Quaternion] {
+        &self.data
+    }
+
+    /// Get length
+    pub fn len(&self) -> usize {
+        self.data.len()
+    }
+
+    /// Check if empty
+    pub fn is_empty(&self) -> bool {
+        self.data.is_empty()
+    }
+
+    /// Element-wise multiplication
+    pub fn multiply(&self, other: &Self) -> Option<Self> {
+        if self.len() != other.len() {
+            return None;
+        }
+
+        let result: Vec<Quaternion> = self
+            .data
+            .iter()
+            .zip(other.data.iter())
+            .map(|(a, b)| *a * *b)
+            .collect();
+
+        Some(Self::new(result))
+    }
+
+    /// Normalize all quaternions
+    pub fn normalize(&self) -> Self {
+        let result: Vec<Quaternion> = self.data.iter().map(|q| q.normalize()).collect();
+        Self::new(result)
+    }
+
+    /// Conjugate all quaternions
+    pub fn conjugate(&self) -> Self {
+        let result: Vec<Quaternion> = self.data.iter().map(|q| q.conjugate()).collect();
+        Self::new(result)
+    }
+
+    /// SLERP (Spherical Linear Interpolation) between two quaternion arrays
+    pub fn slerp(&self, other: &Self, t: f64) -> Option<Self> {
+        if self.len() != other.len() {
+            return None;
+        }
+
+        let result: Vec<Quaternion> = self
+            .data
+            .iter()
+            .zip(other.data.iter())
+            .map(|(a, b)| {
+                // Simple SLERP implementation
+                let dot = a.w * b.w + a.x * b.x + a.y * b.y + a.z * b.z;
+                let theta = dot.acos();
+                let sin_theta = theta.sin();
+
+                if sin_theta.abs() < 1e-10 {
+                    *a // Quaternions are very close
+                } else {
+                    let w1 = ((1.0 - t) * theta).sin() / sin_theta;
+                    let w2 = (t * theta).sin() / sin_theta;
+
+                    Quaternion::new(
+                        a.w * w1 + b.w * w2,
+                        a.x * w1 + b.x * w2,
+                        a.y * w1 + b.y * w2,
+                        a.z * w1 + b.z * w2,
+                    )
+                }
+            })
+            .collect();
+
+        Some(Self::new(result))
+    }
+}
+
+/// Complex number array for columnar storage
+#[derive(Debug, Clone)]
+pub struct ComplexArray {
+    data: Vec<Complex64>,
+}
+
+impl ComplexArray {
+    /// Create new ComplexArray
+    pub fn new(data: Vec<Complex64>) -> Self {
+        Self { data }
+    }
+
+    /// Create from iterator
+    pub fn from_iter<I: IntoIterator<Item = Complex64>>(iter: I) -> Self {
+        Self {
+            data: iter.into_iter().collect(),
+        }
+    }
+
+    /// Get value at index
+    pub fn value(&self, index: usize) -> Option<Complex64> {
+        self.data.get(index).copied()
+    }
+
+    /// Get all values
+    pub fn values(&self) -> &[Complex64] {
+        &self.data
+    }
+
+    /// Get length
+    pub fn len(&self) -> usize {
+        self.data.len()
+    }
+
+    /// Check if empty
+    pub fn is_empty(&self) -> bool {
+        self.data.is_empty()
+    }
+
+    /// Element-wise multiplication
+    pub fn multiply(&self, other: &Self) -> Option<Self> {
+        if self.len() != other.len() {
+            return None;
+        }
+
+        let result: Vec<Complex64> = self
+            .data
+            .iter()
+            .zip(other.data.iter())
+            .map(|(a, b)| *a * *b)
+            .collect();
+
+        Some(Self::new(result))
+    }
+
+    /// Element-wise addition
+    pub fn add(&self, other: &Self) -> Option<Self> {
+        if self.len() != other.len() {
+            return None;
+        }
+
+        let result: Vec<Complex64> = self
+            .data
+            .iter()
+            .zip(other.data.iter())
+            .map(|(a, b)| *a + *b)
+            .collect();
+
+        Some(Self::new(result))
+    }
+
+    /// Get magnitude of all elements
+    pub fn magnitude(&self) -> Vec<f64> {
+        self.data.iter().map(|c| c.magnitude()).collect()
+    }
+
+    /// Get phase of all elements
+    pub fn phase(&self) -> Vec<f64> {
+        self.data.iter().map(|c| c.phase()).collect()
+    }
+
+    /// Conjugate all elements
+    pub fn conjugate(&self) -> Self {
+        let result: Vec<Complex64> = self.data.iter().map(|c| c.conjugate()).collect();
+        Self::new(result)
+    }
+}
+
+/// Tensor4D array for columnar storage
+#[derive(Debug, Clone)]
+pub struct Tensor4DArray {
+    data: Vec<Tensor4D>,
+}
+
+impl Tensor4DArray {
+    /// Create new Tensor4DArray
+    pub fn new(data: Vec<Tensor4D>) -> Self {
+        Self { data }
+    }
+
+    /// Create from iterator
+    pub fn from_iter<I: IntoIterator<Item = Tensor4D>>(iter: I) -> Self {
+        Self {
+            data: iter.into_iter().collect(),
+        }
+    }
+
+    /// Get value at index
+    pub fn value(&self, index: usize) -> Option<Tensor4D> {
+        self.data.get(index).copied()
+    }
+
+    /// Get all values
+    pub fn values(&self) -> &[Tensor4D] {
+        &self.data
+    }
+
+    /// Get length
+    pub fn len(&self) -> usize {
+        self.data.len()
+    }
+
+    /// Check if empty
+    pub fn is_empty(&self) -> bool {
+        self.data.is_empty()
+    }
+}
+
+/// Spinor array for columnar storage
+#[derive(Debug, Clone)]
+pub struct SpinorArray {
+    data: Vec<Spinor>,
+}
+
+impl SpinorArray {
+    /// Create new SpinorArray
+    pub fn new(data: Vec<Spinor>) -> Self {
+        Self { data }
+    }
+
+    /// Create from iterator
+    pub fn from_iter<I: IntoIterator<Item = Spinor>>(iter: I) -> Self {
+        Self {
+            data: iter.into_iter().collect(),
+        }
+    }
+
+    /// Get value at index
+    pub fn value(&self, index: usize) -> Option<Spinor> {
+        self.data.get(index).copied()
+    }
+
+    /// Get all values
+    pub fn values(&self) -> &[Spinor] {
+        &self.data
+    }
+
+    /// Get length
+    pub fn len(&self) -> usize {
+        self.data.len()
+    }
+
+    /// Check if empty
+    pub fn is_empty(&self) -> bool {
+        self.data.is_empty()
+    }
+
+    /// Normalize all spinors
+    pub fn normalize(&self) -> Self {
+        let result: Vec<Spinor> = self.data.iter().map(|s| s.normalize()).collect();
+        Self::new(result)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -428,5 +707,156 @@ mod tests {
         );
         let normalized = spinor.normalize();
         assert!((normalized.norm() - 1.0).abs() < 1e-10);
+    }
+
+    // ==================== ARRAY TESTS ====================
+
+    #[test]
+    fn test_quaternion_array_creation() {
+        let q1 = Quaternion::identity();
+        let q2 = Quaternion::new(0.707, 0.707, 0.0, 0.0);
+        let array = QuaternionArray::new(vec![q1, q2]);
+
+        assert_eq!(array.len(), 2);
+        assert_eq!(array.value(0), Some(q1));
+        assert_eq!(array.value(1), Some(q2));
+    }
+
+    #[test]
+    fn test_quaternion_array_multiply() {
+        let q1 = Quaternion::identity();
+        let q2 = Quaternion::new(0.0, 1.0, 0.0, 0.0);
+        let array1 = QuaternionArray::new(vec![q1, q1]);
+        let array2 = QuaternionArray::new(vec![q2, q2]);
+
+        let result = array1.multiply(&array2).unwrap();
+        assert_eq!(result.len(), 2);
+        assert_eq!(result.value(0).unwrap().x, 1.0);
+    }
+
+    #[test]
+    fn test_quaternion_array_normalize() {
+        let q1 = Quaternion::new(2.0, 0.0, 0.0, 0.0);
+        let q2 = Quaternion::new(0.0, 3.0, 0.0, 0.0);
+        let array = QuaternionArray::new(vec![q1, q2]);
+
+        let normalized = array.normalize();
+        assert!((normalized.value(0).unwrap().magnitude() - 1.0).abs() < 1e-10);
+        assert!((normalized.value(1).unwrap().magnitude() - 1.0).abs() < 1e-10);
+    }
+
+    #[test]
+    fn test_quaternion_array_slerp() {
+        let q1 = Quaternion::identity();
+        let q2 = Quaternion::from_axis_angle([0.0, 0.0, 1.0], std::f64::consts::PI);
+        let array1 = QuaternionArray::new(vec![q1, q1]);
+        let array2 = QuaternionArray::new(vec![q2, q2]);
+
+        let result = array1.slerp(&array2, 0.5).unwrap();
+        assert_eq!(result.len(), 2);
+        assert!((result.value(0).unwrap().magnitude() - 1.0).abs() < 1e-10);
+    }
+
+    #[test]
+    fn test_complex_array_creation() {
+        let c1 = Complex64::new(1.0, 2.0);
+        let c2 = Complex64::new(3.0, 4.0);
+        let array = ComplexArray::new(vec![c1, c2]);
+
+        assert_eq!(array.len(), 2);
+        assert_eq!(array.value(0), Some(c1));
+        assert_eq!(array.value(1), Some(c2));
+    }
+
+    #[test]
+    fn test_complex_array_multiply() {
+        let c1 = Complex64::new(1.0, 2.0);
+        let c2 = Complex64::new(3.0, 4.0);
+        let array1 = ComplexArray::new(vec![c1, c1]);
+        let array2 = ComplexArray::new(vec![c2, c2]);
+
+        let result = array1.multiply(&array2).unwrap();
+        assert_eq!(result.len(), 2);
+        assert_eq!(result.value(0).unwrap().re, -5.0);
+        assert_eq!(result.value(0).unwrap().im, 10.0);
+    }
+
+    #[test]
+    fn test_complex_array_add() {
+        let c1 = Complex64::new(1.0, 2.0);
+        let c2 = Complex64::new(3.0, 4.0);
+        let array1 = ComplexArray::new(vec![c1, c1]);
+        let array2 = ComplexArray::new(vec![c2, c2]);
+
+        let result = array1.add(&array2).unwrap();
+        assert_eq!(result.len(), 2);
+        assert_eq!(result.value(0).unwrap().re, 4.0);
+        assert_eq!(result.value(0).unwrap().im, 6.0);
+    }
+
+    #[test]
+    fn test_complex_array_magnitude() {
+        let c1 = Complex64::new(3.0, 4.0);
+        let c2 = Complex64::new(5.0, 12.0);
+        let array = ComplexArray::new(vec![c1, c2]);
+
+        let magnitudes = array.magnitude();
+        assert_eq!(magnitudes[0], 5.0);
+        assert_eq!(magnitudes[1], 13.0);
+    }
+
+    #[test]
+    fn test_complex_array_phase() {
+        let c1 = Complex64::new(1.0, 1.0);
+        let array = ComplexArray::new(vec![c1]);
+
+        let phases = array.phase();
+        assert!((phases[0] - std::f64::consts::PI / 4.0).abs() < 1e-10);
+    }
+
+    #[test]
+    fn test_complex_array_conjugate() {
+        let c1 = Complex64::new(1.0, 2.0);
+        let c2 = Complex64::new(3.0, 4.0);
+        let array = ComplexArray::new(vec![c1, c2]);
+
+        let conj = array.conjugate();
+        assert_eq!(conj.value(0).unwrap().re, 1.0);
+        assert_eq!(conj.value(0).unwrap().im, -2.0);
+        assert_eq!(conj.value(1).unwrap().re, 3.0);
+        assert_eq!(conj.value(1).unwrap().im, -4.0);
+    }
+
+    #[test]
+    fn test_tensor4d_array_creation() {
+        let t1 = Tensor4D::minkowski();
+        let t2 = Tensor4D::zeros();
+        let array = Tensor4DArray::new(vec![t1, t2]);
+
+        assert_eq!(array.len(), 2);
+        assert_eq!(array.value(0), Some(t1));
+        assert_eq!(array.value(1), Some(t2));
+    }
+
+    #[test]
+    fn test_spinor_array_creation() {
+        let s1 = Spinor::spin_up();
+        let s2 = Spinor::spin_down();
+        let array = SpinorArray::new(vec![s1, s2]);
+
+        assert_eq!(array.len(), 2);
+        assert_eq!(array.value(0), Some(s1));
+        assert_eq!(array.value(1), Some(s2));
+    }
+
+    #[test]
+    fn test_spinor_array_normalize() {
+        let s1 = Spinor::new(Complex64::new(2.0, 0.0), Complex64::new(0.0, 0.0));
+        let s2 = Spinor::new(Complex64::new(0.0, 0.0), Complex64::new(3.0, 0.0));
+        let array = SpinorArray::new(vec![s1, s2]);
+
+        let normalized = array.normalize();
+        assert!((normalized.value(0).unwrap().norm() - 1.0).abs() < 1e-10);
+        assert!((normalized.value(1).unwrap().norm() - 1.0).abs() < 1e-10);
     }
 }

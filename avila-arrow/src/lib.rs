@@ -27,9 +27,11 @@
 #![warn(clippy::all)]
 
 pub mod array;
+pub mod compute;
 pub mod datatypes;
 pub mod error;
 pub mod record_batch;
+pub mod simd;
 
 #[cfg(feature = "scientific")]
 pub mod scientific;

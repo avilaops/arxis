@@ -1,13 +1,13 @@
 [package]
 name = "avila-arrow"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = [
     "Nícolas Ávila <nicolas@avila.inc>",
     "Avila Development Team <dev@avila.inc>",
 ]
 license = "MIT OR Apache-2.0"
-description = "Native columnar format for AvilaDB with scientific types (Quaternions, Tensors, Complex, Spinors) - Optimized for Brazilian research infrastructure"
+description = "Zero-copy columnar format with scientific arrays (Quaternions, Complex, Tensors, Spinors) and SIMD acceleration - Built for Brazilian scientific computing"
 repository = "https://github.com/avilaops/arxis"
 homepage = "https://avila.cloud"
 documentation = "https://docs.rs/avila-arrow"
