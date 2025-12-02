@@ -100,7 +100,7 @@ pub fn apply_window(signal: &mut [f64], window: &[f64]) {
 }
 
 /// Apply window to complex signal
-use num_complex::Complex64;
+use avila_fft::num_complex::Complex64;
 
 pub fn apply_window_complex(signal: &mut [Complex64], window: &[f64]) {
     assert_eq!(
@@ -110,7 +110,7 @@ pub fn apply_window_complex(signal: &mut [Complex64], window: &[f64]) {
     );
 
     for (s, w) in signal.iter_mut().zip(window.iter()) {
-        *s *= w;
+        *s *= *w;
     }
 }
 

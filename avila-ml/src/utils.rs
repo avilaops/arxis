@@ -12,8 +12,8 @@ pub fn xavier_uniform<T: Float + NumAssign + ndarray::ScalarOperand + Send + Syn
     let fan_out = shape[0];
     let limit = T::from((6.0 / (fan_in + fan_out) as f64).sqrt()).unwrap();
 
-    use rand::Rng;
-    let mut rng = rand::thread_rng();
+    use rand::{thread_rng, Rng};
+    let mut rng = thread_rng();
     let size: usize = shape.iter().product();
 
     let data: Vec<T> = (0..size)
@@ -33,8 +33,8 @@ pub fn kaiming_uniform<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sy
     let fan_in = if shape.len() > 1 { shape[1] } else { shape[0] };
     let limit = T::from((3.0 / fan_in as f64).sqrt()).unwrap();
 
-    use rand::Rng;
-    let mut rng = rand::thread_rng();
+    use rand::{thread_rng, Rng};
+    let mut rng = thread_rng();
     let size: usize = shape.iter().product();
 
     let data: Vec<T> = (0..size)
@@ -66,8 +66,8 @@ pub fn train_test_split<T: Float + NumAssign + ndarray::ScalarOperand + Send + S
     let train_size = n - test_size;
 
     // Shuffle indices
-    use rand::seq::SliceRandom;
-    let mut rng = rand::thread_rng();
+    use rand::{thread_rng, SliceRandom};
+    let mut rng = thread_rng();
     let mut indices: Vec<usize> = (0..n).collect();
     indices.shuffle(&mut rng);
 

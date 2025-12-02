@@ -10,11 +10,11 @@ pub fn encode(data: &[u8]) -> Result<Vec<u8>> {
     if data.is_empty() {
         return Ok(Vec::new());
     }
-    
+
     let mut dictionary = Vec::new();
     let mut map: HashMap<u8, u8> = HashMap::new();
     let mut indices = Vec::with_capacity(data.len());
-    
+
     // Build dictionary
     for &value in data {
         let index = *map.entry(value).or_insert_with(|| {
@@ -24,19 +24,19 @@ pub fn encode(data: &[u8]) -> Result<Vec<u8>> {
         });
         indices.push(index);
     }
-    
+
     if dictionary.len() > 255 {
         return Err(ArrowError::InvalidData(
             "Dictionary too large (>255 entries)".to_string()
         ));
     }
-    
+
     // Output format: [dict_size][dict_values...][indices...]
     let mut output = Vec::with_capacity(1 + dictionary.len() + indices.len());
     output.push(dictionary.len() as u8);
     output.extend_from_slice(&dictionary);
     output.extend_from_slice(&indices);
-    
+
     Ok(output)
 }
 
@@ -45,23 +45,23 @@ pub fn decode(data: &[u8]) -> Result<Vec<u8>> {
     if data.is_empty() {
         return Ok(Vec::new());
     }
-    
+
     if data.len() < 1 {
         return Err(ArrowError::InvalidData(
             "Dictionary data too short".to_string()
         ));
     }
-    
+
     let dict_size = data[0] as usize;
     if data.len() < 1 + dict_size {
         return Err(ArrowError::InvalidData(
             "Truncated dictionary".to_string()
         ));
     }
-    
+
     let dictionary = &data[1..1 + dict_size];
     let indices = &data[1 + dict_size..];
-    
+
     let mut output = Vec::with_capacity(indices.len());
     for &idx in indices {
         if idx as usize >= dict_size {
@@ -71,7 +71,7 @@ pub fn decode(data: &[u8]) -> Result<Vec<u8>> {
         }
         output.push(dictionary[idx as usize]);
     }
-    
+
     Ok(output)
 }
 
@@ -91,7 +91,7 @@ impl DictionaryEncoder {
             indices: Vec::new(),
         }
     }
-    
+
     /// Encode a string value
     pub fn encode(&mut self, value: &[u8]) -> Result<()> {
         let index = *self.map.entry(value.to_vec()).or_insert_with(|| {
@@ -102,12 +102,12 @@ impl DictionaryEncoder {
         self.indices.push(index);
         Ok(())
     }
-    
+
     /// Get dictionary size
     pub fn dict_size(&self) -> usize {
         self.dictionary.len()
     }
-    
+
     /// Get encoded data
     pub fn finish(self) -> (Vec<Vec<u8>>, Vec<u32>) {
         (self.dictionary, self.indices)
@@ -136,7 +136,7 @@ impl DictionaryEncoderI64 {
             indices: Vec::new(),
         }
     }
-    
+
     /// Encode an i64 value
     pub fn encode(&mut self, value: i64) {
         let index = *self.map.entry(value).or_insert_with(|| {
@@ -146,12 +146,12 @@ impl DictionaryEncoderI64 {
         });
         self.indices.push(index);
     }
-    
+
     /// Get dictionary size
     pub fn dict_size(&self) -> usize {
         self.dictionary.len()
     }
-    
+
     /// Get encoded data
     pub fn finish(self) -> (Vec<i64>, Vec<u32>) {
         (self.dictionary, self.indices)
@@ -180,7 +180,7 @@ impl DictionaryEncoderF64 {
             indices: Vec::new(),
         }
     }
-    
+
     /// Encode an f64 value
     pub fn encode(&mut self, value: f64) {
         let bits = value.to_bits();
@@ -191,12 +191,12 @@ impl DictionaryEncoderF64 {
         });
         self.indices.push(index);
     }
-    
+
     /// Get dictionary size
     pub fn dict_size(&self) -> usize {
         self.dictionary.len()
     }
-    
+
     /// Get encoded data
     pub fn finish(self) -> (Vec<f64>, Vec<u32>) {
         (self.dictionary, self.indices)
@@ -218,7 +218,7 @@ mod tests {
         let data = vec![1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3];
         let encoded = encode(&data).unwrap();
         // Small data may not compress due to overhead
-        
+
         let decoded = decode(&encoded).unwrap();
         assert_eq!(decoded, data);
     }
@@ -228,7 +228,7 @@ mod tests {
         let data = vec![5u8; 100];
         let encoded = encode(&data).unwrap();
         // Small repeated data has overhead
-        
+
         let decoded = decode(&encoded).unwrap();
         assert_eq!(decoded, data);
     }
@@ -240,7 +240,7 @@ mod tests {
         encoder.encode(b"world").unwrap();
         encoder.encode(b"hello").unwrap();
         encoder.encode(b"world").unwrap();
-        
+
         assert_eq!(encoder.dict_size(), 2);
         let (dict, indices) = encoder.finish();
         assert_eq!(dict.len(), 2);
@@ -253,7 +253,7 @@ mod tests {
         for i in 0..100 {
             encoder.encode(i % 10); // Only 10 unique values
         }
-        
+
         assert_eq!(encoder.dict_size(), 10);
         let (dict, indices) = encoder.finish();
         assert_eq!(dict.len(), 10);
@@ -266,7 +266,7 @@ mod tests {
         for i in 0..100 {
             encoder.encode((i % 5) as f64 * 0.5); // Only 5 unique values
         }
-        
+
         assert_eq!(encoder.dict_size(), 5);
         let (dict, indices) = encoder.finish();
         assert_eq!(dict.len(), 5);

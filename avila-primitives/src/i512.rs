@@ -10,10 +10,10 @@ pub struct I512(pub U512);
 impl I512 {
     /// Zero value
     pub const ZERO: Self = Self(U512::ZERO);
-    
+
     /// One value
     pub const ONE: Self = Self(U512::ONE);
-    
+
     /// Check if negative
     #[inline]
     pub fn is_negative(&self) -> bool {

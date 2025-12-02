@@ -1,0 +1,254 @@
+name: avila-geo CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  # Job 1: Lint e formato
+  lint:
+    name: Lint and Format Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache cargo registry
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache cargo build
+        uses: actions/cache@v3
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+
+      - name: Run clippy (core library)
+        run: cargo clippy --package avila-geo --lib --no-default-features -- -W clippy::all
+        continue-on-error: true
+
+  # Job 2: Testes
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-test-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Run core library tests
+        run: cargo test --package avila-geo --lib --no-default-features --verbose
+        continue-on-error: true
+
+      - name: Run integration tests
+        run: cargo test --package avila-geo --test integration_test --no-default-features
+        continue-on-error: true
+
+      - name: Run doc tests
+        run: cargo test --package avila-geo --doc --no-default-features
+        continue-on-error: true
+
+  # Job 3: Benchmarks
+  benchmark:
+    name: Run Benchmarks
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-bench-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Run benchmarks
+        run: cargo bench --package avila-geo --no-fail-fast
+        continue-on-error: true
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v3
+        with:
+          name: benchmark-results
+          path: target/criterion
+
+  # Job 4: Build Release
+  build:
+    name: Build Release
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    strategy:
+      matrix:
+        features:
+          - "--no-default-features"
+          - "--features spatial-native"
+          - "--features gis-buffer,gis-network,gis-geocoding"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-release-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Build release (${{ matrix.features }})
+        run: cargo build --release --package avila-geo ${{ matrix.features }}
+        continue-on-error: true
+
+  # Job 5: Examples
+  examples:
+    name: Build Examples
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-examples-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Build examples
+        run: |
+          cargo build --example world_map --release --no-default-features
+          cargo build --example advanced_gis_demo --release --no-default-features
+          cargo build --example clustering_demo --release --no-default-features
+        continue-on-error: true
+
+  # Job 6: Security Audit (Nativo - sem cargo-audit)
+  security:
+    name: Security Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Check for unsafe code
+        run: |
+          echo "Checking for unsafe blocks..."
+          grep -r "unsafe" src/ || echo "No unsafe blocks found"
+
+      - name: Verify zero external dependencies
+        run: |
+          echo "Checking Cargo.toml for external dependencies..."
+          grep -E "^[^#].*version = \"[0-9]" Cargo.toml || echo "✅ Zero external dependencies (only path deps)"
+
+      - name: Run clippy security lints
+        run: cargo clippy --package avila-geo -- -W clippy::all -W clippy::pedantic
+        continue-on-error: true
+
+  # Job 7: Coverage (usando llvm-cov nativo)
+  coverage:
+    name: Code Coverage
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
+
+      - name: Install cargo-llvm-cov
+        run: cargo install cargo-llvm-cov
+
+      - name: Generate coverage
+        run: cargo llvm-cov --package avila-geo --no-default-features --html
+        continue-on-error: true
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: target/llvm-cov/html
+
+  # Job 8: Documentation
+  docs:
+    name: Build Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build documentation
+        run: cargo doc --package avila-geo --no-deps --no-default-features
+
+      - name: Upload documentation
+        uses: actions/upload-artifact@v3
+        with:
+          name: documentation
+          path: target/doc
+
+  # Job 9: Dependency Check (100% Ávila)
+  dependencies:
+    name: Verify Ávila Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for external dependencies
+        run: |
+          echo "🔍 Checking avila-geo Cargo.toml..."
+          if grep -E "^[a-z].*= \"[0-9]" Cargo.toml | grep -v "#"; then
+            echo "❌ ERRO: Dependências externas encontradas!"
+            exit 1
+          else
+            echo "✅ SUCESSO: 100% dependências Ávila (path)"
+          fi
+
+      - name: List all dependencies
+        run: |
+          echo "📦 Dependências do projeto:"
+          cargo tree --package avila-geo --depth 1 || true

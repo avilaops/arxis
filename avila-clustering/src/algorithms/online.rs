@@ -343,7 +343,7 @@ impl SlidingWindowClustering {
             return false;
         }
 
-        // Simple drift detection: compare cluster distributions
+        // Distribution-based drift detection: compare cluster distributions
         let recent = self.windows.back().unwrap();
         let older = self.windows.front().unwrap();
 

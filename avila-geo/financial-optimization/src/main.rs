@@ -19,9 +19,11 @@ mod corporate_structure;
 mod simulators;
 mod api;
 mod errors;
+mod rate_limit;
 
 use api::*;
 use errors::AppError;
+use rate_limit::{RateLimiter, RateLimitConfig};
 
 #[derive(Clone)]
 pub struct AppState {

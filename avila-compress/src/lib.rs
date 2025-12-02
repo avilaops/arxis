@@ -50,12 +50,14 @@ pub enum CompressionAlgorithm {
 /// Compression level
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum Level {
-    /// Fastest compression, lower ratio
+    /// Fastest compression, lower ratio (optimized for speed)
     Fast,
-    /// Balanced speed and ratio
+    /// Balanced speed and ratio (good default)
     Balanced,
-    /// Best compression ratio, slower
+    /// Best compression ratio, slower (optimal parsing)
     Best,
+    /// Ultra compression with maximum effort
+    Ultra,
 }
 
 impl Default for Level {

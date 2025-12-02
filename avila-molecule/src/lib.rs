@@ -18,7 +18,7 @@
 
 #![warn(missing_docs)]
 
-use avila_error::{Error, ErrorKind, Result};
+use avila_error::{Error, Result};
 use tokio::net::{TcpListener, TcpStream, UdpSocket};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 

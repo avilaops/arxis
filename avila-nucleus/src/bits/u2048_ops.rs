@@ -145,6 +145,21 @@ pub const fn is_zero2048(a: &[u64; 32]) -> bool {
 }
 
 #[inline]
+pub const fn gt2048(a: &[u64; 32], b: &[u64; 32]) -> bool {
+    lt2048(b, a)
+}
+
+#[inline]
+pub const fn le2048(a: &[u64; 32], b: &[u64; 32]) -> bool {
+    !gt2048(a, b)
+}
+
+#[inline]
+pub const fn ge2048(a: &[u64; 32], b: &[u64; 32]) -> bool {
+    !lt2048(a, b)
+}
+
+#[inline]
 pub const fn leading_zeros2048(a: &[u64; 32]) -> u32 {
     let mut i = 31;
     loop {
@@ -157,6 +172,68 @@ pub const fn leading_zeros2048(a: &[u64; 32]) -> u32 {
         i -= 1;
     }
     2048
+}
+
+/// Multiplicação U2048 × U2048 → U4096
+pub fn mul2048x2048(a: &[u64; 32], b: &[u64; 32]) -> [u64; 64] {
+    let mut result = [0u64; 64];
+    for i in 0..32 {
+        let mut carry = 0u64;
+        for j in 0..32 {
+            let (lo, hi) = mul_wide(a[i], b[j]);
+            let (sum, c1) = adc(result[i + j], lo, 0);
+            result[i + j] = sum;
+            let (sum2, c2) = adc(result[i + j + 1], hi, c1);
+            result[i + j + 1] = sum2;
+            carry = c2;
+        }
+        if carry != 0 && i + 32 < 64 {
+            let mut k = i + 32;
+            while carry != 0 && k < 64 {
+                let (sum, c) = result[k].overflowing_add(carry);
+                result[k] = sum;
+                carry = c as u64;
+                k += 1;
+            }
+        }
+    }
+    result
+}
+
+/// Divisão U2048
+pub fn div2048(a: &[u64; 32], b: &[u64; 32]) -> ([u64; 32], [u64; 32]) {
+    if is_zero2048(b) {
+        return ([0; 32], *a);
+    }
+    if lt2048(a, b) {
+        return ([0; 32], *a);
+    }
+    if eq2048(a, b) {
+        let mut one = [0u64; 32];
+        one[0] = 1;
+        return (one, [0; 32]);
+    }
+
+    let mut quotient = [0u64; 32];
+    let mut remainder = [0u64; 32];
+
+    for i in (0..2048).rev() {
+        remainder = shl2048(&remainder, 1);
+        let limb_idx = i / 64;
+        let bit_idx = i % 64;
+        if (a[limb_idx] >> bit_idx) & 1 == 1 {
+            remainder[0] |= 1;
+        }
+        if ge2048(&remainder, b) {
+            let (new_remainder, _) = sub2048(&remainder, b);
+            remainder = new_remainder;
+            let q_limb = i / 64;
+            let q_bit = i % 64;
+            quotient[q_limb] |= 1u64 << q_bit;
+        }
+    }
+
+    (quotient, remainder)
 }
 
 #[cfg(test)]

@@ -1,0 +1,72 @@
+[package]
+name = "avila-copilot"
+version = "0.1.0"
+edition = "2021"
+authors = ["Avila Team <team@avila.dev>"]
+description = "AI-powered code assistant - superior to GitHub Copilot, 100% local, zero external dependencies"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/avilaops/arxis"
+keywords = ["ai", "code-assistant", "copilot", "ml", "lsp"]
+categories = ["development-tools", "machine-learning"]
+
+[workspace]
+members = [
+    "crates/avila-copilot-core",
+    "crates/avila-copilot-model-storage",
+    "crates/avila-copilot-tokenizer",
+    "crates/avila-copilot-context",
+    "crates/avila-copilot-inference",
+    "crates/avila-copilot-intelligence",
+    "crates/avila-copilot-lsp",
+    "crates/avila-copilot-extension-bridge",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/avilaops/arxis"
+
+[workspace.dependencies]
+# Internal Arxis dependencies
+avila-ml = { version = "1.0.0", path = "../avila-ml" }
+avila-async = { version = "0.5.0", path = "../avila-async" }
+avila-compress = { version = "0.3.0", path = "../avila-compress" }
+avila-crypto = { version = "0.1.0", path = "../avila-crypto" }
+avila-math = { version = "0.1.0", path = "../avila-math" }
+avila-linalg = { version = "0.1.1", path = "../avila-linalg" }
+avila-error = { version = "0.2.0", path = "../avila-error" }
+avila-serde = { version = "0.2.0", path = "../avila-serde" }
+
+# Copilot internal crates
+avila-copilot-core = { version = "0.1.0", path = "crates/avila-copilot-core" }
+avila-copilot-model-storage = { version = "0.1.0", path = "crates/avila-copilot-model-storage" }
+avila-copilot-tokenizer = { version = "0.1.0", path = "crates/avila-copilot-tokenizer" }
+avila-copilot-context = { version = "0.1.0", path = "crates/avila-copilot-context" }
+avila-copilot-inference = { version = "0.1.0", path = "crates/avila-copilot-inference" }
+avila-copilot-intelligence = { version = "0.1.0", path = "crates/avila-copilot-intelligence" }
+avila-copilot-lsp = { version = "0.1.0", path = "crates/avila-copilot-lsp" }
+avila-copilot-extension-bridge = { version = "0.1.0", path = "crates/avila-copilot-extension-bridge" }
+
+[dependencies]
+avila-copilot-core = { workspace = true }
+avila-copilot-lsp = { workspace = true }
+tokio = { version = "1", features = ["full"] }
+env_logger = "0.11"
+
+[[bin]]
+name = "avila-copilot"
+path = "src/main.rs"
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = true
+
+[profile.dev]
+opt-level = 1
+
+[profile.bench]
+inherits = "release"

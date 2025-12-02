@@ -83,23 +83,34 @@ impl<K: Clone + Eq + Hash, V: Clone> ConcurrentCache<K, V> {
     }
 
     pub fn get(&self, key: &K) -> Option<V> {
-        self.cache.lock().unwrap().get(key).cloned()
+        self.cache.lock()
+            .ok()?
+            .get(key)
+            .cloned()
     }
 
     pub fn insert(&self, key: K, value: V) {
-        self.cache.lock().unwrap().insert(key, value);
+        if let Ok(mut cache) = self.cache.lock() {
+            cache.insert(key, value);
+        }
     }
 
     pub fn len(&self) -> usize {
-        self.cache.lock().unwrap().len()
+        self.cache.lock()
+            .map(|c| c.len())
+            .unwrap_or(0)
     }
 
     pub fn is_empty(&self) -> bool {
-        self.cache.lock().unwrap().is_empty()
+        self.cache.lock()
+            .map(|c| c.is_empty())
+            .unwrap_or(true)
     }
 
     pub fn clear(&self) {
-        self.cache.lock().unwrap().clear();
+        if let Ok(mut cache) = self.cache.lock() {
+            cache.clear();
+        }
     }
 }
 

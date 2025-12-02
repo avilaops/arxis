@@ -2,7 +2,7 @@
 
 use core::ops::{Add, Sub, Mul, Div, Rem, BitAnd, BitOr, BitXor, Not, Shl, Shr};
 use core::cmp::Ordering;
-use avila_nucleus::bits::{add256, sub256, mul256x256, shl256, shr256, leading_zeros256};
+use avila_nucleus::bits::{add256, sub256, mul256x256, div256, shl256, shr256, leading_zeros256};
 
 /// 256-bit unsigned integer
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
@@ -12,25 +12,25 @@ pub struct U256(pub [u64; 4]);
 impl U256 {
     /// Zero value
     pub const ZERO: Self = Self([0; 4]);
-    
+
     /// One value
     pub const ONE: Self = Self([1, 0, 0, 0]);
-    
+
     /// Maximum value
     pub const MAX: Self = Self([u64::MAX; 4]);
-    
+
     /// Create from u64
     #[inline]
     pub const fn from_u64(value: u64) -> Self {
         Self([value, 0, 0, 0])
     }
-    
+
     /// Convert to u64 (lossy - only low 64 bits)
     #[inline]
     pub const fn to_u64(&self) -> u64 {
         self.0[0]
     }
-    
+
     /// Create from little-endian bytes
     pub fn from_le_bytes(bytes: &[u8]) -> Self {
         let mut result = [0u64; 4];
@@ -41,7 +41,7 @@ impl U256 {
         }
         Self(result)
     }
-    
+
     /// Convert to little-endian bytes
     pub fn to_le_bytes(&self) -> [u8; 32] {
         let mut result = [0u8; 32];
@@ -50,13 +50,13 @@ impl U256 {
         }
         result
     }
-    
+
     /// Count leading zeros
     #[inline]
     pub fn leading_zeros(&self) -> u32 {
         leading_zeros256(&self.0)
     }
-    
+
     /// Count trailing zeros
     pub fn trailing_zeros(&self) -> u32 {
         for (i, &word) in self.0.iter().enumerate() {
@@ -66,13 +66,13 @@ impl U256 {
         }
         256
     }
-    
+
     /// Constant-time equality
     #[inline]
     pub fn ct_eq(&self, other: &Self) -> bool {
-        let diff = self.0[0] ^ other.0[0] | 
-                   self.0[1] ^ other.0[1] | 
-                   self.0[2] ^ other.0[2] | 
+        let diff = self.0[0] ^ other.0[0] |
+                   self.0[1] ^ other.0[1] |
+                   self.0[2] ^ other.0[2] |
                    self.0[3] ^ other.0[3];
         diff == 0
     }
@@ -80,7 +80,7 @@ impl U256 {
 
 impl Add for U256 {
     type Output = Self;
-    
+
     fn add(self, rhs: Self) -> Self {
         let (result, _carry) = add256(&self.0, &rhs.0);
         Self(result)
@@ -89,7 +89,7 @@ impl Add for U256 {
 
 impl Sub for U256 {
     type Output = Self;
-    
+
     fn sub(self, rhs: Self) -> Self {
         let (result, _borrow) = sub256(&self.0, &rhs.0);
         Self(result)
@@ -98,7 +98,7 @@ impl Sub for U256 {
 
 impl Mul for U256 {
     type Output = Self;
-    
+
     fn mul(self, rhs: Self) -> Self {
         let result = mul256x256(&self.0, &rhs.0);
         Self([result[0], result[1], result[2], result[3]])
@@ -107,25 +107,23 @@ impl Mul for U256 {
 
 impl Div for U256 {
     type Output = Self;
-    
-    fn div(self, _rhs: Self) -> Self {
-        // TODO: Implement division
-        self
+
+    fn div(self, rhs: Self) -> Self {
+        let (quotient, _remainder) = div256(&self.0, &rhs.0);
+        Self(quotient)
     }
 }
 
 impl Rem for U256 {
     type Output = Self;
-    
-    fn rem(self, _rhs: Self) -> Self {
-        // TODO: Implement modulo
-        Self::ZERO
-    }
-}
 
-impl BitAnd for U256 {
+    fn rem(self, rhs: Self) -> Self {
+        let (_quotient, remainder) = div256(&self.0, &rhs.0);
+        Self(remainder)
+    }
+}impl BitAnd for U256 {
     type Output = Self;
-    
+
     fn bitand(self, rhs: Self) -> Self {
         Self([
             self.0[0] & rhs.0[0],
@@ -138,7 +136,7 @@ impl BitAnd for U256 {
 
 impl BitOr for U256 {
     type Output = Self;
-    
+
     fn bitor(self, rhs: Self) -> Self {
         Self([
             self.0[0] | rhs.0[0],
@@ -151,7 +149,7 @@ impl BitOr for U256 {
 
 impl BitXor for U256 {
     type Output = Self;
-    
+
     fn bitxor(self, rhs: Self) -> Self {
         Self([
             self.0[0] ^ rhs.0[0],
@@ -164,7 +162,7 @@ impl BitXor for U256 {
 
 impl Not for U256 {
     type Output = Self;
-    
+
     fn not(self) -> Self {
         Self([
             !self.0[0],
@@ -177,7 +175,7 @@ impl Not for U256 {
 
 impl Shl<u32> for U256 {
     type Output = Self;
-    
+
     fn shl(self, rhs: u32) -> Self {
         let result = shl256(&self.0, rhs);
         Self(result)
@@ -186,7 +184,7 @@ impl Shl<u32> for U256 {
 
 impl Shr<u32> for U256 {
     type Output = Self;
-    
+
     fn shr(self, rhs: u32) -> Self {
         let result = shr256(&self.0, rhs);
         Self(result)
@@ -234,32 +232,38 @@ impl core::fmt::Display for U256 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
+    #[test]
+    fn test_basic_ops() {
     #[test]
     fn test_basic_ops() {
         let a = U256::from_u64(100);
         let b = U256::from_u64(50);
-        
+
         assert_eq!((a + b).to_u64(), 150);
         assert_eq!((a - b).to_u64(), 50);
         assert_eq!((a * b).to_u64(), 5000);
-    }
-    
-    #[test]
-    fn test_bitwise() {
-        let a = U256::from_u64(0b1010);
+        assert_eq!((a / b).to_u64(), 2);
+        assert_eq!((a % b).to_u64(), 0);
+
+        // Division with remainder
+        let a = U256::from_u64(107);
+        let b = U256::from_u64(10);
+        assert_eq!((a / b).to_u64(), 10);
+        assert_eq!((a % b).to_u64(), 7);
+    }        let a = U256::from_u64(0b1010);
         let b = U256::from_u64(0b1100);
-        
+
         assert_eq!((a & b).to_u64(), 0b1000);
         assert_eq!((a | b).to_u64(), 0b1110);
         assert_eq!((a ^ b).to_u64(), 0b0110);
     }
-    
+
     #[test]
     fn test_comparison() {
         let a = U256::from_u64(100);
         let b = U256::from_u64(50);
-        
+
         assert!(a > b);
         assert!(b < a);
         assert_eq!(a, a);

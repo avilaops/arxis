@@ -40,10 +40,10 @@ avl-auth = { version = "0.1.0", path = "../avl-auth", optional = true }
 avx-config = { version = "0.1.0", path = "../avx-config" }
 
 # Async runtime
-tokio = { version = "1", features = ["full"] }
+avila-async = { version = "0.5.0", path = "../avila-async" }
 
 # CLI framework
-clap = { version = "4.5", features = ["derive", "env", "color"] }
+avila-cli = { version = "1.0.0", path = "../avila-cli" }
 
 # Terminal UI
 console = "0.15"
@@ -51,20 +51,18 @@ indicatif = "0.17"
 dialoguer = "0.11"
 
 # Serialization
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
+avila-serde = { version = "0.2.0", path = "../avila-serde" }
 toml = "0.8"
 
 # Error handling
-anyhow = "1.0"
-thiserror = "2.0"
+avila-error = { version = "0.2.0", path = "../avila-error" }
 
 # Logging
-tracing = "0.1"
+avila-tracing = { version = "0.1.0", path = "../avila-tracing" }
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
 # HTTP client
-reqwest = { version = "0.12", features = ["json"] }
+avila-http = { version = "0.1.0", path = "../avila-http" }
 
 # Table formatting
 tabled = "0.16"

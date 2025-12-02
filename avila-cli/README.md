@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/crates/l/avila-cli.svg)](LICENSE)
 [![Downloads](https://img.shields.io/crates/d/avila-cli.svg)](https://crates.io/crates/avila-cli)
 
-**Zero-allocation**, zero-dependency command-line argument parser with compile-time type guarantees, constant-time lookups, and deterministic memory layout.
+**Zero-dependency**, zero-allocation command-line argument parser with compile-time type guarantees, constant-time lookups, and deterministic memory layout.
 
 ✨ **Why Ávila CLI?**
 - 🚀 **Zero dependencies** - Just Rust std, nothing else
@@ -14,6 +14,13 @@
 - 📦 **Tiny binary** - Only +5KB to your executable
 - 🎯 **Simple API** - Easy to learn, easy to use
 - 🛡️ **Memory safe** - No unsafe code
+- 🎨 **Colored output** - ANSI colors with auto-detection
+- 🐚 **Shell completions** - Bash, Zsh, Fish, PowerShell
+- 🔧 **Config files** - TOML-like format support
+- 🌍 **Environment variables** - Automatic fallback
+- 🎭 **Macro helpers** - Rapid CLI definition
+- 🔗 **Advanced relations** - Conflicts, requirements, groups
+- 📊 **Value source tracking** - Know where values came from
 
 Built on pure Rust `std` without external dependencies. Designed for performance-critical systems requiring predictable parsing behavior.
 
@@ -1511,6 +1518,70 @@ cargo flamegraph --bin myapp -- --args
 # Memory profiling (Linux)
 valgrind --tool=massif target/release/myapp
 ```
+
+## Contributing
+
+## Version History
+
+### v1.0.0 (Latest - Stable Release) 🎉
+
+**Major Features:**
+- 🎨 **Colored Output**: ANSI escape code support with automatic terminal detection
+- 🐚 **Shell Completions**: Generate scripts for Bash, Zsh, Fish, PowerShell
+- 🔗 **Argument Groups**: Mutual exclusion and required groups
+- ✅ **Custom Validators**: User-defined validation functions
+- 🎯 **Smart Help**: Colorized help text with `[required]` markers
+
+**All features maintain zero external dependencies!**
+
+```rust
+// Example - Everything in v1.0.0
+use avila_cli::*;
+
+let app = App::new("myapp")
+    .colored_help(true)
+    .arg(
+        Arg::new("port")
+            .takes_value(true)
+            .validator(|v| v.parse::<u16>().map(|_| ()).map_err(|_| "invalid port".to_string()))
+    )
+    .arg(Arg::new("json"))
+    .arg(Arg::new("yaml"))
+    .group(
+        ArgGroup::new("format")
+            .args(&["json", "yaml"])
+            .required(true)
+            .multiple(false)
+    );
+
+// Generate shell completions
+println!("{}", app.generate_completion(Shell::Bash));
+```
+
+### v0.3.0
+
+**Added:**
+- Default values with `.default_value()`
+- Possible values restriction with `.possible_values()`
+- Automatic validation of required arguments and possible values
+
+### v0.2.0
+
+**Added:**
+- Type-safe parsing: `value_as::<T>()`
+- Multi-flag checks: `any_present()`, `all_present()`
+- Default with fallback: `value_or()`
+- Value counting: `values_count()`
+
+### v0.1.0 (Initial Release)
+
+**Core Features:**
+- Zero-dependency CLI parsing
+- HashMap-based O(1) lookups
+- Subcommand support
+- Help/version generation
+
+---
 
 ## Contributing
 

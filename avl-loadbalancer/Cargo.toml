@@ -14,26 +14,23 @@ categories = ["network-programming", "web-programming"]
 
 [dependencies]
 # AVL Platform Core
-tokio = { version = "1.40", features = ["full", "signal"] }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-thiserror = "2.0"
-anyhow = "1.0"
+avila-async = { version = "0.5.0", path = "../avila-async" }
+avila-serde = { version = "0.2.0", path = "../avila-serde" }
+avila-error = { version = "0.2.0", path = "../avila-error" }
 
 # AVL Platform - Workspace Dependencies
-avila-compress = { version = "0.1", path = "../avila-compress" }
+avila-compress = { version = "0.3.0", path = "../avila-compress" }
 avx-http = { version = "0.4", path = "../avx-http" }
 avx-config = { version = "0.1", path = "../avx-config" }
 avx-telemetry = { version = "0.1", path = "../avx-telemetry" }
 
 # HTTP/Networking
-axum = { version = "0.7", features = ["ws"] }
-tower = "0.5"
+avila-web = { version = "0.1.0", path = "../avila-web" }
 tower-http = { version = "0.6", features = ["full"] }
 hyper = { version = "1.5", features = ["full"] }
 hyper-util = { version = "0.1", features = ["tokio"] }
-futures = "0.3"
-reqwest = { version = "0.12", features = ["json", "rustls-tls"] }
+avila-future = { version = "0.1.0", path = "../avila-future" }
+avila-http = { version = "0.1.0", path = "../avila-http" }
 
 # TLS/SSL
 rustls = { version = "0.23", optional = true }
@@ -41,7 +38,7 @@ tokio-rustls = { version = "0.26", optional = true }
 rustls-pemfile = { version = "2.2", optional = true }
 
 # Observability & Tracing
-tracing = "0.1"
+avila-tracing = { version = "0.1.0", path = "../avila-tracing" }
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 opentelemetry = { version = "0.27", features = ["trace"], optional = true }
 opentelemetry_sdk = { version = "0.27", features = ["trace", "rt-tokio"], optional = true }
@@ -57,8 +54,9 @@ async-trait = "0.1"
 
 # Hashing & Crypto
 twox-hash = "2.0"
-sha2 = { version = "0.10", optional = true }
+avila-crypto = { version = "0.1.0", path = "../avila-crypto" }
 hmac = { version = "0.12", optional = true }
+sha2 = { version = "0.10", optional = true }
 base64 = { version = "0.22", optional = true }
 
 # Config & Hot Reload
@@ -77,8 +75,8 @@ brotli = "7.0"
 maxminddb = { version = "0.24", optional = true }
 
 # Time & UUID
-uuid = { version = "1.11", features = ["v4", "serde"] }
-chrono = { version = "0.4", features = ["serde"] }
+avila-id = { version = "0.1.0", path = "../avila-id" }
+avila-time = { version = "0.1.0", path = "../avila-time" }
 
 # Cookie management for sticky sessions
 cookie = { version = "0.18", optional = true }
@@ -86,7 +84,6 @@ cookie = { version = "0.18", optional = true }
 [features]
 default = ["sticky-sessions", "geo-routing", "hot-reload"]
 tls = ["rustls", "tokio-rustls", "rustls-pemfile"]
-tracing = ["opentelemetry", "opentelemetry_sdk", "opentelemetry-otlp"]
 sticky-sessions = ["cookie", "hmac", "sha2", "base64"]
 geo-routing = ["maxminddb"]
 hot-reload = ["notify"]

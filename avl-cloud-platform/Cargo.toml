@@ -1,0 +1,62 @@
+[package]
+name = "avila-cloud"
+version = "0.1.0"
+edition = "2021"
+authors = ["Avila Team <avilacloud@avila.cloud>"]
+license = "MIT OR Apache-2.0"
+description = "Enterprise-grade cloud infrastructure platform with compute, storage, networking, and billing services"
+repository = "https://github.com/avilaops/arxis"
+keywords = ["cloud", "infrastructure", "paas", "iaas", "saas"]
+categories = ["web-programming", "network-programming"]
+
+[dependencies]
+# Core dependencies from crates.io
+avx-gateway = { version = "0.1.0", optional = true }
+avx-telemetry = { version = "0.1.0", optional = true }
+avx-http = { version = "0.4.0", optional = true }
+avl-loadbalancer = { version = "0.1.0", optional = true }
+avila-error = { version = "0.2.0", features = ["derive"], optional = true }
+
+# For local development, uncomment below and comment above:
+# avx-gateway = { path = "../avx-gateway", optional = true }
+# avx-telemetry = { path = "../avx-telemetry", optional = true }
+# avx-http = { path = "../avx-http", optional = true }
+# avl-loadbalancer = { path = "../avl-loadbalancer", optional = true }
+# avila-error = { version = "0.2.0", path = "../avila-error", optional = true }
+
+# Async runtime
+tokio = { version = "1.40", features = ["full"] }
+futures = "0.3"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = "0.3"
+
+# CLI
+clap = { version = "4.5", features = ["derive"] }
+
+# Additional dependencies
+bytes = "1.5"
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.6", features = ["v4", "serde"] }
+thiserror = "1.0"
+anyhow = "1.0"
+
+[features]
+default = ["compute", "storage", "network", "billing"]
+compute = []
+storage = []
+network = []
+billing = []
+
+[[bin]]
+name = "avila-cloud"
+path = "src/main.rs"
+
+[[bin]]
+name = "avila-cloud-cli"
+path = "src/cli.rs"

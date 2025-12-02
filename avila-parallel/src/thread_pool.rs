@@ -86,6 +86,7 @@ impl Drop for ThreadPool {
 }
 
 struct Worker {
+    #[allow(dead_code)]
     id: usize,
     thread: Option<thread::JoinHandle<()>>,
 }
@@ -133,6 +134,7 @@ static mut GLOBAL_POOL: Option<ThreadPool> = None;
 static INIT: std::sync::Once = std::sync::Once::new();
 
 /// Get or initialize the global thread pool
+#[allow(static_mut_refs)]
 pub fn global_pool() -> &'static ThreadPool {
     unsafe {
         INIT.call_once(|| {

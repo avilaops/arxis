@@ -269,8 +269,8 @@ pub const fn select(condition: bool, if_true: u64, if_false: u64) -> u64 {
 /// ```
 /// use avila_nucleus::bits::rotl;
 ///
-/// assert_eq!(rotl(0b1000_0001, 1), 0b0000_0011);
-/// assert_eq!(rotl(0b1000_0000, 1), 0b0000_0001);
+/// assert_eq!(rotl(0b0000_0001, 1), 0b0000_0010);
+/// assert_eq!(rotl(0b1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000u64, 1), 0b0000_0001);
 /// ```
 #[inline(always)]
 pub const fn rotl(x: u64, n: u32) -> u64 {
@@ -284,8 +284,8 @@ pub const fn rotl(x: u64, n: u32) -> u64 {
 /// ```
 /// use avila_nucleus::bits::rotr;
 ///
-/// assert_eq!(rotr(0b0000_0011, 1), 0b1000_0001);
-/// assert_eq!(rotr(0b0000_0001, 1), 0b1000_0000);
+/// assert_eq!(rotr(0b0000_0010, 1), 0b0000_0001);
+/// assert_eq!(rotr(0b0000_0001, 1), 0b1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000u64);
 /// ```
 #[inline(always)]
 pub const fn rotr(x: u64, n: u32) -> u64 {
@@ -309,7 +309,7 @@ pub const fn rotr(x: u64, n: u32) -> u64 {
 pub const fn ct_eq(a: u64, b: u64) -> u64 {
     let diff = a ^ b;
     let combined = diff | diff.wrapping_neg();
-    !((combined >> 63).wrapping_sub(1))
+    (combined >> 63).wrapping_sub(1)
 }
 
 /// Constant-time less than: a < b

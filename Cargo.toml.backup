@@ -1,0 +1,244 @@
+[workspace]
+members = [
+    ".",  # arxis_quaternions (root package)
+
+    # Meta-package
+    "avila",
+
+    # Core Scientific Libraries
+    "avila-math",
+    "avila-linalg",
+    "avila-telemetry",
+    "avila-compress",
+    "avila-arrow",
+    "avila-image",
+    "avila-numeric",
+    "avila-parallel",
+
+    # Machine Learning
+    "avila-ml",
+    "avila-clustering",
+    "avila-reduction",
+    "avila-tokenizer",
+
+    # Data & Geo
+    "avila-dataframe",
+    "avila-geo",
+
+    # Core Utilities (replacement for external crates)
+    "avila-error",      # anyhow/thiserror replacement
+    "avila-id",         # uuid replacement
+    "avila-time",       # chrono replacement
+    "avila-serde",      # serde/serde_json replacement
+    "avila-cli",        # clap replacement
+    "avila-terminal",   # colored replacement
+    "avila-async",      # tokio replacement
+    "avila-future",     # futures replacement
+    "avila-http",       # reqwest/hyper replacement
+    # "avila-web",  # Desabilitado: erros de compilacao
+    "avila-tracing",    # tracing replacement
+    "avila-rand",       # rand replacement
+    "avila-rand-simple", # Simple rand for avila-ml
+    "avila-rayon-simple", # Simple rayon for avila-ml
+    "avila-crypto",     # sha2/hmac/base64/argon2 replacement
+    "avila-regex",      # regex replacement
+    # "avila-ndarray",  # Desabilitado: precisa refatoracao
+    "avila-fft",        # rustfft/num-complex replacement
+
+    # Biological Hierarchy - Email System from Scratch
+    "avila-atom",       # Fundamental data structures (Option, Result, Vec, HashMap)
+    # "avila-molecule",  # Desabilitado: erros de compilacao
+    # "avila-cell",  # Depende de avila-web (desabilitado)       # Email protocols (SMTP, POP3, IMAP)
+    # "avila-tissue",  # Depende de avila-web (desabilitado)     # Email organization (storage, indexing, search)
+    # "avila-organ",  # Depende de avila-web (desabilitado)      # Email server & client system
+    # "avila-organism",  # Depende de avila-web (desabilitado)   # Complete email platform
+    "avila-fungi",      # 🍄 Distributed system - spreads between atoms like fungal mycelium
+
+    # AVL Cloud Platform - Data & Storage
+    # "aviladb",  # Depende de avila-web (desabilitado)
+    # "avl-storage",  # Depende de avila-web (desabilitado)
+
+    # AVL Cloud Platform - Infrastructure
+    # "avl-auth",  # Depende de avila-web (desabilitado)
+    # "avl-queue",  # Depende de avila-web (desabilitado)
+    # "avl-secrets",  # Depende de avila-web (desabilitado)
+    # "avl-observability",  # Depende de avila-web (desabilitado)
+    # "avl-loadbalancer",  # Depende de avila-web (desabilitado)
+    # "avl-console",  # Depende de avila-web (desabilitado)
+
+    # Avila Cloud - Complete Cloud Provider
+    "avila-cloud",
+
+    # AVX API & Gateway
+    # "avx-api-core",  # Depende de avila-web (desabilitado)
+    "avx-cli",
+    "avx-config",
+    "avx-events",
+    # "avx-gateway",  # Depende de avila-web (desabilitado)
+    # "avx-gpu",  # Nested workspace - excluded
+    "avx-http",
+    # "avx-quantum-render",  # Depende de avx-gpu
+    # "avx-runtime",  # Nested workspace - excluded
+    # "avx-telemetry",  # Desabilitado: erros de compilacao
+
+    # Dark Net / Deep Web
+    "avila-darknet",
+    # "avila-browser",  # Desabilitado: requer implementacao completa
+
+    # Personal Controller - Enterprise Management Application (nested workspace)
+    # "personal-controller",
+    # "personal-controller/pc-core",
+    # "personal-controller/pc-db",
+    # "personal-controller/pc-api",
+    # "personal-controller/pc-cli",
+]
+resolver = "2"
+
+# Exclude nested workspaces
+exclude = [
+    "avx-gpu",
+    "avx-runtime",
+    "personal-controller",  # Nested workspace
+    "geo",
+    "core",
+    "ai",
+    "Dependencias - Sub",
+    "A Desenvolver",
+    "avila-nucleus",  # Has its own workspace
+]
+
+# Note: these directories contain separate nested workspaces and must be built independently
+# and must be built independently
+
+[package]
+name = "arxis_quaternions"
+version = "0.2.0"
+edition = "2021"
+authors = [
+    "Nícolas Ávila <nicolas@avila.inc>",
+    "Avila Development Team <dev@avila.inc>",
+]
+license = "MIT OR Apache-2.0"
+description = "Research-grade physics engine with quaternions, tensors, 4D geometry, gravitational waves, and General Relativity for NASA LISA mission"
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://avila.inc"
+documentation = "https://docs.rs/arxis_quaternions"
+readme = "README.md"
+keywords = [
+    "physics",
+    "quaternions",
+    "gravitational-waves",
+    "nasa-lisa",
+    "4d-geometry",
+]
+categories = ["science", "mathematics", "simulation", "algorithms"]
+exclude = [
+    "target/",
+    "*.swp",
+    ".git*",
+    "examples/*.ppm",
+    "output_*.ppm",
+    "*.png",
+    "*.jpg",
+]
+
+[lib]
+name = "arxis_quaternions"
+path = "src/lib.rs"
+
+[[example]]
+name = "rotations_example"
+path = "examples/rotations_example.rs"
+
+[[example]]
+name = "tensors_example"
+path = "examples/tensors_example.rs"
+
+[[example]]
+name = "relativity_example"
+path = "examples/relativity_example.rs"
+
+[[example]]
+name = "ml_example"
+path = "examples/ml_example.rs"
+
+[[example]]
+name = "geometry4d_example"
+path = "examples/geometry4d_example.rs"
+
+[dependencies]
+avila-rand = { path = "avila-rand" }
+rand_distr = "0.4"
+avila-time = { path = "avila-time" }
+avila-math = { version = "0.1.0", path = "avila-math" }
+avila-telemetry = { version = "0.1.0", path = "avila-telemetry" }
+avila-parallel = { path = "avila-parallel" }
+
+# Big Data & Parallel Processing
+avila-dataframe = { version = "0.2.0", path = "avila-dataframe", features = ["full"] }
+datafusion = "43.0" # SQL query engine para big data
+arrow = "53.0" # Apache Arrow (columnar format)
+parquet = "53.0" # Parquet file format
+
+# Machine Learning & Deep Learning (USING OUR OWN TOOLS! 🚀)
+avila-ml = { version = "1.0.0", path = "avila-ml", features = ["full"] }
+avila-clustering = { version = "0.1.0", path = "avila-clustering" }
+avila-reduction = { version = "0.1.0", path = "avila-reduction" }
+avila-linalg = { version = "0.1.1", path = "avila-linalg" }
+# Desabilitado: precisa refatoracao
+# avila-ndarray = { path = "avila-ndarray" }
+# smartcore = "0.3"  # Replaced by avila-ml
+# linfa = "0.7"     # Replaced by avila-ml
+# candle-core = "0.7"  # Hugging Face ML framework (incompatível com rand_distr)
+# candle-nn = "0.7"
+
+# LLM & NLP
+tokenizers = "0.20" # Hugging Face tokenizers
+hf-hub = "0.3"      # Download models from Hugging Face
+llm-chain = "0.13"  # LLM chaining framework
+tiktoken-rs = "0.5" # OpenAI tokenizer
+
+# Computer Vision (USING OUR OWN TOOLS! 🚀)
+# avx-image = { path = "avx-image" }  # Located in avila-geo/avx-image
+image = "0.25"        # External image library for now
+# imageproc = "0.25"    # Optional image processing
+avila-fft = { path = "avila-fft" }
+
+# Graph Analytics & Network Science
+petgraph = "0.6"     # Graph data structures
+pathfinding = "4.11" # Pathfinding algorithms
+
+# Statistical Analysis (USING OUR OWN TOOLS! 🚀)
+# Already using avila-telemetry which includes statrs functionality
+# statrs = "0.17"   # Replaced by avila-telemetry
+# nalgebra = "0.33" # Replaced by avila-linalg
+
+# Time Series (complementar ao avila-telemetry)
+prophet = { version = "0.1", optional = true } # Facebook Prophet (se disponível)
+
+# Distributed Computing
+avila-async = { path = "avila-async" }
+avila-http = { path = "avila-http" }
+
+# Serialization for ML models
+avila-serde = { path = "avila-serde" }
+bincode = "1.3"
+
+[dev-dependencies]
+
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+strip = true
+
+[profile.bench]
+inherits = "release"
+
+[profile.dev]
+opt-level = 0
+debug = true
+incremental = true
+
+

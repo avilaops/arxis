@@ -41,7 +41,7 @@ fn main() -> avila_clustering::Result<()> {
     println!("Labels: {:?}", euclidean_result.labels);
     println!("Centroids shape: {:?}\n", euclidean_result.centroids.dim());
 
-    // 2. Cluster using DTW (better for temporal patterns)
+    // 2. Cluster using DTW (handles temporal distortions)
     println!("2. Clustering with Dynamic Time Warping (DTW)");
     println!("{}", "=".repeat(50));
 

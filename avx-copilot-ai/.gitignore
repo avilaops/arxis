@@ -1,0 +1,40 @@
+# .gitignore for Avila Copilot
+
+# Rust
+target/
+Cargo.lock
+**/*.rs.bk
+*.pdb
+
+# Node.js / TypeScript
+node_modules/
+out/
+*.vsix
+.vscode-test/
+
+# Models (large files)
+models/
+*.bin
+*.bin.zst
+*.onnx
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Build artifacts
+extension/bin/
+
+# Temp files
+*.tmp
+temp/

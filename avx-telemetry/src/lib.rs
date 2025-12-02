@@ -7,9 +7,8 @@ pub use avila_telemetry::{
     TelemetryError, TimeSeries,
 };
 
-use serde::Serialize;
+use avila_serde::Serialize;
 use std::sync::Arc;
-use tracing_subscriber::{fmt, EnvFilter};
 
 // Re-export módulos públicos
 #[cfg(feature = "middleware")]
@@ -27,25 +26,13 @@ pub struct AvxContext {
 }
 
 pub fn init_tracing(ctx: &AvxContext) {
-    let filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info"));
-
-    fmt()
-        .with_env_filter(filter)
-        .json()
-        .with_current_span(true)
-        .with_span_list(true)
-        .with_target(true)
-        .flatten_event(true)
-        .init();
-
-    tracing::info!(
-        stack = %ctx.stack,
-        layer = %ctx.layer,
-        env   = %ctx.env,
-        cluster = %ctx.cluster,
-        mesh = %ctx.mesh,
-        "Avx telemetry initialized"
-    );
+    // Simple initialization - replace with avila-tracing when full implementation is ready
+    println!("🔍 Avx telemetry initialized:");
+    println!("   Stack: {}", ctx.stack);
+    println!("   Layer: {}", ctx.layer);
+    println!("   Env: {}", ctx.env);
+    println!("   Cluster: {}", ctx.cluster);
+    println!("   Mesh: {}", ctx.mesh);
 }
 
 /// AVX-specific telemetry wrapper for time series metrics

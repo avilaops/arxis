@@ -366,7 +366,7 @@ impl Tensor4D {
 
         let scale = 1.0 / (1.0 - rate);
         self.map(|x| {
-            if rand::random::<f64>() > rate {
+            if avila_rand::random::<f64>() > rate {
                 x * scale
             } else {
                 0.0

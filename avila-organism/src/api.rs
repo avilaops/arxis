@@ -1,4 +1,4 @@
-//! API REST
+//! REST API routes
 
 use axum::{Router, routing::{get, post}, Json};
 use serde::{Serialize, Deserialize};

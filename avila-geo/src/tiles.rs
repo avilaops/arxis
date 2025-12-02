@@ -94,7 +94,7 @@ impl TileCoord {
                 digit += 2;
             }
 
-            quadkey.push_char(std::char::from_digit(digit, 10).unwrap());
+            quadkey.push(std::char::from_digit(digit, 10).unwrap());
         }
 
         quadkey

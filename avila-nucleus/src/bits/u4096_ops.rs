@@ -75,6 +75,131 @@ pub fn is_zero4096(a: &[u64; 64]) -> bool {
     a.iter().all(|&x| x == 0)
 }
 
+#[inline]
+pub fn gt4096(a: &[u64; 64], b: &[u64; 64]) -> bool {
+    lt4096(b, a)
+}
+
+#[inline]
+pub fn le4096(a: &[u64; 64], b: &[u64; 64]) -> bool {
+    !gt4096(a, b)
+}
+
+#[inline]
+pub fn ge4096(a: &[u64; 64], b: &[u64; 64]) -> bool {
+    !lt4096(a, b)
+}
+
+#[inline]
+pub fn leading_zeros4096(a: &[u64; 64]) -> u32 {
+    for i in (0..64).rev() {
+        if a[i] != 0 {
+            return ((63 - i) as u32) * 64 + a[i].leading_zeros();
+        }
+    }
+    4096
+}
+
+/// Shift left U4096
+#[inline]
+pub fn shl4096(a: &[u64; 64], bits: u32) -> [u64; 64] {
+    if bits == 0 {
+        return *a;
+    }
+
+    let mut result = [0u64; 64];
+    let shift_right = 64 - bits;
+
+    result[0] = a[0] << bits;
+
+    for i in 1..64 {
+        result[i] = (a[i] << bits) | (a[i - 1] >> shift_right);
+    }
+
+    result
+}
+
+/// Shift right U4096
+#[inline]
+pub fn shr4096(a: &[u64; 64], bits: u32) -> [u64; 64] {
+    if bits == 0 {
+        return *a;
+    }
+
+    let mut result = [0u64; 64];
+    let shift_left = 64 - bits;
+
+    result[63] = a[63] >> bits;
+
+    for i in (0..63).rev() {
+        result[i] = (a[i] >> bits) | (a[i + 1] << shift_left);
+    }
+
+    result
+}
+
+/// Multiplicação U4096 × U4096 → U8192
+pub fn mul4096x4096(a: &[u64; 64], b: &[u64; 64]) -> [u64; 128] {
+    let mut result = [0u64; 128];
+    for i in 0..64 {
+        let mut carry = 0u64;
+        for j in 0..64 {
+            let (lo, hi) = mul_wide(a[i], b[j]);
+            let (sum, c1) = adc(result[i + j], lo, 0);
+            result[i + j] = sum;
+            let (sum2, c2) = adc(result[i + j + 1], hi, c1);
+            result[i + j + 1] = sum2;
+            carry = c2;
+        }
+        if carry != 0 && i + 64 < 128 {
+            let mut k = i + 64;
+            while carry != 0 && k < 128 {
+                let (sum, c) = result[k].overflowing_add(carry);
+                result[k] = sum;
+                carry = c as u64;
+                k += 1;
+            }
+        }
+    }
+    result
+}
+
+/// Divisão U4096
+pub fn div4096(a: &[u64; 64], b: &[u64; 64]) -> ([u64; 64], [u64; 64]) {
+    if is_zero4096(b) {
+        return ([0; 64], *a);
+    }
+    if lt4096(a, b) {
+        return ([0; 64], *a);
+    }
+    if eq4096(a, b) {
+        let mut one = [0u64; 64];
+        one[0] = 1;
+        return (one, [0; 64]);
+    }
+
+    let mut quotient = [0u64; 64];
+    let mut remainder = [0u64; 64];
+
+    for i in (0..4096).rev() {
+        remainder = shl4096(&remainder, 1);
+        let limb_idx = i / 64;
+        let bit_idx = i % 64;
+        if (a[limb_idx] >> bit_idx) & 1 == 1 {
+            remainder[0] |= 1;
+        }
+        if ge4096(&remainder, b) {
+            let (new_remainder, _) = sub4096(&remainder, b);
+            remainder = new_remainder;
+            let q_limb = i / 64;
+            let q_bit = i % 64;
+            quotient[q_limb] |= 1u64 << q_bit;
+        }
+    }
+
+    (quotient, remainder)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

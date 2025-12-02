@@ -66,8 +66,8 @@ impl<T: Float + NumAssign + ScalarOperand + 'static + Send + Sync> Tensor<T> {
 
     /// Create a tensor filled with random values from uniform distribution [0, 1)
     pub fn rand(shape: &[usize]) -> Self {
-        use rand::Rng;
-        let mut rng = rand::thread_rng();
+        use rand::thread_rng;
+        let mut rng = thread_rng();
         let shape_dyn = IxDyn(shape);
         let size: usize = shape.iter().product();
 
@@ -80,8 +80,8 @@ impl<T: Float + NumAssign + ScalarOperand + 'static + Send + Sync> Tensor<T> {
 
     /// Create a tensor with random normal distribution (mean=0, std=1)
     pub fn randn(shape: &[usize]) -> Self {
-        use rand_distr::{Distribution, Normal};
-        let mut rng = rand::thread_rng();
+        use rand::{thread_rng, Normal};
+        let mut rng = thread_rng();
         let normal = Normal::new(0.0, 1.0).unwrap();
         let shape_dyn = IxDyn(shape);
         let size: usize = shape.iter().product();

@@ -274,6 +274,18 @@ pub const fn gt512(a: &[u64; 8], b: &[u64; 8]) -> bool {
     lt512(b, a)
 }
 
+/// Less than or equal U512: a <= b
+#[inline]
+pub const fn le512(a: &[u64; 8], b: &[u64; 8]) -> bool {
+    !gt512(a, b)
+}
+
+/// Greater than or equal U512: a >= b
+#[inline]
+pub const fn ge512(a: &[u64; 8], b: &[u64; 8]) -> bool {
+    !lt512(a, b)
+}
+
 /// Conta leading zeros em U512
 #[inline]
 pub const fn leading_zeros512(a: &[u64; 8]) -> u32 {
@@ -314,6 +326,45 @@ pub const fn is_zero512(a: &[u64; 8]) -> bool {
 #[inline]
 pub const fn is_even512(a: &[u64; 8]) -> bool {
     (a[0] & 1) == 0
+}
+
+/// Divisão U512: a / b → (quotient, remainder)
+pub fn div512(a: &[u64; 8], b: &[u64; 8]) -> ([u64; 8], [u64; 8]) {
+    if is_zero512(b) {
+        return ([0; 8], *a);
+    }
+
+    if lt512(a, b) {
+        return ([0; 8], *a);
+    }
+
+    if eq512(a, b) {
+        return ([1, 0, 0, 0, 0, 0, 0, 0], [0; 8]);
+    }
+
+    let mut quotient = [0u64; 8];
+    let mut remainder = [0u64; 8];
+
+    for i in (0..512).rev() {
+        remainder = shl512(&remainder, 1);
+
+        let limb_idx = i / 64;
+        let bit_idx = i % 64;
+        if (a[limb_idx] >> bit_idx) & 1 == 1 {
+            remainder[0] |= 1;
+        }
+
+        if ge512(&remainder, b) {
+            let (new_remainder, _) = sub512(&remainder, b);
+            remainder = new_remainder;
+
+            let q_limb = i / 64;
+            let q_bit = i % 64;
+            quotient[q_limb] |= 1u64 << q_bit;
+        }
+    }
+
+    (quotient, remainder)
 }
 
 #[cfg(test)]

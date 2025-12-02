@@ -7,17 +7,21 @@
 //! - LU Decomposition
 //! - Cholesky Decomposition
 
-/// Cholesky decomposition para matrizes simétricas positivas definidas
+// Cholesky decomposition para matrizes simétricas positivas definidas
 // TODO: Implement Cholesky decomposition
 // pub mod cholesky;
+
 // TODO: Implement eigenvalue decomposition
 // pub mod eigen;
-/// LU decomposition com partial pivoting
+
+// LU decomposition com partial pivoting
 // TODO: Implement LU decomposition
 // pub mod lu;
-/// QR decomposition usando Householder reflections
+
+// QR decomposition usando Householder reflections
 // TODO: Implement QR decomposition
 // pub mod qr;
+
 // TODO: Implement SVD decomposition
 // pub mod svd;
 

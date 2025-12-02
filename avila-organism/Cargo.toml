@@ -1,10 +1,12 @@
+[workspace]
+
 [package]
 name = "avila-organism"
 version = "0.1.0"
 edition = "2021"
-authors = ["Nícolas Ávila <nicolas@avila.inc>"]
+authors = ["NÃ­colas Ãvila <nicolas@avila.inc>"]
 license = "MIT OR Apache-2.0"
-description = "Email organism - Complete platform with webmail, API, and integrations"
+description = "Email platform application layer - Complete system with webmail, REST API, and admin interface"
 repository = "https://github.com/avilaops/arxis"
 keywords = ["email", "platform", "webmail", "api"]
 
@@ -17,19 +19,33 @@ name = "avila-mail-cli"
 path = "src/bin/cli.rs"
 
 [dependencies]
-# avila-nucleus (excluded)
-avila-atom = { path = "../avila-atom" }
-avila-molecule = { path = "../avila-molecule" }
-avila-cell = { path = "../avila-cell" }
-avila-tissue = { path = "../avila-tissue" }
-avila-organ = { path = "../avila-organ" }
-avila-error = { path = "../avila-error" }
-avila-id = { path = "../avila-id" }
-avila-time = { path = "../avila-time" }
-avila-terminal = { path = "../avila-terminal" }
+# Core Avila components - NO external dependencies
+avila-atom = { version = "0.7.0", path = "../avila-atom" }
+avila-molecule = { version = "0.1.0", path = "../avila-molecule" }
+avila-cell = { version = "0.4.0", path = "../avila-cell" }
+avila-tissue = { version = "0.1.0", path = "../avila-tissue" }
+avila-organ = { version = "0.1.0", path = "../avila-organ" }
+avila-error = { version = "0.2.0", path = "../avila-error" }
+avila-id = { version = "0.1.0", path = "../avila-id" }
+avila-time = { version = "0.1.0", path = "../avila-time" }
+avila-terminal = { version = "0.1.0", path = "../avila-terminal" }
+avila-async = { version = "0.5.0", path = "../avila-async" }
+avila-web = { version = "0.1.0", path = "../avila-web" }
+avila-serde = { version = "0.2.0", path = "../avila-serde" }
+
+# Minimal required external deps (will be eliminated)
 tokio = { version = "1", features = ["full"] }
-axum = "0.7" # Web framework
-tower = "0.5"
-tower-http = { version = "0.6", features = ["fs", "cors"] }
+axum = "0.7"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = true
+overflow-checks = false
+
+[profile.dev]
+opt-level = 1

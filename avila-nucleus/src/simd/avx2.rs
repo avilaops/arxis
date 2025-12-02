@@ -135,13 +135,16 @@ pub unsafe fn zero256() -> [u64; 4] {
 }
 
 #[cfg(test)]
-#[cfg(target_arch = "x86_64")]
+#[cfg(all(test, target_arch = "x86_64", target_feature = "avx2"))]
 mod tests {
     use super::*;
 
+    extern crate std;
+    use std::println;
+
     #[test]
     fn test_avx2_xor() {
-        if !is_x86_feature_detected!("avx2") {
+        if !std::is_x86_feature_detected!("avx2") {
             println!("Skipping AVX2 test - not supported");
             return;
         }
@@ -160,7 +163,7 @@ mod tests {
 
     #[test]
     fn test_avx2_eq() {
-        if !is_x86_feature_detected!("avx2") {
+        if !std::is_x86_feature_detected!("avx2") {
             return;
         }
 

@@ -39,6 +39,7 @@ logs/
 .env
 .env.local
 .env.*.local
+env-backup-*.json
 
 # Generated Files
 file_list.txt

@@ -1,0 +1,17 @@
+[package]
+name = "avila-copilot-lsp"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Layer 6: LSP server for Avila Copilot"
+
+[dependencies]
+avila-async = { workspace = true }
+avila-copilot-core = { workspace = true }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
+
+[dev-dependencies]
+tokio-test = "0.4"

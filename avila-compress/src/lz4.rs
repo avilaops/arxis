@@ -20,12 +20,16 @@
 
 use crate::{Error, Result, Level};
 
-/// LZ4 constants
+/// LZ4 constants - optimized for maximum performance
 const MIN_MATCH: usize = 4;
-const HASH_LOG: usize = 12;
-const HASH_TABLE_SIZE: usize = 1 << HASH_LOG; // 4096
+const HASH_LOG: usize = 16; // 64K hash table for better compression
+const HASH_TABLE_SIZE: usize = 1 << HASH_LOG;
 const MAX_DISTANCE: usize = 65535;
 const LAST_LITERALS: usize = 5;
+#[allow(dead_code)]
+const ACCELERATION: usize = 1; // Search step size
+const MFLIMIT: usize = 12; // Minimum match finder limit
+const OPTIMAL_ML: usize = 18; // Optimal match length threshold
 
 /// Compress data using LZ4 algorithm
 ///
@@ -66,6 +70,7 @@ pub fn compress_with_level(input: &[u8], level: Level) -> Result<Vec<u8>> {
         Level::Fast => compress_fast(input),
         Level::Balanced => compress_balanced(input),
         Level::Best => compress_best(input),
+        Level::Ultra => compress_best(input), // TODO: Fix Ultra mode - use Best for now
     }
 }
 
@@ -129,7 +134,7 @@ fn compress_fast(input: &[u8]) -> Result<Vec<u8>> {
     Ok(output)
 }
 
-/// Balanced compression - current implementation
+/// Balanced compression - optimized with single-level lazy matching
 fn compress_balanced(input: &[u8]) -> Result<Vec<u8>> {
     if input.is_empty() {
         return Ok(vec![0, 0, 0, 0]); // Empty data marker
@@ -142,164 +147,36 @@ fn compress_balanced(input: &[u8]) -> Result<Vec<u8>> {
         });
     }
 
-    // Reserve space: worst case is input + overhead
-    let mut output = Vec::with_capacity(input.len() + input.len() / 255 + 16);
+    // Optimized capacity estimation
+    let estimated_capacity = input.len() + (input.len() / 64).max(256);
+    let mut output = Vec::with_capacity(estimated_capacity);
 
     // Write original size as 4-byte header
     output.extend_from_slice(&(input.len() as u32).to_le_bytes());
 
-    // Hash table to find matches (stores OUTPUT positions, not input!)
+    // Hash table to find matches
     let mut hash_table: Vec<i32> = vec![-1; HASH_TABLE_SIZE];
 
     let mut anchor = 0; // Start of current literal run
     let mut pos = 0;
 
     let input_end = input.len();
-    let input_limit = if input_end > LAST_LITERALS {
-        input_end - LAST_LITERALS
+    let input_limit = if input_end > MFLIMIT {
+        input_end - MFLIMIT
     } else {
         0
     };
 
-    while pos < input_limit {
-        // Try to find a match
-        let mut match_found = false;
-        let mut match_pos = 0;
-        let mut match_len = 0;
-
-        // Calculate hash and look for match
-        if pos + MIN_MATCH <= input_end {
-            let hash = hash4(&input[pos..]);
-            let candidate = hash_table[hash];
-
-            // Check if we have a valid previous position
-            if candidate >= 0 {
-                let candidate_pos = candidate as usize;
-                let distance = pos - candidate_pos;
-
-                if distance > 0 && distance <= MAX_DISTANCE {
-                    // Verify match
-                    let max_match = input_end - pos;
-                    let len = count_match(&input[candidate_pos..], &input[pos..], max_match);
-
-                    if len >= MIN_MATCH {
-                        match_found = true;
-                        match_pos = candidate_pos;
-                        match_len = len;
-                    }
-                }
-            }
-
-            // Update hash table with current position
-            hash_table[hash] = pos as i32;
-        }
-
-        if match_found {
-            // We found a match! Emit literal + match
-            let literal_len = pos - anchor;
-
-            // Emit token
-            let lit_token = if literal_len >= 15 { 15 } else { literal_len };
-            let match_token = if match_len >= MIN_MATCH + 15 {
-                15
-            } else {
-                match_len - MIN_MATCH
-            };
-            output.push(((lit_token << 4) | match_token) as u8);
-
-            // Extended literal length
-            if literal_len >= 15 {
-                let mut remaining = literal_len - 15;
-                while remaining >= 255 {
-                    output.push(255);
-                    remaining -= 255;
-                }
-                output.push(remaining as u8);
-            }
-
-            // Copy literals
-            output.extend_from_slice(&input[anchor..pos]);
-
-            // Emit match offset
-            let offset = (pos - match_pos) as u16;
-            output.extend_from_slice(&offset.to_le_bytes());
-
-            // Extended match length
-            if match_len >= MIN_MATCH + 15 {
-                let mut remaining = match_len - MIN_MATCH - 15;
-                while remaining >= 255 {
-                    output.push(255);
-                    remaining -= 255;
-                }
-                output.push(remaining as u8);
-            }
-
-            // Move forward past the match
-            pos += match_len;
-            anchor = pos;
-        } else {
-            pos += 1;
-        }
-    }
-
-    // Emit remaining literals
-    let final_literals = input_end - anchor;
-    if final_literals > 0 {
-        let lit_token = if final_literals >= 15 { 15 } else { final_literals };
-        output.push((lit_token << 4) as u8);
-
-        // Extended literal length
-        if final_literals >= 15 {
-            let mut remaining = final_literals - 15;
-            while remaining >= 255 {
-                output.push(255);
-                remaining -= 255;
-            }
-            output.push(remaining as u8);
-        }
-
-        output.extend_from_slice(&input[anchor..]);
-    }
-
-    Ok(output)
-}
-
-/// Best compression - lazy matching for better ratio
-fn compress_best(input: &[u8]) -> Result<Vec<u8>> {
-    if input.is_empty() {
-        return Ok(vec![0, 0, 0, 0]);
-    }
-
-    if input.len() > u32::MAX as usize {
-        return Err(Error::InputTooLarge {
-            size: input.len(),
-            max_size: u32::MAX as usize,
-        });
-    }
-
-    let mut output = Vec::with_capacity(input.len() + input.len() / 255 + 16);
-    output.extend_from_slice(&(input.len() as u32).to_le_bytes());
-
-    let mut hash_table: Vec<i32> = vec![-1; HASH_TABLE_SIZE];
-    let mut anchor = 0;
-    let mut pos = 0;
-    let input_end = input.len();
-    let input_limit = if input_end > LAST_LITERALS {
-        input_end - LAST_LITERALS
-    } else {
-        0
-    };
-
-    // Best mode: lazy matching - look ahead for better matches
     while pos < input_limit {
         let mut best_match_pos = 0;
         let mut best_match_len = 0;
 
-        // Try current position
+        // Find match at current position
         if pos + MIN_MATCH <= input_end {
             let hash = hash4(&input[pos..]);
             let candidate = hash_table[hash];
 
+            // Check candidate
             if candidate >= 0 {
                 let candidate_pos = candidate as usize;
                 let distance = pos - candidate_pos;
@@ -315,11 +192,12 @@ fn compress_best(input: &[u8]) -> Result<Vec<u8>> {
                 }
             }
 
+            // Update hash table
             hash_table[hash] = pos as i32;
         }
 
-        // Lazy matching: check next position for better match
-        if best_match_len > 0 && pos + 1 < input_limit {
+        // Simple lazy matching: check next position if current match is short
+        if best_match_len > 0 && best_match_len < 8 && pos + 1 < input_limit {
             let next_pos = pos + 1;
             if next_pos + MIN_MATCH <= input_end {
                 let hash = hash4(&input[next_pos..]);
@@ -333,9 +211,9 @@ fn compress_best(input: &[u8]) -> Result<Vec<u8>> {
                         let max_match = input_end - next_pos;
                         let len = count_match(&input[candidate_pos..], &input[next_pos..], max_match);
 
-                        // Use next match if significantly better
-                        if len > best_match_len + 2 {
-                            pos += 1;
+                        // Use next match if better by at least 2 bytes
+                        if len >= best_match_len + 2 {
+                            pos = next_pos;
                             best_match_pos = candidate_pos;
                             best_match_len = len;
                         }
@@ -346,7 +224,310 @@ fn compress_best(input: &[u8]) -> Result<Vec<u8>> {
 
         if best_match_len >= MIN_MATCH {
             emit_sequence(&mut output, input, &mut anchor, pos, best_match_pos, best_match_len);
+
+            // Skip some positions in matched area
+            let skip = (best_match_len / 2).min(8);
+            for i in 1..skip {
+                let skip_pos = pos + i;
+                if skip_pos < input_end && skip_pos + MIN_MATCH <= input_end {
+                    let hash = hash4(&input[skip_pos..]);
+                    hash_table[hash] = skip_pos as i32;
+                }
+            }
+
             pos += best_match_len;
+            anchor = pos;
+        } else {
+            pos += 1;
+        }
+    }
+
+    // Emit remaining literals
+    emit_final_literals(&mut output, input, anchor, input_end);
+    Ok(output)
+}
+
+/// Best compression - optimal parsing with advanced lazy matching
+fn compress_best(input: &[u8]) -> Result<Vec<u8>> {
+    if input.is_empty() {
+        return Ok(vec![0, 0, 0, 0]);
+    }
+
+    if input.len() > u32::MAX as usize {
+        return Err(Error::InputTooLarge {
+            size: input.len(),
+            max_size: u32::MAX as usize,
+        });
+    }
+
+    let mut output = Vec::with_capacity(input.len() + input.len() / 255 + 16);
+    output.extend_from_slice(&(input.len() as u32).to_le_bytes());
+
+    // Chain hash table for multiple candidate matches
+    let mut hash_table: Vec<i32> = vec![-1; HASH_TABLE_SIZE];
+    let mut chain: Vec<i32> = vec![-1; input.len().min(MAX_DISTANCE + 1)];
+
+    let mut anchor = 0;
+    let mut pos = 0;
+    let input_end = input.len();
+    let input_limit = if input_end > LAST_LITERALS {
+        input_end - LAST_LITERALS
+    } else {
+        0
+    };
+
+    // Best mode: chain hashing + multi-level lazy matching
+    while pos < input_limit {
+        let mut best_match_pos = 0;
+        let mut best_match_len = 0;
+
+        // Search with hash chains for best match
+        if pos + MIN_MATCH <= input_end {
+            let hash = hash4(&input[pos..]);
+            let mut candidate = hash_table[hash];
+            let mut depth = 0;
+            const MAX_CHAIN_DEPTH: usize = 16; // Search up to 16 candidates
+
+            // Chain through previous positions with same hash
+            while candidate >= 0 && depth < MAX_CHAIN_DEPTH {
+                let candidate_pos = candidate as usize;
+                let distance = pos - candidate_pos;
+
+                if distance > MAX_DISTANCE {
+                    break;
+                }
+
+                if distance > 0 {
+                    let max_match = input_end - pos;
+                    let len = count_match(&input[candidate_pos..], &input[pos..], max_match);
+
+                    if len > best_match_len {
+                        best_match_pos = candidate_pos;
+                        best_match_len = len;
+
+                        // Early exit if we found optimal match
+                        if len >= OPTIMAL_ML {
+                            break;
+                        }
+                    }
+                }
+
+                candidate = chain[candidate_pos % chain.len()];
+                depth += 1;
+            }
+
+            // Update chain
+            let chain_idx = pos % chain.len();
+            chain[chain_idx] = hash_table[hash];
+            hash_table[hash] = pos as i32;
+        }
+
+        // Multi-level lazy matching: check next 2 positions
+        if best_match_len >= MIN_MATCH && best_match_len < OPTIMAL_ML {
+            for lookahead in 1..=2 {
+                let next_pos = pos + lookahead;
+                if next_pos >= input_limit {
+                    break;
+                }
+
+                if next_pos + MIN_MATCH <= input_end {
+                    let hash = hash4(&input[next_pos..]);
+                    let candidate = hash_table[hash];
+
+                    if candidate >= 0 {
+                        let candidate_pos = candidate as usize;
+                        let distance = next_pos - candidate_pos;
+
+                        if distance > 0 && distance <= MAX_DISTANCE {
+                            let max_match = input_end - next_pos;
+                            let len = count_match(&input[candidate_pos..], &input[next_pos..], max_match);
+
+                            // Accept if significantly better (at least 3 bytes gain)
+                            if len > best_match_len + lookahead + 2 {
+                                pos = next_pos;
+                                best_match_pos = candidate_pos;
+                                best_match_len = len;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if best_match_len >= MIN_MATCH {
+            emit_sequence(&mut output, input, &mut anchor, pos, best_match_pos, best_match_len);
+
+            // Skip positions in matched sequence (reduce work)
+            let skip = best_match_len.saturating_sub(1);
+            for i in 1..skip.min(16) {
+                let skip_pos = pos + i;
+                if skip_pos < input_end && skip_pos + MIN_MATCH <= input_end {
+                    let hash = hash4(&input[skip_pos..]);
+                    let chain_idx = skip_pos % chain.len();
+                    chain[chain_idx] = hash_table[hash];
+                    hash_table[hash] = skip_pos as i32;
+                }
+            }
+
+            pos += best_match_len;
+            anchor = pos;
+        } else {
+            pos += 1;
+        }
+    }
+
+    emit_final_literals(&mut output, input, anchor, input_end);
+    Ok(output)
+}
+
+/// Ultra compression - maximum compression with brute-force search
+fn compress_ultra(input: &[u8]) -> Result<Vec<u8>> {
+    if input.is_empty() {
+        return Ok(vec![0, 0, 0, 0]);
+    }
+
+    if input.len() > u32::MAX as usize {
+        return Err(Error::InputTooLarge {
+            size: input.len(),
+            max_size: u32::MAX as usize,
+        });
+    }
+
+    let mut output = Vec::with_capacity(input.len() / 2);
+    output.extend_from_slice(&(input.len() as u32).to_le_bytes());
+
+    // Larger hash table and longer chains for ultra mode
+    let mut hash_table: Vec<i32> = vec![-1; HASH_TABLE_SIZE];
+    let mut chain: Vec<i32> = vec![-1; input.len().min(MAX_DISTANCE + 1)];
+
+    let mut anchor = 0;
+    let mut pos = 0;
+    let input_end = input.len();
+    let input_limit = if input_end > LAST_LITERALS {
+        input_end - LAST_LITERALS
+    } else {
+        0
+    };
+
+    const MAX_ULTRA_CHAIN: usize = 128; // Deep search
+    const ULTRA_LAZY_LEVELS: usize = 4; // Check 4 positions ahead
+
+    while pos < input_limit {
+        let mut best_match_pos = 0;
+        let mut best_match_len = 0;
+
+        // Exhaustive search with long chains
+        if pos + MIN_MATCH <= input_end {
+            let hash = hash4(&input[pos..]);
+            let mut candidate = hash_table[hash];
+            let mut depth = 0;
+
+            while candidate >= 0 && depth < MAX_ULTRA_CHAIN {
+                let candidate_pos = candidate as usize;
+                let distance = pos - candidate_pos;
+
+                if distance > MAX_DISTANCE {
+                    break;
+                }
+
+                if distance > 0 {
+                    let max_match = input_end - pos;
+                    let len = count_match(&input[candidate_pos..], &input[pos..], max_match);
+
+                    if len > best_match_len {
+                        best_match_pos = candidate_pos;
+                        best_match_len = len;
+                    }
+                }
+
+                candidate = chain[candidate_pos % chain.len()];
+                depth += 1;
+            }
+
+            // Also try 8-byte hash for longer patterns
+            if pos + 8 <= input_end && best_match_len < OPTIMAL_ML {
+                let hash8_val = hash8(&input[pos..]);
+
+                // Search in a different part of the hash table to avoid collisions
+                let hash8_idx = (HASH_TABLE_SIZE / 2) + (hash8_val % (HASH_TABLE_SIZE / 2));
+                let hash8_candidate = hash_table[hash8_idx];
+
+                if hash8_candidate >= 0 {
+                    let candidate_pos = hash8_candidate as usize;
+                    let distance = pos.saturating_sub(candidate_pos);
+
+                    if distance > 0 && distance <= MAX_DISTANCE {
+                        let max_match = input_end - pos;
+                        let len = count_match(&input[candidate_pos..], &input[pos..], max_match);
+
+                        if len > best_match_len {
+                            best_match_pos = candidate_pos;
+                            best_match_len = len;
+                        }
+                    }
+                }
+
+                // Update 8-byte hash entry
+                hash_table[hash8_idx] = pos as i32;
+            }
+
+            let chain_idx = pos % chain.len();
+            chain[chain_idx] = hash_table[hash];
+            hash_table[hash] = pos as i32;
+        }
+
+        // Multi-level ultra lazy matching
+        if best_match_len >= MIN_MATCH {
+            let mut final_pos = pos;
+            let mut final_match_pos = best_match_pos;
+            let mut final_match_len = best_match_len;
+
+            for lookahead in 1..=ULTRA_LAZY_LEVELS {
+                let next_pos = pos + lookahead;
+                if next_pos >= input_limit {
+                    break;
+                }
+
+                if next_pos + MIN_MATCH <= input_end {
+                    let hash = hash4(&input[next_pos..]);
+                    let candidate = hash_table[hash];
+
+                    if candidate >= 0 {
+                        let candidate_pos = candidate as usize;
+                        let distance = next_pos.saturating_sub(candidate_pos);
+
+                        if distance > 0 && distance <= MAX_DISTANCE {
+                            let max_match = input_end - next_pos;
+                            let len = count_match(&input[candidate_pos..], &input[next_pos..], max_match);
+
+                            // Accept if better by at least lookahead bytes
+                            if len > final_match_len + lookahead {
+                                final_pos = next_pos;
+                                final_match_pos = candidate_pos;
+                                final_match_len = len;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Emit the best match found
+            emit_sequence(&mut output, input, &mut anchor, final_pos, final_match_pos, final_match_len);
+
+            // Update hash table for skipped positions
+            for i in 1..final_match_len.min(32) {
+                let skip_pos = final_pos + i;
+                if skip_pos < input_end && skip_pos + MIN_MATCH <= input_end {
+                    let hash = hash4(&input[skip_pos..]);
+                    let chain_idx = skip_pos % chain.len();
+                    chain[chain_idx] = hash_table[hash];
+                    hash_table[hash] = skip_pos as i32;
+                }
+            }
+
+            pos = final_pos + final_match_len;
             anchor = pos;
         } else {
             pos += 1;
@@ -366,6 +547,12 @@ fn emit_sequence(
     match_pos: usize,
     match_len: usize,
 ) {
+    // Sanity checks
+    debug_assert!(pos > match_pos, "Invalid match: pos <= match_pos");
+    debug_assert!(pos - match_pos <= MAX_DISTANCE, "Match offset too large");
+    debug_assert!(match_len >= MIN_MATCH, "Match too short");
+    debug_assert!(pos >= *anchor, "pos < anchor");
+
     let literal_len = pos - *anchor;
 
     // Emit token
@@ -390,8 +577,9 @@ fn emit_sequence(
     // Copy literals
     output.extend_from_slice(&input[*anchor..pos]);
 
-    // Emit match offset
+    // Emit match offset (validated)
     let offset = (pos - match_pos) as u16;
+    debug_assert!(offset > 0 && offset as usize <= MAX_DISTANCE);
     output.extend_from_slice(&offset.to_le_bytes());
 
     // Extended match length
@@ -499,9 +687,14 @@ pub fn decompress(input: &[u8]) -> Result<Vec<u8>> {
             pos += literal_len;
         }
 
-        // Check if we're done (no match)
-        if pos >= input.len() || match_len == 0 {
-            continue; // No match to process
+        // Check if we're done (no match after literals)
+        if pos >= input.len() {
+            break;
+        }
+
+        // If match_len from token is 0, there's no match to process
+        if match_len == 0 {
+            continue;
         }
 
         // Read match offset
@@ -561,23 +754,57 @@ pub fn decompress(input: &[u8]) -> Result<Vec<u8>> {
     Ok(output)
 }
 
-/// Calculate 32-bit hash of 4 bytes
-#[inline]
+/// Calculate 32-bit hash of 4 bytes - optimized multiplier
+#[inline(always)]
 fn hash4(data: &[u8]) -> usize {
     if data.len() < 4 {
         return 0;
     }
     let value = u32::from_le_bytes([data[0], data[1], data[2], data[3]]);
-    ((value.wrapping_mul(2654435761)) >> (32 - HASH_LOG)) as usize
+    // xxHash-inspired multiplication for better distribution
+    ((value.wrapping_mul(0x9E3779B1)) >> (32 - HASH_LOG)) as usize
 }
 
-/// Count matching bytes between two slices
-#[inline]
+/// Calculate 64-bit hash for longer sequences
+#[inline(always)]
+fn hash8(data: &[u8]) -> usize {
+    if data.len() < 8 {
+        return hash4(data);
+    }
+    let value = u64::from_le_bytes([
+        data[0], data[1], data[2], data[3],
+        data[4], data[5], data[6], data[7],
+    ]);
+    ((value.wrapping_mul(0x9E3779B185EBCA87)) >> (64 - HASH_LOG)) as usize
+}
+
+/// Count matching bytes between two slices - optimized with 8-byte comparison
+#[inline(always)]
 fn count_match(a: &[u8], b: &[u8], max_len: usize) -> usize {
     let limit = a.len().min(b.len()).min(max_len);
     let mut len = 0;
 
-    // Compare byte-by-byte (future: SIMD optimization)
+    // Fast path: compare 8 bytes at a time
+    while len + 8 <= limit {
+        let a_chunk = u64::from_le_bytes([
+            a[len], a[len+1], a[len+2], a[len+3],
+            a[len+4], a[len+5], a[len+6], a[len+7],
+        ]);
+        let b_chunk = u64::from_le_bytes([
+            b[len], b[len+1], b[len+2], b[len+3],
+            b[len+4], b[len+5], b[len+6], b[len+7],
+        ]);
+
+        if a_chunk != b_chunk {
+            // Find exact mismatch position
+            let xor = a_chunk ^ b_chunk;
+            len += (xor.trailing_zeros() / 8) as usize;
+            return len;
+        }
+        len += 8;
+    }
+
+    // Remaining bytes
     while len < limit && a[len] == b[len] {
         len += 1;
     }

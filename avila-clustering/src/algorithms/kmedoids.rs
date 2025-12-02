@@ -101,7 +101,7 @@ impl KMedoids {
             }
             total_cost = new_cost;
 
-            // Swap step: try to find better medoids
+            // Swap step: search for medoids with lower total cost
             let mut improved = false;
             for i in 0..self.n_clusters {
                 let current_medoid = medoid_indices[i];

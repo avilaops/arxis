@@ -1,0 +1,99 @@
+# Configuração das 3 Máquinas do Cluster AVX
+
+machines:
+  - id: avl-controller
+    name: "AVL (Máquina Preta)"
+    role: orchestrator
+    specs:
+      cpu_cores: auto-detect
+      ram_gb: auto-detect
+      os: Windows
+    workspaces:
+      - d:\arxis
+      - d:\arxis\avx-workspace
+    responsibilities:
+      - Analytics e ML
+      - Semantic Kernel processing
+      - Dashboard e visualização
+      - Orquestração de tarefas
+    crates_focus:
+      - avx-inspector
+      - avx-analytics
+      - avx-orchestrator
+      - avila-ml
+    logs:
+      copilot: logs/copilots/machine-1/
+      terminal: logs/terminals/machine-1/
+      metrics: logs/machines/avl-controller/
+
+  - id: avila-runtime
+    name: "ÁVILA (Máquina Branca)"
+    role: build-engine
+    specs:
+      cpu_cores: auto-detect
+      ram_gb: auto-detect
+      os: Windows
+    workspaces:
+      - d:\arxis\avila-core-workspace
+      - d:\arxis\avila-ai-workspace
+    responsibilities:
+      - Compilação Rust pesada
+      - Testes automatizados
+      - Benchmarks de performance
+      - Validação de qualidade
+    crates_focus:
+      - avila-clustering
+      - avila-reduction
+      - avila-compress
+      - avila-tokenizer
+    logs:
+      copilot: logs/copilots/machine-2/
+      terminal: logs/terminals/machine-2/
+      metrics: logs/machines/avila-runtime/
+
+  - id: alv-factory
+    name: "ALV (Máquina Azul)"
+    role: code-factory
+    specs:
+      cpu_cores: auto-detect
+      ram_gb: auto-detect
+      os: Windows
+    workspaces:
+      - d:\arxis\avx-workspace
+      - d:\arxis\avila-tools
+      - d:\arxis\avila-geo-workspace
+    responsibilities:
+      - Geração massiva de código
+      - Múltiplos VS Codes paralelos
+      - Protótipos rápidos
+      - Documentação automática
+    crates_focus:
+      - avx-gateway
+      - avx-http
+      - avx-image
+      - avx-cli
+    vscode_instances: 3
+    logs:
+      copilot: logs/copilots/machine-3/
+      terminal: logs/terminals/machine-3/
+      metrics: logs/machines/alv-factory/
+
+# Rede compartilhada
+shared_storage:
+  network_path: "\\\\AVILA\\avx-shared"
+  sync_interval_minutes: 5
+  folders:
+    - queue
+    - results
+    - logs
+    - prompts
+    - modules
+
+# Coleta de logs
+log_collection:
+  enabled: true
+  auto_capture_terminals: true
+  auto_capture_copilots: true
+  rotation_days: 30
+  compression: true
+  backup_remote: true

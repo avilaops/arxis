@@ -19,16 +19,16 @@ keywords = [
 categories = ["algorithms", "science"]
 
 [dependencies]
-ndarray = { version = "0.15", features = ["rayon", "serde"] }
+ndarray = "0.17"
 # Removido ndarray-linalg por problemas com OpenBLAS no Windows
 # ndarray-linalg = { version = "0.16", features = ["openblas-static"] }
 ndarray-stats = "0.5"
 ndarray-rand = "0.14"
-rayon = "1.8"
+avila-parallel = { version = "0.4.0", path = "../avila-parallel" }
 num-traits = "0.2"
-serde = { version = "1.0", features = ["derive"] }
-thiserror = "1.0"
-rand = "0.8"
+avila-serde = { version = "0.2.0", path = "../avila-serde" }
+avila-error = { version = "0.2.0", path = "../avila-error" }
+avila-rand = { version = "0.1.0", path = "../avila-rand" }
 rand_xoshiro = "0.6"
 
 # Scientific computing

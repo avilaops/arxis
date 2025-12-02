@@ -1,51 +1,49 @@
 //! Estrutura de mensagem de email
 
-use crate::EmailAddress;
-use avila_error::{Error, ErrorKind, Result};
+use crate::{EmailAddress, mime::{MimePart, MultipartBuilder}};
 use avila_time::DateTime;
 use std::collections::HashMap;
-use serde::{Serialize, Deserialize};
 
-/// Mensagem de email completa
-#[derive(Debug, Clone, Serialize, Deserialize)]
+/// Complete email message
+#[derive(Debug, Clone)]
 pub struct Email {
-    /// ID único da mensagem
+    /// Unique message ID
     pub id: String,
-    /// Remetente
+    /// Sender
     pub from: EmailAddress,
-    /// Destinatários
+    /// Recipients
     pub to: Vec<EmailAddress>,
-    /// Cópia
+    /// Carbon copy
     pub cc: Vec<EmailAddress>,
-    /// Cópia oculta
+    /// Blind carbon copy
     pub bcc: Vec<EmailAddress>,
-    /// Assunto
+    /// Subject
     pub subject: String,
-    /// Corpo da mensagem (texto plano)
+    /// Message body (plain text)
     pub body: String,
-    /// Corpo HTML (opcional)
+    /// HTML body (optional)
     pub html_body: Option<String>,
-    /// Headers customizados
+    /// Custom headers
     pub headers: HashMap<String, String>,
-    /// Data de envio
+    /// Send date
     pub date: DateTime,
-    /// Anexos
+    /// Attachments
     pub attachments: Vec<Attachment>,
 }
 
-/// Anexo de email
-#[derive(Debug, Clone, Serialize, Deserialize)]
+/// Email attachment
+#[derive(Debug, Clone)]
 pub struct Attachment {
-    /// Nome do arquivo
+    /// Filename
     pub filename: String,
-    /// Tipo MIME
+    /// MIME type
     pub content_type: String,
-    /// Conteúdo (base64 encoded)
+    /// Content (base64 encoded)
     pub content: Vec<u8>,
 }
 
 impl Email {
-    /// Cria nova mensagem
+    /// Creates new message
     pub fn new(from: EmailAddress, to: Vec<EmailAddress>, subject: String, body: String) -> Self {
         Self {
             id: Self::generate_message_id(),
@@ -62,7 +60,7 @@ impl Email {
         }
     }
 
-    /// Gera Message-ID único
+    /// Generates unique Message-ID
     fn generate_message_id() -> String {
         use avila_time::DateTime;
         let timestamp = DateTime::now().timestamp();
@@ -70,36 +68,117 @@ impl Email {
         format!("<{}.{}@avila.inc>", timestamp, random)
     }
 
-    /// Adiciona destinatário CC
+    /// Adds CC recipient
     pub fn add_cc(&mut self, address: EmailAddress) {
         self.cc.push(address);
     }
 
-    /// Adiciona destinatário BCC
+    /// Adds BCC recipient
     pub fn add_bcc(&mut self, address: EmailAddress) {
         self.bcc.push(address);
     }
 
-    /// Adiciona anexo
+    /// Adds attachment
     pub fn add_attachment(&mut self, attachment: Attachment) {
         self.attachments.push(attachment);
     }
 
-    /// Define corpo HTML
+    /// Sets HTML body
     pub fn set_html_body(&mut self, html: String) {
         self.html_body = Some(html);
     }
 
-    /// Adiciona header customizado
+    /// Adds custom header
     pub fn add_header(&mut self, key: String, value: String) {
         self.headers.insert(key, value);
     }
 
-    /// Converte para formato RFC 5322 (email wire format)
+    /// Converts to RFC 5322 format (email wire format)
     pub fn to_rfc5322(&self) -> String {
+        if self.html_body.is_some() || !self.attachments.is_empty() {
+            // Use simple format as fallback for now
+            self.to_simple_format()
+        } else {
+            self.to_simple_format()
+        }
+    }
+
+    /// Converts to MIME multipart format
+    pub fn to_mime(&self) -> String {
+        let mut headers = String::new();
+
+        // Basic headers
+        headers.push_str(&format!("Message-ID: {}\r\n", self.id));
+        headers.push_str(&format!("From: {}\r\n", self.from.to_rfc5322()));
+        headers.push_str(&format!("To: {}\r\n",
+            self.to.iter().map(|e| e.to_rfc5322()).collect::<Vec<_>>().join(", ")));
+
+        if !self.cc.is_empty() {
+            headers.push_str(&format!("Cc: {}\r\n",
+                self.cc.iter().map(|e| e.to_rfc5322()).collect::<Vec<_>>().join(", ")));
+        }
+
+        headers.push_str(&format!("Subject: {}\r\n", self.subject));
+        headers.push_str(&format!("Date: {}\r\n", self.date.to_rfc2822()));
+        headers.push_str("MIME-Version: 1.0\r\n");
+
+        // Custom headers
+        for (key, value) in &self.headers {
+            headers.push_str(&format!("{}: {}\r\n", key, value));
+        }
+
+        // Build multipart body
+        if !self.attachments.is_empty() || self.html_body.is_some() {
+            let mut builder = if self.html_body.is_some() {
+                // multipart/alternative for text + HTML
+                let mut alt = MultipartBuilder::alternative()
+                    .add_part(MimePart::text(&self.body));
+
+                if let Some(ref html) = self.html_body {
+                    alt = alt.add_part(MimePart::html(html));
+                }
+
+                if self.attachments.is_empty() {
+                    headers.push_str(&format!("Content-Type: {}\r\n", alt.content_type()));
+                    headers.push_str("\r\n");
+                    headers.push_str(&alt.build());
+                    return headers;
+                }
+
+                // Wrap in multipart/mixed for attachments
+                let mixed = MultipartBuilder::mixed();
+                mixed
+            } else {
+                MultipartBuilder::mixed()
+                    .add_part(MimePart::text(&self.body))
+            };
+
+            // Add attachments
+            for attachment in &self.attachments {
+                builder = builder.add_part(MimePart::attachment(
+                    &attachment.filename,
+                    &attachment.content_type,
+                    attachment.content.clone(),
+                ));
+            }
+
+            headers.push_str(&format!("Content-Type: {}\r\n", builder.content_type()));
+            headers.push_str("\r\n");
+            headers.push_str(&builder.build());
+        } else {
+            // Simple text email
+            headers.push_str("Content-Type: text/plain; charset=utf-8\r\n");
+            headers.push_str("Content-Transfer-Encoding: 8bit\r\n");
+            headers.push_str("\r\n");
+            headers.push_str(&self.body);
+        }
+
+        headers
+    }
+
+    fn to_simple_format(&self) -> String {
         let mut message = String::new();
 
-        // Headers obrigatórios
         message.push_str(&format!("Message-ID: {}\r\n", self.id));
         message.push_str(&format!("From: {}\r\n", self.from));
         message.push_str(&format!("To: {}\r\n",
@@ -113,12 +192,12 @@ impl Email {
         message.push_str(&format!("Subject: {}\r\n", self.subject));
         message.push_str(&format!("Date: {}\r\n", self.date.to_rfc2822()));
 
-        // Headers customizados
+        // Custom headers
         for (key, value) in &self.headers {
             message.push_str(&format!("{}: {}\r\n", key, value));
         }
 
-        // Corpo
+        // Body
         message.push_str("\r\n");
         message.push_str(&self.body);
 

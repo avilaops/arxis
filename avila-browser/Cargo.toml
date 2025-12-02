@@ -1,17 +1,24 @@
+[workspace]
+
 [package]
 name = "avila-browser"
 version = "0.1.0"
 edition = "2021"
 authors = ["Nícolas Ávila <nicolas@avila.inc>"]
-description = "Ultra-secure browser with 7-layer anonymity protection (Tor + VPN + I2P + Garlic + Obfuscation)"
+description = "High-security web browser implementing 7-layer onion routing architecture with cryptographic anonymity guarantees"
 license = "MIT OR Apache-2.0"
+repository = "https://github.com/arxis-io/avila-browser"
+keywords = ["browser", "anonymity", "privacy", "tor", "security"]
+categories = ["network-programming", "cryptography", "web-programming"]
+
+[features]
+default = []
 
 [lib]
 name = "avila_browser"
 path = "src/lib.rs"
 
 [dependencies]
-# Zero external dependencies - 100% Rust nativo
 
 [dev-dependencies]
 
@@ -22,3 +29,7 @@ path = "examples/browser_demo.rs"
 [[example]]
 name = "seven_layers"
 path = "examples/seven_layers.rs"
+
+[[example]]
+name = "native_demo"
+path = "examples/native_demo.rs"

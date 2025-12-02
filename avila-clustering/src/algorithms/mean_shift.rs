@@ -251,7 +251,7 @@ impl MeanShift {
         let factor = (n_samples as f64).powf(-1.0 / (n_features as f64 + 4.0));
         let avg_std = stds.iter().sum::<f64>() / stds.len() as f64;
 
-        factor * avg_std * 3.0 // Scale up for better results
+        factor * avg_std * 3.0 // Scott's rule of thumb scaling factor
     }
 
     /// Get bin seeds for faster initialization

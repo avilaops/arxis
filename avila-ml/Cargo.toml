@@ -44,23 +44,23 @@ path = "examples/ligo_gravitational_waves.rs"
 
 [dependencies]
 # Core numerical computing
-ndarray = { version = "0.16", features = ["rayon", "serde"] }
+ndarray = "0.17"
 num-traits = "0.2"
-rand = "0.8"
-rand_distr = "0.4"
+avila-rand = { version = "0.1.0", path = "../avila-rand" }
+rand = { package = "avila-rand-simple", path = "../avila-rand-simple" }
 
 # Parallel processing
-rayon = "1.10"
+avila-parallel = { version = "0.4.0", path = "../avila-parallel" }
+rayon = { package = "avila-rayon-simple", path = "../avila-rayon-simple" }
 
 # Serialization
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
+avila-serde = { version = "0.2.0", path = "../avila-serde" }
 
 # Data loading
-# avila-dataframe = { path = "../avila-dataframe", features = ["full"], optional = true }
+# avila-dataframe = { version = "0.2.0", path = "../avila-dataframe", features = ["full"], optional = true }
 
 # Complex numbers for scientific applications
-num-complex = "0.4"
+avila-fft = { version = "0.3.0", path = "../avila-fft" }
 
 [dev-dependencies]
 criterion = "0.5"

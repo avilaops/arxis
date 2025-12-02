@@ -2,7 +2,7 @@
 //!
 //! Implements the Wiener filter for noise reduction and signal estimation.
 
-use num_complex::Complex64;
+use avila_fft::num_complex::Complex64;
 
 /// Wiener filter for signal denoising
 #[derive(Debug, Clone)]
@@ -63,34 +63,31 @@ impl WienerFilter {
         spectrum
             .iter()
             .zip(self.coefficients.iter())
-            .map(|(s, c)| s * c)
+            .map(|(s, c)| *s * *c)
             .collect()
     }
 
     /// Apply Wiener filter to a real signal (performs FFT internally)
     pub fn apply(&self, signal: &[f64]) -> Vec<f64> {
-        use rustfft::num_complex::Complex;
-        use rustfft::FftPlanner;
+        use avila_fft::num_complex::Complex;
 
         let n = signal.len();
-        let mut planner = FftPlanner::new();
-        let fft = planner.plan_fft_forward(n);
-        let ifft = planner.plan_fft_inverse(n);
 
         // Forward FFT
-        let mut buffer: Vec<Complex<f64>> = signal.iter().map(|&x| Complex::new(x, 0.0)).collect();
-        fft.process(&mut buffer);
+        let buffer: Vec<Complex<f64>> = signal.iter().map(|&x| Complex::new(x, 0.0)).collect();
+        let mut freq_buffer = avila_fft::fft(&buffer);
 
         // Apply filter
         for (i, coef) in self.coefficients.iter().enumerate().take(n.min(self.order)) {
-            buffer[i] *= coef;
+            freq_buffer[i] = Complex::new(
+                freq_buffer[i].re * coef,
+                freq_buffer[i].im * coef,
+            );
         }
 
         // Inverse FFT
-        ifft.process(&mut buffer);
-
-        // Extract real part and normalize
-        buffer.iter().map(|c| c.re / n as f64).collect()
+        let result = avila_fft::ifft(&freq_buffer);
+        result.iter().map(|c| c.re).collect()
     }
 
     /// Get filter coefficients
@@ -110,10 +107,7 @@ pub fn estimate_power_spectra(
     segment_length: usize,
     overlap: usize,
 ) -> (Vec<f64>, Vec<f64>) {
-    use rustfft::{num_complex::Complex, FftPlanner};
-
-    let mut planner = FftPlanner::new();
-    let fft = planner.plan_fft_forward(segment_length);
+    use avila_fft::num_complex::Complex;
 
     let step = segment_length - overlap;
     let num_segments = (signal.len() - overlap) / step;
@@ -128,11 +122,11 @@ pub fn estimate_power_spectra(
         }
 
         let segment = &signal[start..end];
-        let mut buffer: Vec<Complex<f64>> = segment.iter().map(|&x| Complex::new(x, 0.0)).collect();
+        let buffer: Vec<Complex<f64>> = segment.iter().map(|&x| Complex::new(x, 0.0)).collect();
 
-        fft.process(&mut buffer);
+        let freq_buffer = avila_fft::fft(&buffer);
 
-        for (j, c) in buffer.iter().enumerate() {
+        for (j, c) in freq_buffer.iter().enumerate() {
             power_sum[j] += (c.re * c.re + c.im * c.im) / segment_length as f64;
         }
     }
@@ -154,7 +148,7 @@ pub fn estimate_power_spectra(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rand::Rng;
+    use avila_rand::Rng;
 
     #[test]
     fn test_wiener_snr() {
@@ -164,7 +158,7 @@ mod tests {
 
     #[test]
     fn test_wiener_apply() {
-        let mut rng = rand::thread_rng();
+        let mut rng = avila_rand::thread_rng();
         let signal: Vec<f64> = (0..128).map(|i| (i as f64 * 0.1).sin()).collect();
         let noisy: Vec<f64> = signal.iter().map(|&s| s + rng.gen::<f64>() * 0.1).collect();
 

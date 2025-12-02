@@ -1,10 +1,10 @@
 [package]
 name = "avila-cli"
-version = "0.3.0"
+version = "1.1.0"
 edition = "2021"
 authors = ["Nícolas Ávila <nicolas@avila.inc>"]
 license = "MIT OR Apache-2.0"
-description = "Ávila CLI Parser - Zero-dependency command-line argument parser with compile-time guarantees"
+description = "Ávila CLI Parser - Zero-dependency with config files, env vars, macros, completions, colors, and advanced features"
 repository = "https://github.com/avilaops/arxis"
 homepage = "https://avila.inc"
 keywords = ["cli", "parser", "arguments", "zero-alloc", "no-std"]

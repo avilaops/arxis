@@ -1,9 +1,199 @@
 //! Avila Serde - AVL Platform serialization
 //! Replacement for serde/serde_json - 100% Rust std
-//! Simple JSON serialization/deserialization
+//! Simple JSON serialization/deserialization with derive macros
+
+// When derive feature is enabled, make Serialize and Deserialize available
+// as both traits and derive macros (like serde does)
+#[cfg(feature = "derive")]
+#[doc(hidden)]
+pub use avila_serde_derive::Serialize as SerializeMacro;
+#[cfg(feature = "derive")]
+#[doc(hidden)]
+pub use avila_serde_derive::Deserialize as DeserializeMacro;
 
 use std::collections::HashMap;
 use std::fmt;
+
+// ============================================================================
+// Traits para Serialização/Deserialização
+// ============================================================================
+
+/// Trait para tipos que podem ser serializados
+pub trait Serialize {
+    fn to_value(&self) -> Value;
+
+    fn to_json(&self) -> String {
+        self.to_value().to_json()
+    }
+
+    fn to_json_pretty(&self) -> String {
+        self.to_value().to_json_pretty()
+    }
+}
+
+/// Trait para tipos que podem ser desserializados
+pub trait Deserialize: Sized {
+    fn from_value(value: Value) -> Result<Self, Error>;
+
+    fn from_json(json: &str) -> Result<Self, Error> {
+        let value = Value::from_json(json)?;
+        Self::from_value(value)
+    }
+}
+
+// ============================================================================
+// Implementações para tipos primitivos
+// ============================================================================
+
+impl Serialize for bool {
+    fn to_value(&self) -> Value {
+        Value::Bool(*self)
+    }
+}
+
+impl Deserialize for bool {
+    fn from_value(value: Value) -> Result<Self, Error> {
+        match value {
+            Value::Bool(b) => Ok(b),
+            _ => Err(Error::TypeMismatch("bool")),
+        }
+    }
+}
+
+impl Serialize for f64 {
+    fn to_value(&self) -> Value {
+        Value::Number(*self)
+    }
+}
+
+impl Deserialize for f64 {
+    fn from_value(value: Value) -> Result<Self, Error> {
+        match value {
+            Value::Number(n) => Ok(n),
+            _ => Err(Error::TypeMismatch("number")),
+        }
+    }
+}
+
+impl Serialize for i32 {
+    fn to_value(&self) -> Value {
+        Value::Number(*self as f64)
+    }
+}
+
+impl Deserialize for i32 {
+    fn from_value(value: Value) -> Result<Self, Error> {
+        match value {
+            Value::Number(n) => Ok(n as i32),
+            _ => Err(Error::TypeMismatch("number")),
+        }
+    }
+}
+
+impl Serialize for u64 {
+    fn to_value(&self) -> Value {
+        Value::Number(*self as f64)
+    }
+}
+
+impl Deserialize for u64 {
+    fn from_value(value: Value) -> Result<Self, Error> {
+        match value {
+            Value::Number(n) => Ok(n as u64),
+            _ => Err(Error::TypeMismatch("number")),
+        }
+    }
+}
+
+impl Serialize for usize {
+    fn to_value(&self) -> Value {
+        Value::Number(*self as f64)
+    }
+}
+
+impl Deserialize for usize {
+    fn from_value(value: Value) -> Result<Self, Error> {
+        match value {
+            Value::Number(n) => Ok(n as usize),
+            _ => Err(Error::TypeMismatch("number")),
+        }
+    }
+}
+
+impl Serialize for String {
+    fn to_value(&self) -> Value {
+        Value::String(self.clone())
+    }
+}
+
+impl Deserialize for String {
+    fn from_value(value: Value) -> Result<Self, Error> {
+        match value {
+            Value::String(s) => Ok(s),
+            _ => Err(Error::TypeMismatch("string")),
+        }
+    }
+}
+
+impl<T: Serialize> Serialize for Vec<T> {
+    fn to_value(&self) -> Value {
+        Value::Array(self.iter().map(|item| item.to_value()).collect())
+    }
+}
+
+impl<T: Deserialize> Deserialize for Vec<T> {
+    fn from_value(value: Value) -> Result<Self, Error> {
+        match value {
+            Value::Array(arr) => {
+                arr.into_iter()
+                    .map(|v| T::from_value(v))
+                    .collect()
+            }
+            _ => Err(Error::TypeMismatch("array")),
+        }
+    }
+}
+
+impl<T: Serialize> Serialize for Option<T> {
+    fn to_value(&self) -> Value {
+        match self {
+            Some(value) => value.to_value(),
+            None => Value::Null,
+        }
+    }
+}
+
+impl<T: Deserialize> Deserialize for Option<T> {
+    fn from_value(value: Value) -> Result<Self, Error> {
+        match value {
+            Value::Null => Ok(None),
+            _ => Ok(Some(T::from_value(value)?)),
+        }
+    }
+}
+
+impl<K: ToString, V: Serialize> Serialize for HashMap<K, V> {
+    fn to_value(&self) -> Value {
+        let mut map = HashMap::new();
+        for (k, v) in self {
+            map.insert(k.to_string(), v.to_value());
+        }
+        Value::Object(map)
+    }
+}
+
+impl<V: Deserialize> Deserialize for HashMap<String, V> {
+    fn from_value(value: Value) -> Result<Self, Error> {
+        match value {
+            Value::Object(obj) => {
+                obj.into_iter()
+                    .map(|(k, v)| Ok((k, V::from_value(v)?)))
+                    .collect()
+            }
+            _ => Err(Error::TypeMismatch("object")),
+        }
+    }
+}
 
 /// JSON value type
 #[derive(Debug, Clone, PartialEq)]
@@ -345,6 +535,11 @@ pub enum Error {
     InvalidNumber,
     ExpectedChar(char),
     ExpectedString,
+    ExpectedObject,
+    TypeMismatch(&'static str),
+    MissingField(String),
+    Parse(String),
+    NotImplemented,
 }
 
 impl fmt::Display for Error {
@@ -356,6 +551,11 @@ impl fmt::Display for Error {
             Error::InvalidNumber => write!(f, "Invalid number"),
             Error::ExpectedChar(c) => write!(f, "Expected character: {}", c),
             Error::ExpectedString => write!(f, "Expected string"),
+            Error::ExpectedObject => write!(f, "Expected object"),
+            Error::TypeMismatch(t) => write!(f, "Type mismatch: expected {}", t),
+            Error::MissingField(field) => write!(f, "Missing field: {}", field),
+            Error::Parse(msg) => write!(f, "Parse error: {}", msg),
+            Error::NotImplemented => write!(f, "Not implemented"),
         }
     }
 }
@@ -403,5 +603,132 @@ mod tests {
     fn test_to_json() {
         let v = Value::String("hello".to_string());
         assert_eq!(v.to_json(), "\"hello\"");
+    }
+}
+
+// ============================================================================
+// Prelude for convenient imports
+// ============================================================================
+
+/// Prelude module that re-exports commonly used types and traits
+pub mod prelude {
+    pub use crate::{Serialize, Deserialize, Value, Error};
+
+    #[cfg(feature = "derive")]
+    pub use crate::{SerializeMacro as Serialize, DeserializeMacro as Deserialize};
+}
+
+// ============================================================================
+// JSON construction macro (like serde_json::json!)
+// ============================================================================
+
+/// Macro for constructing JSON values easily
+///
+/// # Examples
+/// ```ignore
+/// use avila_serde::json;
+/// let v = json!({
+///     "name": "John",
+///     "age": 30,
+///     "active": true
+/// });
+/// ```
+#[macro_export]
+macro_rules! json {
+    (null) => {
+        $crate::Value::Null
+    };
+
+    (true) => {
+        $crate::Value::Bool(true)
+    };
+
+    (false) => {
+        $crate::Value::Bool(false)
+    };
+
+    ($val:expr) => {
+        {
+            let v = $val;
+            $crate::__json_internal_to_value(v)
+        }
+    };
+
+    ([$($element:tt),* $(,)?]) => {
+        $crate::Value::Array(vec![$($crate::json!($element)),*])
+    };
+
+    ({$($key:tt : $value:tt),* $(,)?}) => {
+        {
+            let mut map = std::collections::HashMap::new();
+            $(
+                map.insert($crate::__json_key!($key), $crate::json!($value));
+            )*
+            $crate::Value::Object(map)
+        }
+    };
+}
+
+#[doc(hidden)]
+#[macro_export]
+macro_rules! __json_key {
+    ($key:ident) => {
+        stringify!($key).to_string()
+    };
+    ($key:expr) => {
+        $key.to_string()
+    };
+}
+
+#[doc(hidden)]
+pub fn __json_internal_to_value<T: Into<Value>>(v: T) -> Value {
+    v.into()
+}
+
+impl From<bool> for Value {
+    fn from(b: bool) -> Self {
+        Value::Bool(b)
+    }
+}
+
+impl From<f64> for Value {
+    fn from(n: f64) -> Self {
+        Value::Number(n)
+    }
+}
+
+impl From<i32> for Value {
+    fn from(n: i32) -> Self {
+        Value::Number(n as f64)
+    }
+}
+
+impl From<u64> for Value {
+    fn from(n: u64) -> Self {
+        Value::Number(n as f64)
+    }
+}
+
+impl From<String> for Value {
+    fn from(s: String) -> Self {
+        Value::String(s)
+    }
+}
+
+impl From<&str> for Value {
+    fn from(s: &str) -> Self {
+        Value::String(s.to_string())
+    }
+}
+
+impl<T: Into<Value>> From<Vec<T>> for Value {
+    fn from(v: Vec<T>) -> Self {
+        Value::Array(v.into_iter().map(|x| x.into()).collect())
+    }
+}
+
+impl From<HashMap<String, Value>> for Value {
+    fn from(m: HashMap<String, Value>) -> Self {
+        Value::Object(m)
     }
 }

@@ -18,11 +18,10 @@ categories = ["mathematics", "science", "algorithms", "game-development"]
 exclude = ["target/", "*.swp", ".git*"]
 
 [dependencies]
-rand = "0.8"
-rayon = "1.10"      # Paralelização para Conv4D
-rustfft = "6.2"     # FFT para análise espectral
-num-complex = "0.4" # Números complexos para FFT
-serde = { version = "1.0", features = ["derive"], optional = true }
+avila-rand = { version = "0.1.0", path = "../avila-rand" }
+avila-parallel = { version = "0.4.0", path = "../avila-parallel" }
+avila-fft = { version = "0.3.0", path = "../avila-fft" }
+avila-serde = { version = "0.2.0", path = "../avila-serde", optional = true }
 nalgebra = "0.33"   # Álgebra linear (SVD, eigenvalues)
 pyo3 = { version = "0.23", features = ["extension-module"], optional = true }
 numpy = { version = "0.23", optional = true }
@@ -33,7 +32,7 @@ approx = "0.5"      # Comparações com tolerância
 
 [features]
 default = []
-serde = ["dep:serde"]
+serde = ["dep:avila-serde"]
 python = ["dep:pyo3", "dep:numpy", "serde"]
 
 # [[bench]]

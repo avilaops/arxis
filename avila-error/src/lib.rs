@@ -1,5 +1,13 @@
 //! Avila Error - AVL Platform error handling
 //! Replacement for anyhow/thiserror - 100% Rust std
+//!
+//! # Features
+//! - `derive`: Enable #[derive(Error)] macro
+//! - `context`: Enable Context trait for anyhow-style error handling
+//! - `full`: Enable all features
+
+#[cfg(feature = "derive")]
+pub use avila_error_derive::Error as ErrorDerive;
 
 use std::fmt;
 use std::error::Error as StdError;
@@ -21,6 +29,7 @@ pub enum ErrorKind {
     Auth,
     NotFound,
     InvalidInput,
+    InvalidState,
     Internal,
     Tls,
     Serialization,
@@ -75,6 +84,10 @@ impl Error {
 
     pub fn invalid_input(message: impl Into<String>) -> Self {
         Self::new(ErrorKind::InvalidInput, message)
+    }
+
+    pub fn invalid_state(message: impl Into<String>) -> Self {
+        Self::new(ErrorKind::InvalidState, message)
     }
 
     pub fn internal(message: impl Into<String>) -> Self {
@@ -142,6 +155,75 @@ macro_rules! ensure {
             $crate::bail!($msg);
         }
     };
+}
+
+// ============================================================================
+// Context trait (feature = "context") - anyhow-style error handling
+// ============================================================================
+
+#[cfg(feature = "context")]
+pub trait Context<T, E> {
+    /// Adiciona contexto ao erro
+    fn context<C>(self, context: C) -> Result<T>
+    where
+        C: fmt::Display + Send + Sync + 'static;
+
+    /// Adiciona contexto lazy ao erro
+    fn with_context<C, F>(self, f: F) -> Result<T>
+    where
+        C: fmt::Display + Send + Sync + 'static,
+        F: FnOnce() -> C;
+}
+
+#[cfg(feature = "context")]
+impl<T, E> Context<T, E> for std::result::Result<T, E>
+where
+    E: StdError + Send + Sync + 'static,
+{
+    fn context<C>(self, context: C) -> Result<T>
+    where
+        C: fmt::Display + Send + Sync + 'static,
+    {
+        self.map_err(|error| {
+            let mut err = Error::new(ErrorKind::Other, context.to_string());
+            err.source = Some(Box::new(error));
+            err
+        })
+    }
+
+    fn with_context<C, F>(self, f: F) -> Result<T>
+    where
+        C: fmt::Display + Send + Sync + 'static,
+        F: FnOnce() -> C,
+    {
+        self.map_err(|error| {
+            let context = f();
+            let mut err = Error::new(ErrorKind::Other, context.to_string());
+            err.source = Some(Box::new(error));
+            err
+        })
+    }
+}
+
+#[cfg(feature = "context")]
+impl<T> Context<T, Error> for Option<T> {
+    fn context<C>(self, context: C) -> Result<T>
+    where
+        C: fmt::Display + Send + Sync + 'static,
+    {
+        self.ok_or_else(|| Error::new(ErrorKind::NotFound, context.to_string()))
+    }
+
+    fn with_context<C, F>(self, f: F) -> Result<T>
+    where
+        C: fmt::Display + Send + Sync + 'static,
+        F: FnOnce() -> C,
+    {
+        self.ok_or_else(|| {
+            let context = f();
+            Error::new(ErrorKind::NotFound, context.to_string())
+        })
+    }
 }
 
 #[cfg(test)]

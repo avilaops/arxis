@@ -10,18 +10,18 @@ pub fn encode_i64(data: &[i64]) -> Result<Vec<u8>> {
     if data.is_empty() {
         return Ok(Vec::new());
     }
-    
+
     let mut output = Vec::with_capacity(data.len() * mem::size_of::<i64>());
-    
+
     // Write first value
     output.extend_from_slice(&data[0].to_le_bytes());
-    
+
     // Write deltas with variable-length encoding
     for i in 1..data.len() {
         let delta = data[i].wrapping_sub(data[i - 1]);
         write_varint(&mut output, delta);
     }
-    
+
     Ok(output)
 }
 
@@ -32,15 +32,15 @@ pub fn decode_i64(data: &[u8]) -> Result<Vec<i64>> {
             "Delta data must have at least 8 bytes".to_string()
         ));
     }
-    
+
     let mut output = Vec::new();
     let mut i = 0;
-    
+
     // Read first value
     let first = i64::from_le_bytes(data[i..i+8].try_into().unwrap());
     output.push(first);
     i += 8;
-    
+
     // Read deltas
     let mut last = first;
     while i < data.len() {
@@ -49,7 +49,7 @@ pub fn decode_i64(data: &[u8]) -> Result<Vec<i64>> {
         output.push(last);
         i += bytes_read;
     }
-    
+
     Ok(output)
 }
 
@@ -74,7 +74,7 @@ pub fn decode_f64(data: &[u8]) -> Result<Vec<f64>> {
 fn write_varint(output: &mut Vec<u8>, value: i64) {
     // Zigzag encode: (n << 1) ^ (n >> 63)
     let zigzag = ((value << 1) ^ (value >> 63)) as u64;
-    
+
     let mut n = zigzag;
     loop {
         let mut byte = (n & 0x7F) as u8;
@@ -94,30 +94,30 @@ fn read_varint(data: &[u8]) -> Result<(i64, usize)> {
     let mut result = 0u64;
     let mut shift = 0;
     let mut i = 0;
-    
+
     loop {
         if i >= data.len() {
             return Err(ArrowError::InvalidData(
                 "Truncated varint".to_string()
             ));
         }
-        
+
         let byte = data[i];
         result |= ((byte & 0x7F) as u64) << shift;
         i += 1;
-        
+
         if byte & 0x80 == 0 {
             break;
         }
         shift += 7;
-        
+
         if shift >= 64 {
             return Err(ArrowError::InvalidData(
                 "Varint too large".to_string()
             ));
         }
     }
-    
+
     // Zigzag decode: (n >> 1) ^ -(n & 1)
     let value = ((result >> 1) as i64) ^ -((result & 1) as i64);
     Ok((value, i))
@@ -137,7 +137,7 @@ impl DeltaEncoder {
             buffer: Vec::new(),
         }
     }
-    
+
     /// Encode i64 value
     pub fn encode_i64(&mut self, value: i64) {
         match self.last {
@@ -152,12 +152,12 @@ impl DeltaEncoder {
             }
         }
     }
-    
+
     /// Encode f64 value
     pub fn encode_f64(&mut self, value: f64) {
         self.encode_i64(value.to_bits() as i64);
     }
-    
+
     /// Get encoded data
     pub fn finish(self) -> Vec<u8> {
         self.buffer
@@ -179,7 +179,7 @@ mod tests {
         let data: Vec<i64> = (0..1000).collect();
         let encoded = encode_i64(&data).unwrap();
         assert!(encoded.len() < data.len() * 8);
-        
+
         let decoded = decode_i64(&encoded).unwrap();
         assert_eq!(decoded, data);
     }
@@ -198,7 +198,7 @@ mod tests {
         let data: Vec<f64> = (0..100).map(|i| i as f64 * 0.1).collect();
         let encoded = encode_f64(&data).unwrap();
         let decoded = decode_f64(&encoded).unwrap();
-        
+
         for (a, b) in data.iter().zip(decoded.iter()) {
             assert!((a - b).abs() < 1e-10);
         }
@@ -208,11 +208,11 @@ mod tests {
     fn test_varint() {
         let values = vec![0i64, 1, -1, 127, -127, 128, -128, 10000, -10000];
         let mut buffer = Vec::new();
-        
+
         for &v in &values {
             write_varint(&mut buffer, v);
         }
-        
+
         let mut pos = 0;
         for &v in &values {
             let (decoded, bytes) = read_varint(&buffer[pos..]).unwrap();
@@ -227,7 +227,7 @@ mod tests {
         for i in 0..100 {
             encoder.encode_i64(i);
         }
-        
+
         let encoded = encoder.finish();
         let decoded = decode_i64(&encoded).unwrap();
         assert_eq!(decoded, (0..100).collect::<Vec<_>>());

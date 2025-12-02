@@ -10,7 +10,7 @@ pub struct ImapClient {
 }
 
 impl ImapClient {
-    /// Conecta a servidor IMAP
+    /// Connects to IMAP server
     pub async fn connect(server: NetworkAddress) -> Result<Self> {
         let client = TcpClient::connect(server).await?;
         Ok(Self {
@@ -19,7 +19,7 @@ impl ImapClient {
         })
     }
 
-    /// Autenticação
+    /// Authentication
     pub async fn login(&mut self, username: &str, password: &str) -> Result<()> {
         let tag = self.next_tag();
         let cmd = format!("{} LOGIN {} {}\r\n", tag, username, password);
@@ -28,7 +28,7 @@ impl ImapClient {
         Ok(())
     }
 
-    /// Seleciona mailbox
+    /// Selects mailbox
     pub async fn select(&mut self, mailbox: &str) -> Result<()> {
         let tag = self.next_tag();
         let cmd = format!("{} SELECT {}\r\n", tag, mailbox);
@@ -37,33 +37,63 @@ impl ImapClient {
         Ok(())
     }
 
-    /// Lista mailboxes
+    /// Lists mailboxes
     pub async fn list(&mut self) -> Result<Vec<String>> {
         let tag = self.next_tag();
         self.client.send(format!("{} LIST \"\" \"*\"\r\n", tag).as_bytes()).await?;
-        // TODO: Parse lista de mailboxes
-        Ok(Vec::new())
+
+        let mut buffer = vec![0u8; 8192];
+        let n = self.client.receive(&mut buffer).await?;
+        let response = String::from_utf8_lossy(&buffer[..n]);
+
+        let mut mailboxes = Vec::new();
+        for line in response.lines() {
+            if line.starts_with("* LIST") {
+                if let Some(mailbox) = line.split('"').nth(3) {
+                    mailboxes.push(mailbox.to_string());
+                }
+            }
+        }
+        Ok(mailboxes)
     }
 
-    /// Busca mensagens
+    /// Searches messages
     pub async fn search(&mut self, criteria: &str) -> Result<Vec<u32>> {
         let tag = self.next_tag();
         let cmd = format!("{} SEARCH {}\r\n", tag, criteria);
         self.client.send(cmd.as_bytes()).await?;
-        // TODO: Parse IDs das mensagens
-        Ok(Vec::new())
+
+        let mut buffer = vec![0u8; 8192];
+        let n = self.client.receive(&mut buffer).await?;
+        let response = String::from_utf8_lossy(&buffer[..n]);
+
+        let mut ids = Vec::new();
+        for line in response.lines() {
+            if line.starts_with("* SEARCH") {
+                for part in line.split_whitespace().skip(2) {
+                    if let Ok(id) = part.parse::<u32>() {
+                        ids.push(id);
+                    }
+                }
+            }
+        }
+        Ok(ids)
     }
 
-    /// Recupera mensagem
+    /// Fetches message
     pub async fn fetch(&mut self, message_id: u32, items: &str) -> Result<String> {
         let tag = self.next_tag();
         let cmd = format!("{} FETCH {} {}\r\n", tag, message_id, items);
         self.client.send(cmd.as_bytes()).await?;
-        // TODO: Parse resposta FETCH
-        Ok(String::new())
+
+        let mut buffer = vec![0u8; 65536];
+        let n = self.client.receive(&mut buffer).await?;
+        let response = String::from_utf8_lossy(&buffer[..n]).to_string();
+
+        Ok(response)
     }
 
-    /// Fecha mailbox
+    /// Closes mailbox
     pub async fn close(&mut self) -> Result<()> {
         let tag = self.next_tag();
         self.client.send(format!("{} CLOSE\r\n", tag).as_bytes()).await?;
@@ -78,13 +108,13 @@ impl ImapClient {
         Ok(())
     }
 
-    /// Gera próxima tag de comando
+    /// Generates next command tag
     fn next_tag(&mut self) -> String {
         self.tag_counter += 1;
         format!("A{:04}", self.tag_counter)
     }
 
-    /// Espera resposta OK
+    /// Expects OK response
     async fn expect_ok(&mut self, tag: &str) -> Result<String> {
         let mut buffer = vec![0u8; 4096];
         let n = self.client.receive(&mut buffer).await?;

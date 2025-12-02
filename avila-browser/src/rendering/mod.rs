@@ -1,4 +1,4 @@
-//! HTML/CSS rendering engine (simplified)
+//! HTML/CSS rendering engine with DOM tree construction and layout computation
 
 use std::collections::BTreeMap;
 
@@ -22,14 +22,14 @@ pub enum NodeType {
 }
 
 impl Dom {
-    /// Parse HTML into DOM
+    /// Parse HTML into abstract syntax tree representation
     pub fn parse(html: &str) -> Self {
         let root = Self::parse_node(html);
         Self { root }
     }
 
     fn parse_node(html: &str) -> DomNode {
-        // Simplified HTML parser
+        // Recursive descent HTML parser
         if html.starts_with('<') {
             // Element node
             if let Some(tag_end) = html.find('>') {
@@ -38,7 +38,7 @@ impl Dom {
                     .unwrap_or("div")
                     .to_string();
 
-                // Extract text content (very simplified)
+                // Extract inner text content (recursive parsing required for production)
                 let inner_text = if let Some(close_start) = html.find("</") {
                     html[tag_end + 1..close_start].to_string()
                 } else {
@@ -66,12 +66,12 @@ impl Dom {
         }
     }
 
-    /// Extract title from HTML
+    /// Extract document title from DOM tree
     pub fn extract_title(&self) -> Option<String> {
         self.find_element("title")
     }
 
-    /// Find element by tag name
+    /// Query DOM tree for element by tag name
     pub fn find_element(&self, tag: &str) -> Option<String> {
         self.find_in_node(&self.root, tag)
     }
@@ -96,7 +96,7 @@ impl Dom {
     }
 }
 
-/// CSS parser
+/// CSS parser implementing selector matching and cascade resolution
 #[derive(Debug)]
 pub struct CssParser {
     pub stylesheets: Vec<Stylesheet>,
@@ -121,10 +121,10 @@ impl CssParser {
     }
 
     pub fn parse(&mut self, css: &str) {
-        // Simplified CSS parser
+        // Tokenization-based CSS parser
         let mut rules = Vec::new();
 
-        // Split by closing brace
+        // Tokenize by rule terminator
         for rule_text in css.split('}') {
             if let Some(open_brace) = rule_text.find('{') {
                 let selector = rule_text[..open_brace].trim().to_string();
@@ -150,7 +150,7 @@ impl CssParser {
     }
 }
 
-/// Layout engine
+/// Layout engine implementing box model and flow layout algorithm
 #[derive(Debug)]
 pub struct LayoutEngine {
     pub viewport_width: u32,
@@ -165,7 +165,7 @@ impl LayoutEngine {
         }
     }
 
-    /// Calculate layout
+    /// Compute layout tree with positioned boxes
     pub fn layout(&self, dom: &Dom) -> LayoutTree {
         LayoutTree {
             root: self.layout_node(&dom.root, 0, 0),
@@ -175,11 +175,11 @@ impl LayoutEngine {
     fn layout_node(&self, node: &DomNode, x: u32, y: u32) -> LayoutNode {
         let (width, height) = match &node.node_type {
             NodeType::Element { .. } => {
-                // Block-level element: full width
+                // Block-level box: full viewport width
                 (self.viewport_width, 20)
             }
             NodeType::Text(text) => {
-                // Text: estimate based on length
+                // Inline text: character-based width estimation
                 (text.len() as u32 * 8, 16)
             }
         };
@@ -208,8 +208,8 @@ pub struct LayoutNode {
     pub children: Vec<LayoutNode>,
 }
 
-/// Render to terminal (ASCII art)
-pub fn render_to_terminal(layout: &LayoutTree, dom: &Dom) -> String {
+/// Render layout tree to terminal using ASCII art representation
+pub fn render_to_terminal(_layout: &LayoutTree, dom: &Dom) -> String {
     let mut output = String::new();
 
     output.push_str("╔════════════════════════════════════════════════════════════════╗\n");

@@ -34,9 +34,9 @@ avx-gpu-compiler = { path = "avx-gpu-compiler", version = "0.1.0" }
 avx-gpu-runtime = { path = "avx-gpu-runtime", version = "0.1.0" }
 
 # External dependencies
-serde = { version = "1.0", features = ["derive"] }
-thiserror = "2.0"
-tracing = "0.1"
+avila-serde = { version = "0.2.0", path = "../avila-serde" }
+avila-error = { version = "0.2.0", path = "../avila-error" }
+avila-tracing = { version = "0.1.0", path = "../avila-tracing" }
 
 [profile.release]
 opt-level = 3

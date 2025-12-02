@@ -1,0 +1,21 @@
+[package]
+name = "avila-copilot-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Core orchestration layer for Avila Copilot"
+
+[dependencies]
+avila-async = { workspace = true }
+avila-copilot-model-storage = { workspace = true }
+avila-copilot-tokenizer = { workspace = true }
+avila-copilot-context = { workspace = true }
+avila-copilot-inference = { workspace = true }
+avila-copilot-intelligence = { workspace = true }
+serde = { version = "1.0", features = ["derive"] }
+num_cpus = "1.16"
+toml = "0.8"
+
+[dev-dependencies]
+tokio = { version = "1", features = ["full"] }

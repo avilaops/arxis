@@ -342,7 +342,7 @@ impl Optics {
         let mut labels = Array1::from_elem(ordering.len(), -1);
         let mut cluster_id = 0;
 
-        // Simple steep down/up detection for cluster extraction
+        // Steep area detection algorithm for cluster extraction
         let mut in_cluster = false;
         let mut current_min = f64::INFINITY;
 

@@ -1,0 +1,134 @@
+# Métricas de Produtividade e Rentabilidade AVX
+
+# Métricas de Produtividade
+productivity:
+  lines_per_hour:
+    target: 1000
+    measure: "Total lines committed / hours worked"
+    alert_below: 500
+
+  commits_per_day:
+    target: 50
+    measure: "Git commits across all machines"
+    alert_below: 20
+
+  crates_per_week:
+    target: 2
+    measure: "New publishable crates"
+    alert_below: 1
+
+  pr_merge_rate:
+    target: 0.95
+    measure: "Approved PRs / Total PRs"
+    alert_below: 0.80
+
+# Métricas de Qualidade
+quality:
+  test_coverage:
+    target: 0.80
+    measure: "Lines covered / Total lines"
+    alert_below: 0.60
+
+  compilation_success:
+    target: 0.95
+    measure: "Successful builds / Total builds"
+    alert_below: 0.85
+
+  clippy_warnings:
+    target: 0
+    measure: "Clippy warnings per 1000 lines"
+    alert_above: 5
+
+  benchmark_regression:
+    target: 0
+    measure: "Performance degradation %"
+    alert_above: 5
+
+# Métricas de Rentabilidade
+profitability:
+  cost_per_line:
+    formula: "Total OpEx / Lines produced"
+    target_usd: 0.01
+    includes:
+      - electricity
+      - internet
+      - hardware_depreciation
+      - licenses
+
+  roi_copilot:
+    formula: "(Value generated - Copilot cost) / Copilot cost"
+    target_multiplier: 10
+    copilot_cost_month_usd: 20
+
+  ip_value_growth:
+    measure: "Estimated IP value increase per month"
+    target_usd: 50000
+    factors:
+      - patents_filed
+      - crates_published
+      - papers_submitted
+      - github_stars
+
+# Métricas para NASA/Vale do Silício
+strategic:
+  scientific_papers:
+    target_per_year: 4
+    venues:
+      - RustConf
+      - NeurIPS
+      - NASA NTRS
+      - ArXiv
+
+  reproducibility_score:
+    target: 1.0
+    measure: "% of experiments fully reproducible"
+    critical: true
+
+  benchmark_superiority:
+    target: 1.2
+    measure: "Performance vs best competitor"
+    domains:
+      - clustering
+      - compression
+      - tokenization
+
+  citation_count:
+    target_per_year: 10
+    measure: "Academic citations + tech blog mentions"
+
+  github_engagement:
+    stars_target: 1000
+    forks_target: 100
+    contributors_target: 20
+
+# Análise de Copilots
+copilot_analysis:
+  instruction_adherence:
+    target: 0.90
+    formula: "Semantic similarity prompt/response"
+
+  code_correctness:
+    target: 0.95
+    formula: "Compilable code / Total code blocks"
+
+  novelty_score:
+    target: 0.60
+    formula: "Unique solutions / Total solutions"
+
+  consistency:
+    target: 0.85
+    formula: "1 - std(pairwise_similarity)"
+
+# Alertas
+alerts:
+  productivity_drop:
+    threshold: 0.20
+    action: "Analyze copilot logs + human intervention"
+
+  quality_decline:
+    threshold: 0.15
+    action: "Review recent changes + retrain prompts"
+
+  cost_spike:
+    threshold: 0.30
+    action: "Optimize resource usage"

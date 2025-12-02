@@ -204,7 +204,7 @@ impl Default for LouvainClustering {
     }
 }
 
-/// Label Propagation for fast community detection
+/// Label Propagation for semi-supervised community detection
 pub struct LabelPropagation {
     max_iterations: usize,
 }
@@ -277,7 +277,7 @@ impl Default for LabelPropagation {
     }
 }
 
-/// Connected components (simple but useful baseline)
+/// Connected components via depth-first graph traversal
 pub fn connected_components(graph: &Graph) -> CommunityResult {
     let mut labels = vec![usize::MAX; graph.n_nodes];
     let mut component_id = 0;

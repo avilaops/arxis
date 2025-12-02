@@ -144,6 +144,99 @@ pub const fn is_zero1024(a: &[u64; 16]) -> bool {
     acc == 0
 }
 
+#[inline]
+pub const fn gt1024(a: &[u64; 16], b: &[u64; 16]) -> bool {
+    lt1024(b, a)
+}
+
+#[inline]
+pub const fn le1024(a: &[u64; 16], b: &[u64; 16]) -> bool {
+    !gt1024(a, b)
+}
+
+#[inline]
+pub const fn ge1024(a: &[u64; 16], b: &[u64; 16]) -> bool {
+    !lt1024(a, b)
+}
+
+/// Leading zeros
+#[inline]
+pub const fn leading_zeros1024(a: &[u64; 16]) -> u32 {
+    let mut i = 15;
+    loop {
+        if a[i] != 0 {
+            return a[i].leading_zeros() + ((15 - i) as u32) * 64;
+        }
+        if i == 0 {
+            break;
+        }
+        i -= 1;
+    }
+    1024
+}
+
+/// Multiplicação U1024 × U1024 → U2048
+pub fn mul1024x1024(a: &[u64; 16], b: &[u64; 16]) -> [u64; 32] {
+    let mut result = [0u64; 32];
+    for i in 0..16 {
+        let mut carry = 0u64;
+        for j in 0..16 {
+            let (lo, hi) = mul_wide(a[i], b[j]);
+            let (sum, c1) = adc(result[i + j], lo, 0);
+            result[i + j] = sum;
+            let (sum2, c2) = adc(result[i + j + 1], hi, c1);
+            result[i + j + 1] = sum2;
+            carry = c2;
+        }
+        if carry != 0 && i + 16 < 32 {
+            let mut k = i + 16;
+            while carry != 0 && k < 32 {
+                let (sum, c) = result[k].overflowing_add(carry);
+                result[k] = sum;
+                carry = c as u64;
+                k += 1;
+            }
+        }
+    }
+    result
+}
+
+/// Divisão U1024 (algoritmo long division)
+pub fn div1024(a: &[u64; 16], b: &[u64; 16]) -> ([u64; 16], [u64; 16]) {
+    if is_zero1024(b) {
+        return ([0; 16], *a);
+    }
+    if lt1024(a, b) {
+        return ([0; 16], *a);
+    }
+    if eq1024(a, b) {
+        let mut one = [0u64; 16];
+        one[0] = 1;
+        return (one, [0; 16]);
+    }
+
+    let mut quotient = [0u64; 16];
+    let mut remainder = [0u64; 16];
+
+    for i in (0..1024).rev() {
+        remainder = shl1024(&remainder, 1);
+        let limb_idx = i / 64;
+        let bit_idx = i % 64;
+        if (a[limb_idx] >> bit_idx) & 1 == 1 {
+            remainder[0] |= 1;
+        }
+        if ge1024(&remainder, b) {
+            let (new_remainder, _) = sub1024(&remainder, b);
+            remainder = new_remainder;
+            let q_limb = i / 64;
+            let q_bit = i % 64;
+            quotient[q_limb] |= 1u64 << q_bit;
+        }
+    }
+
+    (quotient, remainder)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

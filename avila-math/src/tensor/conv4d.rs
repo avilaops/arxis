@@ -8,7 +8,8 @@
 ///
 /// Formato de tensores: [batch, channels, dim1, dim2, dim3, dim4]
 use crate::tensor::Tensor;
-use rayon::prelude::*;
+// Parallel processing using avila-parallel (sequential for now)
+// use avila_parallel::prelude::*;
 
 pub type Tensor4D = Tensor<4>;
 pub type Tensor5D = Tensor<5>;
@@ -147,7 +148,7 @@ impl Conv4DLayer {
 
         // Inicializa com distribuição uniforme [-scale, scale]
         for i in 0..self.weights.data.len() {
-            self.weights.data[i] = (rand::random::<f64>() * 2.0 - 1.0) * scale;
+            self.weights.data[i] = (avila_rand::random::<f64>() * 2.0 - 1.0) * scale;
         }
     }
 
@@ -161,7 +162,7 @@ impl Conv4DLayer {
         let scale = (2.0 / fan_in as f64).sqrt();
 
         for i in 0..self.weights.data.len() {
-            self.weights.data[i] = rand::random::<f64>() * scale;
+            self.weights.data[i] = avila_rand::random::<f64>() * scale;
         }
     }
 
@@ -226,7 +227,7 @@ impl Conv4DLayer {
 
         // Calcula gradientes em paralelo por batch
         let grad_results: Vec<_> = (0..batch)
-            .into_par_iter()
+            .into_iter()
             .map(|b| {
                 conv4d_backward_single_batch(
                     input,
@@ -393,7 +394,7 @@ pub fn conv4d(
 
     // Convolução paralela por batch
     let results: Vec<_> = (0..batch)
-        .into_par_iter()
+        .into_iter()
         .map(|b| {
             conv4d_single_batch(
                 input,

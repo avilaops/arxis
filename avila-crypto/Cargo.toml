@@ -1,0 +1,15 @@
+[package]
+name = "avila-crypto"
+version = "0.1.0"
+edition = "2021"
+authors = ["Ávila Engineering Team"]
+description = "🔐 Sovereign cryptography - Zero compromises, maximum security"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+# ZERO EXTERNAL DEPENDENCIES - Everything implemented from scratch
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1

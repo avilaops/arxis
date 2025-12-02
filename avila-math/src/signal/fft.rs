@@ -6,7 +6,7 @@
 //!
 //! ```
 //! use avila_math::signal::fft::{fft_1d, ifft_1d};
-//! use num_complex::Complex64;
+//! use avila_fft::num_complex::Complex64;
 //!
 //! let signal = vec![
 //!     Complex64::new(1.0, 0.0),
@@ -19,33 +19,16 @@
 //! let reconstructed = ifft_1d(&spectrum);
 //! ```
 
-use num_complex::Complex64;
-use rustfft::FftPlanner;
+use avila_fft::num_complex::Complex64;
 
 /// 1D FFT
 pub fn fft_1d(input: &[Complex64]) -> Vec<Complex64> {
-    let mut planner = FftPlanner::<f64>::new();
-    let fft = planner.plan_fft_forward(input.len());
-
-    let mut buffer = input.to_vec();
-    fft.process(&mut buffer);
-
-    buffer
+    avila_fft::fft(input)
 }
 
 /// 1D Inverse FFT
 pub fn ifft_1d(input: &[Complex64]) -> Vec<Complex64> {
-    let mut planner = FftPlanner::<f64>::new();
-    let ifft = planner.plan_fft_inverse(input.len());
-
-    let mut buffer = input.to_vec();
-    ifft.process(&mut buffer);
-
-    // Normalize
-    let scale = 1.0 / (input.len() as f64);
-    buffer.iter_mut().for_each(|x| *x *= scale);
-
-    buffer
+    avila_fft::ifft(input)
 }
 
 /// 2D FFT (row-column algorithm)
@@ -219,7 +202,7 @@ pub fn ifft_3d(input: &[Vec<Vec<Complex64>>]) -> Vec<Vec<Vec<Complex64>>> {
 ///
 /// ```
 /// use avila_math::signal::fft::fft_4d;
-/// use num_complex::Complex64;
+/// use avila_fft::num_complex::Complex64;
 ///
 /// // Create 4D signal (e.g., video: time, channels, height, width)
 /// let signal = vec![

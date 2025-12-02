@@ -29,34 +29,32 @@ path = "src/lib.rs"
 [features]
 default = ["prometheus", "tracing"]
 prometheus = ["dep:prometheus"]
-tracing = ["dep:tracing", "dep:tracing-subscriber", "dep:opentelemetry"]
+tracing = ["avila-tracing", "tracing-subscriber", "opentelemetry"]
 full = ["prometheus", "tracing"]
 
 [dependencies]
 # Async runtime
-tokio = { version = "1", features = ["full"] }
+avila-async = { version = "0.5.0", path = "../avila-async" }
 
 # HTTP server
-axum = "0.7"
-tower = "0.5"
+avila-web = { version = "0.1.0", path = "../avila-web" }
 
 # Prometheus metrics
 prometheus = { version = "0.13", optional = true }
 
 # Distributed tracing
-tracing = { version = "0.1", optional = true }
+avila-tracing = { version = "0.1.0", path = "../avila-tracing", optional = true }
 tracing-subscriber = { version = "0.3", features = ["env-filter"], optional = true }
 opentelemetry = { version = "0.27", optional = true }
 
 # Serialization
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
+avila-serde = { version = "0.2.0", path = "../avila-serde" }
 
 # Time handling
-chrono = { version = "0.4", features = ["serde"] }
+avila-time = { version = "0.1.0", path = "../avila-time" }
 
 # Error handling
-thiserror = "2.0"
+avila-error = { version = "0.2.0", path = "../avila-error" }
 
 [dev-dependencies]
 tokio-test = "0.4"

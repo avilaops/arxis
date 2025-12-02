@@ -39,29 +39,29 @@ avila-linalg = { version = "0.1.1", path = "../avila-linalg" }
 avx-gpu = { version = "0.1.0", path = "../avx-gpu", optional = true }
 
 # N-dimensional arrays
-ndarray = { version = "0.16", features = ["rayon"] }
+avila-ndarray = { version = "0.1.0", path = "../avila-ndarray" }
 
 # Parallel processing
-rayon = "1.10"
+avila-parallel = { version = "0.4.0", path = "../avila-parallel" }
 
 # Random number generation
-rand = "0.8"
+avila-rand = { version = "0.1.0", path = "../avila-rand" }
 rand_distr = "0.4"
 
 # FFT for spectral methods
-rustfft = "6.2"
+avila-fft = { version = "0.3.0", path = "../avila-fft" }
 
 # Image output
 image = "0.25"
 
 # Serialization
-serde = { version = "1.0", features = ["derive"] }
+avila-serde = { version = "0.2.0", path = "../avila-serde" }
 
 # Error handling
-thiserror = "2.0"
+avila-error = { version = "0.2.0", path = "../avila-error" }
 
 # Complex numbers
-num-complex = "0.4"
+avila-fft = { version = "0.3.0", path = "../avila-fft" }
 
 [dev-dependencies]
 criterion = "0.5"

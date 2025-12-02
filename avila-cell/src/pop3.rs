@@ -9,13 +9,13 @@ pub struct Pop3Client {
 }
 
 impl Pop3Client {
-    /// Conecta a servidor POP3
+    /// Connects to POP3 server
     pub async fn connect(server: NetworkAddress) -> Result<Self> {
         let client = TcpClient::connect(server).await?;
         Ok(Self { client })
     }
 
-    /// Autenticação
+    /// Authentication
     pub async fn login(&mut self, username: &str, password: &str) -> Result<()> {
         // USER
         let cmd = format!("USER {}\r\n", username);
@@ -30,25 +30,50 @@ impl Pop3Client {
         Ok(())
     }
 
-    /// Lista mensagens
+    /// Lists messages
     pub async fn list(&mut self) -> Result<Vec<(u32, usize)>> {
         self.client.send(b"LIST\r\n").await?;
-        self.expect_ok().await?;
+        let response = self.expect_ok().await?;
 
-        // TODO: Parse lista de mensagens
-        Ok(Vec::new())
+        let mut messages = Vec::new();
+        for line in response.lines().skip(1) {
+            if line == "." {
+                break;
+            }
+            let parts: Vec<&str> = line.split_whitespace().collect();
+            if parts.len() >= 2 {
+                if let (Ok(id), Ok(size)) = (parts[0].parse(), parts[1].parse()) {
+                    messages.push((id, size));
+                }
+            }
+        }
+        Ok(messages)
     }
 
-    /// Recupera mensagem
+    /// Retrieves message
     pub async fn retrieve(&mut self, message_id: u32) -> Result<String> {
         let cmd = format!("RETR {}\r\n", message_id);
         self.client.send(cmd.as_bytes()).await?;
+        self.expect_ok().await?;
 
-        // TODO: Ler mensagem completa até "."
-        Ok(String::new())
+        let mut message = String::new();
+        let mut buffer = vec![0u8; 4096];
+
+        loop {
+            let n = self.client.receive(&mut buffer).await?;
+            let chunk = String::from_utf8_lossy(&buffer[..n]);
+            message.push_str(&chunk);
+
+            if message.ends_with("\r\n.\r\n") {
+                message.truncate(message.len() - 5);
+                break;
+            }
+        }
+
+        Ok(message)
     }
 
-    /// Deleta mensagem
+    /// Deletes message
     pub async fn delete(&mut self, message_id: u32) -> Result<()> {
         let cmd = format!("DELE {}\r\n", message_id);
         self.client.send(cmd.as_bytes()).await?;
@@ -56,13 +81,13 @@ impl Pop3Client {
         Ok(())
     }
 
-    /// Fecha conexão
+    /// Closes connection
     pub async fn quit(&mut self) -> Result<()> {
         self.client.send(b"QUIT\r\n").await?;
         Ok(())
     }
 
-    /// Espera resposta +OK
+    /// Expects +OK response
     async fn expect_ok(&mut self) -> Result<String> {
         let mut buffer = vec![0u8; 1024];
         let n = self.client.receive(&mut buffer).await?;

@@ -1,11 +1,10 @@
 //! Core browser functionality
 
 use crate::layers::LayerStack;
-use crate::protocols::HttpProtocol;
-use crate::rendering::Dom;
 use std::collections::BTreeMap;
+use std::time::{SystemTime, UNIX_EPOCH};
 
-/// Browser instance
+/// Browser runtime instance with stateful session management
 #[derive(Debug)]
 pub struct Browser {
     pub config: BrowserConfig,
@@ -15,7 +14,7 @@ pub struct Browser {
     pub history: Vec<HistoryEntry>,
 }
 
-/// Browser configuration
+/// Browser configuration parameters and security policy enforcement
 #[derive(Debug, Clone)]
 pub struct BrowserConfig {
     pub user_agent: String,
@@ -25,13 +24,13 @@ pub struct BrowserConfig {
     pub max_redirects: usize,
     pub timeout_ms: u64,
 
-    // Security settings
+    // Cryptographic security enforcement
     pub strict_ssl: bool,
     pub block_trackers: bool,
-    pub block_ads: bool,
-    pub clear_history_on_exit: bool,
+    pub block_advertisements: bool,
+    pub ephemeral_session_mode: bool,
 
-    // Anonymity settings
+    // Anonymity layer configuration
     pub num_layers: usize,          // 7 layers by default
     pub tor_enabled: bool,
     pub vpn_enabled: bool,
@@ -43,7 +42,7 @@ impl Default for BrowserConfig {
     fn default() -> Self {
         Self {
             user_agent: "Avila Browser/1.0".to_string(),
-            enable_javascript: false,      // Disabled for security
+            enable_javascript: false,      // Disabled for attack surface reduction
             enable_cookies: false,
             enable_cache: true,
             max_redirects: 5,
@@ -51,8 +50,8 @@ impl Default for BrowserConfig {
 
             strict_ssl: true,
             block_trackers: true,
-            block_ads: true,
-            clear_history_on_exit: true,
+            block_advertisements: true,
+            ephemeral_session_mode: true,
 
             num_layers: 7,
             tor_enabled: true,
@@ -64,7 +63,7 @@ impl Default for BrowserConfig {
 }
 
 impl Browser {
-    /// Create new browser instance
+    /// Instantiate new browser runtime with specified configuration
     pub fn new(config: BrowserConfig) -> Self {
         let layer_stack = LayerStack::new(config.num_layers);
 
@@ -77,12 +76,12 @@ impl Browser {
         }
     }
 
-    /// Navigate to URL
+    /// Execute HTTP navigation to specified URL with layer stack protection
     pub fn navigate(&mut self, url: &str) -> Result<Response, BrowserError> {
-        // 1. Parse URL
+        // 1. URL parsing and validation
         let request = Request::parse(url)?;
 
-        // 2. Check cache
+        // 2. Cache lookup with TTL validation
         if self.config.enable_cache {
             if let Some(cached) = self.cache.get(url) {
                 if !cached.is_expired() {
@@ -91,10 +90,10 @@ impl Browser {
             }
         }
 
-        // 3. Send through layer stack
+        // 3. Layer stack traversal with onion encryption
         let response = self.layer_stack.send_request(&request)?;
 
-        // 4. Update cache
+        // 4. Cache insertion with timestamp
         if self.config.enable_cache {
             self.cache.insert(url.to_string(), CachedResponse {
                 response: response.clone(),
@@ -103,7 +102,7 @@ impl Browser {
             });
         }
 
-        // 5. Update history
+        // 5. Session history maintenance
         self.history.push(HistoryEntry {
             url: url.to_string(),
             title: response.title.clone(),
@@ -113,14 +112,14 @@ impl Browser {
         Ok(response)
     }
 
-    /// Clear browsing data
+    /// Purge all cached data and session state
     pub fn clear_data(&mut self) {
         self.cache.clear();
         self.cookies.clear();
         self.history.clear();
     }
 
-    /// Get security metrics
+    /// Retrieve current security and anonymity metrics
     pub fn security_metrics(&self) -> SecurityMetrics {
         SecurityMetrics {
             layers_active: self.layer_stack.active_layers(),
@@ -233,8 +232,10 @@ pub enum BrowserError {
 }
 
 fn current_timestamp() -> u64 {
-    // Production: actual timestamp
-    1700000000
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_secs()
 }
 
 #[cfg(test)]

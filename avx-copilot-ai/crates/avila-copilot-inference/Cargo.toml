@@ -1,0 +1,24 @@
+[package]
+name = "avila-copilot-inference"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Layer 4: ML inference engine with <50ms latency for Avila Copilot"
+
+[dependencies]
+avila-ml = { workspace = true }
+avila-async = { workspace = true }
+avila-math = { workspace = true }
+avila-linalg = { workspace = true }
+avila-copilot-model-storage = { workspace = true }
+avila-copilot-tokenizer = { workspace = true }
+ndarray = "0.17"
+
+[dev-dependencies]
+criterion = "0.5"
+tokio = { version = "1", features = ["full"] }
+
+[[bench]]
+name = "inference_bench"
+harness = false

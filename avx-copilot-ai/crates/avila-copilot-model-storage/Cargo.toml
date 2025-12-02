@@ -1,0 +1,17 @@
+[package]
+name = "avila-copilot-model-storage"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Layer 1: Model storage with compression and caching for Avila Copilot"
+
+[dependencies]
+avila-compress = { workspace = true }
+avila-crypto = { workspace = true }
+avila-error = { workspace = true }
+avila-serde = { workspace = true }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["full"] }
+tempfile = "3"

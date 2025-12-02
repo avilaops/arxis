@@ -116,7 +116,7 @@ fn main() -> avila_clustering::Result<()> {
     println!("{}", "-".repeat(50));
     println!("{:<20} {:<15.4} {:<15.4}", "K-Means", silhouette, davies_bouldin);
 
-    // Best practices recommendation
+    // Clustering quality analysis
     println!("\n=== Recommendations ===");
     println!("Based on validation metrics:");
     if silhouette > 0.5 {

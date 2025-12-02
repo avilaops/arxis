@@ -1,0 +1,123 @@
+{
+  "name": "avila-copilot",
+  "displayName": "Avila Copilot",
+  "description": "AI-powered code assistant - superior to GitHub Copilot, 100% local, zero external dependencies",
+  "version": "0.1.0",
+  "publisher": "avila",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Machine Learning",
+    "Snippets",
+    "Other"
+  ],
+  "keywords": [
+    "ai",
+    "copilot",
+    "code-completion",
+    "machine-learning",
+    "local"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "avila-copilot.enable",
+        "title": "Avila Copilot: Enable"
+      },
+      {
+        "command": "avila-copilot.disable",
+        "title": "Avila Copilot: Disable"
+      },
+      {
+        "command": "avila-copilot.generateDocs",
+        "title": "Avila Copilot: Generate Documentation"
+      },
+      {
+        "command": "avila-copilot.generateTests",
+        "title": "Avila Copilot: Generate Tests"
+      },
+      {
+        "command": "avila-copilot.refactor",
+        "title": "Avila Copilot: Suggest Refactorings"
+      },
+      {
+        "command": "avila-copilot.detectBugs",
+        "title": "Avila Copilot: Detect Bugs"
+      }
+    ],
+    "configuration": {
+      "title": "Avila Copilot",
+      "properties": {
+        "avilacopilot.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable Avila Copilot"
+        },
+        "avilacopilot.maxLatencyMs": {
+          "type": "number",
+          "default": 50,
+          "description": "Maximum acceptable latency in milliseconds"
+        },
+        "avilacopilot.autoComplete": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable automatic code completion"
+        },
+        "avilacopilot.bugDetection": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable automatic bug detection"
+        },
+        "avilacopilot.showInlineCompletions": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show inline completions as you type"
+        },
+        "avilacopilot.serverPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to Avila Copilot LSP server binary"
+        }
+      }
+    },
+    "keybindings": [
+      {
+        "command": "avila-copilot.generateDocs",
+        "key": "ctrl+shift+d",
+        "mac": "cmd+shift+d",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "avila-copilot.generateTests",
+        "key": "ctrl+shift+t",
+        "mac": "cmd+shift+t",
+        "when": "editorTextFocus"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "echo \"Tests not implemented yet\""
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^20.x",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  }
+}

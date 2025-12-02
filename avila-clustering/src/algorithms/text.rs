@@ -176,7 +176,7 @@ impl TopicModeling {
 
         let tfidf = vectorizer.fit_transform(documents)?;
 
-        // Cluster documents (simple K-Means)
+        // Cluster documents using K-Means
         let labels = self.cluster_documents(&tfidf)?;
 
         // Extract top words per topic
@@ -190,7 +190,7 @@ impl TopicModeling {
     }
 
     fn cluster_documents(&self, tfidf: &Array2<f64>) -> Result<Vec<usize>> {
-        // Simple K-Means clustering
+        // K-Means iterative optimization on TF-IDF vectors
         let n_docs = tfidf.nrows();
         let n_features = tfidf.ncols();
 

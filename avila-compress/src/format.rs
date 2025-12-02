@@ -316,6 +316,7 @@ fn xxhash64(data: &[u8]) -> u64 {
     const PRIME1: u64 = 0x9E3779B185EBCA87;
     const PRIME2: u64 = 0xC2B2AE3D27D4EB4F;
     const PRIME3: u64 = 0x165667B19E3779F9;
+    #[allow(dead_code)]
     const PRIME4: u64 = 0x85EBCA77C2B2AE63;
     const PRIME5: u64 = 0x27D4EB2F165667C5;
 

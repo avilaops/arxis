@@ -1,6 +1,6 @@
 [package]
 name = "avila-compress"
-version = "0.1.0"
+version = "0.3.0"
 edition = "2021"
 authors = [
     "Nícolas Ávila <nicolas@avila.inc>",
@@ -11,7 +11,6 @@ description = "Native compression library (LZ4, Zstd) for Avila ecosystem"
 repository = "https://github.com/avilaops/arxis"
 homepage = "https://avila.inc"
 documentation = "https://docs.rs/avila-compress"
-readme = "README.md"
 keywords = [
     "compression",
     "lz4",
@@ -27,29 +26,14 @@ name = "avila_compress"
 path = "src/lib.rs"
 
 [features]
-default = ["lz4", "zstd"]
-lz4 = ["dep:lz4"]
-zstd = ["dep:zstd"]
-full = ["lz4", "zstd"]
+default = []
+# Pure Rust implementation - no features needed
 
 [dependencies]
-# LZ4 compression (fast, moderate ratio)
-lz4 = { version = "1.28", optional = true }
-
-# Zstd compression (slower, better ratio)
-zstd = { version = "0.13", optional = true }
-
-# Async support
-tokio = { version = "1", features = ["io-util"], optional = true }
-futures = { version = "0.3", optional = true }
-
-# Error handling
-thiserror = "2.0"
+# Pure Rust implementation - no external dependencies!
 
 [dev-dependencies]
-tokio = { version = "1", features = ["full"] }
-criterion = "0.5"
-rand = "0.8"
+# No dev dependencies for minimal build
 
 # [[bench]]
 # name = "compression_bench"

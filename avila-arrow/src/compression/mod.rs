@@ -124,29 +124,29 @@ pub fn auto_codec(data: &[u8]) -> Codec {
     if data.len() < 64 {
         return Codec::None;
     }
-    
+
     // Sample data to determine best codec
     let sample_size = data.len().min(1024);
     let sample = &data[..sample_size];
-    
+
     let unique_count = count_unique(sample);
     let unique_ratio = unique_count as f64 / sample_size as f64;
-    
+
     // Check for very repeated values (RLE) - less than 10% unique
     if unique_ratio < 0.1 {
         return Codec::Rle;
     }
-    
+
     // Check for sequential/sorted data (Delta)
     if is_mostly_sequential(sample) {
         return Codec::Delta;
     }
-    
+
     // Check for low cardinality (Dictionary) - 10-25% unique
     if unique_ratio < 0.25 {
         return Codec::Dictionary;
     }
-    
+
     // Default to bit-packing for integers
     Codec::BitPack
 }
@@ -167,7 +167,7 @@ fn is_mostly_sequential(data: &[u8]) -> bool {
     if data.len() < 2 {
         return false;
     }
-    
+
     let mut sequential = 0;
     for i in 1..data.len() {
         let diff = (data[i] as i16 - data[i-1] as i16).abs();
@@ -175,7 +175,7 @@ fn is_mostly_sequential(data: &[u8]) -> bool {
             sequential += 1;
         }
     }
-    
+
     sequential > data.len() * 3 / 4
 }
 

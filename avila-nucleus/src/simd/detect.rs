@@ -110,9 +110,12 @@ pub fn execution_path() -> ExecutionPath {
     cpu_features().best_path()
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "std"))]
 mod tests {
     use super::*;
+
+    extern crate std;
+    use std::println;
 
     #[test]
     fn test_cpu_features_detect() {

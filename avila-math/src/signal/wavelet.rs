@@ -15,7 +15,7 @@
 //! - DWT for multi-scale noise reduction
 //! - Time-frequency localization of merger events
 
-use num_complex::Complex;
+use avila_fft::num_complex::Complex;
 use std::f64::consts::PI;
 
 /// Continuous Wavelet Transform (CWT) usando wavelet Morlet
@@ -73,7 +73,7 @@ fn morlet_wavelet(t: f64, scale: f64) -> Complex<f64> {
     let envelope = (-t * t / 2.0).exp();
     let oscillation = Complex::new(0.0, omega0 * t).exp();
 
-    norm * envelope * oscillation
+    Complex::new(norm * envelope, 0.0) * oscillation
 }
 
 /// Discrete Wavelet Transform (DWT) usando Daubechies-4

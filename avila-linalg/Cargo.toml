@@ -15,7 +15,7 @@ categories = ["mathematics", "science", "algorithms"]
 [dependencies]
 # Core - apenas o essencial
 num-traits = "0.2"  # Traits numéricos genéricos
-rayon = { version = "1.10", optional = true }  # Paralelização opcional
+avila-parallel = { version = "0.4.0", path = "../avila-parallel", optional = true }
 
 [dev-dependencies]
 # criterion = "0.5"  # TODO: adicionar quando tivermos benchmarks
@@ -23,7 +23,7 @@ rayon = { version = "1.10", optional = true }  # Paralelização opcional
 
 [features]
 default = []
-parallel = ["rayon"]  # Operações paralelas
+parallel = ["dep:avila-parallel"]  # Operações paralelas
 std = []              # Suporte std (default é no_std friendly)
 
 # [[bench]]

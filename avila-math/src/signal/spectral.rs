@@ -3,7 +3,7 @@
 //! Power spectral density, spectrogram, and frequency domain analysis.
 
 use super::fft::fft_1d;
-use num_complex::Complex64;
+use avila_fft::num_complex::Complex64;
 
 /// Calculate Power Spectral Density (PSD)
 ///
@@ -81,7 +81,7 @@ pub fn cross_correlation(signal1: &[Complex64], signal2: &[Complex64]) -> Vec<Co
     let product: Vec<Complex64> = fft1
         .iter()
         .zip(fft2.iter())
-        .map(|(a, b)| a * b.conj())
+        .map(|(a, b)| *a * b.conj())
         .collect();
 
     // Inverse FFT

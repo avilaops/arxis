@@ -10,12 +10,11 @@ homepage = "https://avila.inc"
 keywords = ["time", "date", "datetime", "avila", "avl"]
 
 [dependencies]
-# Zero dependências - Rust std apenas
-serde = { version = "1.0", features = ["derive"], optional = true }
+avila-serde = { version = "0.2.0", path = "../avila-serde", optional = true }
 
 [features]
 default = []
-serde = ["dep:serde"]
+serde = ["dep:avila-serde"]
 
 [lib]
 name = "avila_time"

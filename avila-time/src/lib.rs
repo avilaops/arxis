@@ -5,12 +5,8 @@
 use std::fmt;
 use std::time::{SystemTime, UNIX_EPOCH, Duration};
 
-#[cfg(feature = "serde")]
-use serde::{Serialize, Deserialize};
-
 /// DateTime representation (UTC)
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct DateTime {
     timestamp: u64, // Unix timestamp (seconds since epoch)
     nanos: u32,     // Nanoseconds component
@@ -216,5 +212,67 @@ mod tests {
         let dt = DateTime::from_timestamp(1000, 0);
         let dt2 = dt.add(Duration::from_secs(500));
         assert_eq!(dt2.timestamp(), 1500);
+    }
+}
+
+// Implementação de Serialize/Deserialize para avila-serde
+#[cfg(feature = "serde")]
+impl avila_serde::Serialize for DateTime {
+    fn to_value(&self) -> avila_serde::Value {
+        // Serializa como string ISO 8601
+        avila_serde::Value::String(self.to_rfc3339())
+    }
+}
+
+#[cfg(feature = "serde")]
+impl avila_serde::Deserialize for DateTime {
+    fn from_value(value: avila_serde::Value) -> Result<Self, avila_serde::Error> {
+        match value {
+            avila_serde::Value::String(s) => {
+                // Parse ISO 8601: YYYY-MM-DDTHH:MM:SSZ
+                // Implementação simplificada - assume formato exato
+                if s.len() < 19 {
+                    return Err(avila_serde::Error::Parse(format!("Invalid datetime format: {}", s)));
+                }
+
+                // Extrai componentes básicos
+                let parts: Vec<&str> = s.split('T').collect();
+                if parts.len() != 2 {
+                    return Err(avila_serde::Error::Parse(format!("Invalid datetime format: {}", s)));
+                }
+
+                let date_parts: Vec<&str> = parts[0].split('-').collect();
+                let time_str = parts[1].trim_end_matches('Z');
+                let time_parts: Vec<&str> = time_str.split(':').collect();
+
+                if date_parts.len() != 3 || time_parts.len() != 3 {
+                    return Err(avila_serde::Error::Parse(format!("Invalid datetime format: {}", s)));
+                }
+
+                let year: u32 = date_parts[0].parse()
+                    .map_err(|_| avila_serde::Error::Parse(format!("Invalid year: {}", date_parts[0])))?;
+                let month: u32 = date_parts[1].parse()
+                    .map_err(|_| avila_serde::Error::Parse(format!("Invalid month: {}", date_parts[1])))?;
+                let day: u32 = date_parts[2].parse()
+                    .map_err(|_| avila_serde::Error::Parse(format!("Invalid day: {}", date_parts[2])))?;
+                let hour: u32 = time_parts[0].parse()
+                    .map_err(|_| avila_serde::Error::Parse(format!("Invalid hour: {}", time_parts[0])))?;
+                let minute: u32 = time_parts[1].parse()
+                    .map_err(|_| avila_serde::Error::Parse(format!("Invalid minute: {}", time_parts[1])))?;
+                let second: u32 = time_parts[2].parse()
+                    .map_err(|_| avila_serde::Error::Parse(format!("Invalid second: {}", time_parts[2])))?;
+
+                // Calcula timestamp Unix aproximado
+                // Fórmula simplificada - não considera anos bissextos
+                let days_since_1970 = (year - 1970) * 365 + (month - 1) * 30 + (day - 1);
+                let seconds = (days_since_1970 as u64) * 86400
+                    + (hour as u64) * 3600
+                    + (minute as u64) * 60
+                    + (second as u64);
+
+                Ok(Self::from_timestamp(seconds, 0))
+            }
+            _ => Err(avila_serde::Error::Parse("Expected string for DateTime".to_string()))
+        }
     }
 }

@@ -1,0 +1,18 @@
+[package]
+name = "avila-copilot-tokenizer"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Layer 2: Advanced tokenizer and embeddings for Avila Copilot"
+
+[dependencies]
+avila-math = { workspace = true }
+avila-error = { workspace = true }
+
+[dev-dependencies]
+criterion = "0.5"
+
+[[bench]]
+name = "tokenizer_bench"
+harness = false

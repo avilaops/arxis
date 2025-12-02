@@ -10,10 +10,10 @@ pub struct I1024(pub U1024);
 impl I1024 {
     /// Zero value
     pub const ZERO: Self = Self(U1024::ZERO);
-    
+
     /// One value
     pub const ONE: Self = Self(U1024::ONE);
-    
+
     /// Check if negative
     #[inline]
     pub fn is_negative(&self) -> bool {

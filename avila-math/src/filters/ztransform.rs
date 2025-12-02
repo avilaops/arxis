@@ -2,7 +2,7 @@
 //!
 //! The Z-transform converts discrete-time signals to the complex frequency domain.
 
-use num_complex::Complex64;
+use avila_fft::num_complex::Complex64;
 use std::f64::consts::PI;
 
 /// Z-Transform result
@@ -34,7 +34,7 @@ pub fn ztransform(signal: &[f64], n_points: usize) -> ZTransform {
         let mut h = Complex64::new(0.0, 0.0);
 
         for (n, &x_n) in signal.iter().enumerate() {
-            h += x_n * z.powf(-(n as f64));
+            h += Complex64::new(x_n, 0.0) * z.powf(-(n as f64));
         }
 
         response.push(h);
@@ -51,21 +51,19 @@ pub fn ztransform(signal: &[f64], n_points: usize) -> ZTransform {
 /// This is a simplified version for FIR systems
 pub fn inverse_ztransform(ztrans: &ZTransform) -> Vec<f64> {
     // For simplicity, use IFFT on unit circle samples
-    use rustfft::{num_complex::Complex, FftPlanner};
+    use avila_fft::num_complex::Complex;
 
     let n = ztrans.response.len();
-    let mut planner = FftPlanner::new();
-    let ifft = planner.plan_fft_inverse(n);
 
-    let mut buffer: Vec<Complex<f64>> = ztrans
+    let buffer: Vec<Complex<f64>> = ztrans
         .response
         .iter()
         .map(|&c| Complex::new(c.re, c.im))
         .collect();
 
-    ifft.process(&mut buffer);
+    let result = avila_fft::ifft(&buffer);
 
-    buffer.iter().map(|c| c.re / n as f64).collect()
+    result.iter().map(|c| c.re).collect()
 }
 
 /// Evaluate Z-transform at a specific complex point z
@@ -73,7 +71,7 @@ pub fn evaluate_at(signal: &[f64], z: Complex64) -> Complex64 {
     signal
         .iter()
         .enumerate()
-        .map(|(n, &x_n)| x_n * z.powf(-(n as f64)))
+        .map(|(n, &x_n)| Complex64::new(x_n, 0.0) * z.powf(-(n as f64)))
         .sum()
 }
 

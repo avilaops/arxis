@@ -1,20 +1,20 @@
 //! # Avila Browser
 //!
-//! Ultra-secure web browser with 7-layer anonymity protection
+//! High-assurance web browser implementing multi-layer onion routing architecture
 //!
-//! ## Threat Model
+//! ## Adversarial Model
 //!
-//! - **Passive Adversary**: Can observe traffic but not modify
-//! - **Active Adversary**: Can drop/modify/inject packets
-//! - **Global Adversary**: Can monitor entire network (NSA-level)
+//! - **Passive Adversary**: Observes network traffic without modification capabilities
+//! - **Active Adversary**: Possesses packet manipulation, injection, and dropping capabilities
+//! - **Global Adversary**: Exhibits omniscient network monitoring capabilities (nation-state level)
 //!
-//! ## Security Properties
+//! ## Cryptographic Security Properties
 //!
-//! - **Anonymity**: Unlinkability of sender/receiver
-//! - **Unlinkability**: Cannot correlate multiple sessions
-//! - **Unobservability**: Cannot detect communication is happening
-//! - **Forward Secrecy**: Past sessions safe if keys compromised
-//! - **Traffic Analysis Resistance**: Timing/volume attacks mitigated
+//! - **Sender-Receiver Anonymity**: Computational unlinkability of communicating parties
+//! - **Session Unlinkability**: Infeasibility of correlating distinct protocol sessions
+//! - **Communication Unobservability**: Statistical indistinguishability from random noise
+//! - **Perfect Forward Secrecy**: Retroactive security guarantee under key compromise
+//! - **Traffic Analysis Resistance**: Countermeasures against temporal and volumetric side-channels
 
 pub mod core;
 pub mod layers;

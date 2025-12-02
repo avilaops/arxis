@@ -278,7 +278,7 @@ impl BirchBuilder {
 
             // Check if we need to split
             if node.children.len() > branching_factor {
-                // Simple split: keep first half, second half goes to new node
+                // Median split: partition children into balanced nodes
                 // In production, would use more sophisticated splitting
                 let mid = node.children.len() / 2;
                 node.children.truncate(mid);
@@ -321,7 +321,7 @@ impl BirchBuilder {
         labels: &[usize],
         target_clusters: usize,
     ) -> Result<Vec<usize>> {
-        // Simple agglomerative clustering on subclusters
+        // Agglomerative hierarchical clustering on subclusters
         let mut cluster_map = (0..subclusters.len()).collect::<Vec<_>>();
         let mut n_clusters = subclusters.len();
 

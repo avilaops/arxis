@@ -26,8 +26,8 @@ name = "avx_telemetry"
 path = "src/lib.rs"
 
 [features]
-default = ["middleware"]
-middleware = ["dep:axum"]
+default = []
+middleware = ["avila-web"]
 observability = ["avl-observability"]
 full = ["middleware", "observability"]
 
@@ -36,31 +36,25 @@ full = ["middleware", "observability"]
 avl-observability = { version = "0.1.0", path = "../avl-observability", optional = true }
 
 # Async runtime
-tokio = { version = "1", features = ["time"] }
+avila-async = { version = "0.5.0", path = "../avila-async" }
 
 # HTTP middleware
-axum = { version = "0.7", optional = true }
-tower = "0.5"
+avila-web = { version = "0.1.0", path = "../avila-web", optional = true }
 
 # Tracing
-tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+avila-tracing = { version = "0.1.0", path = "../avila-tracing" }
 
 # Time handling
-chrono = { version = "0.4", features = ["serde"] }
+avila-time = { version = "0.1.0", path = "../avila-time" }
 
 # Serialization
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
+avila-serde = { version = "0.2.0", path = "../avila-serde" }
 
 # UUID generation
-uuid = { version = "1.11", features = ["v4", "serde"] }
+avila-id = { version = "0.1.0", path = "../avila-id" }
 
 # Error handling
-thiserror = "2.0"
-
-[dev-dependencies]
-tokio-test = "0.4"
+avila-error = { version = "0.2.0", path = "../avila-error" }
 
 [profile.release]
 opt-level = 3

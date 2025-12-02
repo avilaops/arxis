@@ -91,8 +91,8 @@ impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Data
         self.current_idx = 0;
 
         if self.shuffle {
-            use rand::seq::SliceRandom;
-            let mut rng = rand::thread_rng();
+            use rand::{thread_rng, SliceRandom};
+            let mut rng = thread_rng();
             self.indices.shuffle(&mut rng);
         }
     }

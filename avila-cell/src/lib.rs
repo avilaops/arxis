@@ -21,31 +21,41 @@
 //! Email é a forma mais fundamental de comunicação digital assíncrona.
 //! É o "DNA" da internet - simples, robusto, descentralizado.
 
-#![warn(missing_docs)]
+#![allow(missing_docs)] // TODO: Complete documentation coverage
+#![warn(clippy::all)]
 
 use avila_error::{Error, ErrorKind, Result};
-use avila_time::DateTime;
-use serde::{Serialize, Deserialize};
 
 pub mod smtp;
 pub mod pop3;
 pub mod imap;
 pub mod message;
+pub mod mime;
+pub mod encoding;
+pub mod auth;
+pub mod queue;
+pub mod template;
+pub mod dkim;
+pub mod pool;
+pub mod classifier;
+pub mod calendar;
 
-/// Versão da biblioteca
+/// Library version
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
-/// Endereço de email
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+/// Email address structure
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct EmailAddress {
     /// Parte local (antes do @)
     pub local: String,
     /// Domínio (depois do @)
     pub domain: String,
+    /// Nome de exibição opcional
+    pub display_name: Option<String>,
 }
 
 impl EmailAddress {
-    /// Cria novo endereço de email
+    /// Creates new email address
     pub fn new(email: impl AsRef<str>) -> Result<Self> {
         let email = email.as_ref();
         let parts: Vec<&str> = email.split('@').collect();
@@ -60,17 +70,32 @@ impl EmailAddress {
         Ok(Self {
             local: parts[0].to_string(),
             domain: parts[1].to_string(),
+            display_name: None,
         })
     }
 
-    /// Converte para string completa
+    /// Converts to complete string
     pub fn to_string(&self) -> String {
         format!("{}@{}", self.local, self.domain)
     }
 
-    /// Valida formato do email
+    /// Validates email format
     pub fn is_valid(&self) -> bool {
         !self.local.is_empty() && !self.domain.is_empty() && self.domain.contains('.')
+    }
+
+    /// Sets display name
+    pub fn with_name(mut self, name: impl Into<String>) -> Self {
+        self.display_name = Some(name.into());
+        self
+    }
+
+    /// Formats for RFC 5322 (with display name if present)
+    pub fn to_rfc5322(&self) -> String {
+        match &self.display_name {
+            Some(name) => format!("\"{}\" <{}@{}>", name, self.local, self.domain),
+            None => format!("{}@{}", self.local, self.domain),
+        }
     }
 }
 

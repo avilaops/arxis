@@ -88,10 +88,10 @@ pub fn silhouette_score(
     Ok(silhouette_values.iter().sum::<f64>() / n_samples as f64)
 }
 
-/// Davies-Bouldin index (internal metric, lower is better)
+/// Davies-Bouldin index (internal validation metric)
 ///
 /// Average similarity between each cluster and its most similar cluster.
-/// Lower values indicate better clustering (0 is best).
+/// Lower values indicate tighter, more separated clusters (optimal: 0).
 pub fn davies_bouldin_score(data: &ArrayView2<f64>, labels: &ArrayView1<usize>) -> Result<f64> {
     let n_samples = data.nrows();
     let n_features = data.ncols();
@@ -180,10 +180,10 @@ pub fn davies_bouldin_score(data: &ArrayView2<f64>, labels: &ArrayView1<usize>) 
     Ok(db_sum / n_clusters as f64)
 }
 
-/// Calinski-Harabasz index (internal metric, higher is better)
+/// Calinski-Harabasz index (internal validation metric)
 ///
 /// Also known as Variance Ratio Criterion.
-/// Higher values indicate better defined clusters.
+/// Higher values indicate greater inter-cluster separation and intra-cluster compactness.
 pub fn calinski_harabasz_score(data: &ArrayView2<f64>, labels: &ArrayView1<usize>) -> Result<f64> {
     let n_samples = data.nrows();
     let n_features = data.ncols();
@@ -273,7 +273,7 @@ pub fn calinski_harabasz_score(data: &ArrayView2<f64>, labels: &ArrayView1<usize
     Ok(score)
 }
 
-/// Dunn index (internal metric, higher is better)
+/// Dunn index (internal validation metric)
 pub fn dunn_index(
     data: &ArrayView2<f64>,
     labels: &ArrayView1<usize>,

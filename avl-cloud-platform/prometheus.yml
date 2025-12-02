@@ -1,0 +1,45 @@
+# Prometheus configuration for Avila Cloud
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'avila-cloud'
+    environment: 'production'
+
+scrape_configs:
+  # Avila Cloud API metrics
+  - job_name: 'avila-cloud'
+    static_configs:
+      - targets: ['avila-cloud:8080']
+    metrics_path: '/metrics'
+
+  # PostgreSQL metrics
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres:5432']
+
+  # Redis metrics
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Node exporter (se instalado)
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:9100']
+
+# Alerting rules
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+# Recording and alerting rules
+rule_files:
+  - "alert_rules.yml"

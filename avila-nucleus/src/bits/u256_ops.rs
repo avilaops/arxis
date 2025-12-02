@@ -289,6 +289,69 @@ pub const fn is_odd256(a: &[u64; 4]) -> bool {
     a[0] & 1 == 1
 }
 
+/// Divisão 256-bit: a / b → (quotient, remainder)
+///
+/// Implementa algoritmo de divisão long division
+/// Retorna (0, a) se b == 0 (divisão por zero)
+///
+/// # Exemplos
+///
+/// ```
+/// use avila_nucleus::bits::div256;
+///
+/// let a = [100, 0, 0, 0];
+/// let b = [10, 0, 0, 0];
+/// let (quotient, remainder) = div256(&a, &b);
+/// assert_eq!(quotient, [10, 0, 0, 0]);
+/// assert_eq!(remainder, [0, 0, 0, 0]);
+/// ```
+pub fn div256(a: &[u64; 4], b: &[u64; 4]) -> ([u64; 4], [u64; 4]) {
+    // Check for division by zero
+    if is_zero256(b) {
+        return ([0, 0, 0, 0], *a);
+    }
+
+    // Check if a < b (quotient is 0)
+    if lt256(a, b) {
+        return ([0, 0, 0, 0], *a);
+    }
+
+    // Check if a == b (quotient is 1)
+    if eq256(a, b) {
+        return ([1, 0, 0, 0], [0, 0, 0, 0]);
+    }
+
+    // Long division algorithm
+    let mut quotient = [0u64; 4];
+    let mut remainder = [0u64; 4];
+
+    // Process bits from high to low
+    for i in (0..256).rev() {
+        // Shift remainder left by 1
+        remainder = shl256(&remainder, 1);
+
+        // Set bit 0 of remainder to bit i of dividend
+        let limb_idx = i / 64;
+        let bit_idx = i % 64;
+        if (a[limb_idx] >> bit_idx) & 1 == 1 {
+            remainder[0] |= 1;
+        }
+
+        // If remainder >= divisor, subtract and set quotient bit
+        if ge256(&remainder, b) {
+            let (new_remainder, _) = sub256(&remainder, b);
+            remainder = new_remainder;
+
+            // Set bit i of quotient
+            let q_limb = i / 64;
+            let q_bit = i % 64;
+            quotient[q_limb] |= 1u64 << q_bit;
+        }
+    }
+
+    (quotient, remainder)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -354,11 +417,45 @@ mod tests {
     #[test]
     fn test_bit_ops() {
         assert_eq!(leading_zeros256(&[0, 0, 0, 0]), 256);
-        assert_eq!(leading_zeros256(&[1, 0, 0, 0]), 63);
-        assert_eq!(leading_zeros256(&[0, 0, 0, 1]), 192 - 64 + 63);
+        // [1, 0, 0, 0] means a[0]=1, a[3]=0 (most significant)
+        // So we have 192 zeros from a[3],a[2],a[1] and then a[0]=1 has 63 leading zeros
+        assert_eq!(leading_zeros256(&[1, 0, 0, 0]), 192 + 63);
+        // [0, 0, 0, 1] means a[3]=1 (most significant word)
+        assert_eq!(leading_zeros256(&[0, 0, 0, 1]), 63);
 
         assert_eq!(trailing_zeros256(&[0, 0, 0, 0]), 256);
         assert_eq!(trailing_zeros256(&[1, 0, 0, 0]), 0);
         assert_eq!(trailing_zeros256(&[0, 1, 0, 0]), 64);
+    }
+
+    #[test]
+    fn test_div256() {
+        // Simple division
+        let a = [100, 0, 0, 0];
+        let b = [10, 0, 0, 0];
+        let (q, r) = div256(&a, &b);
+        assert_eq!(q, [10, 0, 0, 0]);
+        assert_eq!(r, [0, 0, 0, 0]);
+
+        // Division with remainder
+        let a = [107, 0, 0, 0];
+        let b = [10, 0, 0, 0];
+        let (q, r) = div256(&a, &b);
+        assert_eq!(q, [10, 0, 0, 0]);
+        assert_eq!(r, [7, 0, 0, 0]);
+
+        // a < b
+        let a = [5, 0, 0, 0];
+        let b = [10, 0, 0, 0];
+        let (q, r) = div256(&a, &b);
+        assert_eq!(q, [0, 0, 0, 0]);
+        assert_eq!(r, [5, 0, 0, 0]);
+
+        // a == b
+        let a = [42, 0, 0, 0];
+        let b = [42, 0, 0, 0];
+        let (q, r) = div256(&a, &b);
+        assert_eq!(q, [1, 0, 0, 0]);
+        assert_eq!(r, [0, 0, 0, 0]);
     }
 }

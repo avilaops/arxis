@@ -41,27 +41,24 @@ avx-config = { version = "0.1.0", path = "../avx-config" }
 avx-events = { version = "0.1.0", path = "../avx-events" }
 
 # Async runtime
-tokio = { version = "1", features = ["full"] }
-futures = "0.3"
+avila-async = { version = "0.5.0", path = "../avila-async" }
+avila-future = { version = "0.1.0", path = "../avila-future" }
 
 # HTTP server
-axum = "0.7"
-tower = "0.5"
+avila-web = { version = "0.1.0", path = "../avila-web" }
 tower-http = { version = "0.6", features = ["full"] }
 
 # Rate limiting
 governor = { version = "0.6", optional = true }
 
 # Serialization
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
+avila-serde = { version = "0.2.0", path = "../avila-serde" }
 
 # Error handling
-thiserror = "2.0"
-anyhow = "1.0"
+avila-error = { version = "0.2.0", path = "../avila-error" }
 
 # Logging
-tracing = "0.1"
+avila-tracing = { version = "0.1.0", path = "../avila-tracing" }
 
 [dev-dependencies]
 tokio-test = "0.4"

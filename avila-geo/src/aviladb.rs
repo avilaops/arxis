@@ -35,6 +35,7 @@ use crate::geometry::{GeoPoint, GeoLine, GeoPolygon, GeoCollection};
 use crate::calc::{haversine_distance, point_in_polygon};
 
 use std::collections::HashMap;
+use avila_serde::{Value as JsonValue, json};
 
 /// Geographic document for AvilaDB storage
 ///
@@ -44,7 +45,7 @@ pub struct GeoDocument {
     pub id: String,
     pub geometry_type: GeometryType,
     pub coordinates: Vec<GeoCoord>,
-    pub properties: HashMap<String, serde_json::Value>,
+    pub properties: HashMap<String, JsonValue>,
 }
 
 /// Type of geometry stored in the document
@@ -95,53 +96,62 @@ impl GeoDocument {
     }
 
     /// Add a property
-    pub fn with_property(mut self, key: impl Into<String>, value: impl Into<serde_json::Value>) -> Self {
+    pub fn with_property(mut self, key: impl Into<String>, value: impl Into<JsonValue>) -> Self {
         self.properties.insert(key.into(), value.into());
         self
     }
 
     /// Convert to GeoJSON
-    pub fn to_geojson(&self) -> serde_json::Value {
+    pub fn to_geojson(&self) -> JsonValue {
         let geometry = match self.geometry_type {
             GeometryType::Point if self.coordinates.len() == 1 => {
-                serde_json::json!({
-                    "type": "Point",
-                    "coordinates": [self.coordinates[0].lon, self.coordinates[0].lat]
-                })
+                let mut obj = HashMap::new();
+                obj.insert("type".to_string(), JsonValue::String("Point".to_string()));
+                obj.insert("coordinates".to_string(), JsonValue::Array(vec![
+                    JsonValue::Number(self.coordinates[0].lon),
+                    JsonValue::Number(self.coordinates[0].lat)
+                ]));
+                JsonValue::Object(obj)
             }
             GeometryType::LineString => {
-                let coords: Vec<[f64; 2]> = self.coordinates
+                let coords: Vec<JsonValue> = self.coordinates
                     .iter()
-                    .map(|c| [c.lon, c.lat])
+                    .map(|c| JsonValue::Array(vec![
+                        JsonValue::Number(c.lon),
+                        JsonValue::Number(c.lat)
+                    ]))
                     .collect();
-                serde_json::json!({
-                    "type": "LineString",
-                    "coordinates": coords
-                })
+                let mut obj = HashMap::new();
+                obj.insert("type".to_string(), JsonValue::String("LineString".to_string()));
+                obj.insert("coordinates".to_string(), JsonValue::Array(coords));
+                JsonValue::Object(obj)
             }
             GeometryType::Polygon => {
-                let coords: Vec<[f64; 2]> = self.coordinates
+                let coords: Vec<JsonValue> = self.coordinates
                     .iter()
-                    .map(|c| [c.lon, c.lat])
+                    .map(|c| JsonValue::Array(vec![
+                        JsonValue::Number(c.lon),
+                        JsonValue::Number(c.lat)
+                    ]))
                     .collect();
-                serde_json::json!({
-                    "type": "Polygon",
-                    "coordinates": [coords]
-                })
+                let mut obj = HashMap::new();
+                obj.insert("type".to_string(), JsonValue::String("Polygon".to_string()));
+                obj.insert("coordinates".to_string(), JsonValue::Array(vec![JsonValue::Array(coords)]));
+                JsonValue::Object(obj)
             }
-            _ => serde_json::json!(null),
+            _ => JsonValue::Null,
         };
 
-        serde_json::json!({
-            "type": "Feature",
-            "id": self.id,
-            "geometry": geometry,
-            "properties": self.properties
-        })
+        let mut feature = HashMap::new();
+        feature.insert("type".to_string(), JsonValue::String("Feature".to_string()));
+        feature.insert("id".to_string(), JsonValue::String(self.id.clone()));
+        feature.insert("geometry".to_string(), geometry);
+        feature.insert("properties".to_string(), JsonValue::Object(self.properties.clone()));
+        JsonValue::Object(feature)
     }
 
     /// Parse from GeoJSON
-    pub fn from_geojson(value: &serde_json::Value) -> Result<Self, String> {
+    pub fn from_geojson(value: &JsonValue) -> Result<Self, String> {
         let id = value["id"]
             .as_str()
             .unwrap_or("")
@@ -252,7 +262,7 @@ pub enum QueryType {
 pub struct PropertyFilter {
     pub field: String,
     pub operator: FilterOperator,
-    pub value: serde_json::Value,
+    pub value: JsonValue,
 }
 
 /// Filter operators
@@ -357,7 +367,7 @@ impl GeoQuery {
         })
     }
 
-    fn compare_values(a: &serde_json::Value, b: &serde_json::Value, op: FilterOperator) -> bool {
+    fn compare_values(a: &JsonValue, b: &JsonValue, op: FilterOperator) -> bool {
         use FilterOperator::*;
         match op {
             Equal => a == b,

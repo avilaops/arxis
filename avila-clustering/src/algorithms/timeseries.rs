@@ -145,7 +145,7 @@ impl TimeSeriesKMeans {
                     .collect();
 
                 if !cluster_series.is_empty() {
-                    // Simple mean for non-DTW metrics
+                    // Arithmetic mean for non-DTW metrics
                     let mut new_centroid = Array1::<f64>::zeros(series_len);
                     for series in &cluster_series {
                         new_centroid = &new_centroid + &series.to_owned();

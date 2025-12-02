@@ -10,11 +10,25 @@ keywords = ["email", "server", "client", "smtp", "imap"]
 
 [dependencies]
 # avila-nucleus (excluded)
-avila-atom = { path = "../avila-atom" }
-avila-molecule = { path = "../avila-molecule" }
-avila-cell = { path = "../avila-cell" }
-avila-tissue = { path = "../avila-tissue" }
-avila-error = { path = "../avila-error" }
-avila-id = { path = "../avila-id" }
-avila-time = { path = "../avila-time" }
+avila-atom = { version = "0.7.0", path = "../avila-atom" }
+avila-molecule = { version = "0.1.0", path = "../avila-molecule" }
+avila-cell = { version = "0.4.0", path = "../avila-cell" }
+avila-tissue = { version = "0.1.0", path = "../avila-tissue" }
+avila-error = { version = "0.2.0", path = "../avila-error" }
+avila-id = { version = "0.1.0", path = "../avila-id" }
+avila-time = { version = "0.1.0", path = "../avila-time" }
+avila-async = { version = "0.5.0", path = "../avila-async" }
 tokio = { version = "1", features = ["full"] }
+
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = true
+overflow-checks = false
+incremental = false
+
+[profile.dev]
+opt-level = 1

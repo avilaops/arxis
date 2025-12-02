@@ -2,6 +2,7 @@
 
 use core::ops::{Add, Sub, Mul, Div, Rem, BitAnd, BitOr, BitXor, Not, Shl, Shr};
 use core::cmp::Ordering;
+use avila_nucleus::bits::{add512, sub512, mul512x512, div512, shl512, shr512, leading_zeros512, eq512, lt512, gt512};
 
 /// 512-bit unsigned integer (8 x u64)
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
@@ -11,82 +12,138 @@ pub struct U512(pub [u64; 8]);
 impl U512 {
     /// Zero value
     pub const ZERO: Self = Self([0; 8]);
-    
+
     /// One value
     pub const ONE: Self = Self([1, 0, 0, 0, 0, 0, 0, 0]);
-    
+
     /// Maximum value
     pub const MAX: Self = Self([u64::MAX; 8]);
-    
+
     /// Create from u64
     #[inline]
     pub const fn from_u64(value: u64) -> Self {
         Self([value, 0, 0, 0, 0, 0, 0, 0])
     }
-    
+
     /// Convert to u64 (lossy)
     #[inline]
     pub const fn to_u64(&self) -> u64 {
         self.0[0]
     }
-}
 
-// TODO: Implement full arithmetic (similar to U256)
-// For now, provide stub implementations
+    /// Count leading zeros
+    #[inline]
+    pub fn leading_zeros(&self) -> u32 {
+        leading_zeros512(&self.0)
+    }
+
+    /// Constant-time equality
+    #[inline]
+    pub fn ct_eq(&self, other: &Self) -> bool {
+        eq512(&self.0, &other.0)
+    }
+}
 
 impl Add for U512 {
     type Output = Self;
-    fn add(self, _rhs: Self) -> Self { self }
+    fn add(self, rhs: Self) -> Self {
+        let (result, _carry) = add512(&self.0, &rhs.0);
+        Self(result)
+    }
 }
 
 impl Sub for U512 {
     type Output = Self;
-    fn sub(self, _rhs: Self) -> Self { self }
+    fn sub(self, rhs: Self) -> Self {
+        let (result, _borrow) = sub512(&self.0, &rhs.0);
+        Self(result)
+    }
 }
 
 impl Mul for U512 {
     type Output = Self;
-    fn mul(self, _rhs: Self) -> Self { self }
+    fn mul(self, rhs: Self) -> Self {
+        let result = mul512x512(&self.0, &rhs.0);
+        Self([result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7]])
+    }
 }
 
 impl Div for U512 {
     type Output = Self;
-    fn div(self, _rhs: Self) -> Self { self }
+    fn div(self, rhs: Self) -> Self {
+        let (quotient, _) = div512(&self.0, &rhs.0);
+        Self(quotient)
+    }
 }
 
 impl Rem for U512 {
     type Output = Self;
-    fn rem(self, _rhs: Self) -> Self { self }
+    fn rem(self, rhs: Self) -> Self {
+        let (_, remainder) = div512(&self.0, &rhs.0);
+        Self(remainder)
+    }
 }
 
 impl BitAnd for U512 {
     type Output = Self;
-    fn bitand(self, _rhs: Self) -> Self { self }
+    fn bitand(self, rhs: Self) -> Self {
+        Self([
+            self.0[0] & rhs.0[0], self.0[1] & rhs.0[1],
+            self.0[2] & rhs.0[2], self.0[3] & rhs.0[3],
+            self.0[4] & rhs.0[4], self.0[5] & rhs.0[5],
+            self.0[6] & rhs.0[6], self.0[7] & rhs.0[7],
+        ])
+    }
 }
 
 impl BitOr for U512 {
     type Output = Self;
-    fn bitor(self, _rhs: Self) -> Self { self }
+    fn bitor(self, rhs: Self) -> Self {
+        Self([
+            self.0[0] | rhs.0[0], self.0[1] | rhs.0[1],
+            self.0[2] | rhs.0[2], self.0[3] | rhs.0[3],
+            self.0[4] | rhs.0[4], self.0[5] | rhs.0[5],
+            self.0[6] | rhs.0[6], self.0[7] | rhs.0[7],
+        ])
+    }
 }
 
 impl BitXor for U512 {
     type Output = Self;
-    fn bitxor(self, _rhs: Self) -> Self { self }
+    fn bitxor(self, rhs: Self) -> Self {
+        Self([
+            self.0[0] ^ rhs.0[0], self.0[1] ^ rhs.0[1],
+            self.0[2] ^ rhs.0[2], self.0[3] ^ rhs.0[3],
+            self.0[4] ^ rhs.0[4], self.0[5] ^ rhs.0[5],
+            self.0[6] ^ rhs.0[6], self.0[7] ^ rhs.0[7],
+        ])
+    }
 }
 
 impl Not for U512 {
     type Output = Self;
-    fn not(self) -> Self { self }
+    fn not(self) -> Self {
+        Self([
+            !self.0[0], !self.0[1], !self.0[2], !self.0[3],
+            !self.0[4], !self.0[5], !self.0[6], !self.0[7],
+        ])
+    }
 }
 
 impl Shl<u32> for U512 {
     type Output = Self;
-    fn shl(self, _rhs: u32) -> Self { self }
+    fn shl(self, rhs: u32) -> Self {
+        let result = shl512(&self.0, rhs);
+        Self(result)
+    }
 }
 
 impl Shr<u32> for U512 {
     type Output = Self;
-    fn shr(self, _rhs: u32) -> Self { self }
+    fn shr(self, rhs: u32) -> Self {
+        let result = shr512(&self.0, rhs);
+        Self(result)
+    }
 }
 
 impl PartialOrd for U512 {
@@ -97,12 +154,59 @@ impl PartialOrd for U512 {
 
 impl Ord for U512 {
     fn cmp(&self, other: &Self) -> Ordering {
-        for i in (0..8).rev() {
-            match self.0[i].cmp(&other.0[i]) {
-                Ordering::Equal => continue,
-                ord => return ord,
-            }
+        if lt512(&self.0, &other.0) {
+            Ordering::Less
+        } else if gt512(&self.0, &other.0) {
+            Ordering::Greater
+        } else {
+            Ordering::Equal
         }
-        Ordering::Equal
+    }
+}
+
+impl core::fmt::Debug for U512 {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "U512(0x")?;
+        for &word in self.0.iter().rev() {
+            write!(f, "{:016x}", word)?;
+        }
+        write!(f, ")")
+    }
+}
+
+impl core::fmt::Display for U512 {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "0x")?;
+        for &word in self.0.iter().rev() {
+            write!(f, "{:016x}", word)?;
+        }
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_basic_ops() {
+        let a = U512::from_u64(100);
+        let b = U512::from_u64(50);
+
+        assert_eq!((a + b).to_u64(), 150);
+        assert_eq!((a - b).to_u64(), 50);
+        assert_eq!((a * b).to_u64(), 5000);
+        assert_eq!((a / b).to_u64(), 2);
+        assert_eq!((a % b).to_u64(), 0);
+    }
+
+    #[test]
+    fn test_comparison() {
+        let a = U512::from_u64(100);
+        let b = U512::from_u64(50);
+
+        assert!(a > b);
+        assert!(b < a);
+        assert_eq!(a, a);
     }
 }

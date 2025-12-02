@@ -1,0 +1,111 @@
+version: '3.8'
+
+services:
+  # Banco de Dados PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: avila-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: avilacloud
+      POSTGRES_USER: avila
+      POSTGRES_PASSWORD: avila_secure_2024
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - avila-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U avila"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Cache Redis
+  redis:
+    image: redis:7-alpine
+    container_name: avila-redis
+    restart: always
+    command: redis-server --requirepass redis_secure_2024
+    volumes:
+      - redis-data:/data
+    networks:
+      - avila-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Avila Cloud API
+  avila-cloud:
+    image: avila-cloud:latest
+    container_name: avila-cloud-api
+    restart: always
+    ports:
+      - "8080:8080"
+      - "443:443"
+    environment:
+      - RUST_LOG=info
+      - DATABASE_URL=postgres://avila:avila_secure_2024@postgres:5432/avilacloud
+      - REDIS_URL=redis://:redis_secure_2024@redis:6379
+      - JWT_SECRET=jwt_secret_change_in_production_2024
+      - STORAGE_PATH=/data/storage
+    volumes:
+      - storage-data:/data/storage
+      - logs-data:/data/logs
+    networks:
+      - avila-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # Prometheus (Monitoramento)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: avila-prometheus
+    restart: always
+    ports:
+      - "9090:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    volumes:
+      - prometheus-data:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - avila-network
+
+  # Grafana (Dashboards)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: avila-grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_USER=admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+      - avila-network
+
+volumes:
+  postgres-data:
+    driver: local
+  redis-data:
+    driver: local
+  storage-data:
+    driver: local
+  logs-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+
+networks:
+  avila-network:
+    driver: bridge

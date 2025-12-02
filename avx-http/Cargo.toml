@@ -40,7 +40,7 @@ rustls-native-certs = { version = "0.7", optional = true }
 criterion = "0.5"
 
 # For benchmark comparisons with Tokio (always available in dev builds)
-tokio = { version = "1.35", features = ["full"] }
+avila-async = { version = "0.5.0", path = "../avila-async" }
 
 [profile.release]
 opt-level = 3

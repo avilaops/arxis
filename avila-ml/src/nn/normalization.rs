@@ -231,8 +231,8 @@ impl<T: Float + NumAssign + ndarray::ScalarOperand + Send + Sync + 'static> Modu
         }
 
         // During training, randomly zero out elements with probability p
-        use rand::Rng;
-        let mut rng = rand::thread_rng();
+        use rand::thread_rng;
+        let mut rng = thread_rng();
 
         let mask = input.data.mapv(|_| {
             if rng.gen::<f64>() < T::to_f64(&self.p).unwrap() {

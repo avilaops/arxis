@@ -54,7 +54,7 @@ impl Robinson {
 
         let t = (lat_abs - Self::COEFF[idx].0) / 5.0;
         let x_coeff = Self::COEFF[idx].1 + (Self::COEFF[idx + 1].1 - Self::COEFF[idx].1) * t;
-        let y_coeff = Self::COEFF[idx].2 + (Self::COEFF[idx + 1].2 - Self::COEFF[idx].2] * t;
+        let y_coeff = Self::COEFF[idx].2 + (Self::COEFF[idx + 1].2 - Self::COEFF[idx].2) * t;
 
         (x_coeff, y_coeff)
     }

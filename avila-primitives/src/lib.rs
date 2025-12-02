@@ -32,18 +32,18 @@ pub mod traits;
 
 pub mod prelude {
     //! Common imports for convenience
-    
+
     pub use crate::u256::U256;
     pub use crate::u512::U512;
     pub use crate::u1024::U1024;
     pub use crate::u2048::U2048;
     pub use crate::u4096::U4096;
-    
+
     pub use crate::i256::I256;
     pub use crate::i512::I512;
     pub use crate::i1024::I1024;
     pub use crate::i2048::I2048;
     pub use crate::i4096::I4096;
-    
+
     pub use crate::traits::{BigInt, BigUint};
 }

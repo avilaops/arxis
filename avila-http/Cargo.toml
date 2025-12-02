@@ -1,0 +1,39 @@
+[package]
+name = "avila-http"
+version = "0.1.0"
+edition = "2021"
+authors = ["Nícolas Ávila <nicolas@avila.inc>"]
+license = "MIT OR Apache-2.0"
+description = "HTTP client nativo - substitui reqwest"
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://avila.inc"
+
+[dependencies]
+avila-async = { version = "0.5.0", path = "../avila-async" }
+avila-error = { version = "0.2.0", path = "../avila-error", features = ["full"] }
+avila-serde = { version = "0.2.0", path = "../avila-serde" }
+tokio = { version = "1.42", features = ["net", "io-util", "rt"] }
+
+[features]
+default = ["tls"]
+tls = []
+compression = []
+json = []
+full = ["tls", "compression", "json"]
+
+[lib]
+name = "avila_http"
+path = "src/lib.rs"
+
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = true
+overflow-checks = false
+incremental = false
+
+[profile.dev]
+opt-level = 1

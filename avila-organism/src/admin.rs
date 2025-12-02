@@ -1,4 +1,4 @@
-//! Painel administrativo
+//! Admin panel HTTP routes
 
 use axum::{Router, routing::get};
 
@@ -18,5 +18,5 @@ async fn users() -> &'static str {
 }
 
 async fn stats() -> &'static str {
-    "Platform Statistics"
+    "Application Statistics"
 }

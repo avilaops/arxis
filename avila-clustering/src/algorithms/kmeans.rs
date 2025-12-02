@@ -12,7 +12,7 @@ use rayon::prelude::*;
 pub enum InitMethod {
     /// Random initialization
     Random,
-    /// KMeans++ initialization (smart seeding)
+    /// KMeans++ initialization (probabilistic distance-weighted seeding)
     KMeansPlusPlus,
     /// Forgy initialization
     Forgy,
@@ -165,7 +165,7 @@ impl KMeans {
                 }
             };
 
-            // Keep the best result
+            // Keep the result with lowest inertia
             if result.inertia < best_inertia {
                 best_inertia = result.inertia;
                 best_result = Some(result);
@@ -215,7 +215,7 @@ impl KMeans {
                 self.kmeans_plusplus_init(data, &mut rng)
             }
             InitMethod::Forgy => {
-                // Same as Random for now
+                // Random partition assignment initialization
                 let mut centroids = Array2::zeros((self.n_clusters, n_features));
                 let selected = rand::seq::index::sample(&mut rng, n_samples, self.n_clusters);
 

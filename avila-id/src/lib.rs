@@ -141,3 +141,24 @@ mod tests {
         assert_eq!(nil.to_string(), "00000000-0000-0000-0000-000000000000");
     }
 }
+
+// Implementação de Serialize/Deserialize para avila-serde
+#[cfg(feature = "serde")]
+impl avila_serde::Serialize for Id {
+    fn to_value(&self) -> avila_serde::Value {
+        // Serializa como string hyphenated
+        avila_serde::Value::String(self.to_string())
+    }
+}
+
+#[cfg(feature = "serde")]
+impl avila_serde::Deserialize for Id {
+    fn from_value(value: avila_serde::Value) -> Result<Self, avila_serde::Error> {
+        match value {
+            avila_serde::Value::String(s) => {
+                Self::parse(&s).map_err(|e| avila_serde::Error::Parse(format!("Invalid ID: {}", e)))
+            }
+            _ => Err(avila_serde::Error::Parse("Expected string for Id".to_string()))
+        }
+    }
+}

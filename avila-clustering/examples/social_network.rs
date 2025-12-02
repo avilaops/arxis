@@ -59,7 +59,7 @@ fn main() -> avila_clustering::Result<()> {
         println!("Community {}: {:?}", c, members);
     }
 
-    // 2. Label Propagation (fast alternative)
+    // 2. Label Propagation (linear time complexity)
     println!("\n2. Label Propagation");
     println!("{}", "=".repeat(50));
 

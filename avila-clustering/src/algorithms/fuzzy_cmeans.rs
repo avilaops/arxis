@@ -224,21 +224,12 @@ impl FuzzyCMeans {
 
         let exponent = 2.0 / (self.fuzziness - 1.0);
 
-        if self.parallel {
-            membership
-                .axis_iter_mut(Axis(0))
-                .into_par_iter()
-                .zip(data.axis_iter(Axis(0)).into_par_iter())
-                .for_each(|(mut mem_row, data_point)| {
-                    self.compute_membership_row(&data_point.insert_axis(Axis(0)), centroids, &mut mem_row, exponent);
-                });
-        } else {
-            for (mut mem_row, data_point) in membership
-                .axis_iter_mut(Axis(0))
-                .zip(data.axis_iter(Axis(0)))
-            {
-                self.compute_membership_row(&data_point.insert_axis(Axis(0)), centroids, &mut mem_row, exponent);
-            }
+        // Compute membership values for each point
+        for (mut mem_row, data_point) in membership
+            .axis_iter_mut(Axis(0))
+            .zip(data.axis_iter(Axis(0)))
+        {
+            self.compute_membership_row(&data_point.insert_axis(Axis(0)), centroids, &mut mem_row, exponent);
         }
 
         Ok(membership)
@@ -312,7 +303,7 @@ impl FuzzyCMeans {
     }
 
     /// Get fuzzy partition coefficient (FPC) - measure of clustering quality
-    /// FPC ranges from 1/c to 1, where higher is better
+    /// FPC ranges from 1/c to 1, where higher values indicate crisper cluster assignments
     pub fn fuzzy_partition_coefficient(&self) -> Result<f64> {
         let membership = self.membership.as_ref()
             .ok_or_else(|| ClusteringError::InvalidParameter("Model not fitted".to_string()))?;
@@ -337,7 +328,7 @@ mod tests {
 
     #[test]
     fn test_fuzzy_cmeans_simple() {
-        // Simple 2D data with 2 clusters
+        // 2D synthetic data with 2 separable clusters
         let data = array![
             [1.0, 1.0],
             [1.5, 2.0],

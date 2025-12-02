@@ -1,4 +1,4 @@
-//! Interface webmail
+//! Webmail HTTP routes
 
 use axum::{Router, routing::get};
 

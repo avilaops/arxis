@@ -232,9 +232,12 @@ pub unsafe fn max512(a: &[u64; 8], b: &[u64; 8]) -> [u64; 8] {
 }
 
 #[cfg(test)]
-#[cfg(target_arch = "x86_64")]
+#[cfg(all(test, target_arch = "x86_64", target_feature = "avx512f"))]
 mod tests {
     use super::*;
+
+    extern crate std;
+    use std::println;
 
     #[test]
     fn test_avx512_xor() {

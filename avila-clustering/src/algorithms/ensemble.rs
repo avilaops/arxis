@@ -8,7 +8,7 @@
 //! - More stable results across runs
 //! - Combines strengths of different algorithms
 //! - Reduces sensitivity to initialization
-//! - Better handling of complex data structures
+//! - Enhanced robustness for complex data structures
 
 use crate::{ClusteringError, Result};
 use ndarray::{Array2, ArrayView2};
@@ -112,7 +112,7 @@ impl EnsembleClusteringBuilder {
     }
 
     fn run_base_clustering(&self, data: &ArrayView2<f64>, indices: &[usize]) -> Result<Vec<usize>> {
-        // Simple K-Means implementation for ensemble
+        // Lightweight K-Means base clusterer for ensemble
         let n_features = data.ncols();
         let subsample_size = indices.len();
 
@@ -125,7 +125,7 @@ impl EnsembleClusteringBuilder {
 
         let mut labels = vec![0; subsample_size];
 
-        // Simple K-Means iterations
+        // Fixed-iteration K-Means optimization
         for _iter in 0..10 {
             // Assign to nearest centroid
             for (i, &sample_idx) in indices.iter().enumerate() {
