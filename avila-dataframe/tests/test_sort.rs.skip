@@ -1,0 +1,195 @@
+//! Sort operation tests
+
+use avila_dataframe::prelude::*;
+
+#[test]
+fn test_sort_single_column_ascending() {
+    let df = DataFrame::new(vec![
+        Series::new("value", vec![3.0, 1.0, 4.0, 1.0, 5.0]),
+        Series::new("id", vec![0.0, 1.0, 2.0, 3.0, 4.0]),
+    ])
+    .unwrap();
+
+    let sorted = df.sort(&["value"], false).unwrap();
+
+    assert_eq!(sorted.height(), 5);
+}
+
+#[test]
+fn test_sort_single_column_descending() {
+    let df = DataFrame::new(vec![
+        Series::new("value", vec![3.0, 1.0, 4.0, 1.0, 5.0]),
+    ])
+    .unwrap();
+
+    let sorted = df.sort(&["value"], true).unwrap();
+
+    assert_eq!(sorted.height(), 5);
+}
+
+#[test]
+fn test_sort_multiple_columns() {
+    let df = DataFrame::new(vec![
+        Series::new("priority", vec![2.0, 1.0, 2.0, 1.0]),
+        Series::new("timestamp", vec![100.0, 200.0, 50.0, 150.0]),
+    ])
+    .unwrap();
+
+    let sorted = df.sort(&["priority", "timestamp"], false).unwrap();
+
+    assert_eq!(sorted.height(), 4);
+}
+
+#[test]
+fn test_sort_with_nulls() {
+    let df = DataFrame::new(vec![
+        Series::new("value", vec![3.0, f64::NAN, 1.0, 2.0]),
+        Series::new("id", vec![0.0, 1.0, 2.0, 3.0]),
+    ])
+    .unwrap();
+
+    let sorted = df.sort(&["value"], false).unwrap();
+
+    assert_eq!(sorted.height(), 4);
+}
+
+#[test]
+fn test_sort_stability() {
+    let df = DataFrame::new(vec![
+        Series::new("key", vec![1.0, 2.0, 1.0, 2.0]),
+        Series::new("order", vec![0.0, 1.0, 2.0, 3.0]),
+    ])
+    .unwrap();
+
+    let sorted = df.sort(&["key"], false).unwrap();
+
+    assert_eq!(sorted.height(), 4);
+}
+
+#[test]
+fn test_sort_strings() {
+    let df = DataFrame::new(vec![
+        Series::new("name", vec!["Charlie", "Alice", "Bob"]),
+        Series::new("id", vec![2.0, 0.0, 1.0]),
+    ])
+    .unwrap();
+
+    let sorted = df.sort(&["name"], false).unwrap();
+
+    assert_eq!(sorted.height(), 3);
+}
+
+#[test]
+fn test_sort_already_sorted() {
+    let df = DataFrame::new(vec![
+        Series::new("value", vec![1.0, 2.0, 3.0, 4.0, 5.0]),
+    ])
+    .unwrap();
+
+    let sorted = df.sort(&["value"], false).unwrap();
+
+    assert_eq!(sorted.height(), 5);
+}
+
+#[test]
+fn test_sort_reverse_sorted() {
+    let df = DataFrame::new(vec![
+        Series::new("value", vec![5.0, 4.0, 3.0, 2.0, 1.0]),
+    ])
+    .unwrap();
+
+    let sorted = df.sort(&["value"], false).unwrap();
+
+    assert_eq!(sorted.height(), 5);
+}
+
+#[test]
+fn test_sort_large_dataset() {
+    let values: Vec<f64> = (0..10000).rev().map(|i| i as f64).collect();
+    let df = DataFrame::new(vec![
+        Series::new("value", values),
+    ])
+    .unwrap();
+
+    let sorted = df.sort(&["value"], false).unwrap();
+
+    assert_eq!(sorted.height(), 10000);
+}
+
+#[test]
+fn test_sort_with_duplicates() {
+    let df = DataFrame::new(vec![
+        Series::new("value", vec![1.0, 2.0, 1.0, 2.0, 1.0]),
+    ])
+    .unwrap();
+
+    let sorted = df.sort(&["value"], false).unwrap();
+
+    assert_eq!(sorted.height(), 5);
+}
+
+#[test]
+fn test_sort_three_columns() {
+    let df = DataFrame::new(vec![
+        Series::new("a", vec![1.0, 1.0, 2.0, 2.0]),
+        Series::new("b", vec![2.0, 1.0, 2.0, 1.0]),
+        Series::new("c", vec![10.0, 20.0, 30.0, 40.0]),
+    ])
+    .unwrap();
+
+    let sorted = df.sort(&["a", "b", "c"], false).unwrap();
+
+    assert_eq!(sorted.height(), 4);
+}
+
+#[test]
+fn test_sort_mixed_order() {
+    let df = DataFrame::new(vec![
+        Series::new("primary", vec![3.0, 1.0, 2.0]),
+        Series::new("secondary", vec![100.0, 200.0, 150.0]),
+    ])
+    .unwrap();
+
+    let sorted = df.sort(&["primary"], false).unwrap();
+
+    assert_eq!(sorted.height(), 3);
+}
+
+#[test]
+fn test_sort_empty_dataframe() {
+    let df = DataFrame::new(vec![
+        Series::new("value", Vec::<f64>::new()),
+    ])
+    .unwrap();
+
+    let sorted = df.sort(&["value"], false).unwrap();
+
+    assert_eq!(sorted.height(), 0);
+}
+
+#[test]
+fn test_sort_single_row() {
+    let df = DataFrame::new(vec![
+        Series::new("value", vec![42.0]),
+    ])
+    .unwrap();
+
+    let sorted = df.sort(&["value"], false).unwrap();
+
+    assert_eq!(sorted.height(), 1);
+}
+
+#[test]
+fn test_sort_preserves_other_columns() {
+    let df = DataFrame::new(vec![
+        Series::new("sort_key", vec![3.0, 1.0, 2.0]),
+        Series::new("data", vec![30.0, 10.0, 20.0]),
+        Series::new("id", vec![2.0, 0.0, 1.0]),
+    ])
+    .unwrap();
+
+    let sorted = df.sort(&["sort_key"], false).unwrap();
+
+    assert_eq!(sorted.height(), 3);
+    assert_eq!(sorted.width(), 3);
+}

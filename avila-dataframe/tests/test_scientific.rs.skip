@@ -1,0 +1,240 @@
+//! Scientific computing tests
+
+use avila_dataframe::prelude::*;
+
+#[cfg(feature = "scientific")]
+#[test]
+fn test_fft_basic() {
+    let series = Series::new("signal", vec![1.0, 0.0, -1.0, 0.0]);
+
+    let fft_result = series.fft().unwrap();
+
+    assert_eq!(fft_result.len(), 4);
+}
+
+#[cfg(feature = "scientific")]
+#[test]
+fn test_fft_real_signal() {
+    let series = Series::new("wave", vec![1.0, 2.0, 3.0, 2.0, 1.0, 0.0, -1.0, 0.0]);
+
+    let fft_result = series.fft().unwrap();
+
+    assert_eq!(fft_result.len(), 8);
+}
+
+#[cfg(feature = "scientific")]
+#[test]
+fn test_ifft_roundtrip() {
+    let original = Series::new("data", vec![1.0, 2.0, 3.0, 4.0]);
+
+    let fft = original.fft().unwrap();
+    let reconstructed = fft.ifft().unwrap();
+
+    assert_eq!(reconstructed.len(), 4);
+}
+
+#[cfg(feature = "scientific")]
+#[test]
+fn test_astronomy_luminosity_distance() {
+    use avila_dataframe::scientific::astronomy::luminosity_distance;
+
+    let z = 0.1; // redshift
+    let d = luminosity_distance(z);
+
+    assert!(d > 400.0 && d < 450.0, "Expected ~427 Mpc");
+}
+
+#[cfg(feature = "scientific")]
+#[test]
+fn test_astronomy_angular_separation() {
+    use avila_dataframe::scientific::astronomy::angular_separation;
+
+    let sep = angular_separation(0.0, 0.0, 1.0, 1.0);
+
+    assert!(sep > 1.4 && sep < 1.5);
+}
+
+#[cfg(feature = "scientific")]
+#[test]
+fn test_astronomy_absolute_magnitude() {
+    use avila_dataframe::scientific::astronomy::absolute_magnitude;
+
+    let m_abs = absolute_magnitude(-26.0, 100.0);
+
+    assert!(m_abs < -25.0);
+}
+
+#[cfg(feature = "scientific")]
+#[test]
+fn test_astronomy_redshift_to_distance() {
+    use avila_dataframe::scientific::astronomy::luminosity_distance;
+
+    let redshifts = vec![0.01, 0.05, 0.1, 0.2];
+
+    for z in redshifts {
+        let d = luminosity_distance(z);
+        assert!(d > 0.0, "Distance must be positive");
+    }
+}
+
+#[test]
+fn test_quaternion_normalization() {
+    use avila_dataframe::core::dtype::Quaternion;
+
+    let mut q = Quaternion::from_axis_angle([0.0, 0.0, 1.0], std::f64::consts::PI / 4.0);
+    q = q.normalize();
+
+    let mag_sq = q.w * q.w + q.x * q.x + q.y * q.y + q.z * q.z;
+    assert!((mag_sq - 1.0).abs() < 1e-10);
+}
+
+#[test]
+fn test_quaternion_multiplication() {
+    use avila_dataframe::core::dtype::Quaternion;
+
+    let q1 = Quaternion { w: 1.0, x: 0.0, y: 0.0, z: 0.0 };
+    let q2 = Quaternion { w: 0.0, x: 1.0, y: 0.0, z: 0.0 };
+
+    let result = q1.multiply(&q2);
+
+    assert_eq!(result.w, 0.0);
+    assert_eq!(result.x, 1.0);
+}
+
+#[test]
+fn test_quaternion_conjugate() {
+    use avila_dataframe::core::dtype::Quaternion;
+
+    let q = Quaternion { w: 1.0, x: 2.0, y: 3.0, z: 4.0 };
+    let conj = q.conjugate();
+
+    assert_eq!(conj.w, 1.0);
+    assert_eq!(conj.x, -2.0);
+    assert_eq!(conj.y, -3.0);
+    assert_eq!(conj.z, -4.0);
+}
+
+#[test]
+fn test_geodesic_schwarzschild_metric() {
+    use avila_dataframe::core::dtype::GeodesicCoord;
+
+    let coord = GeodesicCoord {
+        t: 0.0,
+        r: 10.0,
+        theta: 0.0,
+        phi: 0.0,
+    };
+
+    let g_tt = coord.schwarzschild_gtt(1.0);
+    assert!(g_tt < 0.0, "g_tt should be negative (timelike)");
+    assert!(g_tt > -1.0, "g_tt should be > -1 for r > 2M");
+}
+
+#[test]
+fn test_geodesic_event_horizon() {
+    use avila_dataframe::core::dtype::GeodesicCoord;
+
+    let mass = 1.0;
+    let r_s = 2.0 * mass; // Schwarzschild radius
+
+    let coord = GeodesicCoord {
+        t: 0.0,
+        r: r_s,
+        theta: 0.0,
+        phi: 0.0,
+    };
+
+    let g_tt = coord.schwarzschild_gtt(mass);
+    assert!((g_tt.abs()) < 1e-10, "g_tt should be ~0 at event horizon");
+}
+
+#[cfg(feature = "scientific")]
+#[test]
+fn test_correlation_matrix() {
+    let df = DataFrame::new(vec![
+        Series::new("x", vec![1.0, 2.0, 3.0, 4.0, 5.0]),
+        Series::new("y", vec![2.0, 4.0, 6.0, 8.0, 10.0]),
+    ])
+    .unwrap();
+
+    let corr = df.correlation().unwrap();
+
+    assert_eq!(corr.height(), 2);
+    assert_eq!(corr.width(), 2);
+}
+
+#[cfg(feature = "scientific")]
+#[test]
+fn test_covariance_matrix() {
+    let df = DataFrame::new(vec![
+        Series::new("a", vec![1.0, 2.0, 3.0]),
+        Series::new("b", vec![4.0, 5.0, 6.0]),
+    ])
+    .unwrap();
+
+    let cov = df.covariance().unwrap();
+
+    assert_eq!(cov.height(), 2);
+}
+
+#[cfg(feature = "scientific")]
+#[test]
+fn test_standardization() {
+    let series = Series::new("data", vec![1.0, 2.0, 3.0, 4.0, 5.0]);
+
+    let standardized = series.standardize().unwrap();
+
+    let mean = standardized.mean();
+    assert!(mean.abs() < 1e-10, "Mean should be ~0");
+
+    let std = standardized.std();
+    assert!((std - 1.0).abs() < 1e-10, "Std should be ~1");
+}
+
+#[cfg(feature = "scientific")]
+#[test]
+fn test_normalization() {
+    let series = Series::new("values", vec![10.0, 20.0, 30.0, 40.0, 50.0]);
+
+    let normalized = series.normalize().unwrap();
+
+    let min = normalized.min();
+    let max = normalized.max();
+
+    assert!((min - 0.0).abs() < 1e-10);
+    assert!((max - 1.0).abs() < 1e-10);
+}
+
+#[cfg(feature = "scientific")]
+#[test]
+fn test_quantiles() {
+    let series = Series::new("data", vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0]);
+
+    let q25 = series.quantile(0.25).unwrap();
+    let q50 = series.quantile(0.50).unwrap();
+    let q75 = series.quantile(0.75).unwrap();
+
+    assert!(q25 > 2.0 && q25 < 4.0);
+    assert!(q50 > 5.0 && q50 < 6.0);
+    assert!(q75 > 7.0 && q75 < 9.0);
+}
+
+#[cfg(feature = "scientific")]
+#[test]
+fn test_rolling_statistics() {
+    let series = Series::new("values", vec![1.0, 2.0, 3.0, 4.0, 5.0]);
+
+    let rolling_mean = series.rolling_mean(3).unwrap();
+
+    assert_eq!(rolling_mean.len(), 3); // 5 - 3 + 1
+}
+
+#[cfg(feature = "scientific")]
+#[test]
+fn test_expanding_statistics() {
+    let series = Series::new("data", vec![1.0, 2.0, 3.0, 4.0]);
+
+    let expanding_mean = series.expanding_mean().unwrap();
+
+    assert_eq!(expanding_mean.len(), 4);
+}

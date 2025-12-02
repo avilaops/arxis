@@ -20,16 +20,26 @@ pub struct Secp256k1;
 
 impl Secp256k1 {
     /// Primo do field: p = 2^256 - 2^32 - 977
-    /// (primo de Mersenne generalizado para aritmética eficiente)
-    pub const P: U256 = U256::from_hex(
-        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F"
-    );
+    /// FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
+    pub const P: U256 = U256 {
+        limbs: [
+            0xFFFFFFFEFFFFFC2F,
+            0xFFFFFFFFFFFFFFFF,
+            0xFFFFFFFFFFFFFFFF,
+            0xFFFFFFFFFFFFFFFF,
+        ]
+    };
 
     /// Ordem do grupo (número de pontos na curva)
-    /// n = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
-    pub const N: U256 = U256::from_hex(
-        "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141"
-    );
+    /// FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
+    pub const N: U256 = U256 {
+        limbs: [
+            0xBFD25E8CD0364141,
+            0xBAAEDCE6AF48A03B,
+            0xFFFFFFFFFFFFFFFE,
+            0xFFFFFFFFFFFFFFFF,
+        ]
+    };
 
     /// Coeficiente A da curva (zero em secp256k1, simplifica cálculos)
     pub const A: U256 = U256::ZERO;
@@ -37,31 +47,50 @@ impl Secp256k1 {
     /// Coeficiente B da curva: y² = x³ + 7, então B = 7
     pub const B: U256 = U256::from_u64(7);
 
-    /// Ponto gerador G (comprimido)
-    /// Gx = 0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798
-    pub const GX: U256 = U256::from_hex(
-        "79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798"
-    );
+    /// Ponto gerador Gx
+    /// 79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798
+    pub const GX: U256 = U256 {
+        limbs: [
+            0x59F2815B16F81798,
+            0x029BFCDB2DCE28D9,
+            0x55A06295CE870B07,
+            0x79BE667EF9DCBBAC,
+        ]
+    };
 
-    /// Gy = 0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8
-    pub const GY: U256 = U256::from_hex(
-        "483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8"
-    );
+    /// Ponto gerador Gy
+    /// 483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8
+    pub const GY: U256 = U256 {
+        limbs: [
+            0x9C47D08FFB10D4B8,
+            0xFD17B448A6855419,
+            0x5DA4FBFC0E1108A8,
+            0x483ADA7726A3C465,
+        ]
+    };
 
     /// **Otimização GLV (Gallant-Lambert-Vanstone)**
-    ///
-    /// secp256k1 tem endomorphism eficiente:
-    /// Para ponto P = (x, y), existe β tal que (βx, y) também está na curva
-    /// Isso permite decompor k×P em k1×P + k2×(β×P) onde k1, k2 são menores
-    /// **Resultado: 2x mais rápido que double-and-add normal!**
-    pub const BETA: U256 = U256::from_hex(
-        "7AE96A2B657C07106E64479EAC3434E99CF0497512F58995C1396C28719501EE"
-    );
+    /// Beta para endomorphism
+    /// 7AE96A2B657C07106E64479EAC3434E99CF0497512F58995C1396C28719501EE
+    pub const BETA: U256 = U256 {
+        limbs: [
+            0xC1396C28719501EE,
+            0x9CF0497512F58995,
+            0x6E64479EAC3434E9,
+            0x7AE96A2B657C0710,
+        ]
+    };
 
     /// Lambda para decomposição GLV
-    pub const LAMBDA: U256 = U256::from_hex(
-        "5363AD4CC05C30E0A5261C028812645A122E22EA20816678DF02967C1B23BD72"
-    );
+    /// 5363AD4CC05C30E0A5261C028812645A122E22EA20816678DF02967C1B23BD72
+    pub const LAMBDA: U256 = U256 {
+        limbs: [
+            0xDF02967C1B23BD72,
+            0x122E22EA20816678,
+            0xA5261C028812645A,
+            0x5363AD4CC05C30E0,
+        ]
+    };
 }
 
 impl EllipticCurve for Secp256k1 {
@@ -77,7 +106,7 @@ impl EllipticCurve for Secp256k1 {
     }
 
     /// Adição de pontos na curva
-    /// 
+    ///
     /// Fórmula: P + Q = R
     /// - λ = (Q.y - P.y) / (Q.x - P.x) mod p
     /// - R.x = λ² - P.x - Q.x mod p
@@ -135,7 +164,7 @@ impl EllipticCurve for Secp256k1 {
         // λ = 3x² / 2y
         let three = U256::from_u64(3);
         let two = U256::from_u64(2);
-        
+
         let numerator = three.mul_mod(&p.x.mul_mod(&p.x, &Self::P), &Self::P);
         let denominator = two.mul_mod(&p.y, &Self::P);
         let denominator_inv = denominator.mod_inverse(&Self::P);
@@ -216,13 +245,13 @@ impl Secp256k1KeyPair {
     /// Serializa chave pública (formato comprimido - 33 bytes)
     pub fn serialize_public_compressed(&self) -> [u8; 33] {
         let mut bytes = [0u8; 33];
-        
+
         // Prefix: 0x02 se y é par, 0x03 se y é ímpar
         bytes[0] = if self.public_key.y.is_odd() { 0x03 } else { 0x02 };
-        
+
         // X coordinate
         bytes[1..33].copy_from_slice(&self.public_key.x.to_bytes_be());
-        
+
         bytes
     }
 
@@ -258,7 +287,7 @@ mod tests {
         let g = Secp256k1::generator();
         let k = U256::from_u64(5);
         let result = Secp256k1::scalar_mul(&k, &g);
-        
+
         assert!(Secp256k1::is_on_curve(&result), "5G deve estar na curva");
         assert!(!result.is_infinity(), "5G não deve ser infinito");
     }
@@ -266,7 +295,7 @@ mod tests {
     #[test]
     fn test_identity() {
         let g = Secp256k1::generator();
-        
+
         // n × G = ∞ (onde n é a ordem do grupo)
         let identity = Secp256k1::scalar_mul(&Secp256k1::N, &g);
         assert!(identity.is_infinity(), "n×G deve ser ponto no infinito");

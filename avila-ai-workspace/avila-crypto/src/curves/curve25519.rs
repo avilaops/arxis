@@ -15,10 +15,15 @@ pub struct Curve25519;
 
 impl Curve25519 {
     /// Primo do field: p = 2^255 - 19
-    /// (primo de Mersenne generalizado - aritmética super rápida)
-    pub const P: U256 = U256::from_hex(
-        "7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFED"
-    );
+    /// 7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFED
+    pub const P: U256 = U256 {
+        limbs: [
+            0xFFFFFFFFFFFFFFED,
+            0xFFFFFFFFFFFFFFFF,
+            0xFFFFFFFFFFFFFFFF,
+            0x7FFFFFFFFFFFFFFF,
+        ]
+    };
 
     /// Coeficiente A = 486662
     pub const A: U256 = U256::from_u64(486662);
@@ -38,15 +43,26 @@ impl Ed25519 {
 
     /// Ordem do grupo
     /// l = 2^252 + 27742317777372353535851937790883648493
-    pub const L: U256 = U256::from_hex(
-        "1000000000000000000000000000000014DEF9DEA2F79CD65812631A5CF5D3ED"
-    );
+    /// 1000000000000000000000000000000014DEF9DEA2F79CD65812631A5CF5D3ED
+    pub const L: U256 = U256 {
+        limbs: [
+            0x5812631A5CF5D3ED,
+            0x14DEF9DEA2F79CD6,
+            0x0000000000000000,
+            0x1000000000000000,
+        ]
+    };
 
     /// Coeficiente d = -121665/121666
     /// d ≡ 0x52036CEE2B6FFE738CC740797779E89800700A4D4141D8AB75EB4DCA135978A3 (mod p)
-    pub const D: U256 = U256::from_hex(
-        "52036CEE2B6FFE738CC740797779E89800700A4D4141D8AB75EB4DCA135978A3"
-    );
+    pub const D: U256 = U256 {
+        limbs: [
+            0x75EB4DCA135978A3,
+            0x00700A4D4141D8AB,
+            0x8CC740797779E898,
+            0x52036CEE2B6FFE73,
+        ]
+    };
 }
 
 /// Montgomery ladder para scalar multiplication

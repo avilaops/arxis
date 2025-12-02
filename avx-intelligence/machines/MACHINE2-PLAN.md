@@ -236,10 +236,10 @@ $crates = Get-ChildItem -Directory | Where-Object { Test-Path "$_\Cargo.toml" }
 foreach ($crate in $crates) {
     Push-Location $crate
     Write-Host "Benchmarking $($crate.Name)..." -ForegroundColor Cyan
-    
+
     cargo bench --message-format json `
         | Tee-Object -FilePath "..\bench-results\$($crate.Name)-$(Get-Date -Format 'yyyyMMdd').json"
-    
+
     Pop-Location
 }
 

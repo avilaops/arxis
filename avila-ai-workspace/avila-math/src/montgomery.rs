@@ -11,18 +11,19 @@
 //! Operações em Montgomery form são mais rápidas.
 
 use avila_primitives::U256;
+use crate::ModularArithmetic;
 
 /// Montgomery context para operações modulares
 pub struct MontgomeryContext {
     /// Modulus N
     pub modulus: U256,
-    
+
     /// R = 2^256 mod N
     pub r: U256,
-    
+
     /// R² mod N (para conversão para Montgomery form)
     pub r_squared: U256,
-    
+
     /// N' tal que N × N' ≡ -1 (mod R)
     /// Usado no algoritmo REDC
     pub n_prime: u64,
@@ -33,13 +34,13 @@ impl MontgomeryContext {
     pub fn new(modulus: U256) -> Self {
         // Calcula R = 2^256 mod N
         let r = compute_r_mod_n(&modulus);
-        
+
         // Calcula R² mod N
         let r_squared = r.mul_mod(&r, &modulus);
-        
+
         // Calcula N' usando extended GCD
         let n_prime = compute_n_prime(&modulus);
-        
+
         Self {
             modulus,
             r,
@@ -72,23 +73,23 @@ impl MontgomeryContext {
 
         // Implementação simplificada para U256
         // TODO: Implementação completa com carry handling
-        
+
         let m = t.limbs[0].wrapping_mul(self.n_prime);
-        
+
         // T + m × N
         let mn = self.modulus.mul_u64(m);
         let sum = t.wrapping_add(&mn);
-        
+
         // Divide por R (= shift right 256 bits)
         // Como estamos em U256, isso seria pegar os limbs superiores de U512
         // Simplificação: assumir resultado cabe em U256
         let mut result = sum;
-        
+
         // Redução final
         if result.cmp(&self.modulus) >= 0 {
             result = result.wrapping_sub(&self.modulus);
         }
-        
+
         result
     }
 
@@ -102,7 +103,7 @@ impl MontgomeryContext {
     /// base^exp mod N
     pub fn pow_mod(&self, base: &U256, exp: &U256) -> U256 {
         // Converte base para Montgomery form
-        let base_mont = self.to_montgomery(base);
+        let mut base_mont = self.to_montgomery(base);
         let mut result_mont = self.to_montgomery(&U256::ONE);
         let mut exp_bits = *exp;
 
@@ -120,13 +121,13 @@ impl MontgomeryContext {
 }
 
 /// Calcula R = 2^256 mod N
-fn compute_r_mod_n(modulus: &U256) -> U256 {
+fn compute_r_mod_n(_modulus: &U256) -> U256 {
     // R = 2^256 mod N
     // Implementação simplificada
     // TODO: Implementar corretamente com U512
     let mut r = U256::ZERO;
     r.limbs[0] = 1;
-    
+
     // Shift left 256 bits seria overflow, então fazemos modular
     // Por enquanto, aproximação
     r
@@ -136,15 +137,15 @@ fn compute_r_mod_n(modulus: &U256) -> U256 {
 fn compute_n_prime(modulus: &U256) -> u64 {
     // Usando Newton's method para encontrar inverso
     // x_{i+1} = x_i × (2 - N × x_i)
-    
+
     let n0 = modulus.limbs[0];
     let mut x = n0; // aproximação inicial
-    
+
     // Itera algumas vezes para convergir
     for _ in 0..5 {
         x = x.wrapping_mul(2u64.wrapping_sub(n0.wrapping_mul(x)));
     }
-    
+
     // Retorna -x (two's complement)
     x.wrapping_neg()
 }
@@ -157,11 +158,11 @@ mod tests {
     fn test_montgomery_context() {
         let modulus = U256::from_u64(97); // primo pequeno
         let ctx = MontgomeryContext::new(modulus);
-        
+
         let x = U256::from_u64(42);
         let x_mont = ctx.to_montgomery(&x);
         let x_back = ctx.from_montgomery(&x_mont);
-        
+
         // Deve recuperar o valor original (mod N)
         assert_eq!(x_back.limbs[0] % 97, 42);
     }

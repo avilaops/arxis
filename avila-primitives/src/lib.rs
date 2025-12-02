@@ -30,6 +30,21 @@ pub mod i4096;
 
 pub mod traits;
 
+// Re-export types at the root for easier access
+pub use u256::U256;
+pub use u512::U512;
+pub use u1024::U1024;
+pub use u2048::U2048;
+pub use u4096::U4096;
+
+pub use i256::I256;
+pub use i512::I512;
+pub use i1024::I1024;
+pub use i2048::I2048;
+pub use i4096::I4096;
+
+pub use traits::{BigInt, BigUint};
+
 pub mod prelude {
     //! Common imports for convenience
 

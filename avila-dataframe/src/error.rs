@@ -33,8 +33,8 @@ pub enum AvilaError {
     #[error("CSV error: {0}")]
     CsvError(#[from] csv::Error),
 
-    #[error("JSON error: {0}")]
-    JsonError(#[from] serde_json::Error),
+    // #[error("JSON error: {0}")]
+    // JsonError(#[from] serde_json::Error),
 
     #[error("Arrow error: {0}")]
     ArrowError(String),

@@ -13,7 +13,7 @@ impl U384 {
     pub const LIMBS: usize = 6;
     pub const BITS: usize = 384;
     pub const BYTES: usize = 48;
-    
+
     pub const ZERO: Self = Self { limbs: [0; 6] };
     pub const ONE: Self = Self { limbs: [1, 0, 0, 0, 0, 0] };
     pub const MAX: Self = Self { limbs: [u64::MAX; 6] };
@@ -36,11 +36,11 @@ impl U384 {
         let mut limbs = [0u64; 6];
         let mut padded = [0u8; 48];
         padded[48 - bytes.len()..].copy_from_slice(bytes);
-        
+
         for (i, chunk) in padded.chunks_exact(8).enumerate() {
             limbs[5 - i] = u64::from_be_bytes(chunk.try_into().unwrap());
         }
-        
+
         Self { limbs }
     }
 

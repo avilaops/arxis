@@ -1,0 +1,277 @@
+//! Join operation tests
+
+use avila_dataframe::prelude::*;
+
+#[test]
+fn test_inner_join_basic() {
+    let df1 = DataFrame::new(vec![
+        Series::new("id", vec![1.0, 2.0, 3.0]),
+        Series::new("name", vec!["Alice", "Bob", "Charlie"]),
+    ])
+    .unwrap();
+
+    let df2 = DataFrame::new(vec![
+        Series::new("id", vec![1.0, 2.0, 4.0]),
+        Series::new("dept", vec!["Engineering", "Sales", "HR"]),
+    ])
+    .unwrap();
+
+    let result = df1.join(&df2, &["id"], &["id"], "inner").unwrap();
+
+    assert_eq!(result.height(), 2); // Only 1 and 2 match
+}
+
+#[test]
+fn test_left_join() {
+    let df1 = DataFrame::new(vec![
+        Series::new("id", vec![1.0, 2.0, 3.0]),
+        Series::new("name", vec!["A", "B", "C"]),
+    ])
+    .unwrap();
+
+    let df2 = DataFrame::new(vec![
+        Series::new("id", vec![1.0, 2.0]),
+        Series::new("value", vec![10.0, 20.0]),
+    ])
+    .unwrap();
+
+    let result = df1.join(&df2, &["id"], &["id"], "left").unwrap();
+
+    assert_eq!(result.height(), 3); // All from left
+}
+
+#[test]
+fn test_right_join() {
+    let df1 = DataFrame::new(vec![
+        Series::new("id", vec![1.0, 2.0]),
+        Series::new("name", vec!["A", "B"]),
+    ])
+    .unwrap();
+
+    let df2 = DataFrame::new(vec![
+        Series::new("id", vec![1.0, 2.0, 3.0]),
+        Series::new("value", vec![10.0, 20.0, 30.0]),
+    ])
+    .unwrap();
+
+    let result = df1.join(&df2, &["id"], &["id"], "right").unwrap();
+
+    assert_eq!(result.height(), 3); // All from right
+}
+
+#[test]
+fn test_outer_join() {
+    let df1 = DataFrame::new(vec![
+        Series::new("id", vec![1.0, 2.0]),
+        Series::new("name", vec!["A", "B"]),
+    ])
+    .unwrap();
+
+    let df2 = DataFrame::new(vec![
+        Series::new("id", vec![2.0, 3.0]),
+        Series::new("value", vec![20.0, 30.0]),
+    ])
+    .unwrap();
+
+    let result = df1.join(&df2, &["id"], &["id"], "outer").unwrap();
+
+    assert_eq!(result.height(), 3); // 1, 2, 3
+}
+
+#[test]
+fn test_cross_join() {
+    let df1 = DataFrame::new(vec![
+        Series::new("a", vec![1.0, 2.0]),
+    ])
+    .unwrap();
+
+    let df2 = DataFrame::new(vec![
+        Series::new("b", vec![3.0, 4.0]),
+    ])
+    .unwrap();
+
+    let result = df1.join(&df2, &[], &[], "cross").unwrap();
+
+    assert_eq!(result.height(), 4); // 2 * 2 = 4
+}
+
+#[test]
+fn test_join_multiple_keys() {
+    let df1 = DataFrame::new(vec![
+        Series::new("key1", vec![1.0, 1.0, 2.0]),
+        Series::new("key2", vec!["A", "B", "A"]),
+        Series::new("value1", vec![10.0, 20.0, 30.0]),
+    ])
+    .unwrap();
+
+    let df2 = DataFrame::new(vec![
+        Series::new("key1", vec![1.0, 2.0]),
+        Series::new("key2", vec!["A", "A"]),
+        Series::new("value2", vec![100.0, 200.0]),
+    ])
+    .unwrap();
+
+    let result = df1.join(&df2, &["key1", "key2"], &["key1", "key2"], "inner").unwrap();
+
+    assert_eq!(result.height(), 2);
+}
+
+#[test]
+fn test_join_no_matches() {
+    let df1 = DataFrame::new(vec![
+        Series::new("id", vec![1.0, 2.0]),
+        Series::new("name", vec!["A", "B"]),
+    ])
+    .unwrap();
+
+    let df2 = DataFrame::new(vec![
+        Series::new("id", vec![3.0, 4.0]),
+        Series::new("value", vec![30.0, 40.0]),
+    ])
+    .unwrap();
+
+    let result = df1.join(&df2, &["id"], &["id"], "inner").unwrap();
+
+    assert_eq!(result.height(), 0); // No matches
+}
+
+#[test]
+fn test_join_duplicate_keys() {
+    let df1 = DataFrame::new(vec![
+        Series::new("id", vec![1.0, 1.0, 2.0]),
+        Series::new("name", vec!["A1", "A2", "B"]),
+    ])
+    .unwrap();
+
+    let df2 = DataFrame::new(vec![
+        Series::new("id", vec![1.0, 1.0]),
+        Series::new("value", vec![10.0, 20.0]),
+    ])
+    .unwrap();
+
+    let result = df1.join(&df2, &["id"], &["id"], "inner").unwrap();
+
+    assert_eq!(result.height(), 4); // 2*2 for id=1
+}
+
+#[test]
+fn test_join_different_column_names() {
+    let df1 = DataFrame::new(vec![
+        Series::new("user_id", vec![1.0, 2.0, 3.0]),
+        Series::new("name", vec!["Alice", "Bob", "Charlie"]),
+    ])
+    .unwrap();
+
+    let df2 = DataFrame::new(vec![
+        Series::new("id", vec![1.0, 2.0]),
+        Series::new("dept", vec!["Eng", "Sales"]),
+    ])
+    .unwrap();
+
+    let result = df1.join(&df2, &["user_id"], &["id"], "inner").unwrap();
+
+    assert_eq!(result.height(), 2);
+}
+
+#[test]
+fn test_join_preserves_column_order() {
+    let df1 = DataFrame::new(vec![
+        Series::new("id", vec![1.0, 2.0]),
+        Series::new("a", vec![10.0, 20.0]),
+        Series::new("b", vec![100.0, 200.0]),
+    ])
+    .unwrap();
+
+    let df2 = DataFrame::new(vec![
+        Series::new("id", vec![1.0, 2.0]),
+        Series::new("c", vec![1000.0, 2000.0]),
+    ])
+    .unwrap();
+
+    let result = df1.join(&df2, &["id"], &["id"], "inner").unwrap();
+
+    assert_eq!(result.height(), 2);
+    assert!(result.width() >= 4);
+}
+
+#[test]
+fn test_anti_join() {
+    let df1 = DataFrame::new(vec![
+        Series::new("id", vec![1.0, 2.0, 3.0]),
+        Series::new("name", vec!["A", "B", "C"]),
+    ])
+    .unwrap();
+
+    let df2 = DataFrame::new(vec![
+        Series::new("id", vec![2.0]),
+        Series::new("value", vec![20.0]),
+    ])
+    .unwrap();
+
+    let result = df1.join(&df2, &["id"], &["id"], "anti").unwrap();
+
+    assert_eq!(result.height(), 2); // 1 and 3
+}
+
+#[test]
+fn test_semi_join() {
+    let df1 = DataFrame::new(vec![
+        Series::new("id", vec![1.0, 2.0, 3.0]),
+        Series::new("name", vec!["A", "B", "C"]),
+    ])
+    .unwrap();
+
+    let df2 = DataFrame::new(vec![
+        Series::new("id", vec![2.0, 3.0]),
+        Series::new("value", vec![20.0, 30.0]),
+    ])
+    .unwrap();
+
+    let result = df1.join(&df2, &["id"], &["id"], "semi").unwrap();
+
+    assert_eq!(result.height(), 2); // 2 and 3 exist in both
+}
+
+#[test]
+fn test_join_large_datasets() {
+    let ids1: Vec<f64> = (0..1000).map(|i| i as f64).collect();
+    let vals1: Vec<f64> = (0..1000).map(|i| i as f64 * 10.0).collect();
+
+    let ids2: Vec<f64> = (500..1500).map(|i| i as f64).collect();
+    let vals2: Vec<f64> = (500..1500).map(|i| i as f64 * 100.0).collect();
+
+    let df1 = DataFrame::new(vec![
+        Series::new("id", ids1),
+        Series::new("value1", vals1),
+    ])
+    .unwrap();
+
+    let df2 = DataFrame::new(vec![
+        Series::new("id", ids2),
+        Series::new("value2", vals2),
+    ])
+    .unwrap();
+
+    let result = df1.join(&df2, &["id"], &["id"], "inner").unwrap();
+
+    assert_eq!(result.height(), 500); // 500-999 overlap
+}
+
+#[test]
+fn test_join_with_nulls() {
+    let df1 = DataFrame::new(vec![
+        Series::new("id", vec![1.0, f64::NAN, 3.0]),
+        Series::new("name", vec!["A", "B", "C"]),
+    ])
+    .unwrap();
+
+    let df2 = DataFrame::new(vec![
+        Series::new("id", vec![1.0, 3.0]),
+        Series::new("value", vec![10.0, 30.0]),
+    ])
+    .unwrap();
+
+    let result = df1.join(&df2, &["id"], &["id"], "inner").unwrap();
+
+    assert_eq!(result.height(), 2); // Only non-null matches
+}

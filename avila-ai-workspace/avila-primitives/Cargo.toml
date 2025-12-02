@@ -18,6 +18,6 @@ avila-nucleus = { path = "../avila-nucleus" }
 criterion = "0.5"
 hex = "0.4"
 
-[[bench]]
-name = "bigint_ops"
-harness = false
+# [[bench]]
+# name = "bigint_ops"
+# harness = false

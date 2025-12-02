@@ -6,7 +6,8 @@
 //! - P-256 (NIST)
 
 use avila_nucleus::{adc, sbb, mul_wide, mac};
-use core::ops::{Add, Sub, Mul, BitAnd, BitOr, BitXor, Shl, Shr};
+use alloc::vec::Vec;
+use core::ops::{Add, Sub};
 
 /// Inteiro de 256 bits (4 limbs de 64 bits)
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
@@ -19,19 +20,19 @@ pub struct U256 {
 impl U256 {
     /// Número de limbs
     pub const LIMBS: usize = 4;
-    
+
     /// Número de bits
     pub const BITS: usize = 256;
-    
+
     /// Número de bytes
     pub const BYTES: usize = 32;
-    
+
     /// Valor zero
     pub const ZERO: Self = Self { limbs: [0; 4] };
-    
+
     /// Valor um
     pub const ONE: Self = Self { limbs: [1, 0, 0, 0] };
-    
+
     /// Valor máximo (2^256 - 1)
     pub const MAX: Self = Self { limbs: [u64::MAX; 4] };
 
@@ -46,15 +47,15 @@ impl U256 {
     /// Cria a partir de bytes big-endian
     pub fn from_bytes_be(bytes: &[u8]) -> Self {
         assert!(bytes.len() <= 32, "Bytes excedem 256 bits");
-        
+
         let mut limbs = [0u64; 4];
         let mut padded = [0u8; 32];
         padded[32 - bytes.len()..].copy_from_slice(bytes);
-        
+
         for (i, chunk) in padded.chunks_exact(8).enumerate() {
             limbs[3 - i] = u64::from_be_bytes(chunk.try_into().unwrap());
         }
-        
+
         Self { limbs }
     }
 
@@ -65,6 +66,12 @@ impl U256 {
             bytes[i * 8..(i + 1) * 8].copy_from_slice(&limb.to_be_bytes());
         }
         bytes
+    }
+
+    /// Cria a partir de string hexadecimal
+    pub const fn from_hex_const(hex: &str) -> Self {
+        // TODO: Implementar versão const
+        Self::ZERO
     }
 
     /// Cria a partir de string hexadecimal
@@ -192,6 +199,13 @@ impl U256 {
             i -= 1;
         }
         0
+    }
+}
+
+impl Default for U256 {
+    #[inline]
+    fn default() -> Self {
+        Self::ZERO
     }
 }
 

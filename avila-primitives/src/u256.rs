@@ -235,6 +235,49 @@ impl core::fmt::Display for U256 {
     }
 }
 
+impl crate::traits::BigUint for U256 {
+    #[inline]
+    fn from_u64(value: u64) -> Self {
+        Self::from_u64(value)
+    }
+
+    #[inline]
+    fn to_u64(&self) -> u64 {
+        Self::to_u64(self)
+    }
+
+    #[inline]
+    fn from_le_bytes(bytes: &[u8]) -> Self {
+        Self::from_le_bytes(bytes)
+    }
+
+    #[inline]
+    fn to_le_bytes(&self) -> &[u8] {
+        // Safety: U256 is repr(transparent) over [u64; 4], which is 32 bytes
+        unsafe { core::slice::from_raw_parts(self as *const U256 as *const u8, 32) }
+    }
+
+    #[inline]
+    fn bits(&self) -> u32 {
+        256
+    }
+
+    #[inline]
+    fn leading_zeros(&self) -> u32 {
+        Self::leading_zeros(self)
+    }
+
+    #[inline]
+    fn trailing_zeros(&self) -> u32 {
+        Self::trailing_zeros(self)
+    }
+
+    #[inline]
+    fn ct_eq(&self, other: &Self) -> bool {
+        Self::ct_eq(self, other)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

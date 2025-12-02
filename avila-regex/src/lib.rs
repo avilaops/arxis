@@ -94,3 +94,50 @@ impl Captures {
         self.matches.get(index).map(|m| m.as_str(&self.text))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_exact_match() {
+        let re = Regex::new("^test$").unwrap();
+        assert!(re.is_match("test"));
+        assert!(!re.is_match("testing"));
+    }
+
+    #[test]
+    fn test_start_match() {
+        let re = Regex::new("^hello").unwrap();
+        assert!(re.is_match("hello world"));
+        assert!(!re.is_match("say hello"));
+    }
+
+    #[test]
+    fn test_end_match() {
+        let re = Regex::new("world$").unwrap();
+        assert!(re.is_match("hello world"));
+        assert!(!re.is_match("world hello"));
+    }
+
+    #[test]
+    fn test_contains_match() {
+        let re = Regex::new("rust").unwrap();
+        assert!(re.is_match("I love rust"));
+        assert!(!re.is_match("I love go"));
+    }
+
+    #[test]
+    fn test_replace() {
+        let re = Regex::new("world").unwrap();
+        let result = re.replace("hello world", "Rust");
+        assert_eq!(result, "hello Rust");
+    }
+
+    #[test]
+    fn test_replace_all() {
+        let re = Regex::new("o").unwrap();
+        let result = re.replace_all("foo bar boo", "0");
+        assert_eq!(result, "f00 bar b00");
+    }
+}

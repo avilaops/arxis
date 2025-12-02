@@ -64,7 +64,7 @@ mod tests {
         let key = [0u8; 32];
         let nonce = [0u8; 12];
         let plaintext = b"Hello, Avila!";
-        
+
         let ciphertext = ChaCha20::process(&key, &nonce, plaintext);
         assert_eq!(ciphertext.len(), plaintext.len());
     }

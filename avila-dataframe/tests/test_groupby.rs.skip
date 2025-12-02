@@ -1,0 +1,272 @@
+//! GroupBy comprehensive tests
+
+use avila_dataframe::prelude::*;
+
+#[test]
+fn test_groupby_single_column_sum() {
+    let df = DataFrame::new(vec![
+        Series::new("category", vec!["A", "B", "A", "B", "A"]),
+        Series::new("value", vec![10.0, 20.0, 30.0, 40.0, 50.0]),
+    ])
+    .unwrap();
+
+    let result = df
+        .group_by(&["category"])
+        .unwrap()
+        .agg(&[("value", "sum")])
+        .unwrap();
+
+    assert_eq!(result.height(), 2);
+    assert_eq!(result.width(), 2);
+}
+
+#[test]
+fn test_groupby_multiple_aggregations() {
+    let df = DataFrame::new(vec![
+        Series::new("group", vec!["X", "X", "Y", "Y"]),
+        Series::new("values", vec![1.0, 2.0, 3.0, 4.0]),
+    ])
+    .unwrap();
+
+    let result = df
+        .group_by(&["group"])
+        .unwrap()
+        .agg(&[("values", "sum"), ("values", "mean"), ("values", "count")])
+        .unwrap();
+
+    assert_eq!(result.height(), 2);
+    assert!(result.width() >= 3);
+}
+
+#[test]
+fn test_groupby_mean_calculation() {
+    let df = DataFrame::new(vec![
+        Series::new("dept", vec!["Sales", "Sales", "Eng", "Eng"]),
+        Series::new("salary", vec![50000.0, 60000.0, 70000.0, 80000.0]),
+    ])
+    .unwrap();
+
+    let result = df
+        .group_by(&["dept"])
+        .unwrap()
+        .agg(&[("salary", "mean")])
+        .unwrap();
+
+    assert_eq!(result.height(), 2);
+}
+
+#[test]
+fn test_groupby_max_min() {
+    let df = DataFrame::new(vec![
+        Series::new("team", vec!["A", "A", "B", "B"]),
+        Series::new("score", vec![85.0, 92.0, 78.0, 88.0]),
+    ])
+    .unwrap();
+
+    let result = df
+        .group_by(&["team"])
+        .unwrap()
+        .agg(&[("score", "max"), ("score", "min")])
+        .unwrap();
+
+    assert_eq!(result.height(), 2);
+}
+
+#[test]
+fn test_groupby_count() {
+    let df = DataFrame::new(vec![
+        Series::new("category", vec!["A", "B", "A", "C", "B", "A"]),
+        Series::new("id", vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0]),
+    ])
+    .unwrap();
+
+    let result = df
+        .group_by(&["category"])
+        .unwrap()
+        .agg(&[("id", "count")])
+        .unwrap();
+
+    assert_eq!(result.height(), 3); // A, B, C
+}
+
+#[test]
+fn test_groupby_std_deviation() {
+    let df = DataFrame::new(vec![
+        Series::new("group", vec!["X", "X", "Y", "Y"]),
+        Series::new("value", vec![10.0, 20.0, 30.0, 40.0]),
+    ])
+    .unwrap();
+
+    let result = df
+        .group_by(&["group"])
+        .unwrap()
+        .agg(&[("value", "std")])
+        .unwrap();
+
+    assert_eq!(result.height(), 2);
+}
+
+#[test]
+fn test_groupby_multiple_columns() {
+    let df = DataFrame::new(vec![
+        Series::new("dept", vec!["Sales", "Sales", "Eng", "Eng"]),
+        Series::new("region", vec!["North", "South", "North", "South"]),
+        Series::new("revenue", vec![100.0, 200.0, 150.0, 250.0]),
+    ])
+    .unwrap();
+
+    let result = df
+        .group_by(&["dept", "region"])
+        .unwrap()
+        .agg(&[("revenue", "sum")])
+        .unwrap();
+
+    assert_eq!(result.height(), 4);
+}
+
+#[test]
+fn test_groupby_empty_groups() {
+    let df = DataFrame::new(vec![
+        Series::new("key", vec!["A", "A", "A"]),
+        Series::new("val", vec![1.0, 2.0, 3.0]),
+    ])
+    .unwrap();
+
+    let result = df
+        .group_by(&["key"])
+        .unwrap()
+        .agg(&[("val", "sum")])
+        .unwrap();
+
+    assert_eq!(result.height(), 1);
+}
+
+#[test]
+fn test_groupby_median() {
+    let df = DataFrame::new(vec![
+        Series::new("category", vec!["A", "A", "B", "B", "A"]),
+        Series::new("value", vec![1.0, 2.0, 3.0, 4.0, 5.0]),
+    ])
+    .unwrap();
+
+    let result = df
+        .group_by(&["category"])
+        .unwrap()
+        .agg(&[("value", "median")])
+        .unwrap();
+
+    assert_eq!(result.height(), 2);
+}
+
+#[test]
+fn test_groupby_quantile() {
+    let df = DataFrame::new(vec![
+        Series::new("group", vec!["X", "X", "Y", "Y", "X"]),
+        Series::new("value", vec![1.0, 2.0, 3.0, 4.0, 5.0]),
+    ])
+    .unwrap();
+
+    let result = df
+        .group_by(&["group"])
+        .unwrap()
+        .agg(&[("value", "quantile_0.75")])
+        .unwrap();
+
+    assert_eq!(result.height(), 2);
+}
+
+#[test]
+fn test_groupby_variance() {
+    let df = DataFrame::new(vec![
+        Series::new("team", vec!["A", "A", "B", "B"]),
+        Series::new("points", vec![10.0, 20.0, 15.0, 25.0]),
+    ])
+    .unwrap();
+
+    let result = df
+        .group_by(&["team"])
+        .unwrap()
+        .agg(&[("points", "var")])
+        .unwrap();
+
+    assert_eq!(result.height(), 2);
+}
+
+#[test]
+fn test_groupby_first_last() {
+    let df = DataFrame::new(vec![
+        Series::new("key", vec!["A", "B", "A", "B"]),
+        Series::new("value", vec![1.0, 2.0, 3.0, 4.0]),
+    ])
+    .unwrap();
+
+    let result = df
+        .group_by(&["key"])
+        .unwrap()
+        .agg(&[("value", "first"), ("value", "last")])
+        .unwrap();
+
+    assert_eq!(result.height(), 2);
+}
+
+#[test]
+fn test_groupby_with_nulls() {
+    let df = DataFrame::new(vec![
+        Series::new("category", vec!["A", "A", "B", "B"]),
+        Series::new("value", vec![1.0, f64::NAN, 3.0, 4.0]),
+    ])
+    .unwrap();
+
+    let result = df
+        .group_by(&["category"])
+        .unwrap()
+        .agg(&[("value", "sum")])
+        .unwrap();
+
+    assert_eq!(result.height(), 2);
+}
+
+#[test]
+fn test_groupby_large_groups() {
+    let categories: Vec<&str> = (0..1000).map(|i| if i % 2 == 0 { "Even" } else { "Odd" }).collect();
+    let values: Vec<f64> = (0..1000).map(|i| i as f64).collect();
+
+    let df = DataFrame::new(vec![
+        Series::new("category", categories),
+        Series::new("value", values),
+    ])
+    .unwrap();
+
+    let result = df
+        .group_by(&["category"])
+        .unwrap()
+        .agg(&[("value", "sum"), ("value", "count")])
+        .unwrap();
+
+    assert_eq!(result.height(), 2);
+}
+
+#[test]
+fn test_groupby_all_aggregations() {
+    let df = DataFrame::new(vec![
+        Series::new("group", vec!["A", "A", "B", "B"]),
+        Series::new("value", vec![10.0, 20.0, 30.0, 40.0]),
+    ])
+    .unwrap();
+
+    let result = df
+        .group_by(&["group"])
+        .unwrap()
+        .agg(&[
+            ("value", "sum"),
+            ("value", "mean"),
+            ("value", "min"),
+            ("value", "max"),
+            ("value", "std"),
+            ("value", "count"),
+        ])
+        .unwrap();
+
+    assert_eq!(result.height(), 2);
+    assert!(result.width() >= 6);
+}

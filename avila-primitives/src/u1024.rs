@@ -26,6 +26,12 @@ impl U1024 {
         Self(limbs)
     }
 
+    /// Convert to u64 (lossy)
+    #[inline]
+    pub const fn to_u64(&self) -> u64 {
+        self.0[0]
+    }
+
     /// Check if zero
     pub const fn is_zero(&self) -> bool {
         is_zero1024(&self.0)
@@ -34,6 +40,46 @@ impl U1024 {
     /// Leading zeros count
     pub const fn leading_zeros(&self) -> u32 {
         leading_zeros1024(&self.0)
+    }
+
+    /// Constant-time equality
+    #[inline]
+    pub fn ct_eq(&self, other: &Self) -> bool {
+        let mut diff = 0u64;
+        for i in 0..16 {
+            diff |= self.0[i] ^ other.0[i];
+        }
+        diff == 0
+    }
+
+    /// Create from little-endian bytes
+    pub fn from_le_bytes(bytes: &[u8]) -> Self {
+        let mut result = [0u64; 16];
+        for (i, chunk) in bytes.chunks(8).enumerate().take(16) {
+            let mut buf = [0u8; 8];
+            buf[..chunk.len()].copy_from_slice(chunk);
+            result[i] = u64::from_le_bytes(buf);
+        }
+        Self(result)
+    }
+
+    /// Convert to little-endian bytes
+    pub fn to_le_bytes(&self) -> [u8; 128] {
+        let mut result = [0u8; 128];
+        for (i, &word) in self.0.iter().enumerate() {
+            result[i * 8..(i + 1) * 8].copy_from_slice(&word.to_le_bytes());
+        }
+        result
+    }
+
+    /// Count trailing zeros
+    pub fn trailing_zeros(&self) -> u32 {
+        for (i, &word) in self.0.iter().enumerate() {
+            if word != 0 {
+                return (i as u32) * 64 + word.trailing_zeros();
+            }
+        }
+        1024
     }
 }
 
@@ -184,6 +230,48 @@ impl core::fmt::Debug for U1024 {
 impl core::fmt::Display for U1024 {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "U1024({})", self.0[0])
+    }
+}
+
+impl crate::traits::BigUint for U1024 {
+    #[inline]
+    fn from_u64(value: u64) -> Self {
+        Self::from_u64(value)
+    }
+
+    #[inline]
+    fn to_u64(&self) -> u64 {
+        Self::to_u64(self)
+    }
+
+    #[inline]
+    fn from_le_bytes(bytes: &[u8]) -> Self {
+        Self::from_le_bytes(bytes)
+    }
+
+    #[inline]
+    fn to_le_bytes(&self) -> &[u8] {
+        unsafe { core::slice::from_raw_parts(self as *const U1024 as *const u8, 128) }
+    }
+
+    #[inline]
+    fn bits(&self) -> u32 {
+        1024
+    }
+
+    #[inline]
+    fn leading_zeros(&self) -> u32 {
+        Self::leading_zeros(self)
+    }
+
+    #[inline]
+    fn trailing_zeros(&self) -> u32 {
+        Self::trailing_zeros(self)
+    }
+
+    #[inline]
+    fn ct_eq(&self, other: &Self) -> bool {
+        Self::ct_eq(self, other)
     }
 }
 

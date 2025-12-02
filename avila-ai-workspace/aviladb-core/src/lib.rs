@@ -42,19 +42,19 @@ pub mod query;
 pub struct Config {
     /// Diretório de dados
     pub data_dir: alloc::string::String,
-    
+
     /// Endereço de bind (ex: "127.0.0.1:5432")
     pub bind_addr: alloc::string::String,
-    
+
     /// Tamanho máximo de memória para cache (bytes)
     pub cache_size: usize,
-    
+
     /// Intervalo de checkpoint (segundos)
     pub checkpoint_interval: u64,
-    
+
     /// Chave pública do servidor (para autenticação)
     pub server_public_key: [u8; 33],
-    
+
     /// Chave privada do servidor
     pub server_private_key: [u8; 32],
 }
@@ -76,10 +76,10 @@ impl Default for Config {
 pub struct AvilaDB {
     /// Configuração
     pub config: Config,
-    
+
     /// Storage engine
     pub storage: storage::StorageEngine,
-    
+
     /// Transaction manager
     pub txn_manager: transaction::TransactionManager,
 }

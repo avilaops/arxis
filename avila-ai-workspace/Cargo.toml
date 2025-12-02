@@ -35,7 +35,7 @@ strip = true
 [profile.release.build-override]
 opt-level = 3
 
-# Profile para performance máxima (usa instruções AVX-512)
+# Profile para performance máxima (requer Cargo nightly para rustflags em profile)
+# Use: RUSTFLAGS="-C target-cpu=native" cargo build --release
 [profile.extreme]
 inherits = "release"
-rustflags = ["-C", "target-cpu=native"]

@@ -11,27 +11,27 @@ pub enum Query {
         table: String,
         where_clause: Option<String>,
     },
-    
+
     /// INSERT
     Insert {
         table: String,
         columns: Vec<String>,
         values: Vec<String>,
     },
-    
+
     /// UPDATE
     Update {
         table: String,
         set: Vec<(String, String)>,
         where_clause: Option<String>,
     },
-    
+
     /// DELETE
     Delete {
         table: String,
         where_clause: Option<String>,
     },
-    
+
     /// CREATE TABLE
     CreateTable {
         name: String,
@@ -43,10 +43,10 @@ pub enum Query {
 pub struct ColumnDef {
     /// Nome da coluna
     pub name: String,
-    
+
     /// Tipo da coluna
     pub data_type: DataType,
-    
+
     /// Constraints
     pub nullable: bool,
 }

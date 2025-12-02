@@ -122,9 +122,9 @@ $notebooks = @{
 
 function Create-Issue {
     param($Module, $NotebookLabel, $NotebookName)
-    
+
     $title = "[$($NotebookLabel.ToUpper())] $($Module.name)"
-    
+
     $body = @"
 ## 📦 Módulo: $($Module.name)
 
@@ -195,13 +195,13 @@ Veja o manifesto do notebook para dependências específicas.
     }
 
     Write-Host "  Creating: $title" -ForegroundColor Green
-    
+
     gh issue create `
         --title $title `
         --body $body `
         --label "$NotebookLabel,area-$($Module.area),priority-$($Module.priority)" `
         2>&1 | Out-Null
-    
+
     Start-Sleep -Milliseconds 500  # Rate limiting
 }
 
@@ -214,21 +214,21 @@ if ($DryRun) {
     Write-Host ""
 }
 
-$notebooksToProcess = if ($Notebook -eq "all") { 
-    @("n1", "n2", "n3", "n4", "n5") 
-} else { 
-    @($Notebook.ToLower()) 
+$notebooksToProcess = if ($Notebook -eq "all") {
+    @("n1", "n2", "n3", "n4", "n5")
+} else {
+    @($Notebook.ToLower())
 }
 
 foreach ($nbKey in $notebooksToProcess) {
     $nb = $notebooks[$nbKey]
     Write-Host "📘 $($nb.name) ($($nb.modules.Count) módulos)" -ForegroundColor Cyan
     Write-Host ""
-    
+
     foreach ($module in $nb.modules) {
         Create-Issue -Module $module -NotebookLabel $nb.label -NotebookName $nb.name
     }
-    
+
     Write-Host ""
 }
 

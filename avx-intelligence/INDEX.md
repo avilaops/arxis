@@ -37,7 +37,7 @@ cd d:\arxis\avx-intelligence\scripts
 ## 💻 Planos por Máquina
 
 ### Machine 1 - AVL-CONTROLLER
-**Papel**: Coordenador Central  
+**Papel**: Coordenador Central
 **Arquivo**: [`machines/MACHINE1-PLAN.md`](machines/MACHINE1-PLAN.md)
 
 **Responsabilidades**:
@@ -52,7 +52,7 @@ cd d:\arxis\avx-intelligence\scripts
 ---
 
 ### Machine 2 - AVILA-RUNTIME
-**Papel**: Build Engine  
+**Papel**: Build Engine
 **Arquivo**: [`machines/MACHINE2-PLAN.md`](machines/MACHINE2-PLAN.md)
 
 **Responsabilidades**:
@@ -67,7 +67,7 @@ cd d:\arxis\avx-intelligence\scripts
 ---
 
 ### Machine 3 - ALV-FACTORY
-**Papel**: Code Factory  
+**Papel**: Code Factory
 **Arquivo**: [`machines/MACHINE3-PLAN.md`](machines/MACHINE3-PLAN.md)
 
 **Responsabilidades**:
@@ -322,5 +322,5 @@ cd d:\arxis\avx-intelligence\scripts
 
 ---
 
-*Última atualização: 02/12/2025*  
+*Última atualização: 02/12/2025*
 *Sistema AVX Intelligence v1.0*

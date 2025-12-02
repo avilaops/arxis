@@ -125,7 +125,7 @@ fn select_u64_bad(a: u64, b: u64, condition: bool) -> u64 {
 /// # Exemplo
 /// ```
 /// use avila_crypto::curves::secp256k1::{Point, GENERATOR};
-/// 
+///
 /// let p1 = GENERATOR;
 /// let p2 = GENERATOR;
 /// let p3 = p1.point_add(&p2);
@@ -165,7 +165,7 @@ mod tests {
         use std::time::Instant;
 
         let iterations = 10_000_000;
-        
+
         // Mede tempo para condition=true
         let start = Instant::now();
         for _ in 0..iterations {
@@ -370,7 +370,7 @@ git push origin feature/schnorr-batch-verification
        let a = U256::from_u64(123456);
        let b = U256::from_u64(789012);
        let p = U256::from_u64(1000);
-       
+
        let lhs = (a.wrapping_add(&b)).mod_reduce(&p);
        let rhs = (a.mod_reduce(&p).wrapping_add(&b.mod_reduce(&p))).mod_reduce(&p);
        assert_eq!(lhs, rhs);
@@ -402,7 +402,7 @@ git push origin feature/schnorr-batch-verification
        let tx = db.begin_transaction();
        tx.put("key", "value");
        tx.commit();
-       
+
        let value = db.get("key").unwrap();
        assert_eq!(value, "value");
    }
@@ -456,7 +456,7 @@ make test-integration
        let va = _mm256_loadu_si256(a.as_ptr() as *const __m256i);
        let vb = _mm256_loadu_si256(b.as_ptr() as *const __m256i);
        let result = _mm256_add_epi64(va, vb);
-       
+
        let mut output = [0u64; 4];
        _mm256_storeu_si256(output.as_mut_ptr() as *mut __m256i, result);
        output

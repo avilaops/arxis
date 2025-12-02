@@ -113,3 +113,26 @@ pub mod stream {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn test_ready() {
+        let fut = future::ready(42);
+        assert_eq!(fut.await, 42);
+    }
+
+    #[tokio::test]
+    async fn test_map() {
+        let fut = future::ready(10).map(|x| x * 2);
+        assert_eq!(fut.await, 20);
+    }
+
+    #[tokio::test]
+    async fn test_spawn() {
+        let handle = spawn(async { 100 });
+        assert_eq!(handle.await.unwrap(), 100);
+    }
+}

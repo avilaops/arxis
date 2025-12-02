@@ -17,6 +17,7 @@ path = "src/lib.rs"
 [dev-dependencies]
 criterion = "0.5"
 
-[[bench]]
-name = "simd_ops"
-harness = false
+# Benchmarks comentados até serem implementados
+# [[bench]]
+# name = "simd_ops"
+# harness = false

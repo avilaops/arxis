@@ -1,0 +1,11 @@
+﻿    pub fn extract_title(&self) -> Option<String> {
+        // Extract title directly from root node inner_text
+        if let NodeType::Element { inner_text, .. } = &self.root.node_type {
+            if let Some(start) = inner_text.find("<title>") {
+                if let Some(end) = inner_text[start..].find("</title>") {
+                    return Some(inner_text[start + 7..start + end].to_string());
+                }
+            }
+        }
+        None
+    }

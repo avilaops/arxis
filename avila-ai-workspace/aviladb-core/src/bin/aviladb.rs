@@ -32,14 +32,14 @@ fn main() {
 
     // Cria e inicia servidor
     let mut db = AvilaDB::new(config);
-    
+
     println!("🚀 AvilaDB iniciando...");
     db.start();
-    
+
     println!("✅ AvilaDB pronto para conexões!");
     println!();
     println!("Pressione Ctrl+C para parar.");
-    
+
     // TODO: Implementar loop principal
     // loop {
     //     // Aceitar conexões

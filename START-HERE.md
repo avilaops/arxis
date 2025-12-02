@@ -1,7 +1,7 @@
 # 🚀 ARXIS - START HERE
 
-**Data**: 02 Dezembro 2025  
-**Meta**: NASA + Silicon Valley + $500k ARR até Jun 2027  
+**Data**: 02 Dezembro 2025
+**Meta**: NASA + Silicon Valley + $500k ARR até Jun 2027
 **Método**: 3 Máquinas + 6 Copilots + 82 Módulos
 
 ---
@@ -19,8 +19,8 @@ cd d:\arxis\avx-intelligence\scripts
 .\create-github-issues.ps1 -Notebook n1
 ```
 
-**Você faz**: Coordenação, issues, CI/CD  
-**VS Code**: 1 instância  
+**Você faz**: Coordenação, issues, CI/CD
+**VS Code**: 1 instância
 
 ---
 
@@ -32,8 +32,8 @@ cd d:\arxis\avx-intelligence\scripts
 .\start-week1.ps1 -Machine machine2
 ```
 
-**Você faz**: Build, testes, benchmarks  
-**VS Codes**: 2 instâncias (depois)  
+**Você faz**: Build, testes, benchmarks
+**VS Codes**: 2 instâncias (depois)
 **Status**: ⏸️ Aguardar código da Machine 3
 
 ---
@@ -50,8 +50,8 @@ code d:\arxis\avila-core-workspace    # VS Code 1
 code d:\arxis\avila-ai-workspace      # VS Code 2
 ```
 
-**Você faz**: Desenvolvimento massivo  
-**VS Codes**: 2-3 instâncias paralelas  
+**Você faz**: Desenvolvimento massivo
+**VS Codes**: 2-3 instâncias paralelas
 **Status**: 🔴 COMEÇAR TERÇA (3/Dez)
 
 ---
@@ -237,8 +237,8 @@ ls
 
 ## 🎉 Let's Build!
 
-**Timeline**: 24 meses  
-**Método**: Fordism Digital  
+**Timeline**: 24 meses
+**Método**: Fordism Digital
 **Meta**: NASA recognition + SV standards + $500k ARR
 
 **Semana 1 começa AGORA!** 🚀

@@ -19,16 +19,16 @@ pub enum PacketType {
 pub struct LongHeader {
     /// Tipo do packet
     pub packet_type: PacketType,
-    
+
     /// Versão QUIC
     pub version: u32,
-    
+
     /// Destination Connection ID
     pub dcid: alloc::vec::Vec<u8>,
-    
+
     /// Source Connection ID
     pub scid: alloc::vec::Vec<u8>,
-    
+
     /// Packet number
     pub packet_number: u64,
 }
@@ -37,7 +37,7 @@ pub struct LongHeader {
 pub struct ShortHeader {
     /// Destination Connection ID
     pub dcid: alloc::vec::Vec<u8>,
-    
+
     /// Packet number
     pub packet_number: u64,
 }
@@ -46,7 +46,7 @@ pub struct ShortHeader {
 pub struct Packet {
     /// Header
     pub header: PacketHeader,
-    
+
     /// Payload (frames)
     pub payload: alloc::vec::Vec<u8>,
 }

@@ -53,7 +53,7 @@ unsafe fn add_avx512(a: &[u64; 8], b: &[u64; 8]) -> [u64; 8] {
     let va = _mm512_loadu_epi64(a.as_ptr());
     let vb = _mm512_loadu_epi64(b.as_ptr());
     let sum = _mm512_add_epi64(va, vb);
-    
+
     let mut result = [0u64; 8];
     _mm512_storeu_epi64(result.as_mut_ptr(), sum);
     result
@@ -124,19 +124,19 @@ fn scalar_mul(k: &[u8; 32], u: &U256) -> U256 {
     let mut z2 = U256::ZERO;
     let mut x3 = *u;
     let mut z3 = U256::ONE;
-    
+
     // Itera bits de k (MSB para LSB)
     for bit in (0..255).rev() {
         let swap = (k[bit/8] >> (bit%8)) & 1;
-        
+
         // Conditional swap (sem branches!)
         cswap(swap, &mut x2, &mut x3);
         cswap(swap, &mut z2, &mut z3);
-        
+
         // Differential addition (fórmulas específicas)
         // ...
     }
-    
+
     x2 * z2.mod_inverse(&P) % P
 }
 ```
@@ -306,7 +306,7 @@ se now - time_sent > loss_delay:
 
 #### **PTO (Probe Timeout)**
 ```
-pto = smoothed_rtt 
+pto = smoothed_rtt
     + max(4 × rtt_var, 1ms)
     + max_ack_delay
 
@@ -464,7 +464,7 @@ QUIC:
   Initial (ClientHello) → 0.5 RTT
   Handshake            → 1.0 RTT
   Data                 → 1.0 RTT
-  
+
 Reconnect (0-RTT):
   Data → 0.5 RTT  ⚡
 ```
@@ -500,7 +500,7 @@ use criterion::{black_box, Criterion};
 fn bench_u256_add(c: &mut Criterion) {
     let a = U256::from_u64(12345);
     let b = U256::from_u64(67890);
-    
+
     c.bench_function("u256_add", |bencher| {
         bencher.iter(|| {
             black_box(a + b)
@@ -533,12 +533,12 @@ fn secure_compare(a: &[u8], b: &[u8]) -> bool {
     if a.len() != b.len() {
         return false;
     }
-    
+
     let mut diff = 0u8;
     for (x, y) in a.iter().zip(b.iter()) {
         diff |= x ^ y;
     }
-    
+
     diff == 0  // tempo constante
 }
 ```

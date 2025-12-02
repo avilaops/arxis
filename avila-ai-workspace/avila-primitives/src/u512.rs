@@ -13,7 +13,7 @@ impl U512 {
     pub const LIMBS: usize = 8;
     pub const BITS: usize = 512;
     pub const BYTES: usize = 64;
-    
+
     pub const ZERO: Self = Self { limbs: [0; 8] };
     pub const ONE: Self = Self { limbs: [1, 0, 0, 0, 0, 0, 0, 0] };
     pub const MAX: Self = Self { limbs: [u64::MAX; 8] };
@@ -32,11 +32,11 @@ impl U512 {
         let mut limbs = [0u64; 8];
         let mut padded = [0u8; 64];
         padded[64 - bytes.len()..].copy_from_slice(bytes);
-        
+
         for (i, chunk) in padded.chunks_exact(8).enumerate() {
             limbs[7 - i] = u64::from_be_bytes(chunk.try_into().unwrap());
         }
-        
+
         Self { limbs }
     }
 }

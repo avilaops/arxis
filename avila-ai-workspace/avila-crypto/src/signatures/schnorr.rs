@@ -9,7 +9,7 @@
 //! 6. ❌ Patente expirou só em 2008 (por isso não foi usado antes)
 
 use avila_primitives::U256;
-use crate::curves::{Point, Secp256k1, EllipticCurve};
+use crate::curves::{Point, secp256k1::Secp256k1, EllipticCurve};
 
 /// Assinatura Schnorr (r, s)
 #[derive(Copy, Clone, Debug)]
@@ -49,17 +49,17 @@ impl SchnorrSignature {
 pub fn sign(private_key: &U256, message: &[u8]) -> SchnorrSignature {
     // TODO: Implementar hash (precisa de BLAKE3 ou SHA256)
     // Por enquanto, stub
-    
+
     let k = U256::from_u64(12345); // Deveria ser H(privkey || msg)
     let r_point = Secp256k1::scalar_mul(&k, &Secp256k1::generator());
     let r = r_point.x;
-    
+
     let e = U256::from_u64(67890); // Deveria ser H(r || pubkey || msg)
-    
+
     // s = k + e × private_key mod n
     use avila_math::ModularArithmetic;
     let s = k.add_mod(&e.mul_mod(private_key, &Secp256k1::N), &Secp256k1::N);
-    
+
     SchnorrSignature { r, s }
 }
 
@@ -85,10 +85,10 @@ mod tests {
             r: U256::from_u64(123),
             s: U256::from_u64(456),
         };
-        
+
         let bytes = sig.to_bytes();
         let recovered = SchnorrSignature::from_bytes(&bytes);
-        
+
         assert_eq!(sig.r, recovered.r);
         assert_eq!(sig.s, recovered.s);
     }

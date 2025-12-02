@@ -27,10 +27,10 @@ use alloc::string::String;
 pub struct StorageEngine {
     /// MemTable ativa (in-memory)
     pub memtable: MemTable,
-    
+
     /// MemTables imutáveis (sendo flushed)
     pub immutable_memtables: Vec<MemTable>,
-    
+
     /// SSTables no disco
     pub sstables: Vec<SSTable>,
 }
@@ -48,7 +48,7 @@ impl StorageEngine {
     /// Escreve key-value
     pub fn put(&mut self, key: &[u8], value: &[u8]) {
         self.memtable.put(key.to_vec(), value.to_vec());
-        
+
         // Se MemTable ficou grande, flush para disco
         if self.memtable.size_bytes() > 4 * 1024 * 1024 {
             self.flush_memtable();
@@ -89,11 +89,11 @@ impl StorageEngine {
     fn flush_memtable(&mut self) {
         // Move MemTable ativa para imutáveis
         let old_memtable = core::mem::replace(&mut self.memtable, MemTable::new());
-        
+
         // Cria SSTable a partir da MemTable
         let sstable = SSTable::from_memtable(&old_memtable);
         self.sstables.push(sstable);
-        
+
         // TODO: Escrever SSTable no disco
     }
 
@@ -111,7 +111,7 @@ impl StorageEngine {
 pub struct MemTable {
     /// Dados ordenados
     data: BTreeMap<Vec<u8>, Entry>,
-    
+
     /// Tamanho aproximado em bytes
     size: usize,
 }
@@ -159,7 +159,7 @@ impl MemTable {
 pub struct SSTable {
     /// ID da SSTable
     pub id: u64,
-    
+
     /// Dados em memória (para este stub)
     /// Em produção, seria mmap ou leitura do disco
     data: BTreeMap<Vec<u8>, Vec<u8>>,
@@ -168,13 +168,13 @@ pub struct SSTable {
 impl SSTable {
     fn from_memtable(memtable: &MemTable) -> Self {
         let mut data = BTreeMap::new();
-        
+
         for (key, entry) in &memtable.data {
             if let Entry::Value(value) = entry {
                 data.insert(key.clone(), value.clone());
             }
         }
-        
+
         Self {
             id: 0, // TODO: Gerar ID único
             data,
@@ -193,7 +193,7 @@ mod tests {
     #[test]
     fn test_put_get() {
         let mut storage = StorageEngine::new();
-        
+
         storage.put(b"key1", b"value1");
         assert_eq!(storage.get(b"key1"), Some(b"value1".to_vec()));
     }
@@ -201,10 +201,10 @@ mod tests {
     #[test]
     fn test_delete() {
         let mut storage = StorageEngine::new();
-        
+
         storage.put(b"key1", b"value1");
         storage.delete(b"key1");
-        
+
         assert_eq!(storage.get(b"key1"), None);
     }
 }

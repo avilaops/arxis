@@ -23,25 +23,25 @@ pub enum ConnectionState {
 pub struct Connection {
     /// Estado atual
     pub state: ConnectionState,
-    
+
     /// Connection ID local
     pub local_cid: [u8; 8],
-    
+
     /// Connection ID remoto
     pub remote_cid: [u8; 8],
-    
+
     /// Streams ativos
     pub streams: BTreeMap<u64, Stream>,
-    
+
     /// Próximo packet number a enviar
     pub next_packet_number: u64,
-    
+
     /// Maior packet number recebido
     pub largest_received_pn: u64,
-    
+
     /// Flow control: bytes que podemos receber
     pub max_data_local: u64,
-    
+
     /// Flow control: bytes que podemos enviar
     pub max_data_remote: u64,
 }
@@ -91,19 +91,19 @@ impl Connection {
 pub struct Stream {
     /// ID do stream
     pub id: u64,
-    
+
     /// Offset de envio (próximo byte a enviar)
     pub send_offset: u64,
-    
+
     /// Offset de recepção (próximo byte esperado)
     pub recv_offset: u64,
-    
+
     /// Máximo de dados que podemos receber
     pub max_stream_data: u64,
-    
+
     /// FIN enviado (stream fechado para escrita)
     pub fin_sent: bool,
-    
+
     /// FIN recebido (stream fechado para leitura)
     pub fin_received: bool,
 }
@@ -140,7 +140,7 @@ mod tests {
             fin_sent: false,
             fin_received: false,
         };
-        
+
         assert!(stream_bidi_client.is_bidirectional());
         assert!(stream_bidi_client.is_client_initiated());
     }

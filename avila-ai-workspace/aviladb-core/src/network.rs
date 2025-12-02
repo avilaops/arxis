@@ -6,7 +6,7 @@ use avila_quinn::{Connection, Config as QuinnConfig};
 pub struct NetworkServer {
     /// Configuração QUIC
     pub config: QuinnConfig,
-    
+
     /// Conexões ativas
     pub connections: alloc::vec::Vec<Connection>,
 }
@@ -45,19 +45,19 @@ impl NetworkServer {
 pub enum Message {
     /// Query SQL
     Query { sql: alloc::string::String },
-    
+
     /// Resultado da query
     QueryResult { rows: alloc::vec::Vec<Row> },
-    
+
     /// Begin transaction
     Begin,
-    
+
     /// Commit transaction
     Commit,
-    
+
     /// Rollback transaction
     Rollback,
-    
+
     /// Erro
     Error { message: alloc::string::String },
 }

@@ -2,7 +2,7 @@
 
 use crate::u2048::U2048;
 use core::cmp::Ordering;
-use core::ops::{Add, Sub, Mul, Div, Rem, Neg};
+use core::ops::{Add, Sub, Mul, Div, Rem, Neg, BitAnd, BitOr, BitXor, Not, Shl, Shr};
 
 /// 2048-bit signed integer (two's complement)
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
@@ -89,6 +89,44 @@ impl Neg for I2048 {
     fn neg(self) -> Self { Self(!self.0 + U2048::ONE) }
 }
 
+impl BitAnd for I2048 {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self { Self(self.0 & rhs.0) }
+}
+
+impl BitOr for I2048 {
+    type Output = Self;
+    fn bitor(self, rhs: Self) -> Self { Self(self.0 | rhs.0) }
+}
+
+impl BitXor for I2048 {
+    type Output = Self;
+    fn bitxor(self, rhs: Self) -> Self { Self(self.0 ^ rhs.0) }
+}
+
+impl Not for I2048 {
+    type Output = Self;
+    fn not(self) -> Self { Self(!self.0) }
+}
+
+impl Shl<u32> for I2048 {
+    type Output = Self;
+    fn shl(self, rhs: u32) -> Self { Self(self.0 << rhs) }
+}
+
+impl Shr<u32> for I2048 {
+    type Output = Self;
+    fn shr(self, rhs: u32) -> Self {
+        if self.is_negative() && rhs > 0 && rhs < 2048 {
+            let shifted = self.0 >> rhs;
+            let fill = U2048::MAX << (2048 - rhs);
+            Self(shifted | fill)
+        } else {
+            Self(self.0 >> rhs)
+        }
+    }
+}
+
 impl PartialOrd for I2048 {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> { Some(self.cmp(other)) }
 }
@@ -113,6 +151,77 @@ impl core::fmt::Debug for I2048 {
 impl core::fmt::Display for I2048 {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "I2048({})", self.0 .0[0])
+    }
+}
+
+impl I2048 {
+    /// Create from little-endian bytes (two's complement)
+    pub fn from_le_bytes(bytes: &[u8]) -> Self {
+        Self(U2048::from_le_bytes(bytes))
+    }
+
+    /// Convert to little-endian bytes (two's complement)
+    pub fn to_le_bytes(&self) -> [u8; 256] {
+        self.0.to_le_bytes()
+    }
+
+    /// Constant-time equality
+    #[inline]
+    pub fn ct_eq(&self, other: &Self) -> bool {
+        self.0.ct_eq(&other.0)
+    }
+
+    /// Convert to i64 (with truncation/clamping)
+    pub fn to_i64(&self) -> i64 {
+        if self.is_negative() {
+            i64::MIN
+        } else if self.0 <= U2048::from_u64(i64::MAX as u64) {
+            self.0.to_u64() as i64
+        } else {
+            i64::MAX
+        }
+    }
+}
+
+impl crate::traits::BigInt for I2048 {
+    #[inline]
+    fn from_i64(value: i64) -> Self {
+        Self::from_i64(value)
+    }
+
+    #[inline]
+    fn to_i64(&self) -> i64 {
+        Self::to_i64(self)
+    }
+
+    #[inline]
+    fn from_le_bytes(bytes: &[u8]) -> Self {
+        Self::from_le_bytes(bytes)
+    }
+
+    #[inline]
+    fn to_le_bytes(&self) -> &[u8] {
+        unsafe { core::slice::from_raw_parts(self as *const I2048 as *const u8, 256) }
+    }
+
+    #[inline]
+    fn bits(&self) -> u32 {
+        2048
+    }
+
+    #[inline]
+    fn is_negative(&self) -> bool {
+        Self::is_negative(self)
+    }
+
+    #[inline]
+    fn abs(&self) -> Self {
+        Self::abs(self)
+    }
+
+    #[inline]
+    fn ct_eq(&self, other: &Self) -> bool {
+        Self::ct_eq(self, other)
     }
 }
 

@@ -15,6 +15,9 @@
 #![deny(unsafe_op_in_unsafe_fn)]
 #![warn(missing_docs)]
 
+extern crate alloc;
+use alloc::vec::Vec;
+
 pub mod u256;
 pub mod u384;
 pub mod u512;
@@ -31,31 +34,31 @@ pub use u4096::U4096;
 pub trait BigUint: Sized + Copy + Clone {
     /// Número de limbs (u64)
     const LIMBS: usize;
-    
+
     /// Número de bits
     const BITS: usize;
-    
+
     /// Número de bytes
     const BYTES: usize;
-    
+
     /// Valor zero
     const ZERO: Self;
-    
+
     /// Valor um
     const ONE: Self;
-    
+
     /// Cria a partir de um u64
     fn from_u64(value: u64) -> Self;
-    
+
     /// Converte para bytes big-endian
     fn to_bytes_be(&self) -> Vec<u8>;
-    
+
     /// Cria a partir de bytes big-endian
     fn from_bytes_be(bytes: &[u8]) -> Self;
-    
+
     /// Verifica se é zero
     fn is_zero(&self) -> bool;
-    
+
     /// Verifica se é ímpar
     fn is_odd(&self) -> bool;
 }

@@ -1,0 +1,21 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      crate:
+        description: 'Crate name to publish'
+        required: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Publish crate
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_TOKEN }}
+        run: |
+          cd ${{ github.event.inputs.crate }}
+          cargo publish

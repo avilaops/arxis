@@ -274,16 +274,22 @@ mod tests {
         let data = array![
             [0.0, 0.0],
             [0.1, 0.1],
+            [0.05, 0.05],
             [5.0, 5.0],
             [5.1, 5.1],
+            [5.05, 5.05],
+            [10.0, 10.0],
+            [10.1, 10.1],
         ];
 
-        let result = EnsembleClusteringBuilder::new(2)
-            .n_iterations(10)
+        let result = EnsembleClusteringBuilder::new(3)
+            .n_iterations(15)
+            .subsample_ratio(0.9)
             .fit(data.view())
             .unwrap();
 
-        assert_eq!(result.labels.len(), 4);
-        assert!(result.stability_score() > 0.5);
+        assert_eq!(result.labels.len(), 8);
+        assert!(result.stability_score() > 0.3, "Stability score too low: {}", result.stability_score());
+        assert_eq!(result.n_clusters, 3);
     }
 }

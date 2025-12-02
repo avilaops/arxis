@@ -69,7 +69,7 @@ pub struct IntroductionPoint {
 }
 
 /// Service descriptor (published to HSDir)
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ServiceDescriptor {
     pub onion_address: String,
     pub public_key: [u8; 32],

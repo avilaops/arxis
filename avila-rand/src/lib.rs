@@ -197,3 +197,52 @@ pub fn seed(seed: u64) {
         *rng.borrow_mut() = Xoshiro256::from_seed(seed);
     });
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_basic_types() {
+        let mut rng = Rng::new();
+        let _u: u64 = rng.gen();
+        let _f: f64 = rng.gen();
+        let _b: bool = rng.gen();
+    }
+
+    #[test]
+    fn test_range() {
+        let mut rng = Rng::new();
+        for _ in 0..100 {
+            let val = rng.gen_range(10..20);
+            assert!(val >= 10 && val < 20);
+        }
+    }
+
+    #[test]
+    fn test_global_functions() {
+        let _v: u32 = random();
+        let v = random_range(5..15);
+        assert!(v >= 5 && v < 15);
+    }
+
+    #[test]
+    fn test_shuffle() {
+        let mut arr = [1, 2, 3, 4, 5];
+        shuffle(&mut arr);
+        assert_eq!(arr.len(), 5);
+    }
+
+    #[test]
+    fn test_seed_determinism() {
+        seed(12345);
+        let mut rng = Rng::new();
+        let v1: u64 = rng.gen();
+
+        seed(12345);
+        let mut rng2 = Rng::new();
+        let v2: u64 = rng2.gen();
+
+        assert_eq!(v1, v2);
+    }
+}

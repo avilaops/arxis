@@ -1,4 +1,4 @@
-//! # Ávila Cryptography Suite
+﻿//! # Ãvila Cryptography Suite
 //!
 //! **Sovereign cryptographic primitives with zero external dependencies.**
 //!
@@ -24,6 +24,8 @@ pub mod curves;
 pub mod signatures;
 pub mod hash;
 pub mod encryption;
+pub mod mac;
 
 /// Version of the library
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
+

@@ -106,14 +106,29 @@ pub fn shl4096(a: &[u64; 64], bits: u32) -> [u64; 64] {
     if bits == 0 {
         return *a;
     }
+    if bits >= 4096 {
+        return [0u64; 64];
+    }
 
     let mut result = [0u64; 64];
-    let shift_right = 64 - bits;
+    let word_shift = (bits / 64) as usize;
+    let bit_shift = bits % 64;
 
-    result[0] = a[0] << bits;
+    if bit_shift == 0 {
+        // Simple word shift
+        for i in word_shift..64 {
+            result[i] = a[i - word_shift];
+        }
+    } else {
+        let shift_right = 64 - bit_shift;
+        result[word_shift] = a[0] << bit_shift;
 
-    for i in 1..64 {
-        result[i] = (a[i] << bits) | (a[i - 1] >> shift_right);
+        for i in (word_shift + 1)..64 {
+            let src_idx = i - word_shift;
+            if src_idx < 64 {
+                result[i] = (a[src_idx] << bit_shift) | (a[src_idx - 1] >> shift_right);
+            }
+        }
     }
 
     result

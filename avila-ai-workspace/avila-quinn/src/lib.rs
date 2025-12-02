@@ -38,16 +38,16 @@ pub mod congestion;
 pub struct Config {
     /// Tamanho máximo de dados não-ACK'd
     pub max_data: u64,
-    
+
     /// Tamanho máximo de streams bidirecionais
     pub max_streams_bidi: u64,
-    
+
     /// Tamanho máximo de streams unidirecionais
     pub max_streams_uni: u64,
-    
+
     /// Tempo máximo de idle (segundos)
     pub idle_timeout: u64,
-    
+
     /// MTU máximo
     pub max_udp_payload_size: u16,
 }

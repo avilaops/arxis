@@ -38,16 +38,48 @@ impl Dom {
                     .unwrap_or("div")
                     .to_string();
 
-                // Extract inner text content (recursive parsing required for production)
-                let inner_text = if let Some(close_start) = html.find("</") {
+                // Extract inner text content - find matching closing tag
+                let close_tag = format!("</{}>", tag);
+                let inner_content = if let Some(close_start) = html.find(&close_tag) {
                     html[tag_end + 1..close_start].to_string()
                 } else {
                     String::new()
                 };
 
+                // Parse children recursively
+                let mut children = Vec::new();
+                let mut remaining = inner_content.as_str();
+                while !remaining.is_empty() {
+                    if remaining.starts_with('<') && !remaining.starts_with("</") {
+                        if let Some(child_tag_end) = remaining.find('>') {
+                            let child_tag_content = &remaining[1..child_tag_end];
+                            let child_tag = child_tag_content.split_whitespace().next()
+                                .unwrap_or("div");
+                            let child_close_tag = format!("</{}>", child_tag);
+                            if let Some(child_close_start) = remaining.find(&child_close_tag) {
+                                let child_close_end = child_close_start + child_close_tag.len();
+                                let child_html = &remaining[..child_close_end];
+                                children.push(Self::parse_node(child_html));
+                                remaining = &remaining[child_close_end..];
+                            } else {
+                                break;
+                            }
+                        } else {
+                            break;
+                        }
+                    } else {
+                        // Skip non-element content
+                        if let Some(next_tag) = remaining.find('<') {
+                            remaining = &remaining[next_tag..];
+                        } else {
+                            break;
+                        }
+                    }
+                }
+
                 DomNode {
-                    node_type: NodeType::Element { tag, inner_text },
-                    children: Vec::new(),
+                    node_type: NodeType::Element { tag, inner_text: inner_content },
+                    children,
                     attributes: BTreeMap::new(),
                 }
             } else {

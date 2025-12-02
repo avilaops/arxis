@@ -46,30 +46,30 @@ function Step {
 if ($Machine -eq "machine1") {
     Write-Host "🎯 Setup: Coordenador Central" -ForegroundColor Cyan
     Write-Host ""
-    
+
     Step "1. Atualizar repositório" {
         git pull origin main
     }
-    
+
     Step "2. Verificar GitHub CLI" {
         $ghVersion = gh --version 2>$null
         if (!$ghVersion) {
             Write-Host "  Instalando GitHub CLI..." -ForegroundColor Yellow
             winget install GitHub.cli
-            Write-Host "  Execute 'gh auth login' manualmente" -ForegroundColor Cyan
+            Write-Host "  Execute gh auth login manualmente" -ForegroundColor Cyan
         } else {
             Write-Host "  GitHub CLI: $($ghVersion[0])" -ForegroundColor Gray
         }
     }
-    
+
     Step "3. Capturar logs iniciais" {
         & "$intelligenceDir\scripts\capture-logs.ps1" -All
     }
-    
+
     Step "4. Criar issues (preview)" {
         & "$intelligenceDir\scripts\create-github-issues.ps1" -DryRun -Notebook n1
     }
-    
+
     Write-Host "📋 Próximos passos manuais:" -ForegroundColor Cyan
     Write-Host "  1. Revisar preview das issues" -ForegroundColor White
     Write-Host "  2. Executar: .\scripts\create-github-issues.ps1 -Notebook n1" -ForegroundColor Gray
@@ -86,20 +86,20 @@ if ($Machine -eq "machine1") {
 elseif ($Machine -eq "machine2") {
     Write-Host "🎯 Setup: Build Engine" -ForegroundColor Cyan
     Write-Host ""
-    
+
     Step "1. Atualizar repositório" {
         git pull origin main
     }
-    
+
     Step "2. Verificar Rust toolchain" {
         $rustVersion = rustc --version
         Write-Host "  Rust: $rustVersion" -ForegroundColor Gray
-        
+
         # Adicionar componentes
         rustup component add clippy rustfmt llvm-tools-preview 2>&1 | Out-Null
         Write-Host "  Componentes: clippy, rustfmt, llvm-tools" -ForegroundColor Gray
     }
-    
+
     Step "3. Instalar ferramentas de build" {
         $tools = @("cargo-nextest", "cargo-llvm-cov", "cargo-criterion")
         foreach ($tool in $tools) {
@@ -111,15 +111,15 @@ elseif ($Machine -eq "machine2") {
         }
         Write-Host "  Ferramentas instaladas" -ForegroundColor Gray
     }
-    
+
     Step "4. Build inicial (verificação)" {
         cargo check --all
     }
-    
+
     Step "5. Capturar logs iniciais" {
         & "$intelligenceDir\scripts\capture-logs.ps1" -All
     }
-    
+
     Write-Host "📋 Próximos passos:" -ForegroundColor Cyan
     Write-Host "  1. Aguardar PRs do Notebook 1" -ForegroundColor White
     Write-Host "  2. Rodar testes quando código chegar" -ForegroundColor White
@@ -135,18 +135,18 @@ elseif ($Machine -eq "machine2") {
 elseif ($Machine -eq "machine3") {
     Write-Host "🎯 Setup: Code Factory" -ForegroundColor Cyan
     Write-Host ""
-    
+
     Step "1. Atualizar repositório" {
         git pull origin main
     }
-    
+
     Step "2. Verificar Rust e Copilot" {
         $rustVersion = rustc --version
         Write-Host "  Rust: $rustVersion" -ForegroundColor Gray
-        
+
         Write-Host "  Copilot: Verificar nas configurações do VS Code" -ForegroundColor Gray
     }
-    
+
     Step "3. Criar branches de trabalho" {
         # Primeiros 4 módulos da Área 1
         $modules = @("avila-primitives", "avila-error", "avila-id", "avila-time")
@@ -158,11 +158,11 @@ elseif ($Machine -eq "machine3") {
             }
         }
     }
-    
+
     Step "4. Capturar logs iniciais" {
         & "$intelligenceDir\scripts\capture-logs.ps1" -All
     }
-    
+
     Step "5. Preparar workspaces" {
         # Criar estrutura se não existir
         $workspaces = @(
@@ -170,14 +170,14 @@ elseif ($Machine -eq "machine3") {
             "$baseDir\avila-ai-workspace",
             "$baseDir\avila-geo-workspace"
         )
-        
+
         foreach ($ws in $workspaces) {
             if (!(Test-Path $ws)) {
                 Write-Host "  ⚠️  Workspace não encontrado: $ws" -ForegroundColor Yellow
             }
         }
     }
-    
+
     Write-Host "📋 Próximos passos:" -ForegroundColor Cyan
     Write-Host "  1. Abrir 2 VS Codes (workspaces diferentes)" -ForegroundColor White
     Write-Host "  2. Começar desenvolvimento (Terça-feira)" -ForegroundColor White
@@ -202,7 +202,8 @@ Write-Host "📊 Logs salvos em:" -ForegroundColor Cyan
 Write-Host "  $intelligenceDir\logs\machines\$Machine\" -ForegroundColor Gray
 Write-Host ""
 Write-Host "📖 Documentação completa:" -ForegroundColor Cyan
-Write-Host "  $intelligenceDir\machines\$(($Machine -replace 'machine', 'MACHINE').ToUpper())-PLAN.md" -ForegroundColor Gray
+$machineName = $Machine.ToUpper()
+Write-Host "  $intelligenceDir\machines\$machineName-PLAN.md" -ForegroundColor Gray
 Write-Host ""
 
 # Salvar log do setup
@@ -215,7 +216,8 @@ $setupLog = @{
     git_commit = (git rev-parse --short HEAD)
 } | ConvertTo-Json
 
-$logFile = "$intelligenceDir\logs\machines\$Machine\setup-$(Get-Date -Format 'yyyyMMdd-HHmmss').json"
+$timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
+$logFile = "$intelligenceDir\logs\machines\$Machine\setup-$timestamp.json"
 $setupLog | Out-File -FilePath $logFile -Encoding UTF8
 
 Write-Host "✓ Log de setup salvo: $logFile" -ForegroundColor Green

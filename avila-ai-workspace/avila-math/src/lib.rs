@@ -17,22 +17,22 @@ extern crate alloc;
 pub mod modular;
 pub mod montgomery;
 
-use avila_primitives::U256;
+// Removido: use avila_primitives::U256;
 
 /// Trait para operações modulares
 pub trait ModularArithmetic: Sized {
     /// Adição modular: (a + b) mod m
     fn add_mod(&self, rhs: &Self, modulus: &Self) -> Self;
-    
+
     /// Subtração modular: (a - b) mod m
     fn sub_mod(&self, rhs: &Self, modulus: &Self) -> Self;
-    
+
     /// Multiplicação modular: (a × b) mod m
     fn mul_mod(&self, rhs: &Self, modulus: &Self) -> Self;
-    
+
     /// Exponenciação modular: a^exp mod m
     fn pow_mod(&self, exp: &Self, modulus: &Self) -> Self;
-    
+
     /// Inverso modular: a^(-1) mod m (usando Extended Euclidean Algorithm)
     fn mod_inverse(&self, modulus: &Self) -> Self;
 }

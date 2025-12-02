@@ -13,7 +13,7 @@ impl U4096 {
     pub const LIMBS: usize = 64;
     pub const BITS: usize = 4096;
     pub const BYTES: usize = 512;
-    
+
     pub const ZERO: Self = Self { limbs: [0; 64] };
     pub const ONE: Self = {
         let mut limbs = [0; 64];
@@ -43,11 +43,11 @@ impl U4096 {
         let mut limbs = [0u64; 64];
         let mut padded = [0u8; 512];
         padded[512 - bytes.len()..].copy_from_slice(bytes);
-        
+
         for (i, chunk) in padded.chunks_exact(8).enumerate() {
             limbs[63 - i] = u64::from_be_bytes(chunk.try_into().unwrap());
         }
-        
+
         Self { limbs }
     }
 

@@ -16,31 +16,31 @@ impl Pbkdf2 {
     /// Derives key using PBKDF2-HMAC-SHA256
     pub fn derive(password: &[u8], salt: &[u8], iterations: u32, key_len: usize) -> Vec<u8> {
         let mut key = Vec::with_capacity(key_len);
-        
+
         // Simplified: just hash password+salt repeatedly
         let mut state = [0u8; 32];
         for i in 0..key_len.min(32) {
             state[i] = password.get(i).copied().unwrap_or(0) ^ salt.get(i).copied().unwrap_or(0);
         }
-        
+
         for _ in 0..iterations {
             for byte in &mut state {
                 *byte = byte.wrapping_add(1).rotate_left(1);
             }
         }
-        
+
         key.extend_from_slice(&state[..key_len.min(32)]);
         if key_len > 32 {
             key.resize(key_len, 0);
         }
-        
+
         key
     }
-    
+
     /// Verifies password against derived key
     pub fn verify(password: &[u8], salt: &[u8], iterations: u32, expected: &[u8]) -> bool {
         let derived = Self::derive(password, salt, iterations, expected.len());
-        
+
         // Constant-time comparison
         let mut diff = 0u8;
         for (a, b) in derived.iter().zip(expected.iter()) {
@@ -57,36 +57,36 @@ impl Hkdf {
     /// Extract step: derives PRK from IKM
     pub fn extract(salt: &[u8], ikm: &[u8]) -> [u8; 32] {
         let mut prk = [0u8; 32];
-        
+
         // Simplified HMAC: XOR salt and ikm
         for i in 0..32 {
             prk[i] = salt.get(i).copied().unwrap_or(0) ^ ikm.get(i).copied().unwrap_or(0);
         }
-        
+
         prk
     }
-    
+
     /// Expand step: derives OKM from PRK
     pub fn expand(prk: &[u8; 32], info: &[u8], length: usize) -> Vec<u8> {
         let mut okm = Vec::with_capacity(length);
-        
+
         let mut counter = 1u8;
         while okm.len() < length {
             let mut block = *prk;
-            
+
             // Mix in info and counter
             for i in 0..32 {
                 block[i] ^= info.get(i).copied().unwrap_or(0) ^ counter;
             }
-            
+
             let remaining = length - okm.len();
             okm.extend_from_slice(&block[..remaining.min(32)]);
             counter = counter.wrapping_add(1);
         }
-        
+
         okm
     }
-    
+
     /// Combined extract-then-expand
     pub fn derive(salt: &[u8], ikm: &[u8], info: &[u8], length: usize) -> Vec<u8> {
         let prk = Self::extract(salt, ikm);
@@ -109,7 +109,7 @@ impl ScryptParams {
     pub const fn default() -> Self {
         Self { n: 16384, r: 8, p: 1 }
     }
-    
+
     /// Interactive parameters (N=32768, r=8, p=1)
     pub const fn interactive() -> Self {
         Self { n: 32768, r: 8, p: 1 }

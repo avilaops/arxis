@@ -232,10 +232,10 @@ use_huge_pages = false
 # [server]
 # bind_addr = "127.0.0.1:7000"
 # data_dir = "./dev-data"
-# 
+#
 # [logging]
 # level = "debug"
-# 
+#
 # [monitoring]
 # metrics_port = 9090
 # enable_profiling = true
@@ -246,18 +246,18 @@ use_huge_pages = false
 # bind_addr = "0.0.0.0:7000"
 # data_dir = "/var/lib/aviladb"
 # worker_threads = 16
-# 
+#
 # [performance]
 # cache_size_mb = 2048
 # compaction_threads = 4
-# 
+#
 # [network]
 # max_connections = 10000
-# 
+#
 # [storage]
 # fsync_on_write = true
 # use_direct_io = true
-# 
+#
 # [logging]
 # level = "warn"
 # format = "json"
@@ -268,20 +268,20 @@ use_huge_pages = false
 # --- High Performance ---
 # [server]
 # worker_threads = 32
-# 
+#
 # [performance]
 # cache_size_mb = 8192
 # memtable_size_mb = 256
 # checkpoint_interval_sec = 300
-# 
+#
 # [network]
 # max_udp_payload = 1500
 # enable_zero_rtt = true
-# 
+#
 # [storage]
 # fsync_on_write = false  # ⚠️  Risco de perda de dados!
 # use_direct_io = true
-# 
+#
 # [experimental]
 # use_avx512 = true
 # use_huge_pages = true

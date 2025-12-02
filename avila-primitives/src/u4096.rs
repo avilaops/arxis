@@ -30,6 +30,12 @@ impl U4096 {
         Self(limbs)
     }
 
+    /// Convert to u64 (lossy)
+    #[inline]
+    pub const fn to_u64(&self) -> u64 {
+        self.0[0]
+    }
+
     /// Check if zero
     pub fn is_zero(&self) -> bool {
         is_zero4096(&self.0)
@@ -38,6 +44,46 @@ impl U4096 {
     /// Leading zeros count
     pub fn leading_zeros(&self) -> u32 {
         leading_zeros4096(&self.0)
+    }
+
+    /// Constant-time equality
+    #[inline]
+    pub fn ct_eq(&self, other: &Self) -> bool {
+        let mut diff = 0u64;
+        for i in 0..64 {
+            diff |= self.0[i] ^ other.0[i];
+        }
+        diff == 0
+    }
+
+    /// Create from little-endian bytes
+    pub fn from_le_bytes(bytes: &[u8]) -> Self {
+        let mut result = [0u64; 64];
+        for (i, chunk) in bytes.chunks(8).enumerate().take(64) {
+            let mut buf = [0u8; 8];
+            buf[..chunk.len()].copy_from_slice(chunk);
+            result[i] = u64::from_le_bytes(buf);
+        }
+        Self(result)
+    }
+
+    /// Convert to little-endian bytes
+    pub fn to_le_bytes(&self) -> [u8; 512] {
+        let mut result = [0u8; 512];
+        for (i, &word) in self.0.iter().enumerate() {
+            result[i * 8..(i + 1) * 8].copy_from_slice(&word.to_le_bytes());
+        }
+        result
+    }
+
+    /// Count trailing zeros
+    pub fn trailing_zeros(&self) -> u32 {
+        for (i, &word) in self.0.iter().enumerate() {
+            if word != 0 {
+                return (i as u32) * 64 + word.trailing_zeros();
+            }
+        }
+        4096
     }
 }
 

@@ -1,15 +1,25 @@
-[package]
+﻿[package]
 name = "avila-crypto"
 version = "0.1.0"
 edition = "2021"
-authors = ["Ávila Engineering Team"]
-description = "🔐 Sovereign cryptography - Zero compromises, maximum security"
+authors = ["Ãvila Project"]
 license = "MIT OR Apache-2.0"
+description = "Sovereign cryptographic primitives with zero external dependencies"
+repository = "https://github.com/avila-org/avila-crypto"
+homepage = "https://avila.org"
+documentation = "https://docs.rs/avila-crypto"
+readme = "README.md"
+keywords = ["cryptography", "crypto", "no-std", "zero-deps", "sovereign"]
+categories = ["cryptography", "no-std"]
 
 [dependencies]
-# ZERO EXTERNAL DEPENDENCIES - Everything implemented from scratch
 
-[profile.release]
-opt-level = 3
-lto = "fat"
-codegen-units = 1
+[dev-dependencies]
+
+[lib]
+name = "avila_crypto"
+path = "src/lib.rs"
+
+[features]
+default = []
+std = []

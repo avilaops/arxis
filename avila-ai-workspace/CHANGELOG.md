@@ -51,7 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Constant-time where applicable
 
 #### avila-crypto (Sovereign Cryptography)
-- **secp256k1 curve**: 
+- **secp256k1 curve**:
   - Point addition and doubling (projective coordinates)
   - Scalar multiplication with double-and-add
   - Generator point G and curve validation
@@ -161,12 +161,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Documentation**: Extensive inline docs + 5 markdown files
 
 ### 🎯 Philosophy
-> "Construir do átomo para cima, sem dependências externas. 
+> "Construir do átomo para cima, sem dependências externas.
 > Zero compromissos com aprovações governamentais ou padrões corporativos.
 > Se Bitcoin e Ethereum confiam em secp256k1 e Schnorr, nós também confiamos."
 
-This release establishes the **mathematical and cryptographic foundation** 
-for AvilaDB. Everything is built from first principles with transparency 
+This release establishes the **mathematical and cryptographic foundation**
+for AvilaDB. Everything is built from first principles with transparency
 and auditability as core values.
 
 ### 🙏 Acknowledgments

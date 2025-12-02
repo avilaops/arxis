@@ -2,7 +2,7 @@
 
 use crate::u256::U256;
 use core::cmp::Ordering;
-use core::ops::{Add, Sub, Mul, Div, Rem, Neg};
+use core::ops::{Add, Sub, Mul, Div, Rem, Neg, BitAnd, BitOr, BitXor, Not, Shl, Shr};
 
 /// 256-bit signed integer (two's complement)
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
@@ -162,6 +162,61 @@ impl Neg for I256 {
     }
 }
 
+impl BitAnd for I256 {
+    type Output = Self;
+
+    fn bitand(self, rhs: Self) -> Self {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl BitOr for I256 {
+    type Output = Self;
+
+    fn bitor(self, rhs: Self) -> Self {
+        Self(self.0 | rhs.0)
+    }
+}
+
+impl BitXor for I256 {
+    type Output = Self;
+
+    fn bitxor(self, rhs: Self) -> Self {
+        Self(self.0 ^ rhs.0)
+    }
+}
+
+impl Not for I256 {
+    type Output = Self;
+
+    fn not(self) -> Self {
+        Self(!self.0)
+    }
+}
+
+impl Shl<u32> for I256 {
+    type Output = Self;
+
+    fn shl(self, rhs: u32) -> Self {
+        Self(self.0 << rhs)
+    }
+}
+
+impl Shr<u32> for I256 {
+    type Output = Self;
+
+    fn shr(self, rhs: u32) -> Self {
+        // Arithmetic shift: preserve sign bit
+        if self.is_negative() {
+            let shifted = self.0 >> rhs;
+            let fill = U256::MAX << (256 - rhs);
+            Self(shifted | fill)
+        } else {
+            Self(self.0 >> rhs)
+        }
+    }
+}
+
 // Comparison
 impl PartialOrd for I256 {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
@@ -200,6 +255,66 @@ impl core::fmt::Display for I256 {
         } else {
             write!(f, "{}", self.0)
         }
+    }
+}
+
+impl I256 {
+    /// Create from little-endian bytes (two's complement)
+    pub fn from_le_bytes(bytes: &[u8]) -> Self {
+        Self(U256::from_le_bytes(bytes))
+    }
+
+    /// Convert to little-endian bytes (two's complement)
+    pub fn to_le_bytes(&self) -> [u8; 32] {
+        self.0.to_le_bytes()
+    }
+
+    /// Constant-time equality
+    #[inline]
+    pub fn ct_eq(&self, other: &Self) -> bool {
+        self.0.ct_eq(&other.0)
+    }
+}
+
+impl crate::traits::BigInt for I256 {
+    #[inline]
+    fn from_i64(value: i64) -> Self {
+        Self::from_i64(value)
+    }
+
+    #[inline]
+    fn to_i64(&self) -> i64 {
+        Self::to_i64(self).unwrap_or(if self.is_negative() { i64::MIN } else { i64::MAX })
+    }
+
+    #[inline]
+    fn from_le_bytes(bytes: &[u8]) -> Self {
+        Self::from_le_bytes(bytes)
+    }
+
+    #[inline]
+    fn to_le_bytes(&self) -> &[u8] {
+        unsafe { core::slice::from_raw_parts(self as *const I256 as *const u8, 32) }
+    }
+
+    #[inline]
+    fn bits(&self) -> u32 {
+        256
+    }
+
+    #[inline]
+    fn is_negative(&self) -> bool {
+        Self::is_negative(self)
+    }
+
+    #[inline]
+    fn abs(&self) -> Self {
+        Self::abs(self)
+    }
+
+    #[inline]
+    fn ct_eq(&self, other: &Self) -> bool {
+        Self::ct_eq(self, other)
     }
 }
 

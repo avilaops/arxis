@@ -165,7 +165,7 @@ let client = Client::connect("127.0.0.1:7000")?;
 
 // Transação
 let mut txn = client.begin()?;
-txn.execute("INSERT INTO users (name, email) VALUES (?, ?)", 
+txn.execute("INSERT INTO users (name, email) VALUES (?, ?)",
             &["Alice", "alice@avila.inc"])?;
 txn.commit()?;
 
@@ -246,13 +246,13 @@ MIT OR Apache-2.0 (escolha do usuário)
 
 ## 🌟 Filosofia Final
 
-> "Governos aprovam o que podem controlar.  
-> Nós implementamos o que a matemática prova.  
-> A diferença não é técnica - é filosófica."  
->   
+> "Governos aprovam o que podem controlar.
+> Nós implementamos o que a matemática prova.
+> A diferença não é técnica - é filosófica."
+>
 > — Ávila Engineering
 
-**AvilaDB não é apenas um banco de dados.  
+**AvilaDB não é apenas um banco de dados.
 É uma declaração de independência tecnológica.**
 
 ```

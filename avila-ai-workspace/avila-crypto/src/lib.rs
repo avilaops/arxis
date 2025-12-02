@@ -47,13 +47,13 @@ pub mod encryption;
 pub mod constants {
     /// Tamanho de chave simétrica (256 bits = 32 bytes)
     pub const KEY_SIZE: usize = 32;
-    
+
     /// Tamanho de nonce para ChaCha20 (12 bytes)
     pub const NONCE_SIZE: usize = 12;
-    
+
     /// Tamanho de tag de autenticação (16 bytes)
     pub const TAG_SIZE: usize = 16;
-    
+
     /// Tamanho de hash BLAKE3 (32 bytes)
     pub const HASH_SIZE: usize = 32;
 }

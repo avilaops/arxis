@@ -23,22 +23,22 @@ pub enum FrameType {
 pub enum Frame {
     /// Padding (no-op)
     Padding,
-    
+
     /// Ping (keep-alive)
     Ping,
-    
+
     /// ACK (acknowledgment)
     Ack(AckFrame),
-    
+
     /// CRYPTO (handshake data)
     Crypto(CryptoFrame),
-    
+
     /// STREAM (application data)
     Stream(StreamFrame),
-    
+
     /// MAX_DATA (flow control)
     MaxData { max_data: u64 },
-    
+
     /// CONNECTION_CLOSE
     ConnectionClose {
         error_code: u64,
@@ -50,10 +50,10 @@ pub enum Frame {
 pub struct AckFrame {
     /// Maior packet number ACK'd
     pub largest_acknowledged: u64,
-    
+
     /// Delay desde recepção do packet ACK'd
     pub ack_delay: u64,
-    
+
     /// Ranges de packets ACK'd
     pub ack_ranges: alloc::vec::Vec<(u64, u64)>,
 }
@@ -62,7 +62,7 @@ pub struct AckFrame {
 pub struct CryptoFrame {
     /// Offset no stream CRYPTO
     pub offset: u64,
-    
+
     /// Dados do handshake
     pub data: alloc::vec::Vec<u8>,
 }
@@ -71,13 +71,13 @@ pub struct CryptoFrame {
 pub struct StreamFrame {
     /// ID do stream
     pub stream_id: u64,
-    
+
     /// Offset no stream
     pub offset: u64,
-    
+
     /// Dados da aplicação
     pub data: alloc::vec::Vec<u8>,
-    
+
     /// FIN bit (último frame do stream)
     pub fin: bool,
 }

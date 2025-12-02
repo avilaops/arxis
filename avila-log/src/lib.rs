@@ -192,3 +192,50 @@ macro_rules! span {
         $crate::Span::new($name)
     };
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    struct TestLogger {
+        logs: Mutex<Vec<(Level, String)>>,
+    }
+
+    impl TestLogger {
+        fn new() -> Self {
+            Self {
+                logs: Mutex::new(Vec::new()),
+            }
+        }
+
+        fn get_logs(&self) -> Vec<(Level, String)> {
+            self.logs.lock().unwrap().clone()
+        }
+    }
+
+    impl Logger for TestLogger {
+        fn log(&self, level: Level, message: &str) {
+            self.logs.lock().unwrap().push((level, message.to_string()));
+        }
+    }
+
+    #[test]
+    fn test_console_logger() {
+        let logger = ConsoleLogger::new(Level::Info);
+        logger.log(Level::Info, "test message");
+        logger.log(Level::Debug, "should not appear");
+    }
+
+    #[test]
+    fn test_levels() {
+        assert!(Level::Error > Level::Warn);
+        assert!(Level::Info > Level::Debug);
+        assert_eq!(Level::Info.as_str(), "INFO");
+    }
+
+    #[test]
+    fn test_span() {
+        let _span = Span::new("test_operation");
+        // Span should log on creation and drop
+    }
+}

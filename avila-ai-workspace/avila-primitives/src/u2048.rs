@@ -13,7 +13,7 @@ impl U2048 {
     pub const LIMBS: usize = 32;
     pub const BITS: usize = 2048;
     pub const BYTES: usize = 256;
-    
+
     pub const ZERO: Self = Self { limbs: [0; 32] };
     pub const ONE: Self = {
         let mut limbs = [0; 32];
@@ -47,11 +47,11 @@ impl U2048 {
         let mut limbs = [0u64; 32];
         let mut padded = [0u8; 256];
         padded[256 - bytes.len()..].copy_from_slice(bytes);
-        
+
         for (i, chunk) in padded.chunks_exact(8).enumerate() {
             limbs[31 - i] = u64::from_be_bytes(chunk.try_into().unwrap());
         }
-        
+
         Self { limbs }
     }
 

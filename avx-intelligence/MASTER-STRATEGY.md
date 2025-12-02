@@ -18,7 +18,7 @@ Tornar ARXIS **referência mundial** em:
 NOTEBOOK 1 (Fundação)     →  INÍCIO IMEDIATO
     ↓ 50% completo
 NOTEBOOK 2 (Matemática)   →  +2 semanas
-    ↓ 50% completo  
+    ↓ 50% completo
 NOTEBOOK 3 (Data/ML)      →  +4 semanas
     ↓ 70% base estável
 NOTEBOOKS 4+5 (Plataforma) → +8 semanas (paralelo)
@@ -199,7 +199,7 @@ NOTEBOOK 6 (Coordenação)  →  ATIVO desde DIA 1
 1. **Developer Tools** (Q2 2026)
    - avila-clustering, avila-tokenizer
    - Target: ML engineers, data scientists
-   
+
 2. **Cloud Platform** (Q3 2026)
    - AvilaDB, AVL services
    - Target: Startups, scale-ups

@@ -7,7 +7,7 @@ impl ModularArithmetic for U256 {
     /// Adição modular: (a + b) mod m
     fn add_mod(&self, rhs: &Self, modulus: &Self) -> Self {
         let sum = self.wrapping_add(rhs);
-        
+
         // Se sum >= modulus, subtrai modulus
         if sum.cmp(modulus) >= 0 {
             sum.wrapping_sub(modulus)
@@ -33,7 +33,7 @@ impl ModularArithmetic for U256 {
         // TODO: Implementar multiplicação completa U256 × U256 → U512
         // Por enquanto, apenas para números pequenos
         let result = self.mul_u64(rhs.limbs[0]);
-        
+
         // Redução modular simples (divisão repetida)
         reduce_simple(&result, modulus)
     }
@@ -49,10 +49,10 @@ impl ModularArithmetic for U256 {
             if e.is_odd() {
                 result = result.mul_mod(&base, modulus);
             }
-            
+
             // Square
             base = base.mul_mod(&base, modulus);
-            
+
             // Shift right
             e = e.shr1();
         }
@@ -73,12 +73,12 @@ impl ModularArithmetic for U256 {
 
         while !newr.is_zero() {
             let quotient = div_simple(&r, &newr);
-            
+
             // t, newt = newt, t - quotient × newt
             let temp = t;
             t = newt;
             newt = temp.sub_mod(&quotient.mul_mod(&newt, modulus), modulus);
-            
+
             // r, newr = newr, r - quotient × newr
             let temp = r;
             r = newr;
@@ -99,11 +99,11 @@ impl ModularArithmetic for U256 {
 /// usar Montgomery ou Barrett reduction
 fn reduce_simple(value: &U256, modulus: &U256) -> U256 {
     let mut result = *value;
-    
+
     while result.cmp(modulus) >= 0 {
         result = result.wrapping_sub(modulus);
     }
-    
+
     result
 }
 
@@ -112,16 +112,16 @@ fn div_simple(dividend: &U256, divisor: &U256) -> U256 {
     if divisor.is_zero() {
         panic!("Divisão por zero");
     }
-    
+
     let mut quotient = U256::ZERO;
     let mut remainder = *dividend;
-    
+
     // Divisão por subtração repetida (lento, mas correto)
     while remainder.cmp(divisor) >= 0 {
         remainder = remainder.wrapping_sub(divisor);
         quotient = quotient.wrapping_add(&U256::ONE);
     }
-    
+
     quotient
 }
 
@@ -134,7 +134,7 @@ mod tests {
         let a = U256::from_u64(10);
         let b = U256::from_u64(20);
         let m = U256::from_u64(25);
-        
+
         let result = a.add_mod(&b, &m);
         assert_eq!(result.limbs[0], 5); // (10 + 20) mod 25 = 5
     }
@@ -144,7 +144,7 @@ mod tests {
         let a = U256::from_u64(10);
         let b = U256::from_u64(20);
         let m = U256::from_u64(25);
-        
+
         let result = a.sub_mod(&b, &m);
         assert_eq!(result.limbs[0], 15); // (10 - 20) mod 25 = 15
     }
@@ -154,7 +154,7 @@ mod tests {
         let base = U256::from_u64(2);
         let exp = U256::from_u64(10);
         let modulus = U256::from_u64(1000);
-        
+
         let result = base.pow_mod(&exp, &modulus);
         assert_eq!(result.limbs[0], 24); // 2^10 mod 1000 = 1024 mod 1000 = 24
     }

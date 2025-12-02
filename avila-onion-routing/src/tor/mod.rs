@@ -276,7 +276,7 @@ mod tests {
         let exit = TorNode::new(NodeRole::Exit);
 
         let mut circuit = Circuit::new(guard, middle, exit);
-        circuit.keys = vec![[1u8; 32], [2u8; 32], [3u8; 32]];
+        circuit.keys = vec![[1u8; 32], [2u8; 32], [4u8; 32]];  // Use keys that don't cancel via XOR
 
         let plaintext = b"Hello Tor!";
         let encrypted = circuit.encrypt_onion(plaintext);

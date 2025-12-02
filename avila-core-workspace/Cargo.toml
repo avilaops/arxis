@@ -1,11 +1,11 @@
 [workspace]
 members = [
-    "../avila-arrow",
-    "../avila-compress",
-    "../avila-linalg",
-    "../avila-math",
-    "../avila-reduction",
-    "../avila-telemetry"
+    "avila-nucleus",
+    "avila-primitives",
+    "avila-math",
+    "avila-crypto",
+    "avila-quinn",
+    "avila-db"
 ]
 resolver = "2"
 
@@ -23,4 +23,8 @@ rust-version = "1.70"
 [workspace.metadata.avila]
 domain = "core"
 release_tag_prefix = "core-"
-summary = "Bibliotecas fundamentais de matemática, colunas e telemetria para toda a plataforma AVL"
+summary = "AvilaDB - Banco de dados soberano com criptografia de ponta e protocolo QUIC nativo"
+
+[workspace.dependencies]
+# Zero external dependencies - tudo implementado do zero
+# Apenas std library do Rust

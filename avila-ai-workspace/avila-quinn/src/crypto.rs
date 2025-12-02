@@ -6,10 +6,10 @@ use avila_crypto::encryption::chacha20::ChaCha20;
 pub struct Keys {
     /// Chave de criptografia (ChaCha20)
     pub key: [u8; 32],
-    
+
     /// IV (nonce base)
     pub iv: [u8; 12],
-    
+
     /// Header protection key
     pub hp_key: [u8; 32],
 }
@@ -66,13 +66,13 @@ impl Keys {
 pub struct CryptoHandshake {
     /// Estado do handshake
     pub state: HandshakeState,
-    
+
     /// Keys para Initial packets
     pub initial_keys: Keys,
-    
+
     /// Keys para Handshake packets
     pub handshake_keys: Option<Keys>,
-    
+
     /// Keys para Application packets
     pub application_keys: Option<Keys>,
 }
@@ -93,7 +93,7 @@ impl CryptoHandshake {
     pub fn new() -> Self {
         // Deriva Initial keys (conhecidas por ambos os lados)
         let initial_secret = [0u8; 32]; // TODO: Derivar corretamente
-        
+
         Self {
             state: HandshakeState::Initial,
             initial_keys: Keys::from_secret(&initial_secret),
@@ -109,7 +109,7 @@ impl CryptoHandshake {
         // 2. ServerHello
         // 3. Key exchange (ECDHE usando secp256k1)
         // 4. Certificate verification (usando Schnorr signatures)
-        
+
         alloc::vec![]
     }
 }

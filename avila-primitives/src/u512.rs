@@ -49,6 +49,36 @@ impl U512 {
     pub fn ct_eq(&self, other: &Self) -> bool {
         eq512(&self.0, &other.0)
     }
+
+    /// Create from little-endian bytes
+    pub fn from_le_bytes(bytes: &[u8]) -> Self {
+        let mut result = [0u64; 8];
+        for (i, chunk) in bytes.chunks(8).enumerate().take(8) {
+            let mut buf = [0u8; 8];
+            buf[..chunk.len()].copy_from_slice(chunk);
+            result[i] = u64::from_le_bytes(buf);
+        }
+        Self(result)
+    }
+
+    /// Convert to little-endian bytes
+    pub fn to_le_bytes(&self) -> [u8; 64] {
+        let mut result = [0u8; 64];
+        for (i, &word) in self.0.iter().enumerate() {
+            result[i * 8..(i + 1) * 8].copy_from_slice(&word.to_le_bytes());
+        }
+        result
+    }
+
+    /// Count trailing zeros
+    pub fn trailing_zeros(&self) -> u32 {
+        for (i, &word) in self.0.iter().enumerate() {
+            if word != 0 {
+                return (i as u32) * 64 + word.trailing_zeros();
+            }
+        }
+        512
+    }
 }
 
 impl Add for U512 {
@@ -188,6 +218,48 @@ impl core::fmt::Display for U512 {
             write!(f, "{:016x}", word)?;
         }
         Ok(())
+    }
+}
+
+impl crate::traits::BigUint for U512 {
+    #[inline]
+    fn from_u64(value: u64) -> Self {
+        Self::from_u64(value)
+    }
+
+    #[inline]
+    fn to_u64(&self) -> u64 {
+        Self::to_u64(self)
+    }
+
+    #[inline]
+    fn from_le_bytes(bytes: &[u8]) -> Self {
+        Self::from_le_bytes(bytes)
+    }
+
+    #[inline]
+    fn to_le_bytes(&self) -> &[u8] {
+        unsafe { core::slice::from_raw_parts(self as *const U512 as *const u8, 64) }
+    }
+
+    #[inline]
+    fn bits(&self) -> u32 {
+        512
+    }
+
+    #[inline]
+    fn leading_zeros(&self) -> u32 {
+        Self::leading_zeros(self)
+    }
+
+    #[inline]
+    fn trailing_zeros(&self) -> u32 {
+        Self::trailing_zeros(self)
+    }
+
+    #[inline]
+    fn ct_eq(&self, other: &Self) -> bool {
+        Self::ct_eq(self, other)
     }
 }
 

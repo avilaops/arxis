@@ -216,3 +216,45 @@ impl Distribution<f32> for Normal {
         self.sample(rng) as f32
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_rng_struct() {
+        let mut rng = RngStruct::new();
+        let v1: f64 = rng.gen();
+        let v2: f64 = rng.gen();
+        assert_ne!(v1, v2);
+    }
+
+    #[test]
+    fn test_thread_rng() {
+        let mut rng = thread_rng();
+        let v: f64 = rng.gen();
+        assert!(v >= 0.0 && v <= 1.0);
+    }
+
+    #[test]
+    fn test_range() {
+        let mut rng = RngStruct::new();
+        let v = rng.gen_range(10..20);
+        assert!(v >= 10 && v < 20);
+    }
+
+    #[test]
+    fn test_shuffle() {
+        let mut rng = RngStruct::new();
+        let mut arr = [1, 2, 3, 4, 5];
+        arr.shuffle(&mut rng);
+        assert_eq!(arr.len(), 5);
+    }
+
+    #[test]
+    fn test_normal_distribution() {
+        let normal = Normal::new(0.0, 1.0).unwrap();
+        let mut rng = RngStruct::new();
+        let _sample: f64 = normal.sample(&mut rng);
+    }
+}

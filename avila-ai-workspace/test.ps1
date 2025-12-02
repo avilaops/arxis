@@ -7,7 +7,7 @@ param(
     [Parameter(Position=0)]
     [ValidateSet('unit', 'integration', 'crypto', 'perf', 'all')]
     [string]$Suite = 'all',
-    
+
     [switch]$Verbose,
     [switch]$Coverage
 )
@@ -22,19 +22,19 @@ $BANNER = @"
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 "@
 
-# Test vectors para criptografia
-$CRYPTO_VECTORS = @{
-    secp256k1_point = @{
-        x = "79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798"
-        y = "483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8"
-        description = "Generator point G"
-    }
-    schnorr_test = @{
-        privkey = "0000000000000000000000000000000000000000000000000000000000000001"
-        message = "Hello AvilaDB"
-        description = "Simple Schnorr signature test"
-    }
-}
+# Test vectors para criptografia (reservado para uso futuro)
+# $CRYPTO_VECTORS = @{
+#     secp256k1_point = @{
+#         x = "79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798"
+#         y = "483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8"
+#         description = "Generator point G"
+#     }
+#     schnorr_test = @{
+#         privkey = "0000000000000000000000000000000000000000000000000000000000000001"
+#         message = "Hello AvilaDB"
+#         description = "Simple Schnorr signature test"
+#     }
+# }
 
 # ========================================
 # Helper Functions
@@ -68,7 +68,7 @@ function Write-Skip {
 # ========================================
 function Test-Unit {
     Write-TestHeader "Unit Tests"
-    
+
     $packages = @(
         "avila-nucleus",
         "avila-primitives",
@@ -77,18 +77,18 @@ function Test-Unit {
         "avila-quinn",
         "aviladb-core"
     )
-    
+
     $passed = 0
     $failed = 0
-    
+
     foreach ($pkg in $packages) {
         Write-Host "`n📦 Testing $pkg..." -ForegroundColor Magenta
-        
+
         $testArgs = @("test", "-p", $pkg)
         if ($Verbose) {
             $testArgs += @("--", "--nocapture")
         }
-        
+
         try {
             & cargo @testArgs
             if ($LASTEXITCODE -eq 0) {
@@ -103,13 +103,13 @@ function Test-Unit {
             $failed++
         }
     }
-    
+
     return @{ Passed = $passed; Failed = $failed }
 }
 
 function Test-Crypto {
     Write-TestHeader "Cryptography Tests"
-    
+
     $tests = @(
         @{
             Name = "secp256k1 Point Addition"
@@ -134,20 +134,20 @@ function Test-Crypto {
             Reason = "Aguardando implementação completa"
         }
     )
-    
+
     $passed = 0
     $failed = 0
     $skipped = 0
-    
+
     foreach ($test in $tests) {
         if ($test.Skip) {
             Write-Skip $test.Name $test.Reason
             $skipped++
             continue
         }
-        
+
         Write-Host "`n  Testing: $($test.Description)" -ForegroundColor Gray
-        
+
         # Executa teste específico
         $testName = $test.Name -replace " ", "_" -replace "-", "_"
         try {
@@ -164,48 +164,48 @@ function Test-Crypto {
             $failed++
         }
     }
-    
+
     return @{ Passed = $passed; Failed = $failed; Skipped = $skipped }
 }
 
 function Test-Integration {
     Write-TestHeader "Integration Tests"
-    
+
     Write-Host "`n⚠️  Integration tests requerem servidor rodando" -ForegroundColor Yellow
     Write-Host "Start server: .\target\release\aviladb.exe" -ForegroundColor Gray
-    
+
     $tests = @(
         "QUIC Connection Establishment",
         "Transaction Commit/Rollback",
         "Storage Persistence",
         "Concurrent Writes"
     )
-    
+
     $skipped = 0
     foreach ($test in $tests) {
         Write-Skip $test "Aguardando implementação"
         $skipped++
     }
-    
+
     return @{ Passed = 0; Failed = 0; Skipped = $skipped }
 }
 
 function Test-Performance {
     Write-TestHeader "Performance Tests"
-    
+
     Write-Host "`n🚀 Benchmarking critical paths..." -ForegroundColor Magenta
-    
+
     $benchmarks = @(
         @{ Name = "U256 Operations"; Target = "1M ops/sec" },
         @{ Name = "secp256k1 Point Mul"; Target = "10K ops/sec" },
         @{ Name = "Schnorr Sign"; Target = "20K ops/sec" },
         @{ Name = "BLAKE3 Throughput"; Target = "1 GB/sec" }
     )
-    
+
     foreach ($bench in $benchmarks) {
         Write-Host "`n  📊 $($bench.Name)" -ForegroundColor Cyan
         Write-Host "     Target: $($bench.Target)" -ForegroundColor Gray
-        
+
         # Tenta rodar benchmark (pode não existir)
         $benchName = $bench.Name -replace " ", "_"
         try {
@@ -219,41 +219,41 @@ function Test-Performance {
             Write-Skip "$($bench.Name) benchmark" "Not implemented"
         }
     }
-    
+
     return @{ Passed = 0; Failed = 0; Skipped = $benchmarks.Count }
 }
 
 function Test-All {
     Write-TestHeader "Running ALL Test Suites"
-    
+
     $results = @{
         Unit = Test-Unit
         Crypto = Test-Crypto
         Integration = Test-Integration
         Perf = Test-Performance
     }
-    
+
     return $results
 }
 
 # ========================================
 # Coverage Report
 # ========================================
-function Generate-Coverage {
+function New-CoverageReport {
     Write-TestHeader "Code Coverage"
-    
+
     if (-not (Get-Command "cargo-tarpaulin" -ErrorAction SilentlyContinue)) {
         Write-Host "⚠️  cargo-tarpaulin não instalado" -ForegroundColor Yellow
         Write-Host "Install: cargo install cargo-tarpaulin" -ForegroundColor Gray
         return
     }
-    
+
     Write-Host "`n📊 Generating coverage report..." -ForegroundColor Magenta
     cargo tarpaulin --workspace --out Html --output-dir coverage
-    
+
     if ($LASTEXITCODE -eq 0) {
         Write-Pass "Coverage report generated: .\coverage\index.html"
-        
+
         # Abre no browser
         Start-Process ".\coverage\index.html"
     } else {
@@ -266,21 +266,21 @@ function Generate-Coverage {
 # ========================================
 function Show-Summary {
     param($Results)
-    
+
     Write-Host "`n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor DarkGray
     Write-Host "📊 Test Summary" -ForegroundColor Cyan
     Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor DarkGray
-    
+
     $totalPassed = 0
     $totalFailed = 0
     $totalSkipped = 0
-    
+
     foreach ($suite in $Results.Keys) {
         $result = $Results[$suite]
         $totalPassed += $result.Passed
         $totalFailed += $result.Failed
         $totalSkipped += $result.Skipped
-        
+
         $status = if ($result.Failed -gt 0) { "❌" } else { "✅" }
         Write-Host "`n$status $suite Tests:"
         Write-Host "   Passed:  $($result.Passed)" -ForegroundColor Green
@@ -291,7 +291,7 @@ function Show-Summary {
             Write-Host "   Skipped: $($result.Skipped)" -ForegroundColor Yellow
         }
     }
-    
+
     Write-Host "`n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor DarkGray
     Write-Host "Total Passed:  $totalPassed" -ForegroundColor Green
     if ($totalFailed -gt 0) {
@@ -301,7 +301,7 @@ function Show-Summary {
         Write-Host "Total Skipped: $totalSkipped" -ForegroundColor Yellow
     }
     Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`n" -ForegroundColor DarkGray
-    
+
     return ($totalFailed -eq 0)
 }
 
@@ -310,9 +310,9 @@ function Show-Summary {
 # ========================================
 function Main {
     Write-Host $BANNER
-    
+
     $startTime = Get-Date
-    
+
     $results = switch ($Suite) {
         'unit'        { @{ Unit = Test-Unit } }
         'integration' { @{ Integration = Test-Integration } }
@@ -321,16 +321,16 @@ function Main {
         'all'         { Test-All }
         default       { @{ Unit = Test-Unit } }
     }
-    
+
     if ($Coverage) {
-        Generate-Coverage
+        New-CoverageReport
     }
-    
+
     $success = Show-Summary -Results $results
-    
+
     $elapsed = (Get-Date) - $startTime
     Write-Host "⏱️  Tempo total: $($elapsed.ToString('mm\:ss'))" -ForegroundColor Magenta
-    
+
     if (-not $success) {
         exit 1
     }
