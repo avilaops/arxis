@@ -23,7 +23,7 @@ impl App {
     pub fn new(name: impl Into<String>) -> Self {
         Self {
             name: name.into(),
-            version: "0.1.0".to_string(),
+            version: "0.2.0".to_string(),
             about: String::new(),
             commands: Vec::new(),
             global_args: Vec::new(),
@@ -222,6 +222,46 @@ impl Matches {
         &self.values
     }
 
+    /// Get parsed value as specific type
+    /// 
+    /// # Example
+    /// ```
+    /// let port: u16 = matches.value_as("port").unwrap_or(8080);
+    /// ```
+    pub fn value_as<T>(&self, name: &str) -> Option<T>
+    where
+        T: std::str::FromStr,
+    {
+        self.value_of(name)?.parse().ok()
+    }
+
+    /// Check if any of the given argument names is present
+    /// 
+    /// # Example
+    /// ```
+    /// if matches.any_present(&["verbose", "debug"]) {
+    ///     println!("Logging enabled");
+    /// }
+    /// ```
+    pub fn any_present(&self, names: &[&str]) -> bool {
+        names.iter().any(|name| self.is_present(name))
+    }
+
+    /// Check if all of the given argument names are present
+    pub fn all_present(&self, names: &[&str]) -> bool {
+        names.iter().all(|name| self.is_present(name))
+    }
+
+    /// Get value or return a default
+    pub fn value_or<'a>(&'a self, name: &str, default: &'a str) -> &'a str {
+        self.value_of(name).unwrap_or(default)
+    }
+
+    /// Get the number of positional arguments
+    pub fn values_count(&self) -> usize {
+        self.values.len()
+    }
+
     fn parse_command_args(&mut self, cmd: &Command, args: &[String]) {
         self.parse_args_list(&cmd.args, args);
     }
@@ -290,5 +330,67 @@ mod tests {
 
         assert_eq!(cmd.name, "test");
         assert_eq!(cmd.args.len(), 1);
+    }
+
+    #[test]
+    fn test_value_as_parsing() {
+        let mut matches = Matches {
+            command: None,
+            args: HashMap::new(),
+            values: Vec::new(),
+        };
+        matches.args.insert("port".to_string(), Some("8080".to_string()));
+        
+        let port: u16 = matches.value_as("port").unwrap();
+        assert_eq!(port, 8080);
+    }
+
+    #[test]
+    fn test_any_present() {
+        let mut matches = Matches {
+            command: None,
+            args: HashMap::new(),
+            values: Vec::new(),
+        };
+        matches.args.insert("verbose".to_string(), None);
+        
+        assert!(matches.any_present(&["verbose", "debug"]));
+        assert!(!matches.any_present(&["quiet", "silent"]));
+    }
+
+    #[test]
+    fn test_all_present() {
+        let mut matches = Matches {
+            command: None,
+            args: HashMap::new(),
+            values: Vec::new(),
+        };
+        matches.args.insert("verbose".to_string(), None);
+        matches.args.insert("debug".to_string(), None);
+        
+        assert!(matches.all_present(&["verbose", "debug"]));
+        assert!(!matches.all_present(&["verbose", "debug", "trace"]));
+    }
+
+    #[test]
+    fn test_value_or_default() {
+        let matches = Matches {
+            command: None,
+            args: HashMap::new(),
+            values: Vec::new(),
+        };
+        
+        assert_eq!(matches.value_or("port", "8080"), "8080");
+    }
+
+    #[test]
+    fn test_values_count() {
+        let matches = Matches {
+            command: None,
+            args: HashMap::new(),
+            values: vec!["file1".to_string(), "file2".to_string()],
+        };
+        
+        assert_eq!(matches.values_count(), 2);
     }
 }

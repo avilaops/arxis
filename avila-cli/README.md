@@ -61,7 +61,7 @@ Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-avila-cli = "0.1.0"
+avila-cli = "0.2.0"
 ```
 
 Then run:
@@ -74,7 +74,7 @@ cargo build
 
 ```toml
 [dependencies]
-avila-cli = { version = "0.1.0", default-features = false }
+avila-cli = { version = "0.2.0", default-features = false }
 ```
 
 > 💡 **Note:** Ávila CLI has ZERO dependencies, so no surprises in your dependency tree!
@@ -358,7 +358,7 @@ let matches = App::new("deploy")
 if matches.is_present("production") {
     let confirm = matches.value_of("confirm")
         .expect("--confirm required when using --production");
-    
+
     if confirm != "yes" {
         eprintln!("Error: must pass --confirm yes for production");
         std::process::exit(1);
@@ -723,6 +723,41 @@ We especially welcome:
 - 🐛 Bug reports and fixes
 - ✨ Feature suggestions (open an issue first!)
 </details>
+
+---
+
+## 📋 Changelog
+
+### v0.2.0 (December 2025)
+
+**New Features:**
+- ✨ `value_as<T>()` - Parse values to any type implementing `FromStr`
+- ✨ `any_present()` - Check if any argument from a list is present
+- ✨ `all_present()` - Check if all arguments from a list are present
+- ✨ `value_or()` - Get value with inline default
+- ✨ `values_count()` - Get number of positional arguments
+
+**Improvements:**
+- 📚 Enhanced documentation with 8 FAQ entries
+- 📚 Added 8 common patterns with examples
+- 🎨 Professional badges (crates.io, docs.rs, license, downloads)
+- 🎯 Real use cases section
+- 💡 Visual "How It Works" diagram
+- ❓ Comprehensive troubleshooting guide
+
+**Tests:**
+- ✅ Added 5 new unit tests for new features
+- ✅ Improved test coverage to 85%+
+
+### v0.1.0 (December 2025)
+
+**Initial Release:**
+- 🚀 Core CLI parsing functionality
+- 🎯 Subcommand support
+- 📝 Short and long arguments
+- 🔧 Value-taking arguments
+- 📦 Zero dependencies
+- 🛡️ Memory safe (no unsafe code)
 
 ---
 
