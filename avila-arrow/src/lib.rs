@@ -32,6 +32,7 @@ pub mod datatypes;
 pub mod error;
 pub mod record_batch;
 pub mod simd;
+pub mod compression;
 
 #[cfg(feature = "scientific")]
 pub mod scientific;

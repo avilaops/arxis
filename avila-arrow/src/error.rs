@@ -72,6 +72,9 @@ pub enum ArrowError {
         message: String
     },
 
+    /// Invalid data error
+    InvalidData(String),
+
     /// Internal error
     Internal {
         /// Error message
@@ -108,6 +111,9 @@ impl fmt::Display for ArrowError {
             }
             ArrowError::ComputationError { message } => {
                 write!(f, "Computation error: {}", message)
+            }
+            ArrowError::InvalidData(message) => {
+                write!(f, "Invalid data: {}", message)
             }
             ArrowError::Internal { message } => {
                 write!(f, "Internal error: {}", message)

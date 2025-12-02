@@ -1,18 +1,18 @@
 [package]
 name = "avila-arrow"
-version = "0.1.3"
+version = "0.2.0"
 edition = "2021"
 authors = [
     "Nícolas Ávila <nicolas@avila.inc>",
     "Avila Development Team <dev@avila.inc>",
 ]
 license = "MIT OR Apache-2.0"
-description = "Zero-copy columnar format with scientific arrays (Quaternions, Complex, Tensors, Spinors) and SIMD acceleration up to 35x - Built for Brazilian scientific computing"
+description = "Zero-copy columnar format with scientific arrays (Quaternions, Complex, Tensors, Spinors), SIMD acceleration (35x), and native compression (125x RLE, 16x BitPack, 4x Delta) - Zero external dependencies"
 repository = "https://github.com/avilaops/arxis"
 homepage = "https://avila.cloud"
 documentation = "https://docs.rs/avila-arrow"
 readme = "README.md"
-keywords = ["arrow", "columnar", "quaternion", "scientific", "aviladb"]
+keywords = ["arrow", "columnar", "quaternion", "scientific", "compression"]
 categories = ["science", "database-implementations", "data-structures"]
 
 [dependencies]
@@ -38,6 +38,10 @@ harness = false
 
 [[bench]]
 name = "extended_bench"
+harness = false
+
+[[bench]]
+name = "compression_bench"
 harness = false
 
 [lib]
