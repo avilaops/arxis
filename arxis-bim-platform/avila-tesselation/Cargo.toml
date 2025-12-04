@@ -1,0 +1,18 @@
+[package]
+name = "avila-tesselation"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "IFC geometry tesselation - converts parametric solids to triangle meshes - 100% Rust"
+keywords = ["ifc", "bim", "tesselation", "geometry", "mesh"]
+categories = ["graphics", "rendering"]
+
+[dependencies]
+avila-vec3d = { path = "../avila-vec3d" }
+avila-mesh = { path = "../avila-mesh" }
+serde = { workspace = true }
+thiserror = "1.0"
+
+[dev-dependencies]

@@ -1,0 +1,22 @@
+[package]
+name = "avila-bim-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+thiserror = { workspace = true }
+
+# Math (geometria 3D)
+nalgebra = { workspace = true }
+glam = { workspace = true }
+
+# Avila ecosystem
+avila-error = { workspace = true }
+
+[dev-dependencies]

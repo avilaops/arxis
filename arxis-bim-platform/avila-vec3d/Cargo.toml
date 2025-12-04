@@ -1,0 +1,18 @@
+[package]
+name = "avila-vec3d"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "3D math library - vectors, matrices, quaternions, AABB, ray casting - 100% Rust"
+keywords = ["math", "3d", "vector", "matrix", "geometry"]
+categories = ["mathematics", "graphics", "game-development"]
+
+[dependencies]
+serde = { workspace = true }
+thiserror = "1.0"
+num-traits = "0.2"
+
+[dev-dependencies]
+approx = "0.5"

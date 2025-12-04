@@ -1,0 +1,37 @@
+[package]
+name = "avila-bim-converter"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+avila-vec3d = { path = "../avila-vec3d" }
+avila-mesh = { path = "../avila-mesh" }
+avila-tesselation = { path = "../avila-tesselation" }
+avila-bim-core = { path = "../avila-bim-core" }
+avila-ifc = { path = "../avila-ifc" }
+avila-gltf = { path = "../avila-gltf" }
+avila-metadata-extractor = { path = "../avila-metadata-extractor" }
+
+# Async & utilities
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+
+# Logging (opcional por agora)
+# tracing = { workspace = true }
+# tracing-subscriber = { workspace = true }
+
+# Message queue (RabbitMQ client) - TODO
+# lapin = "2.3"
+
+# Object Storage (S3/MinIO) - TODO
+# aws-sdk-s3 = "1.0"
+aws-config = "1.0"
+
+[[bin]]
+name = "converter-worker"
+path = "src/main.rs"

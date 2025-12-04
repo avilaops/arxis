@@ -1,0 +1,22 @@
+[package]
+name = "avila-ifc"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Native IFC (Industry Foundation Classes) parser - 100% Rust"
+
+[dependencies]
+avila-bim-core = { path = "../avila-bim-core" }
+avila-error = { workspace = true }
+
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+nalgebra = { workspace = true }
+
+# Regex para parsing STEP
+regex = "1.10"
+lazy_static = "1.4"
+
+[dev-dependencies]

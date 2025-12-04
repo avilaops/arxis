@@ -1,0 +1,17 @@
+[package]
+name = "avila-mesh"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "3D mesh structures with PBR materials, primitives (cube, sphere, plane) - 100% Rust"
+keywords = ["mesh", "3d", "geometry", "pbr", "graphics"]
+categories = ["graphics", "rendering", "game-development"]
+
+[dependencies]
+avila-vec3d = { path = "../avila-vec3d" }
+serde = { workspace = true }
+thiserror = "1.0"
+
+[dev-dependencies]

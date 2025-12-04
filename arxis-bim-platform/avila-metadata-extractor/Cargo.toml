@@ -1,0 +1,20 @@
+[package]
+name = "avila-metadata-extractor"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "BIM metadata extraction to JSON - semantic properties, spatial structure - 100% Rust"
+keywords = ["bim", "ifc", "metadata", "json", "semantic"]
+categories = ["parsing", "encoding"]
+
+[dependencies]
+avila-vec3d = { path = "../avila-vec3d" }
+avila-mesh = { path = "../avila-mesh" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = "1.0"
+uuid = { workspace = true }
+
+[dev-dependencies]

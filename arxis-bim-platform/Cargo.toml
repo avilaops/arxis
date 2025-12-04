@@ -1,0 +1,69 @@
+[workspace]
+resolver = "2"
+
+members = [
+    # Core primitivos (desde o subatômico)
+    "avila-vec3d",
+    "avila-mesh",
+    "avila-tesselation",
+    # "avila-optimizer", # TODO
+    "avila-metadata-extractor",
+
+    # Core primitivos BIM
+    "avila-bim-core",
+    "avila-ifc",
+    "avila-gltf",
+
+    # Conversão e processamento
+    "avila-bim-converter",
+
+    # TODO: Microserviços, BFF, Frontends (criar depois)
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+authors = ["Avila Platform Team"]
+repository = "https://github.com/avilaops/arxis"
+
+[workspace.dependencies]
+# Avila ecosystem dependencies (path-based)
+avila-error = { path = "../avila-error" }
+avila-async = { path = "../avila-async" }
+avila-http = { path = "../avila-http" }
+avila-db = { path = "../avila-db" }
+avila-crypto = { path = "../avila-crypto" }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+bincode = "1.3"
+
+# Async runtime
+tokio = { version = "1.40", features = ["full"] }
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Utilities
+uuid = { version = "1.0", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+thiserror = "1.0"
+anyhow = "1.0"
+
+# Math and geometry
+nalgebra = "0.33"
+glam = "0.29"
+
+# Web framework (using existing avila-http internally)
+axum = "0.7"
+tower = "0.4"
+tower-http = { version = "0.5", features = ["fs", "cors"] }
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+strip = true

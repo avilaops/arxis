@@ -1,0 +1,177 @@
+version: '3.8'
+
+services:
+  # ============================================================================
+  # DATABASES
+  # ============================================================================
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: arxis-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: bim_platform
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - arxis-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: arxis-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - arxis-network
+
+  # ============================================================================
+  # MESSAGE QUEUE
+  # ============================================================================
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: arxis-rabbitmq
+    ports:
+      - "5672:5672"   # AMQP
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - arxis-network
+
+  # ============================================================================
+  # OBJECT STORAGE
+  # ============================================================================
+
+  minio:
+    image: minio/minio:latest
+    container_name: arxis-minio
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # Console UI
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - arxis-network
+
+  # Criar bucket inicial no MinIO
+  minio-init:
+    image: minio/mc:latest
+    container_name: arxis-minio-init
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      sleep 5;
+      /usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin;
+      /usr/bin/mc mb myminio/bim-models --ignore-existing;
+      /usr/bin/mc policy set download myminio/bim-models;
+      exit 0;
+      "
+    networks:
+      - arxis-network
+
+  # ============================================================================
+  # SEARCH ENGINE
+  # ============================================================================
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: arxis-elasticsearch
+    ports:
+      - "9200:9200"
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - arxis-network
+
+  # ============================================================================
+  # MONITORING (Optional)
+  # ============================================================================
+
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   container_name: arxis-prometheus
+  #   ports:
+  #     - "9090:9090"
+  #   volumes:
+  #     - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+  #     - prometheus_data:/prometheus
+  #   networks:
+  #     - arxis-network
+
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   container_name: arxis-grafana
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     GF_SECURITY_ADMIN_PASSWORD: admin
+  #   volumes:
+  #     - grafana_data:/var/lib/grafana
+  #   networks:
+  #     - arxis-network
+
+# ============================================================================
+# VOLUMES
+# ============================================================================
+
+volumes:
+  postgres_data:
+  redis_data:
+  rabbitmq_data:
+  minio_data:
+  elasticsearch_data:
+  # prometheus_data:
+  # grafana_data:
+
+# ============================================================================
+# NETWORKS
+# ============================================================================
+
+networks:
+  arxis-network:
+    driver: bridge
