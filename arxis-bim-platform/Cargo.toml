@@ -6,7 +6,7 @@ members = [
     "avila-vec3d",
     "avila-mesh",
     "avila-tesselation",
-    # "avila-optimizer", # TODO
+    "avila-optimizer",
     "avila-metadata-extractor",
 
     # Core primitivos BIM

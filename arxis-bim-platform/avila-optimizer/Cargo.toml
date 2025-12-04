@@ -1,0 +1,21 @@
+[package]
+name = "avila-optimizer"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "Mesh optimization: merge, LOD generation, spatial indexing - 100% Rust"
+keywords = ["mesh", "optimization", "lod", "3d", "bim"]
+categories = ["graphics", "game-development", "rendering"]
+readme = "README.md"
+
+[dependencies]
+avila-vec3d = { version = "0.1.0", path = "../avila-vec3d" }
+avila-mesh = { version = "0.1.0", path = "../avila-mesh" }
+
+serde = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+approx = "0.5"
