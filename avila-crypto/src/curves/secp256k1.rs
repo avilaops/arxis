@@ -1,4 +1,4 @@
-//! secp256k1 - Bitcoin's battle-tested curve
+﻿//! secp256k1 - Bitcoin's battle-tested curve
 //!
 //! Equation: y² = x³ + 7 (mod p)
 //!
@@ -58,6 +58,21 @@ impl Secp256k1 {
     pub const B: U256 = U256 {
         limbs: [7, 0, 0, 0],
     };
+    
+    /// Modular subtraction: (a - b) mod p
+    fn sub_mod(a: &U256, b: &U256, p: &U256) -> U256 {
+        use crate::bigint::BigInt;
+        use core::cmp::Ordering;
+        
+        match a.cmp(b) {
+            Ordering::Greater | Ordering::Equal => a.sub(b),
+            Ordering::Less => {
+                // a < b, so compute p - (b - a)
+                let diff = b.sub(a);
+                p.sub(&diff)
+            }
+        }
+    }
 }
 
 impl EllipticCurve for Secp256k1 {
@@ -74,7 +89,6 @@ impl EllipticCurve for Secp256k1 {
 
     fn add(p: &Point<U256>, q: &Point<U256>) -> Point<U256> {
         use crate::bigint::BigInt;
-        use core::cmp::Ordering;
 
         if p.infinity {
             return *q;
@@ -99,16 +113,9 @@ impl EllipticCurve for Secp256k1 {
         // λ = (y2 - y1) / (x2 - x1) mod p
         // x3 = λ² - x1 - x2 mod p
         // y3 = λ(x1 - x3) - y1 mod p
-
-        let y_diff = match q.y.cmp(&p.y) {
-            Ordering::Less => Self::P.sub(&p.y.sub(&q.y)),
-            _ => q.y.sub(&p.y),
-        };
-
-        let x_diff = match q.x.cmp(&p.x) {
-            Ordering::Less => Self::P.sub(&p.x.sub(&q.x)),
-            _ => q.x.sub(&p.x),
-        };
+        
+        let y_diff = Self::sub_mod(&q.y, &p.y, &Self::P);
+        let x_diff = Self::sub_mod(&q.x, &p.x, &Self::P);
 
         let x_diff_inv = match x_diff.inv_mod(&Self::P) {
             Some(inv) => inv,
@@ -117,28 +124,19 @@ impl EllipticCurve for Secp256k1 {
 
         let lambda = y_diff.mul_mod(&x_diff_inv, &Self::P);
         let lambda_sq = lambda.mul_mod(&lambda, &Self::P);
-
-        let x3 = lambda_sq
-            .sub(&p.x).add_mod(&U256::ZERO, &Self::P)
-            .sub(&q.x).add_mod(&U256::ZERO, &Self::P);
-
-        let x1_minus_x3 = match p.x.cmp(&x3) {
-            Ordering::Less => Self::P.sub(&x3.sub(&p.x)),
-            _ => p.x.sub(&x3),
-        };
-
-        let y3_pre = lambda.mul_mod(&x1_minus_x3, &Self::P);
-        let y3 = match y3_pre.cmp(&p.y) {
-            Ordering::Less => Self::P.sub(&p.y.sub(&y3_pre)),
-            _ => y3_pre.sub(&p.y),
-        };
+        
+        let x3_temp = Self::sub_mod(&lambda_sq, &p.x, &Self::P);
+        let x3 = Self::sub_mod(&x3_temp, &q.x, &Self::P);
+        
+        let x1_minus_x3 = Self::sub_mod(&p.x, &x3, &Self::P);
+        let y3_temp = lambda.mul_mod(&x1_minus_x3, &Self::P);
+        let y3 = Self::sub_mod(&y3_temp, &p.y, &Self::P);
 
         Point { x: x3, y: y3, infinity: false }
     }
 
     fn double(p: &Point<U256>) -> Point<U256> {
         use crate::bigint::BigInt;
-        use core::cmp::Ordering;
 
         if p.infinity {
             return *p;
@@ -151,7 +149,7 @@ impl EllipticCurve for Secp256k1 {
 
         let x_sq = p.x.mul_mod(&p.x, &Self::P);
         let three_x_sq = x_sq.add_mod(&x_sq, &Self::P).add_mod(&x_sq, &Self::P);
-
+        
         let two_y = p.y.add_mod(&p.y, &Self::P);
         let two_y_inv = match two_y.inv_mod(&Self::P) {
             Some(inv) => inv,
@@ -160,23 +158,13 @@ impl EllipticCurve for Secp256k1 {
 
         let lambda = three_x_sq.mul_mod(&two_y_inv, &Self::P);
         let lambda_sq = lambda.mul_mod(&lambda, &Self::P);
-
+        
         let two_x = p.x.add_mod(&p.x, &Self::P);
-        let x3 = match lambda_sq.cmp(&two_x) {
-            Ordering::Less => Self::P.sub(&two_x.sub(&lambda_sq)),
-            _ => lambda_sq.sub(&two_x),
-        };
-
-        let x_minus_x3 = match p.x.cmp(&x3) {
-            Ordering::Less => Self::P.sub(&x3.sub(&p.x)),
-            _ => p.x.sub(&x3),
-        };
-
-        let y3_pre = lambda.mul_mod(&x_minus_x3, &Self::P);
-        let y3 = match y3_pre.cmp(&p.y) {
-            Ordering::Less => Self::P.sub(&p.y.sub(&y3_pre)),
-            _ => y3_pre.sub(&p.y),
-        };
+        let x3 = Self::sub_mod(&lambda_sq, &two_x, &Self::P);
+        
+        let x_minus_x3 = Self::sub_mod(&p.x, &x3, &Self::P);
+        let y3_temp = lambda.mul_mod(&x_minus_x3, &Self::P);
+        let y3 = Self::sub_mod(&y3_temp, &p.y, &Self::P);
 
         Point { x: x3, y: y3, infinity: false }
     }

@@ -12,7 +12,7 @@ impl BigInt for U512 {
     const BITS: usize = 512;
     const ZERO: Self = Self { limbs: [0; 8] };
     const ONE: Self = Self { limbs: [1, 0, 0, 0, 0, 0, 0, 0] };
-    
+
     fn from_bytes_be(_bytes: &[u8]) -> Self { Self::ZERO }
     fn add_mod(&self, _other: &Self, _modulus: &Self) -> Self { *self }
     fn mul_mod(&self, _other: &Self, _modulus: &Self) -> Self { *self }
@@ -21,63 +21,39 @@ impl BigInt for U512 {
 }
 
 impl U512 {
-    /// Reduce 512-bit value modulo 256-bit modulus
+    /// Reduce 512-bit value modulo 256-bit modulus using multi-limb elimination.
     pub fn reduce(&self, modulus: &super::U256) -> super::U256 {
-        // Simple repeated subtraction (schoolbook division)
-        // Production code would use Barrett or Montgomery reduction
-        
-        let mut result = *self;
-        let mod_wide = Self {
-            limbs: [
-                modulus.limbs[0], modulus.limbs[1], 
-                modulus.limbs[2], modulus.limbs[3],
-                0, 0, 0, 0
-            ],
-        };
-        
-        // Shift modulus left until MSB aligns with result MSB
-        let mut shift = 0u32;
-        for i in (0..8).rev() {
-            if result.limbs[i] != 0 {
-                shift = (i as u32) * 64 + (63 - result.limbs[i].leading_zeros());
-                break;
+        let mut acc = self.limbs;
+
+        for idx in (super::U256::LIMBS..Self::LIMBS).rev() {
+            let limb = acc[idx];
+            if limb == 0 {
+                continue;
             }
+
+            subtract_mul_shift(&mut acc, modulus, limb, idx - super::U256::LIMBS);
+            acc[idx] = 0;
         }
-        
-        let mut mod_shift = 0u32;
-        for i in (0..4).rev() {
-            if modulus.limbs[i] != 0 {
-                mod_shift = (i as u32) * 64 + (63 - modulus.limbs[i].leading_zeros());
-                break;
-            }
-        }
-        
-        if shift >= mod_shift {
-            let mut divisor = mod_wide.shl(shift - mod_shift);
-            
-            while shift >= mod_shift {
-                if result.cmp(&divisor) != core::cmp::Ordering::Less {
-                    result = result.sub(&divisor);
-                }
-                divisor = divisor.shr(1);
-                shift = shift.saturating_sub(1);
-            }
-        }
-        
+
         super::U256 {
             limbs: [
-                result.limbs[0], result.limbs[1],
-                result.limbs[2], result.limbs[3],
+                acc[0],
+                acc[1],
+                acc[2],
+                acc[3],
             ],
         }
+        .normalize(modulus)
     }
-    
+
     fn shl(&self, bits: u32) -> Self {
-        if bits >= 512 { return Self::ZERO; }
+        if bits >= 512 {
+            return Self::ZERO;
+        }
         let limb_shift = (bits / 64) as usize;
         let bit_shift = bits % 64;
         let mut result = Self::ZERO;
-        
+
         for i in limb_shift..8 {
             result.limbs[i] = self.limbs[i - limb_shift] << bit_shift;
             if bit_shift > 0 && i > limb_shift {
@@ -86,13 +62,15 @@ impl U512 {
         }
         result
     }
-    
+
     fn shr(&self, bits: u32) -> Self {
-        if bits >= 512 { return Self::ZERO; }
+        if bits >= 512 {
+            return Self::ZERO;
+        }
         let limb_shift = (bits / 64) as usize;
         let bit_shift = bits % 64;
         let mut result = Self::ZERO;
-        
+
         for i in 0..(8 - limb_shift) {
             result.limbs[i] = self.limbs[i + limb_shift] >> bit_shift;
             if bit_shift > 0 && i + limb_shift + 1 < 8 {
@@ -101,11 +79,11 @@ impl U512 {
         }
         result
     }
-    
+
     fn sub(&self, other: &Self) -> Self {
         let mut result = Self::ZERO;
         let mut borrow = 0u64;
-        
+
         for i in 0..8 {
             let (diff, b1) = self.limbs[i].overflowing_sub(other.limbs[i]);
             let (diff, b2) = diff.overflowing_sub(borrow);
@@ -114,7 +92,7 @@ impl U512 {
         }
         result
     }
-    
+
     fn cmp(&self, other: &Self) -> core::cmp::Ordering {
         for i in (0..8).rev() {
             match self.limbs[i].cmp(&other.limbs[i]) {
@@ -124,4 +102,37 @@ impl U512 {
         }
         core::cmp::Ordering::Equal
     }
+}
+
+fn subtract_mul_shift(acc: &mut [u64; U512::LIMBS], modulus: &super::U256, factor: u64, shift: usize) {
+    let mut borrow = 0u128;
+
+    for (j, &mod_limb) in modulus.limbs.iter().enumerate() {
+        let idx = j + shift;
+        let product = (mod_limb as u128) * (factor as u128) + borrow;
+        let sub = product as u64;
+        borrow = product >> 64;
+
+        let (res, b) = acc[idx].overflowing_sub(sub);
+        acc[idx] = res;
+        borrow += b as u128;
+    }
+
+    let mut idx = modulus.limbs.len() + shift;
+    let mut iterations = 0;
+    while borrow != 0 {
+        iterations += 1;
+        if iterations > 100 {
+            // Prevent infinite loop
+            break;
+        }
+        debug_assert!(idx < acc.len(), "borrow exceeded accumulator length");
+        let sub = borrow as u64;
+        let (res, b) = acc[idx].overflowing_sub(sub);
+        acc[idx] = res;
+        borrow = (borrow >> 64) + (b as u128);
+        idx += 1;
+    }
+
+    debug_assert!(borrow == 0, "residual borrow after reduction");
 }

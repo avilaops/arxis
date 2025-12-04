@@ -12,6 +12,7 @@ readme = "README.md"
 keywords = ["cryptography", "crypto", "no-std", "zero-deps", "sovereign"]
 categories = ["cryptography", "no-std"]
 
+
 [dependencies]
 
 [dev-dependencies]

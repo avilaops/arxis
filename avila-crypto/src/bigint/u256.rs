@@ -5,7 +5,7 @@
 use super::{BigInt, U512};
 
 /// 256-bit unsigned integer (4 x u64 limbs)
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(align(32))]
 pub struct U256 {
     /// Little-endian limbs
@@ -45,12 +45,7 @@ impl BigInt for U256 {
     }
 
     fn add_mod(&self, other: &Self, modulus: &Self) -> Self {
-        let sum = self.add(other);
-        if matches!(sum.cmp(modulus), core::cmp::Ordering::Greater | core::cmp::Ordering::Equal) {
-            sum.sub(modulus)
-        } else {
-            sum
-        }
+        self.add_wide(other).reduce(modulus)
     }
 
     fn mul_mod(&self, other: &Self, modulus: &Self) -> Self {
@@ -76,58 +71,19 @@ impl BigInt for U256 {
     }
 
     fn inv_mod(&self, modulus: &Self) -> Option<Self> {
-        // Extended Euclidean algorithm for modular inverse
         if self.is_zero() || modulus.is_zero() {
             return None;
         }
 
-        // Binary extended GCD (more efficient for binary computers)
-        let mut u = *self;
-        let mut v = *modulus;
-        let mut x1 = Self::ONE;
-        let mut x2 = Self::ZERO;
-
-        while !u.is_zero() {
-            while u.is_even() {
-                u = u.shr(1);
-                if x1.is_even() {
-                    x1 = x1.shr(1);
-                } else {
-                    x1 = x1.add(modulus).shr(1);
-                }
-            }
-
-            while v.is_even() {
-                v = v.shr(1);
-                if x2.is_even() {
-                    x2 = x2.shr(1);
-                } else {
-                    x2 = x2.add(modulus).shr(1);
-                }
-            }
-
-            if u.cmp(&v) != core::cmp::Ordering::Less {
-                u = u.sub(&v);
-                if x1.cmp(&x2) != core::cmp::Ordering::Less {
-                    x1 = x1.sub(&x2);
-                } else {
-                    x1 = modulus.sub(&x2.sub(&x1));
-                }
-            } else {
-                v = v.sub(&u);
-                if x2.cmp(&x1) != core::cmp::Ordering::Less {
-                    x2 = x2.sub(&x1);
-                } else {
-                    x2 = modulus.sub(&x1.sub(&x2));
-                }
-            }
+        // Fermat's little theorem: a^(p-1) ≡ 1 (mod p) for prime p
+        // Therefore a^(p-2) ≡ a^{-1} (mod p) when gcd(a, p) = 1.
+        let two = Self { limbs: [2, 0, 0, 0] };
+        if matches!(modulus.cmp(&two), core::cmp::Ordering::Less | core::cmp::Ordering::Equal) {
+            return None;
         }
 
-        if v.limbs[0] == 1 && v.limbs[1..].iter().all(|&x| x == 0) {
-            Some(x2)
-        } else {
-            None
-        }
+        let exponent = modulus.sub(&two);
+        Some(self.pow_mod(&exponent, modulus))
     }
 }
 
@@ -182,10 +138,26 @@ impl U256 {
         result
     }
 
-    /// Division remainder
-    pub fn rem(&self, _divisor: &Self) -> Self {
-        // Simplified - proper implementation uses Barrett reduction
-        *self
+    /// Division with remainder
+    pub fn div_rem(&self, divisor: &Self) -> (Self, Self) {
+        if divisor.is_zero() {
+            panic!("division by zero");
+        }
+        let mut remainder = Self::ZERO;
+        let mut quotient = Self::ZERO;
+        for i in (0..256).rev() {
+            remainder = remainder.shl(1);
+            let limb_idx = i / 64;
+            let bit_idx = i % 64;
+            if (self.limbs[limb_idx] & (1u64 << bit_idx)) != 0 {
+                remainder.limbs[0] |= 1;
+            }
+            if remainder.cmp(divisor) != core::cmp::Ordering::Less {
+                remainder = remainder.sub(divisor);
+                quotient.limbs[limb_idx] |= 1u64 << bit_idx;
+            }
+        }
+        (quotient, remainder)
     }
 
     /// Right shift
@@ -246,17 +218,38 @@ impl U256 {
         for i in 0..4 {
             let mut carry = 0u128;
             for j in 0..4 {
+                let index = i + j;
                 let product = (self.limbs[i] as u128) * (other.limbs[j] as u128)
-                            + (result[i + j] as u128)
-                            + carry;
-                result[i + j] = product as u64;
+                    + (result[index] as u128)
+                    + carry;
+                result[index] = product as u64;
                 carry = product >> 64;
             }
-            if i + 4 < 8 {
-                result[i + 4] = carry as u64;
+
+            let mut index = i + 4;
+            while carry != 0 && index < 8 {
+                let sum = (result[index] as u128) + carry;
+                result[index] = sum as u64;
+                carry = sum >> 64;
+                index += 1;
             }
         }
 
+        U512 { limbs: result }
+    }
+
+    /// Wide addition (returns 512-bit sum)
+    fn add_wide(&self, other: &Self) -> U512 {
+        let mut result = [0u64; 8];
+        let mut carry = 0u128;
+
+        for i in 0..4 {
+            let sum = self.limbs[i] as u128 + other.limbs[i] as u128 + carry;
+            result[i] = sum as u64;
+            carry = sum >> 64;
+        }
+
+        result[4] = carry as u64;
         U512 { limbs: result }
     }
 
@@ -269,6 +262,51 @@ impl U256 {
             }
         }
         core::cmp::Ordering::Equal
+    }
+
+    pub fn normalize(mut self, modulus: &Self) -> Self {
+        while self.cmp(modulus) != core::cmp::Ordering::Less {
+            self = self.sub(modulus);
+        }
+        self
+    }
+
+    /// Wrapping addition
+    pub fn wrapping_add(&self, other: &Self) -> Self {
+        self.add(other) // Already handles overflow
+    }
+
+    /// Wrapping subtraction
+    pub fn wrapping_sub(&self, other: &Self) -> Self {
+        self.sub(other) // Already handles underflow
+    }
+
+    /// Wrapping multiplication (lower 256 bits)
+    pub fn wrapping_mul(&self, other: &Self) -> Self {
+        self.mul(other)
+    }
+
+    /// To little-endian bytes
+    pub fn to_bytes_le(&self) -> [u8; 32] {
+        let mut bytes = [0u8; 32];
+        for i in 0..4 {
+            let limb = self.limbs[i];
+            for j in 0..8 {
+                bytes[i * 8 + j] = (limb >> (j * 8)) as u8;
+            }
+        }
+        bytes
+    }
+
+    /// From little-endian bytes
+    pub fn from_bytes_le(bytes: &[u8; 32]) -> Self {
+        let mut limbs = [0u64; 4];
+        for i in 0..4 {
+            for j in 0..8 {
+                limbs[i] |= (bytes[i * 8 + j] as u64) << (j * 8);
+            }
+        }
+        Self { limbs }
     }
 }
 

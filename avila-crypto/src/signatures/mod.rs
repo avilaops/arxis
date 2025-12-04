@@ -4,7 +4,7 @@
 
 pub mod ecdsa;
 pub mod schnorr;
-pub mod eddsa;
+// pub mod eddsa; // TODO: Fix compiler ICE
 
 /// Signature verification result
 pub type VerifyResult = Result<(), SignatureError>;

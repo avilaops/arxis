@@ -1,0 +1,52 @@
+[package]
+name = "avila-gis-desktop"
+version = "0.1.0"
+edition = "2021"
+authors = ["Nícolas Ávila <nicolas@avila.inc>"]
+description = "Desktop GIS Application - ArcGIS-like interface for AvilaDB Cartographic"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+# GUI Framework
+iced = { version = "0.12", features = ["canvas", "tokio", "svg", "image"] }
+iced_aw = "0.9"  # Additional widgets
+
+# Graphics and Rendering
+tiny-skia = "0.11"
+resvg = "0.42"
+
+# Geospatial
+# geo = "0.28"
+# geo-types = "0.7"
+# proj = "0.27"
+
+# Data Handling
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+csv = "1.3"
+
+# Utilities
+uuid = { version = "1.10", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+anyhow = "1.0"
+thiserror = "1.0"
+
+# File dialogs
+rfd = "0.14"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = "0.3"
+
+# [dependencies.avila-geo]
+# path = "../avila-geo"
+
+[[bin]]
+name = "avilagis"
+path = "src/main.rs"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
