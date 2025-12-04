@@ -4,6 +4,8 @@ resolver = "2"
 members = [
     "avila-crypto",
     "avila-gis-desktop",
+    "avila-browser",
+    "avila-vizzio",
 ]
 
 exclude = []

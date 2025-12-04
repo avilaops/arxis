@@ -10,7 +10,7 @@ keywords = ["mesh", "3d", "geometry", "pbr", "graphics"]
 categories = ["graphics", "rendering", "game-development"]
 
 [dependencies]
-avila-vec3d = { path = "../avila-vec3d" }
+avila-vec3d = { version = "0.1.0", path = "../avila-vec3d" }
 serde = { workspace = true }
 thiserror = "1.0"
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Avila Browser - Demo Interativo</title>
+    <title>Vizzio - Navegador Seguro</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -26,7 +26,7 @@
         .header {
             background: rgba(255, 255, 255, 0.05);
             padding: 1rem 2rem;
-            border-radius: 12px 12px 0 0;
+            border-radius: 20px 20px 0 0;
             border: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             align-items: center;
@@ -37,7 +37,7 @@
             padding: 0.5rem 1rem;
             background: rgba(255, 255, 255, 0.1);
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             color: var(--text);
             cursor: pointer;
             font-weight: 600;
@@ -54,7 +54,7 @@
             padding: 0.75rem 1rem;
             background: rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
+            border-radius: 12px;
             color: var(--text);
             font-size: 1rem;
         }
@@ -63,7 +63,7 @@
             padding: 0.75rem 1.5rem;
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             color: white;
             font-weight: 700;
             cursor: pointer;
@@ -89,7 +89,7 @@
             padding: 0.5rem 1rem;
             background: rgba(255, 255, 255, 0.1);
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             color: var(--text);
             cursor: pointer;
             font-size: 0.9rem;
@@ -211,12 +211,12 @@
 <body>
     <div class="container">
         <div class="loading-bar" id="loadingBar"></div>
-        
+
         <div class="header">
             <button class="back-btn" onclick="goBack()">←</button>
             <button class="back-btn" onclick="goForward()">→</button>
             <button class="back-btn" onclick="reload()">🔄</button>
-            
+
             <div class="url-bar">
                 <input type="text" class="url-input" id="urlInput" placeholder="Digite uma URL ou busca..." value="https://example.com">
                 <button class="nav-btn" onclick="navigate()">Go</button>
@@ -239,7 +239,7 @@
             <button class="tool-btn" onclick="toggleDevTools()">🔧 DevTools</button>
             <button class="tool-btn" onclick="takeScreenshot()">📸 Screenshot</button>
             <button class="tool-btn" onclick="viewSource()">📄 Ver Código</button>
-            <button class="tool-btn" onclick="togglePrivate()">🕵️ Privado</button>
+            <button class="tool-btn" onclick="togglePrivate()">Modo Privado</button>
         </div>
 
         <div class="browser-content" id="content">
@@ -274,7 +274,7 @@
         function navigate() {
             const url = document.getElementById('urlInput').value;
             const frame = document.getElementById('browserFrame');
-            
+
             document.getElementById('status').textContent = 'Carregando...';
             document.getElementById('loadingBar').style.width = '50%';
 
@@ -414,7 +414,7 @@
         }
 
         function togglePrivate() {
-            alert('🕵️ Modo Privado\n\n• Sem histórico\n• Sem cookies\n• Sem cache\n• Proteção de rastreamento');
+            alert('Modo Privado\n\n• Sem histórico\n• Sem cookies\n• Sem cache\n• Proteção de rastreamento');
         }
 
         // Initialize

@@ -10,8 +10,8 @@ keywords = ["ifc", "bim", "tesselation", "geometry", "mesh"]
 categories = ["graphics", "rendering"]
 
 [dependencies]
-avila-vec3d = { path = "../avila-vec3d" }
-avila-mesh = { path = "../avila-mesh" }
+avila-vec3d = { version = "0.1.0", path = "../avila-vec3d" }
+avila-mesh = { version = "0.1.0", path = "../avila-mesh" }
 serde = { workspace = true }
 thiserror = "1.0"
 

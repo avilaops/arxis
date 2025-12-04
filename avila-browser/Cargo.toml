@@ -1,5 +1,3 @@
-[workspace]
-
 [package]
 name = "avila-browser"
 version = "0.1.0"

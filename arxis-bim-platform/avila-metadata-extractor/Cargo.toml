@@ -10,8 +10,8 @@ keywords = ["bim", "ifc", "metadata", "json", "semantic"]
 categories = ["parsing", "encoding"]
 
 [dependencies]
-avila-vec3d = { path = "../avila-vec3d" }
-avila-mesh = { path = "../avila-mesh" }
+avila-vec3d = { version = "0.1.0", path = "../avila-vec3d" }
+avila-mesh = { version = "0.1.0", path = "../avila-mesh" }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = "1.0"
