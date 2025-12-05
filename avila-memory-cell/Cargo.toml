@@ -1,0 +1,39 @@
+[package]
+name = "avila-memory-cell"
+version = "0.1.0"
+edition = "2021"
+authors = [
+    "Nícolas Ávila <nicolas@avila.inc>",
+    "Avila Development Team <dev@avila.inc>",
+]
+license = "MIT OR Apache-2.0"
+description = "Interior mutability primitives - Cell, RefCell, UnsafeCell, OnceCell without std::cell"
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://avila.inc"
+keywords = ["cell", "interior-mutability", "no-std", "refcell", "memory"]
+categories = ["no-std", "data-structures", "rust-patterns"]
+rust-version = "1.70"
+
+[lib]
+name = "avila_memory_cell"
+path = "src/lib.rs"
+
+[dependencies]
+avila-primitives = { version = "0.1.0", path = "../avila-primitives" }
+avila-atom = { version = "0.7.0", path = "../avila-atom" }
+
+[features]
+default = []
+std = []
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+strip = true
+panic = "abort"
+
+[profile.dev]
+opt-level = 0
+debug = true
+incremental = true
