@@ -24,14 +24,23 @@ avila-id = { version = "0.1.0", path = "../avila-id" }
 avila-rand = { version = "0.1.0", path = "../avila-rand" }
 avila-crypto = { version = "0.1.0", path = "../avila-crypto" }
 
-# Compression (internal) - Coming soon on crates.io
-# avila-compress = { version = "0.3.0", path = "../avila-compress" }
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+anyhow = "1.0"
 
 # Networking
 avila-web = { version = "0.1.0", path = "../avila-web" }
 tower-http = { version = "0.6", features = ["cors", "trace"] }
 avila-http = { version = "0.1.0", path = "../avila-http" }
 brotli = "7.0"
+reqwest = { version = "0.12", features = ["json", "brotli"] }
+
+# Random
+rand = "0.8"
+
+# Compression (internal) - Coming soon on crates.io
+# avila-compress = { version = "0.3.0", path = "../avila-compress" }
 
 # Storage
 # rocksdb = "0.22"  # Requires LLVM/Clang - optional for production use
@@ -41,7 +50,7 @@ sled = "0.34"  # Pure Rust embedded database
 # Observability
 avila-tracing = { version = "0.1.0", path = "../avila-tracing" }
 tracing-subscriber = "0.3"
-avx-telemetry = { version = "0.1", path = "../avx-telemetry" }
+# avx-telemetry = { version = "0.1", path = "../avx-telemetry" }
 
 # Vector search
 hnsw = { version = "0.11", optional = true }
