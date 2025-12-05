@@ -171,7 +171,9 @@ Note: OS entropy source (`OsRng`) requires either the `std` or `getrandom` featu
 
 ## Safety
 
-This crate is marked with `#![forbid(unsafe_code)]` - it uses only safe Rust code.
+This crate is marked with `#![forbid(unsafe_code)]` at the library level - all RNG algorithms use only safe Rust code.
+
+**Note**: The OS entropy source (`OsRng`) on Windows requires a single FFI call to `RtlGenRandom` which is inherently unsafe. This is properly documented and uses the recommended Windows API for cryptographically secure random numbers. The Unix implementation reads from `/dev/urandom` and uses only safe code.
 
 ## Performance
 

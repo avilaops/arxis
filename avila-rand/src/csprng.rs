@@ -2,6 +2,9 @@
 //!
 //! Provides cryptographically secure random numbers from the operating system.
 
+// Windows RtlGenRandom requires FFI which needs unsafe
+#![cfg_attr(windows, allow(unsafe_code))]
+
 use crate::traits::{CryptoRng, Rng};
 
 /// OS-based cryptographically secure RNG
@@ -51,6 +54,8 @@ pub(crate) fn fill_entropy(dest: &mut [u8]) {
     #[cfg(windows)]
     {
         // On Windows, use RtlGenRandom (SystemFunction036)
+        // This is the recommended cryptographically secure random source on Windows
+        // SAFETY: We ensure the buffer pointer is valid and the length matches
         extern "system" {
             fn SystemFunction036(random_buffer: *mut u8, random_buffer_length: u32) -> u8;
         }
