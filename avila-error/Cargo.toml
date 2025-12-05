@@ -1,22 +1,21 @@
 [package]
 name = "avila-error"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 authors = ["Nícolas Ávila <nicolas@avila.inc>"]
 license = "MIT OR Apache-2.0"
-description = "AVL Platform error handling - replacement for anyhow/thiserror"
+description = "Unified error system for Avila Platform - Layer 1, no_std compatible"
 repository = "https://github.com/avilaops/arxis"
 homepage = "https://avila.inc"
-keywords = ["error", "avila", "avl"]
+keywords = ["error", "avila", "no-std", "embedded"]
+categories = ["no-std", "embedded"]
 
 [dependencies]
-avila-error-derive = { path = "./avila-error-derive", version = "0.1.0", optional = true }
+# Zero dependencies - pure no_std implementation
 
 [features]
-default = []
-derive = ["avila-error-derive"]
-context = []  # Trait Context para estilo anyhow
-full = ["derive", "context"]
+default = ["alloc"]
+alloc = []  # Enable String and Vec support via alloc crate
 
 [lib]
 name = "avila_error"
