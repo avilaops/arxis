@@ -25,14 +25,8 @@ pub mod checksum;
 pub mod metrics;
 pub mod columnar;
 pub mod format;
-
-#[cfg(feature = "parallel")]
 pub mod parallel;
-
-#[cfg(feature = "simd")]
 pub mod simd;
-
-#[cfg(feature = "dictionary")]
 pub mod dictionary;
 
 pub use error::{Error, Result};

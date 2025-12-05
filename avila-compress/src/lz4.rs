@@ -70,7 +70,7 @@ pub fn compress_with_level(input: &[u8], level: Level) -> Result<Vec<u8>> {
         Level::Fast => compress_fast(input),
         Level::Balanced => compress_balanced(input),
         Level::Best => compress_best(input),
-        Level::Ultra => compress_best(input), // TODO: Fix Ultra mode - use Best for now
+        Level::Ultra => compress_ultra(input),
     }
 }
 
