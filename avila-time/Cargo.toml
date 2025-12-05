@@ -4,16 +4,20 @@ version = "0.1.0"
 edition = "2021"
 authors = ["Nícolas Ávila <nicolas@avila.inc>"]
 license = "MIT OR Apache-2.0"
-description = "AVL Platform date and time handling - replacement for chrono"
+description = "AVL Platform date and time handling - no_std compatible, no chrono/std::time"
 repository = "https://github.com/avilaops/arxis"
 homepage = "https://avila.inc"
 keywords = ["time", "date", "datetime", "avila", "avl"]
+categories = ["date-and-time", "no-std"]
 
 [dependencies]
+avila-primitives = { version = "0.1.0", path = "../avila-primitives", default-features = false }
+avila-error = { version = "0.2.0", path = "../avila-error", default-features = false }
 avila-serde = { version = "0.2.0", path = "../avila-serde", optional = true }
 
 [features]
 default = []
+std = ["avila-error/full"]
 serde = ["dep:avila-serde"]
 
 [lib]
