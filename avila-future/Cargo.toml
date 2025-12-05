@@ -1,14 +1,31 @@
 [package]
 name = "avila-future"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 authors = ["Nícolas Ávila <nicolas@avila.inc>"]
 license = "MIT OR Apache-2.0"
-description = "Futures nativo - substitui futures crate"
-
-[dependencies]
-tokio = { version = "1.42", features = ["rt", "macros"] }
+description = "Complete async runtime without tokio - Custom Future trait, work-stealing executor, timers, and channels"
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://avila.inc"
+keywords = ["async", "runtime", "future", "executor", "no-std"]
+categories = ["asynchronous", "concurrency", "no-std"]
 
 [lib]
 name = "avila_future"
 path = "src/lib.rs"
+
+[dependencies]
+avila-atom = { version = "0.7.0", path = "../avila-atom", default-features = false }
+avila-time = { version = "0.1.0", path = "../avila-time", optional = true }
+
+[dev-dependencies]
+
+[features]
+default = ["std", "timers"]
+std = ["avila-atom/std"]
+timers = ["dep:avila-time", "std"]
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
