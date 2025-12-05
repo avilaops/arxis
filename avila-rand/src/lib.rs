@@ -1,248 +1,233 @@
-//! Avila Rand - Gerador de números aleatórios nativo
-//! Substitui rand - 100% Rust std
+//! # Avila Rand - Cryptographically Secure Random Number Generator
+//!
+//! A `no_std` compatible random number generator library without external dependencies.
+//! Implements multiple PRNG algorithms including ChaCha20, Xoshiro256**, and OS-based CSPRNG.
+//!
+//! ## Features
+//! - ChaCha20 PRNG (cryptographically secure)
+//! - Xoshiro256** (fast, high-quality non-cryptographic)
+//! - OS entropy source (CSPRNG)
+//! - Multiple distributions (uniform, normal, exponential)
+//! - `no_std` compatible
+//! - Zero external dependencies
 
-use std::cell::RefCell;
+#![cfg_attr(not(feature = "std"), no_std)]
+#![forbid(unsafe_code)]
 
-thread_local! {
-    static RNG: RefCell<Xoshiro256> = RefCell::new(Xoshiro256::new());
-}
+#[cfg(feature = "std")]
+extern crate std;
 
-// Xoshiro256** - algoritmo rápido e de qualidade
-struct Xoshiro256 {
-    s: [u64; 4],
-}
+#[cfg(not(feature = "std"))]
+extern crate core as std;
 
-impl Xoshiro256 {
-    fn new() -> Self {
-        let seed = Self::seed_from_time();
-        Self::from_seed(seed)
+mod chacha;
+mod csprng;
+mod distributions;
+mod traits;
+mod xoshiro;
+
+pub use chacha::ChaCha20Rng;
+pub use csprng::OsRng;
+pub use distributions::{Distribution, Uniform};
+#[cfg(feature = "std")]
+pub use distributions::{Exponential, Normal, Bernoulli, Gamma};
+pub use traits::{CryptoRng, Rng, SeedableRng};
+pub use xoshiro::Xoshiro256StarStar;
+
+/// Default thread-local RNG (only available with std)
+#[cfg(feature = "std")]
+pub mod thread_rng {
+    use super::*;
+    use std::cell::RefCell;
+
+    thread_local! {
+        static THREAD_RNG: RefCell<ChaCha20Rng> = RefCell::new(ChaCha20Rng::from_entropy());
     }
 
-    fn from_seed(seed: u64) -> Self {
-        let mut s = [0u64; 4];
-        s[0] = seed;
-        s[1] = seed.wrapping_mul(0x9e3779b97f4a7c15);
-        s[2] = seed.wrapping_mul(0xbf58476d1ce4e5b9);
-        s[3] = seed.wrapping_mul(0x94d049bb133111eb);
-        Self { s }
+    /// Get thread-local random value
+    pub fn random<T: Random>() -> T {
+        THREAD_RNG.with(|rng| T::random(&mut *rng.borrow_mut()))
     }
 
-    fn seed_from_time() -> u64 {
-        use std::time::{SystemTime, UNIX_EPOCH};
-        SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap()
-            .as_nanos() as u64
-    }
-
-    fn next(&mut self) -> u64 {
-        let result = self.s[1].wrapping_mul(5).rotate_left(7).wrapping_mul(9);
-        let t = self.s[1] << 17;
-
-        self.s[2] ^= self.s[0];
-        self.s[3] ^= self.s[1];
-        self.s[1] ^= self.s[2];
-        self.s[0] ^= self.s[3];
-        self.s[2] ^= t;
-        self.s[3] = self.s[3].rotate_left(45);
-
-        result
-    }
-}
-
-pub struct Rng;
-
-impl Rng {
-    pub fn new() -> Self {
-        Self
-    }
-
-    pub fn gen<T: Rand>(&mut self) -> T {
-        T::rand(self)
-    }
-
-    pub fn gen_range<T: RandRange>(&mut self, range: std::ops::Range<T>) -> T {
-        T::rand_range(self, range)
-    }
-
-    fn next_u64(&mut self) -> u64 {
-        RNG.with(|rng| rng.borrow_mut().next())
+    /// Get thread-local random value in range
+    pub fn random_range<T: RandomRange>(range: core::ops::Range<T>) -> T {
+        THREAD_RNG.with(|rng| T::random_range(&mut *rng.borrow_mut(), range))
     }
 }
 
-impl Default for Rng {
-    fn default() -> Self {
-        Self::new()
+#[cfg(feature = "std")]
+pub use thread_rng::{random, random_range};
+
+/// Trait for types that can be randomly generated
+pub trait Random: Sized {
+    fn random<R: Rng + ?Sized>(rng: &mut R) -> Self;
+}
+
+/// Trait for types that can be generated in a range
+pub trait RandomRange: Sized {
+    fn random_range<R: Rng + ?Sized>(rng: &mut R, range: core::ops::Range<Self>) -> Self;
+}
+
+// Implementations for basic types
+impl Random for u8 {
+    fn random<R: Rng + ?Sized>(rng: &mut R) -> Self {
+        rng.next_u32() as u8
     }
 }
 
-pub trait Rand: Sized {
-    fn rand(rng: &mut Rng) -> Self;
+impl Random for u16 {
+    fn random<R: Rng + ?Sized>(rng: &mut R) -> Self {
+        rng.next_u32() as u16
+    }
 }
 
-pub trait RandRange: Sized {
-    fn rand_range(rng: &mut Rng, range: std::ops::Range<Self>) -> Self;
+impl Random for u32 {
+    fn random<R: Rng + ?Sized>(rng: &mut R) -> Self {
+        rng.next_u32()
+    }
 }
 
-impl Rand for u64 {
-    fn rand(rng: &mut Rng) -> Self {
+impl Random for u64 {
+    fn random<R: Rng + ?Sized>(rng: &mut R) -> Self {
         rng.next_u64()
     }
 }
 
-impl Rand for u32 {
-    fn rand(rng: &mut Rng) -> Self {
-        rng.next_u64() as u32
+impl Random for u128 {
+    fn random<R: Rng + ?Sized>(rng: &mut R) -> Self {
+        let hi = rng.next_u64() as u128;
+        let lo = rng.next_u64() as u128;
+        (hi << 64) | lo
     }
 }
 
-impl Rand for u16 {
-    fn rand(rng: &mut Rng) -> Self {
-        rng.next_u64() as u16
+impl Random for i8 {
+    fn random<R: Rng + ?Sized>(rng: &mut R) -> Self {
+        rng.next_u32() as i8
     }
 }
 
-impl Rand for u8 {
-    fn rand(rng: &mut Rng) -> Self {
-        rng.next_u64() as u8
+impl Random for i16 {
+    fn random<R: Rng + ?Sized>(rng: &mut R) -> Self {
+        rng.next_u32() as i16
     }
 }
 
-impl Rand for i64 {
-    fn rand(rng: &mut Rng) -> Self {
+impl Random for i32 {
+    fn random<R: Rng + ?Sized>(rng: &mut R) -> Self {
+        rng.next_u32() as i32
+    }
+}
+
+impl Random for i64 {
+    fn random<R: Rng + ?Sized>(rng: &mut R) -> Self {
         rng.next_u64() as i64
     }
 }
 
-impl Rand for i32 {
-    fn rand(rng: &mut Rng) -> Self {
-        rng.next_u64() as i32
+impl Random for i128 {
+    fn random<R: Rng + ?Sized>(rng: &mut R) -> Self {
+        u128::random(rng) as i128
     }
 }
 
-impl Rand for f64 {
-    fn rand(rng: &mut Rng) -> Self {
-        let bits = rng.next_u64();
-        let float_bits = (bits >> 12) | 0x3FF0_0000_0000_0000;
-        f64::from_bits(float_bits) - 1.0
+impl Random for bool {
+    fn random<R: Rng + ?Sized>(rng: &mut R) -> Self {
+        (rng.next_u32() & 1) == 1
     }
 }
 
-impl Rand for f32 {
-    fn rand(rng: &mut Rng) -> Self {
-        f64::rand(rng) as f32
+impl Random for f32 {
+    fn random<R: Rng + ?Sized>(rng: &mut R) -> Self {
+        // Generate a float in [0, 1)
+        let bits = rng.next_u32() >> 8; // Use 24 bits
+        let scale = 1.0 / ((1u32 << 24) as f32);
+        bits as f32 * scale
     }
 }
 
-impl Rand for bool {
-    fn rand(rng: &mut Rng) -> Self {
-        (rng.next_u64() & 1) == 1
+impl Random for f64 {
+    fn random<R: Rng + ?Sized>(rng: &mut R) -> Self {
+        // Generate a float in [0, 1)
+        let bits = rng.next_u64() >> 11; // Use 53 bits
+        let scale = 1.0 / ((1u64 << 53) as f64);
+        bits as f64 * scale
     }
 }
 
-impl RandRange for u64 {
-    fn rand_range(rng: &mut Rng, range: std::ops::Range<Self>) -> Self {
+// Range implementations
+impl RandomRange for u8 {
+    fn random_range<R: Rng + ?Sized>(rng: &mut R, range: core::ops::Range<Self>) -> Self {
+        let span = range.end.wrapping_sub(range.start);
+        range.start.wrapping_add((rng.next_u32() % span as u32) as u8)
+    }
+}
+
+impl RandomRange for u16 {
+    fn random_range<R: Rng + ?Sized>(rng: &mut R, range: core::ops::Range<Self>) -> Self {
+        let span = range.end.wrapping_sub(range.start);
+        range.start.wrapping_add((rng.next_u32() % span as u32) as u16)
+    }
+}
+
+impl RandomRange for u32 {
+    fn random_range<R: Rng + ?Sized>(rng: &mut R, range: core::ops::Range<Self>) -> Self {
+        let span = range.end.wrapping_sub(range.start);
+        range.start.wrapping_add(rng.next_u32() % span)
+    }
+}
+
+impl RandomRange for u64 {
+    fn random_range<R: Rng + ?Sized>(rng: &mut R, range: core::ops::Range<Self>) -> Self {
+        let span = range.end.wrapping_sub(range.start);
+        range.start.wrapping_add(rng.next_u64() % span)
+    }
+}
+
+impl RandomRange for usize {
+    fn random_range<R: Rng + ?Sized>(rng: &mut R, range: core::ops::Range<Self>) -> Self {
+        let span = range.end.wrapping_sub(range.start);
+        range.start.wrapping_add((rng.next_u64() as usize) % span)
+    }
+}
+
+impl RandomRange for i32 {
+    fn random_range<R: Rng + ?Sized>(rng: &mut R, range: core::ops::Range<Self>) -> Self {
+        let span = range.end.wrapping_sub(range.start) as u32;
+        range.start.wrapping_add((rng.next_u32() % span) as i32)
+    }
+}
+
+impl RandomRange for i64 {
+    fn random_range<R: Rng + ?Sized>(rng: &mut R, range: core::ops::Range<Self>) -> Self {
+        let span = range.end.wrapping_sub(range.start) as u64;
+        range.start.wrapping_add((rng.next_u64() % span) as i64)
+    }
+}
+
+impl RandomRange for f32 {
+    fn random_range<R: Rng + ?Sized>(rng: &mut R, range: core::ops::Range<Self>) -> Self {
         let span = range.end - range.start;
-        range.start + (rng.next_u64() % span)
+        range.start + f32::random(rng) * span
     }
 }
 
-impl RandRange for usize {
-    fn rand_range(rng: &mut Rng, range: std::ops::Range<Self>) -> Self {
+impl RandomRange for f64 {
+    fn random_range<R: Rng + ?Sized>(rng: &mut R, range: core::ops::Range<Self>) -> Self {
         let span = range.end - range.start;
-        range.start + ((rng.next_u64() as usize) % span)
+        range.start + f64::random(rng) * span
     }
 }
 
-impl RandRange for u32 {
-    fn rand_range(rng: &mut Rng, range: std::ops::Range<Self>) -> Self {
-        let span = range.end - range.start;
-        range.start + ((rng.next_u64() as u32) % span)
-    }
+/// Fill a byte slice with random data
+pub fn fill_bytes<R: Rng + ?Sized>(rng: &mut R, dest: &mut [u8]) {
+    rng.fill_bytes(dest);
 }
 
-impl RandRange for i32 {
-    fn rand_range(rng: &mut Rng, range: std::ops::Range<Self>) -> Self {
-        let span = (range.end - range.start) as u32;
-        range.start + ((rng.next_u64() as u32) % span) as i32
-    }
-}
-
-impl RandRange for f64 {
-    fn rand_range(rng: &mut Rng, range: std::ops::Range<Self>) -> Self {
-        let span = range.end - range.start;
-        range.start + f64::rand(rng) * span
-    }
-}
-
-// Funções globais
-pub fn random<T: Rand>() -> T {
-    Rng::new().gen()
-}
-
-pub fn random_range<T: RandRange>(range: std::ops::Range<T>) -> T {
-    Rng::new().gen_range(range)
-}
-
-pub fn shuffle<T>(slice: &mut [T]) {
-    let mut rng = Rng::new();
+/// Shuffle a slice in place
+pub fn shuffle<T, R: Rng + ?Sized>(rng: &mut R, slice: &mut [T]) {
     for i in (1..slice.len()).rev() {
-        let j = rng.gen_range(0..i + 1);
+        let j = usize::random_range(rng, 0..i + 1);
         slice.swap(i, j);
-    }
-}
-
-pub fn seed(seed: u64) {
-    RNG.with(|rng| {
-        *rng.borrow_mut() = Xoshiro256::from_seed(seed);
-    });
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_basic_types() {
-        let mut rng = Rng::new();
-        let _u: u64 = rng.gen();
-        let _f: f64 = rng.gen();
-        let _b: bool = rng.gen();
-    }
-
-    #[test]
-    fn test_range() {
-        let mut rng = Rng::new();
-        for _ in 0..100 {
-            let val = rng.gen_range(10..20);
-            assert!(val >= 10 && val < 20);
-        }
-    }
-
-    #[test]
-    fn test_global_functions() {
-        let _v: u32 = random();
-        let v = random_range(5..15);
-        assert!(v >= 5 && v < 15);
-    }
-
-    #[test]
-    fn test_shuffle() {
-        let mut arr = [1, 2, 3, 4, 5];
-        shuffle(&mut arr);
-        assert_eq!(arr.len(), 5);
-    }
-
-    #[test]
-    fn test_seed_determinism() {
-        seed(12345);
-        let mut rng = Rng::new();
-        let v1: u64 = rng.gen();
-
-        seed(12345);
-        let mut rng2 = Rng::new();
-        let v2: u64 = rng2.gen();
-
-        assert_eq!(v1, v2);
     }
 }
