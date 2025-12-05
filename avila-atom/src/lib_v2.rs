@@ -4,7 +4,7 @@
 //!
 //! This library provides low-level atomic operations and primitives for building
 //! concurrent systems without relying on `std::sync::atomic`. All operations are
-//! implemented using compiler intrinsics and inline assembly.
+//! implemented using inline assembly for maximum control and portability.
 //!
 //! ## Features
 //!
@@ -21,7 +21,7 @@
 //!
 //! - ❌ NO `std::sync::atomic`
 //! - ✅ `#![no_std]` mandatory
-//! - ✅ Compiler intrinsics or assembly only
+//! - ✅ Inline assembly only
 //!
 //! ## Example
 //!
@@ -35,8 +35,11 @@
 //! ```
 
 #![no_std]
+#![feature(asm_const)]
 #![warn(missing_docs)]
 #![allow(clippy::missing_safety_doc)]
+
+use core::arch::asm;
 
 /// Memory ordering for atomic operations
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
@@ -52,24 +55,14 @@ pub enum Ordering {
     SeqCst = 3,
 }
 
-impl Ordering {
-    /// Convert to LLVM atomic ordering
-    #[inline(always)]
-    const fn to_llvm(&self) -> &'static str {
-        match self {
-            Ordering::Relaxed => "monotonic",
-            Ordering::Acquire => "acquire",
-            Ordering::Release => "release",
-            Ordering::SeqCst => "seq_cst",
-        }
-    }
-}
-
 /// 8-bit atomic integer
 #[repr(C, align(1))]
 pub struct AtomicByte {
     value: u8,
 }
+
+unsafe impl Sync for AtomicByte {}
+unsafe impl Send for AtomicByte {}
 
 impl AtomicByte {
     /// Creates a new atomic byte
@@ -83,13 +76,25 @@ impl AtomicByte {
     pub fn load(&self, order: Ordering) -> u8 {
         match order {
             Ordering::Relaxed => unsafe {
-                core::intrinsics::atomic_load_relaxed(&self.value)
+                let result: u8;
+                asm!(
+                    "mov {}, byte ptr [{}]",
+                    out(reg_byte) result,
+                    in(reg) &self.value,
+                    options(readonly, nostack, preserves_flags)
+                );
+                result
             },
-            Ordering::Acquire => unsafe {
-                core::intrinsics::atomic_load_acquire(&self.value)
-            },
-            Ordering::SeqCst => unsafe {
-                core::intrinsics::atomic_load_seqcst(&self.value)
+            Ordering::Acquire | Ordering::SeqCst => unsafe {
+                let result: u8;
+                asm!(
+                    "mov {}, byte ptr [{}]",
+                    "lock or dword ptr [rsp], 0",  // Memory fence
+                    out(reg_byte) result,
+                    in(reg) &self.value,
+                    options(readonly, nostack)
+                );
+                result
             },
             Ordering::Release => panic!("Invalid ordering for load"),
         }
@@ -100,92 +105,72 @@ impl AtomicByte {
     pub fn store(&self, value: u8, order: Ordering) {
         match order {
             Ordering::Relaxed => unsafe {
-                core::intrinsics::atomic_store_relaxed(&self.value as *const u8 as *mut u8, value);
+                asm!(
+                    "mov byte ptr [{}], {}",
+                    in(reg) &self.value,
+                    in(reg_byte) value,
+                    options(nostack, preserves_flags)
+                );
             },
-            Ordering::Release => unsafe {
-                core::intrinsics::atomic_store_release(&self.value as *const u8 as *mut u8, value);
-            },
-            Ordering::SeqCst => unsafe {
-                core::intrinsics::atomic_store_seqcst(&self.value as *const u8 as *mut u8, value);
+            Ordering::Release | Ordering::SeqCst => unsafe {
+                asm!(
+                    "xchg byte ptr [{}], {}",
+                    in(reg) &self.value,
+                    in(reg_byte) value,
+                    options(nostack)
+                );
             },
             Ordering::Acquire => panic!("Invalid ordering for store"),
         }
     }
 
     /// Compare-and-swap operation
-    ///
-    /// Compares the current value with `current`, and if they are equal,
-    /// replaces it with `new`. Returns the previous value.
     #[inline(always)]
-    pub fn compare_and_swap(&self, current: u8, new: u8, order: Ordering) -> u8 {
-        match order {
-            Ordering::Relaxed => unsafe {
-                core::intrinsics::atomic_cxchg_relaxed_relaxed(
-                    &self.value as *const u8 as *mut u8,
-                    current,
-                    new,
-                ).0
-            },
-            Ordering::Acquire => unsafe {
-                core::intrinsics::atomic_cxchg_acquire_acquire(
-                    &self.value as *const u8 as *mut u8,
-                    current,
-                    new,
-                ).0
-            },
-            Ordering::Release => unsafe {
-                core::intrinsics::atomic_cxchg_release_relaxed(
-                    &self.value as *const u8 as *mut u8,
-                    current,
-                    new,
-                ).0
-            },
-            Ordering::SeqCst => unsafe {
-                core::intrinsics::atomic_cxchg_seqcst_seqcst(
-                    &self.value as *const u8 as *mut u8,
-                    current,
-                    new,
-                ).0
-            },
+    pub fn compare_and_swap(&self, current: u8, new: u8, _order: Ordering) -> u8 {
+        unsafe {
+            let result: u8;
+            asm!(
+                "lock cmpxchg byte ptr [{}], {}",
+                in(reg) &self.value,
+                in(reg_byte) new,
+                inout("al") current => result,
+                options(nostack)
+            );
+            result
         }
     }
 
     /// Atomically adds to the current value and returns the previous value
     #[inline(always)]
-    pub fn fetch_add(&self, value: u8, order: Ordering) -> u8 {
-        match order {
-            Ordering::Relaxed => unsafe {
-                core::intrinsics::atomic_xadd_relaxed(&self.value as *const u8 as *mut u8, value)
-            },
-            Ordering::Acquire => unsafe {
-                core::intrinsics::atomic_xadd_acquire(&self.value as *const u8 as *mut u8, value)
-            },
-            Ordering::Release => unsafe {
-                core::intrinsics::atomic_xadd_release(&self.value as *const u8 as *mut u8, value)
-            },
-            Ordering::SeqCst => unsafe {
-                core::intrinsics::atomic_xadd_seqcst(&self.value as *const u8 as *mut u8, value)
-            },
+    pub fn fetch_add(&self, value: u8, _order: Ordering) -> u8 {
+        unsafe {
+            let result: u8;
+            asm!(
+                "lock xadd byte ptr [{}], {}",
+                in(reg) &self.value,
+                inout(reg_byte) value => result,
+                options(nostack)
+            );
+            result
         }
     }
 
     /// Atomically subtracts from the current value and returns the previous value
     #[inline(always)]
     pub fn fetch_sub(&self, value: u8, order: Ordering) -> u8 {
-        match order {
-            Ordering::Relaxed => unsafe {
-                core::intrinsics::atomic_xsub_relaxed(&self.value as *const u8 as *mut u8, value)
-            },
-            Ordering::Acquire => unsafe {
-                core::intrinsics::atomic_xsub_acquire(&self.value as *const u8 as *mut u8, value)
-            },
-            Ordering::Release => unsafe {
-                core::intrinsics::atomic_xsub_release(&self.value as *const u8 as *mut u8, value)
-            },
-            Ordering::SeqCst => unsafe {
-                core::intrinsics::atomic_xsub_seqcst(&self.value as *const u8 as *mut u8, value)
-            },
-        }
+        self.fetch_add((value as i8).wrapping_neg() as u8, order)
+    }
+
+    /// Gets the inner value (not atomic)
+    #[inline(always)]
+    pub fn into_inner(self) -> u8 {
+        self.value
+    }
+
+    /// Gets a mutable reference to the inner value
+    #[inline(always)]
+    pub fn get_mut(&mut self) -> &mut u8 {
+        &mut self.value
     }
 }
 
@@ -194,6 +179,9 @@ impl AtomicByte {
 pub struct AtomicWord {
     value: u16,
 }
+
+unsafe impl Sync for AtomicWord {}
+unsafe impl Send for AtomicWord {}
 
 impl AtomicWord {
     /// Creates a new atomic word
@@ -207,13 +195,25 @@ impl AtomicWord {
     pub fn load(&self, order: Ordering) -> u16 {
         match order {
             Ordering::Relaxed => unsafe {
-                core::intrinsics::atomic_load_relaxed(&self.value)
+                let result: u16;
+                asm!(
+                    "mov {}, word ptr [{}]",
+                    out(reg) result,
+                    in(reg) &self.value,
+                    options(readonly, nostack, preserves_flags)
+                );
+                result
             },
-            Ordering::Acquire => unsafe {
-                core::intrinsics::atomic_load_acquire(&self.value)
-            },
-            Ordering::SeqCst => unsafe {
-                core::intrinsics::atomic_load_seqcst(&self.value)
+            Ordering::Acquire | Ordering::SeqCst => unsafe {
+                let result: u16;
+                asm!(
+                    "mov {}, word ptr [{}]",
+                    "lock or dword ptr [rsp], 0",
+                    out(reg) result,
+                    in(reg) &self.value,
+                    options(readonly, nostack)
+                );
+                result
             },
             Ordering::Release => panic!("Invalid ordering for load"),
         }
@@ -224,13 +224,20 @@ impl AtomicWord {
     pub fn store(&self, value: u16, order: Ordering) {
         match order {
             Ordering::Relaxed => unsafe {
-                core::intrinsics::atomic_store_relaxed(&self.value as *const u16 as *mut u16, value);
+                asm!(
+                    "mov word ptr [{}], {}",
+                    in(reg) &self.value,
+                    in(reg) value,
+                    options(nostack, preserves_flags)
+                );
             },
-            Ordering::Release => unsafe {
-                core::intrinsics::atomic_store_release(&self.value as *const u16 as *mut u16, value);
-            },
-            Ordering::SeqCst => unsafe {
-                core::intrinsics::atomic_store_seqcst(&self.value as *const u16 as *mut u16, value);
+            Ordering::Release | Ordering::SeqCst => unsafe {
+                asm!(
+                    "xchg word ptr [{}], {}",
+                    in(reg) &self.value,
+                    in(reg) value,
+                    options(nostack)
+                );
             },
             Ordering::Acquire => panic!("Invalid ordering for store"),
         }
@@ -238,75 +245,51 @@ impl AtomicWord {
 
     /// Compare-and-swap operation
     #[inline(always)]
-    pub fn compare_and_swap(&self, current: u16, new: u16, order: Ordering) -> u16 {
-        match order {
-            Ordering::Relaxed => unsafe {
-                core::intrinsics::atomic_cxchg_relaxed_relaxed(
-                    &self.value as *const u16 as *mut u16,
-                    current,
-                    new,
-                ).0
-            },
-            Ordering::Acquire => unsafe {
-                core::intrinsics::atomic_cxchg_acquire_acquire(
-                    &self.value as *const u16 as *mut u16,
-                    current,
-                    new,
-                ).0
-            },
-            Ordering::Release => unsafe {
-                core::intrinsics::atomic_cxchg_release_relaxed(
-                    &self.value as *const u16 as *mut u16,
-                    current,
-                    new,
-                ).0
-            },
-            Ordering::SeqCst => unsafe {
-                core::intrinsics::atomic_cxchg_seqcst_seqcst(
-                    &self.value as *const u16 as *mut u16,
-                    current,
-                    new,
-                ).0
-            },
+    pub fn compare_and_swap(&self, current: u16, new: u16, _order: Ordering) -> u16 {
+        unsafe {
+            let result: u16;
+            asm!(
+                "lock cmpxchg word ptr [{}], {}",
+                in(reg) &self.value,
+                in(reg) new,
+                inout("ax") current => result,
+                options(nostack)
+            );
+            result
         }
     }
 
     /// Atomically adds to the current value and returns the previous value
     #[inline(always)]
-    pub fn fetch_add(&self, value: u16, order: Ordering) -> u16 {
-        match order {
-            Ordering::Relaxed => unsafe {
-                core::intrinsics::atomic_xadd_relaxed(&self.value as *const u16 as *mut u16, value)
-            },
-            Ordering::Acquire => unsafe {
-                core::intrinsics::atomic_xadd_acquire(&self.value as *const u16 as *mut u16, value)
-            },
-            Ordering::Release => unsafe {
-                core::intrinsics::atomic_xadd_release(&self.value as *const u16 as *mut u16, value)
-            },
-            Ordering::SeqCst => unsafe {
-                core::intrinsics::atomic_xadd_seqcst(&self.value as *const u16 as *mut u16, value)
-            },
+    pub fn fetch_add(&self, value: u16, _order: Ordering) -> u16 {
+        unsafe {
+            let result: u16;
+            asm!(
+                "lock xadd word ptr [{}], {}",
+                in(reg) &self.value,
+                inout(reg) value => result,
+                options(nostack)
+            );
+            result
         }
     }
 
     /// Atomically subtracts from the current value and returns the previous value
     #[inline(always)]
     pub fn fetch_sub(&self, value: u16, order: Ordering) -> u16 {
-        match order {
-            Ordering::Relaxed => unsafe {
-                core::intrinsics::atomic_xsub_relaxed(&self.value as *const u16 as *mut u16, value)
-            },
-            Ordering::Acquire => unsafe {
-                core::intrinsics::atomic_xsub_acquire(&self.value as *const u16 as *mut u16, value)
-            },
-            Ordering::Release => unsafe {
-                core::intrinsics::atomic_xsub_release(&self.value as *const u16 as *mut u16, value)
-            },
-            Ordering::SeqCst => unsafe {
-                core::intrinsics::atomic_xsub_seqcst(&self.value as *const u16 as *mut u16, value)
-            },
-        }
+        self.fetch_add((value as i16).wrapping_neg() as u16, order)
+    }
+
+    /// Gets the inner value (not atomic)
+    #[inline(always)]
+    pub fn into_inner(self) -> u16 {
+        self.value
+    }
+
+    /// Gets a mutable reference to the inner value
+    #[inline(always)]
+    pub fn get_mut(&mut self) -> &mut u16 {
+        &mut self.value
     }
 }
 
@@ -315,6 +298,9 @@ impl AtomicWord {
 pub struct AtomicQWord {
     value: u64,
 }
+
+unsafe impl Sync for AtomicQWord {}
+unsafe impl Send for AtomicQWord {}
 
 impl AtomicQWord {
     /// Creates a new atomic qword
@@ -328,13 +314,25 @@ impl AtomicQWord {
     pub fn load(&self, order: Ordering) -> u64 {
         match order {
             Ordering::Relaxed => unsafe {
-                core::intrinsics::atomic_load_relaxed(&self.value)
+                let result: u64;
+                asm!(
+                    "mov {}, qword ptr [{}]",
+                    out(reg) result,
+                    in(reg) &self.value,
+                    options(readonly, nostack, preserves_flags)
+                );
+                result
             },
-            Ordering::Acquire => unsafe {
-                core::intrinsics::atomic_load_acquire(&self.value)
-            },
-            Ordering::SeqCst => unsafe {
-                core::intrinsics::atomic_load_seqcst(&self.value)
+            Ordering::Acquire | Ordering::SeqCst => unsafe {
+                let result: u64;
+                asm!(
+                    "mov {}, qword ptr [{}]",
+                    "lock or dword ptr [rsp], 0",
+                    out(reg) result,
+                    in(reg) &self.value,
+                    options(readonly, nostack)
+                );
+                result
             },
             Ordering::Release => panic!("Invalid ordering for load"),
         }
@@ -345,13 +343,20 @@ impl AtomicQWord {
     pub fn store(&self, value: u64, order: Ordering) {
         match order {
             Ordering::Relaxed => unsafe {
-                core::intrinsics::atomic_store_relaxed(&self.value as *const u64 as *mut u64, value);
+                asm!(
+                    "mov qword ptr [{}], {}",
+                    in(reg) &self.value,
+                    in(reg) value,
+                    options(nostack, preserves_flags)
+                );
             },
-            Ordering::Release => unsafe {
-                core::intrinsics::atomic_store_release(&self.value as *const u64 as *mut u64, value);
-            },
-            Ordering::SeqCst => unsafe {
-                core::intrinsics::atomic_store_seqcst(&self.value as *const u64 as *mut u64, value);
+            Ordering::Release | Ordering::SeqCst => unsafe {
+                asm!(
+                    "xchg qword ptr [{}], {}",
+                    in(reg) &self.value,
+                    in(reg) value,
+                    options(nostack)
+                );
             },
             Ordering::Acquire => panic!("Invalid ordering for store"),
         }
@@ -359,75 +364,51 @@ impl AtomicQWord {
 
     /// Compare-and-swap operation
     #[inline(always)]
-    pub fn compare_and_swap(&self, current: u64, new: u64, order: Ordering) -> u64 {
-        match order {
-            Ordering::Relaxed => unsafe {
-                core::intrinsics::atomic_cxchg_relaxed_relaxed(
-                    &self.value as *const u64 as *mut u64,
-                    current,
-                    new,
-                ).0
-            },
-            Ordering::Acquire => unsafe {
-                core::intrinsics::atomic_cxchg_acquire_acquire(
-                    &self.value as *const u64 as *mut u64,
-                    current,
-                    new,
-                ).0
-            },
-            Ordering::Release => unsafe {
-                core::intrinsics::atomic_cxchg_release_relaxed(
-                    &self.value as *const u64 as *mut u64,
-                    current,
-                    new,
-                ).0
-            },
-            Ordering::SeqCst => unsafe {
-                core::intrinsics::atomic_cxchg_seqcst_seqcst(
-                    &self.value as *const u64 as *mut u64,
-                    current,
-                    new,
-                ).0
-            },
+    pub fn compare_and_swap(&self, current: u64, new: u64, _order: Ordering) -> u64 {
+        unsafe {
+            let result: u64;
+            asm!(
+                "lock cmpxchg qword ptr [{}], {}",
+                in(reg) &self.value,
+                in(reg) new,
+                inout("rax") current => result,
+                options(nostack)
+            );
+            result
         }
     }
 
     /// Atomically adds to the current value and returns the previous value
     #[inline(always)]
-    pub fn fetch_add(&self, value: u64, order: Ordering) -> u64 {
-        match order {
-            Ordering::Relaxed => unsafe {
-                core::intrinsics::atomic_xadd_relaxed(&self.value as *const u64 as *mut u64, value)
-            },
-            Ordering::Acquire => unsafe {
-                core::intrinsics::atomic_xadd_acquire(&self.value as *const u64 as *mut u64, value)
-            },
-            Ordering::Release => unsafe {
-                core::intrinsics::atomic_xadd_release(&self.value as *const u64 as *mut u64, value)
-            },
-            Ordering::SeqCst => unsafe {
-                core::intrinsics::atomic_xadd_seqcst(&self.value as *const u64 as *mut u64, value)
-            },
+    pub fn fetch_add(&self, value: u64, _order: Ordering) -> u64 {
+        unsafe {
+            let result: u64;
+            asm!(
+                "lock xadd qword ptr [{}], {}",
+                in(reg) &self.value,
+                inout(reg) value => result,
+                options(nostack)
+            );
+            result
         }
     }
 
     /// Atomically subtracts from the current value and returns the previous value
     #[inline(always)]
     pub fn fetch_sub(&self, value: u64, order: Ordering) -> u64 {
-        match order {
-            Ordering::Relaxed => unsafe {
-                core::intrinsics::atomic_xsub_relaxed(&self.value as *const u64 as *mut u64, value)
-            },
-            Ordering::Acquire => unsafe {
-                core::intrinsics::atomic_xsub_acquire(&self.value as *const u64 as *mut u64, value)
-            },
-            Ordering::Release => unsafe {
-                core::intrinsics::atomic_xsub_release(&self.value as *const u64 as *mut u64, value)
-            },
-            Ordering::SeqCst => unsafe {
-                core::intrinsics::atomic_xsub_seqcst(&self.value as *const u64 as *mut u64, value)
-            },
-        }
+        self.fetch_add((value as i64).wrapping_neg() as u64, order)
+    }
+
+    /// Gets the inner value (not atomic)
+    #[inline(always)]
+    pub fn into_inner(self) -> u64 {
+        self.value
+    }
+
+    /// Gets a mutable reference to the inner value
+    #[inline(always)]
+    pub fn get_mut(&mut self) -> &mut u64 {
+        &mut self.value
     }
 }
 
@@ -436,6 +417,9 @@ impl AtomicQWord {
 pub struct AtomicBool {
     value: u8,
 }
+
+unsafe impl Sync for AtomicBool {}
+unsafe impl Send for AtomicBool {}
 
 impl AtomicBool {
     /// Creates a new atomic boolean
@@ -449,13 +433,25 @@ impl AtomicBool {
     pub fn load(&self, order: Ordering) -> bool {
         let val = match order {
             Ordering::Relaxed => unsafe {
-                core::intrinsics::atomic_load_relaxed(&self.value)
+                let result: u8;
+                asm!(
+                    "mov {}, byte ptr [{}]",
+                    out(reg_byte) result,
+                    in(reg) &self.value,
+                    options(readonly, nostack, preserves_flags)
+                );
+                result
             },
-            Ordering::Acquire => unsafe {
-                core::intrinsics::atomic_load_acquire(&self.value)
-            },
-            Ordering::SeqCst => unsafe {
-                core::intrinsics::atomic_load_seqcst(&self.value)
+            Ordering::Acquire | Ordering::SeqCst => unsafe {
+                let result: u8;
+                asm!(
+                    "mov {}, byte ptr [{}]",
+                    "lock or dword ptr [rsp], 0",
+                    out(reg_byte) result,
+                    in(reg) &self.value,
+                    options(readonly, nostack)
+                );
+                result
             },
             Ordering::Release => panic!("Invalid ordering for load"),
         };
@@ -468,13 +464,20 @@ impl AtomicBool {
         let val = value as u8;
         match order {
             Ordering::Relaxed => unsafe {
-                core::intrinsics::atomic_store_relaxed(&self.value as *const u8 as *mut u8, val);
+                asm!(
+                    "mov byte ptr [{}], {}",
+                    in(reg) &self.value,
+                    in(reg_byte) val,
+                    options(nostack, preserves_flags)
+                );
             },
-            Ordering::Release => unsafe {
-                core::intrinsics::atomic_store_release(&self.value as *const u8 as *mut u8, val);
-            },
-            Ordering::SeqCst => unsafe {
-                core::intrinsics::atomic_store_seqcst(&self.value as *const u8 as *mut u8, val);
+            Ordering::Release | Ordering::SeqCst => unsafe {
+                asm!(
+                    "xchg byte ptr [{}], {}",
+                    in(reg) &self.value,
+                    in(reg_byte) val,
+                    options(nostack)
+                );
             },
             Ordering::Acquire => panic!("Invalid ordering for store"),
         }
@@ -482,40 +485,30 @@ impl AtomicBool {
 
     /// Compare-and-swap operation
     #[inline(always)]
-    pub fn compare_and_swap(&self, current: bool, new: bool, order: Ordering) -> bool {
-        let curr = current as u8;
-        let n = new as u8;
-        let result = match order {
-            Ordering::Relaxed => unsafe {
-                core::intrinsics::atomic_cxchg_relaxed_relaxed(
-                    &self.value as *const u8 as *mut u8,
-                    curr,
-                    n,
-                ).0
-            },
-            Ordering::Acquire => unsafe {
-                core::intrinsics::atomic_cxchg_acquire_acquire(
-                    &self.value as *const u8 as *mut u8,
-                    curr,
-                    n,
-                ).0
-            },
-            Ordering::Release => unsafe {
-                core::intrinsics::atomic_cxchg_release_relaxed(
-                    &self.value as *const u8 as *mut u8,
-                    curr,
-                    n,
-                ).0
-            },
-            Ordering::SeqCst => unsafe {
-                core::intrinsics::atomic_cxchg_seqcst_seqcst(
-                    &self.value as *const u8 as *mut u8,
-                    curr,
-                    n,
-                ).0
-            },
-        };
-        result != 0
+    pub fn compare_and_swap(&self, current: bool, new: bool, _order: Ordering) -> bool {
+        unsafe {
+            let result: u8;
+            asm!(
+                "lock cmpxchg byte ptr [{}], {}",
+                in(reg) &self.value,
+                in(reg_byte) new as u8,
+                inout("al") current as u8 => result,
+                options(nostack)
+            );
+            result != 0
+        }
+    }
+
+    /// Gets the inner value (not atomic)
+    #[inline(always)]
+    pub fn into_inner(self) -> bool {
+        self.value != 0
+    }
+
+    /// Gets a mutable reference to the inner value
+    #[inline(always)]
+    pub fn get_mut(&mut self) -> &mut bool {
+        unsafe { &mut *((&mut self.value) as *mut u8 as *mut bool) }
     }
 }
 
@@ -524,6 +517,9 @@ impl AtomicBool {
 pub struct AtomicPtr<T> {
     ptr: *mut T,
 }
+
+unsafe impl<T> Sync for AtomicPtr<T> {}
+unsafe impl<T> Send for AtomicPtr<T> {}
 
 impl<T> AtomicPtr<T> {
     /// Creates a new atomic pointer
@@ -537,13 +533,25 @@ impl<T> AtomicPtr<T> {
     pub fn load(&self, order: Ordering) -> *mut T {
         match order {
             Ordering::Relaxed => unsafe {
-                core::intrinsics::atomic_load_relaxed(&self.ptr)
+                let result: *mut T;
+                asm!(
+                    "mov {}, qword ptr [{}]",
+                    out(reg) result,
+                    in(reg) &self.ptr,
+                    options(readonly, nostack, preserves_flags)
+                );
+                result
             },
-            Ordering::Acquire => unsafe {
-                core::intrinsics::atomic_load_acquire(&self.ptr)
-            },
-            Ordering::SeqCst => unsafe {
-                core::intrinsics::atomic_load_seqcst(&self.ptr)
+            Ordering::Acquire | Ordering::SeqCst => unsafe {
+                let result: *mut T;
+                asm!(
+                    "mov {}, qword ptr [{}]",
+                    "lock or dword ptr [rsp], 0",
+                    out(reg) result,
+                    in(reg) &self.ptr,
+                    options(readonly, nostack)
+                );
+                result
             },
             Ordering::Release => panic!("Invalid ordering for load"),
         }
@@ -554,13 +562,20 @@ impl<T> AtomicPtr<T> {
     pub fn store(&self, ptr: *mut T, order: Ordering) {
         match order {
             Ordering::Relaxed => unsafe {
-                core::intrinsics::atomic_store_relaxed(&self.ptr as *const *mut T as *mut *mut T, ptr);
+                asm!(
+                    "mov qword ptr [{}], {}",
+                    in(reg) &self.ptr,
+                    in(reg) ptr,
+                    options(nostack, preserves_flags)
+                );
             },
-            Ordering::Release => unsafe {
-                core::intrinsics::atomic_store_release(&self.ptr as *const *mut T as *mut *mut T, ptr);
-            },
-            Ordering::SeqCst => unsafe {
-                core::intrinsics::atomic_store_seqcst(&self.ptr as *const *mut T as *mut *mut T, ptr);
+            Ordering::Release | Ordering::SeqCst => unsafe {
+                asm!(
+                    "xchg qword ptr [{}], {}",
+                    in(reg) &self.ptr,
+                    in(reg) ptr,
+                    options(nostack)
+                );
             },
             Ordering::Acquire => panic!("Invalid ordering for store"),
         }
@@ -568,37 +583,30 @@ impl<T> AtomicPtr<T> {
 
     /// Compare-and-swap operation
     #[inline(always)]
-    pub fn compare_and_swap(&self, current: *mut T, new: *mut T, order: Ordering) -> *mut T {
-        match order {
-            Ordering::Relaxed => unsafe {
-                core::intrinsics::atomic_cxchg_relaxed_relaxed(
-                    &self.ptr as *const *mut T as *mut *mut T,
-                    current,
-                    new,
-                ).0
-            },
-            Ordering::Acquire => unsafe {
-                core::intrinsics::atomic_cxchg_acquire_acquire(
-                    &self.ptr as *const *mut T as *mut *mut T,
-                    current,
-                    new,
-                ).0
-            },
-            Ordering::Release => unsafe {
-                core::intrinsics::atomic_cxchg_release_relaxed(
-                    &self.ptr as *const *mut T as *mut *mut T,
-                    current,
-                    new,
-                ).0
-            },
-            Ordering::SeqCst => unsafe {
-                core::intrinsics::atomic_cxchg_seqcst_seqcst(
-                    &self.ptr as *const *mut T as *mut *mut T,
-                    current,
-                    new,
-                ).0
-            },
+    pub fn compare_and_swap(&self, current: *mut T, new: *mut T, _order: Ordering) -> *mut T {
+        unsafe {
+            let result: *mut T;
+            asm!(
+                "lock cmpxchg qword ptr [{}], {}",
+                in(reg) &self.ptr,
+                in(reg) new,
+                inout("rax") current => result,
+                options(nostack)
+            );
+            result
         }
+    }
+
+    /// Gets the inner value (not atomic)
+    #[inline(always)]
+    pub fn into_inner(self) -> *mut T {
+        self.ptr
+    }
+
+    /// Gets a mutable reference to the inner value
+    #[inline(always)]
+    pub fn get_mut(&mut self) -> &mut *mut T {
+        &mut self.ptr
     }
 }
 
@@ -642,33 +650,16 @@ impl SpinLock {
 pub fn fence(order: Ordering) {
     match order {
         Ordering::Relaxed => {},
-        Ordering::Acquire => unsafe {
-            core::intrinsics::atomic_fence_acquire();
-        },
-        Ordering::Release => unsafe {
-            core::intrinsics::atomic_fence_release();
-        },
-        Ordering::SeqCst => unsafe {
-            core::intrinsics::atomic_fence_seqcst();
+        Ordering::Acquire | Ordering::Release | Ordering::SeqCst => unsafe {
+            asm!("mfence", options(nostack, preserves_flags));
         },
     }
 }
 
 /// Compiler fence - prevents compiler reordering
 #[inline(always)]
-pub fn compiler_fence(order: Ordering) {
-    match order {
-        Ordering::Relaxed => {},
-        Ordering::Acquire => unsafe {
-            core::intrinsics::atomic_singlethreadfence_acquire();
-        },
-        Ordering::Release => unsafe {
-            core::intrinsics::atomic_singlethreadfence_release();
-        },
-        Ordering::SeqCst => unsafe {
-            core::intrinsics::atomic_singlethreadfence_seqcst();
-        },
-    }
+pub fn compiler_fence(_order: Ordering) {
+    core::sync::atomic::compiler_fence(core::sync::atomic::Ordering::SeqCst);
 }
 
 #[cfg(test)]
@@ -956,5 +947,21 @@ mod tests {
         
         assert!(lock1.try_lock());
         assert!(lock2.try_lock());
+    }
+
+    #[test]
+    fn test_into_inner() {
+        let atomic = AtomicByte::new(42);
+        assert_eq!(atomic.into_inner(), 42);
+        
+        let atomic = AtomicBool::new(true);
+        assert_eq!(atomic.into_inner(), true);
+    }
+
+    #[test]
+    fn test_get_mut() {
+        let mut atomic = AtomicByte::new(10);
+        *atomic.get_mut() = 20;
+        assert_eq!(atomic.load(Ordering::Relaxed), 20);
     }
 }
