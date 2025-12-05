@@ -48,7 +48,8 @@ impl GeminiTokenizer {
             .collect();
 
         // Convert vocab and scores to Vec<(String, f64)> for Unigram
-        let pieces: Vec<(String, f64)> = vocab.keys().map(|token| {
+        let pieces: Vec<(String, f64)> = vocab.keys()
+            .map(|token| {
                 let score = *scores.get(token).unwrap_or(&0.0) as f64;
                 (token.clone(), score)
             })
