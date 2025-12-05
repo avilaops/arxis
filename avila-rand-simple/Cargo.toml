@@ -43,4 +43,4 @@ inherits = "release"
 
 [[bench]]
 name = "rng_bench"
-harness = false
+harness = true
