@@ -27,10 +27,14 @@ path = "src/lib.rs"
 
 [features]
 default = []
-# Pure Rust implementation - no features needed
+# Optional features for advanced functionality
+simd = []        # SIMD acceleration (AVX2/AVX-512)
+parallel = ["rayon"]  # Parallel compression with multiple threads
+dictionary = []  # Dictionary-based compression
 
 [dependencies]
-# Pure Rust implementation - no external dependencies!
+# Pure Rust implementation - minimal external dependencies
+rayon = { version = "1.10", optional = true }
 
 [dev-dependencies]
 # No dev dependencies for minimal build
