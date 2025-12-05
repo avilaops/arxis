@@ -1,6 +1,13 @@
 //! Avila Serde - AVL Platform serialization
-//! Replacement for serde/serde_json - 100% Rust std
-//! Simple JSON serialization/deserialization with derive macros
+//! Replacement for serde/serde_json - 100% no_std Rust
+//! Simple JSON/BSON/MessagePack/CBOR serialization/deserialization with derive macros
+
+#![no_std]
+
+extern crate alloc;
+
+#[cfg(feature = "std")]
+extern crate std;
 
 // When derive feature is enabled, make Serialize and Deserialize available
 // as both traits and derive macros (like serde does)
@@ -11,8 +18,12 @@ pub use avila_serde_derive::Serialize as SerializeMacro;
 #[doc(hidden)]
 pub use avila_serde_derive::Deserialize as DeserializeMacro;
 
-use std::collections::HashMap;
-use std::fmt;
+use alloc::collections::BTreeMap;
+use alloc::string::{String, ToString};
+use alloc::vec::Vec;
+use alloc::vec;
+use alloc::format;
+use core::fmt;
 
 // ============================================================================
 // Traits para Serialização/Deserialização
@@ -172,9 +183,9 @@ impl<T: Deserialize> Deserialize for Option<T> {
     }
 }
 
-impl<K: ToString, V: Serialize> Serialize for HashMap<K, V> {
+impl<K: ToString, V: Serialize> Serialize for BTreeMap<K, V> {
     fn to_value(&self) -> Value {
-        let mut map = HashMap::new();
+        let mut map = BTreeMap::new();
         for (k, v) in self {
             map.insert(k.to_string(), v.to_value());
         }
@@ -182,7 +193,7 @@ impl<K: ToString, V: Serialize> Serialize for HashMap<K, V> {
     }
 }
 
-impl<V: Deserialize> Deserialize for HashMap<String, V> {
+impl<V: Deserialize> Deserialize for BTreeMap<String, V> {
     fn from_value(value: Value) -> Result<Self, Error> {
         match value {
             Value::Object(obj) => {
@@ -203,7 +214,7 @@ pub enum Value {
     Number(f64),
     String(String),
     Array(Vec<Value>),
-    Object(HashMap<String, Value>),
+    Object(BTreeMap<String, Value>),
 }
 
 impl Value {
@@ -310,7 +321,7 @@ impl Value {
     }
 
     /// Get as object
-    pub fn as_object(&self) -> Option<&HashMap<String, Value>> {
+    pub fn as_object(&self) -> Option<&BTreeMap<String, Value>> {
         match self {
             Value::Object(obj) => Some(obj),
             _ => None,
@@ -319,11 +330,18 @@ impl Value {
 }
 
 fn escape_string(s: &str) -> String {
-    s.replace('\\', "\\\\")
-        .replace('\"', "\\\"")
-        .replace('\n', "\\n")
-        .replace('\r', "\\r")
-        .replace('\t', "\\t")
+    let mut result = String::new();
+    for c in s.chars() {
+        match c {
+            '\\' => result.push_str("\\\\"),
+            '\"' => result.push_str("\\\""),
+            '\n' => result.push_str("\\n"),
+            '\r' => result.push_str("\\r"),
+            '\t' => result.push_str("\\t"),
+            _ => result.push(c),
+        }
+    }
+    result
 }
 
 struct Parser {
@@ -457,7 +475,7 @@ impl Parser {
 
     fn parse_object(&mut self) -> Result<Value, Error> {
         self.consume_char('{')?;
-        let mut obj = HashMap::new();
+        let mut obj = BTreeMap::new();
 
         self.skip_whitespace();
         if self.pos < self.chars.len() && self.chars[self.pos] == '}' {
@@ -560,6 +578,7 @@ impl fmt::Display for Error {
     }
 }
 
+#[cfg(feature = "std")]
 impl std::error::Error for Error {}
 
 #[cfg(test)]
@@ -660,7 +679,7 @@ macro_rules! json {
 
     ({$($key:tt : $value:tt),* $(,)?}) => {
         {
-            let mut map = std::collections::HashMap::new();
+            let mut map = alloc::collections::BTreeMap::new();
             $(
                 map.insert($crate::__json_key!($key), $crate::json!($value));
             )*
@@ -727,8 +746,19 @@ impl<T: Into<Value>> From<Vec<T>> for Value {
     }
 }
 
+// HashMap compatibility - std only
+#[cfg(feature = "std")]
+use std::collections::HashMap;
+
+#[cfg(feature = "std")]
 impl From<HashMap<String, Value>> for Value {
     fn from(m: HashMap<String, Value>) -> Self {
+        Value::Object(m.into_iter().collect())
+    }
+}
+
+impl From<BTreeMap<String, Value>> for Value {
+    fn from(m: BTreeMap<String, Value>) -> Self {
         Value::Object(m)
     }
 }

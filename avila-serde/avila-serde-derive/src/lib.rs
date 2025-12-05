@@ -48,7 +48,7 @@ fn generate_struct_serialize(name: &syn::Ident, fields: &Fields) -> proc_macro2:
             quote! {
                 impl avila_serde::Serialize for #name {
                     fn to_value(&self) -> avila_serde::Value {
-                        let mut map = std::collections::HashMap::new();
+                        let mut map = alloc::collections::BTreeMap::new();
                         #(#field_serializations)*
                         avila_serde::Value::Object(map)
                     }
@@ -66,7 +66,7 @@ fn generate_struct_serialize(name: &syn::Ident, fields: &Fields) -> proc_macro2:
             quote! {
                 impl avila_serde::Serialize for #name {
                     fn to_value(&self) -> avila_serde::Value {
-                        let mut vec = Vec::new();
+                        let mut vec = alloc::vec::Vec::new();
                         #(#field_serializations)*
                         avila_serde::Value::Array(vec)
                     }
@@ -77,7 +77,7 @@ fn generate_struct_serialize(name: &syn::Ident, fields: &Fields) -> proc_macro2:
             quote! {
                 impl avila_serde::Serialize for #name {
                     fn to_value(&self) -> avila_serde::Value {
-                        avila_serde::Value::String(stringify!(#name).to_string())
+                        avila_serde::Value::String(alloc::string::ToString::to_string(stringify!(#name)))
                     }
                 }
             }
@@ -93,7 +93,7 @@ fn generate_enum_serialize(name: &syn::Ident, variants: &syn::punctuated::Punctu
         match &variant.fields {
             Fields::Unit => {
                 quote! {
-                    #name::#variant_name => avila_serde::Value::String(#variant_str.to_string()),
+                    #name::#variant_name => avila_serde::Value::String(alloc::string::ToString::to_string(#variant_str)),
                 }
             }
             Fields::Named(fields) => {
@@ -111,8 +111,8 @@ fn generate_enum_serialize(name: &syn::Ident, variants: &syn::punctuated::Punctu
 
                 quote! {
                     #name::#variant_name { #(#field_names),* } => {
-                        let mut outer_map = std::collections::HashMap::new();
-                        let mut map = std::collections::HashMap::new();
+                        let mut outer_map = alloc::collections::BTreeMap::new();
+                        let mut map = alloc::collections::BTreeMap::new();
                         #(#field_serializations)*
                         outer_map.insert(#variant_str.to_string(), avila_serde::Value::Object(map));
                         avila_serde::Value::Object(outer_map)
@@ -132,8 +132,8 @@ fn generate_enum_serialize(name: &syn::Ident, variants: &syn::punctuated::Punctu
 
                 quote! {
                     #name::#variant_name(#(#field_bindings),*) => {
-                        let mut outer_map = std::collections::HashMap::new();
-                        let mut vec = Vec::new();
+                        let mut outer_map = alloc::collections::BTreeMap::new();
+                        let mut vec = alloc::vec::Vec::new();
                         #(#field_serializations)*
                         outer_map.insert(#variant_str.to_string(), avila_serde::Value::Array(vec));
                         avila_serde::Value::Object(outer_map)
