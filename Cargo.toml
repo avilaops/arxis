@@ -8,4 +8,4 @@ members = [
     "avila-vizzio",
 ]
 
-exclude = []
+exclude = ["avila-db"]
