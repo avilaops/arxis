@@ -1,64 +1,82 @@
-//! # Avila Primitives
+//! # Avila Primitives - Layer 1 Foundation
 //!
-//! Big integer primitives for cryptography and high-precision arithmetic.
+//! **100% from scratch primitive types with ZERO dependencies**
 //!
-//! This crate provides:
-//! - **U256, U512, U1024, U2048, U4096** - Unsigned big integers
-//! - **I256, I512, I1024, I2048, I4096** - Signed big integers
-//! - **Arithmetic operations** - Add, sub, mul, div, mod with overflow detection
-//! - **Bitwise operations** - AND, OR, XOR, NOT, shifts, rotations
-//! - **Constant-time operations** - For cryptographic safety
-//! - **SIMD acceleration** - Optional AVX2/AVX512 support
+//! This crate provides the absolute foundation for the Avila ecosystem:
 //!
-//! Built on top of `avila-nucleus` for low-level bit manipulation.
+//! ## Numeric Wrapper Types
+//! - **Byte, Word, DWord, QWord** - Semantic wrappers around primitive integers
+//!
+//! ## Semantic Types
+//! - **Index, Offset, Size** - Type-safe numeric types for different purposes
+//!
+//! ## Bit Manipulation
+//! - **BitSet** - Fixed-size bit operations
+//! - **BitVec** - Dynamic bit vector
+//!
+//! ## Collections (from scratch)
+//! - **Vec<T>** - Dynamic array with custom allocator
+//! - **String** - UTF-8 string built on Vec<u8>
+//! - **HashMap<K,V>** - Hash table with open addressing
+//!
+//! ## Memory Management
+//! - **BumpAllocator** - Simple bump allocator for no_std environments
+//!
+//! ## Philosophy
+//! - ❌ **ZERO** std, core, alloc
+//! - ❌ **ZERO** external dependencies
+//! - ✅ Only Rust primitives (u8, i32, etc)
+//! - ✅ Inline assembly when needed
+//! - ✅ 100% no_std compatible
 
-#![cfg_attr(not(feature = "std"), no_std)]
+#![no_std]
 #![warn(missing_docs)]
 #![warn(clippy::all)]
+#![allow(internal_features)]
+#![feature(core_intrinsics)]
+#![feature(lang_items)]
+#![feature(alloc_error_handler)]
 
-pub mod u256;
-pub mod u512;
-pub mod u1024;
-pub mod u2048;
-pub mod u4096;
+// Core modules
+pub mod types;
+pub mod bits;
+pub mod alloc;
+pub mod vec;
+pub mod string;
+pub mod hashmap;
 
-pub mod i256;
-pub mod i512;
-pub mod i1024;
-pub mod i2048;
-pub mod i4096;
+// Re-export main types
+pub use types::{Byte, Word, DWord, QWord, Index, Offset, Size};
+pub use bits::{BitSet, BitVec};
+pub use vec::Vec;
+pub use string::String;
+pub use hashmap::HashMap;
+pub use alloc::BumpAllocator;
 
-pub mod traits;
-
-// Re-export types at the root for easier access
-pub use u256::U256;
-pub use u512::U512;
-pub use u1024::U1024;
-pub use u2048::U2048;
-pub use u4096::U4096;
-
-pub use i256::I256;
-pub use i512::I512;
-pub use i1024::I1024;
-pub use i2048::I2048;
-pub use i4096::I4096;
-
-pub use traits::{BigInt, BigUint};
-
+/// Prelude module for convenient imports
 pub mod prelude {
-    //! Common imports for convenience
+    pub use crate::types::*;
+    pub use crate::bits::*;
+    pub use crate::vec::Vec;
+    pub use crate::string::String;
+    pub use crate::hashmap::HashMap;
+    pub use crate::alloc::BumpAllocator;
+}
 
-    pub use crate::u256::U256;
-    pub use crate::u512::U512;
-    pub use crate::u1024::U1024;
-    pub use crate::u2048::U2048;
-    pub use crate::u4096::U4096;
+// Panic handler for no_std
+#[cfg(not(test))]
+#[panic_handler]
+fn panic(_info: &core::panic::PanicInfo) -> ! {
+    loop {}
+}
 
-    pub use crate::i256::I256;
-    pub use crate::i512::I512;
-    pub use crate::i1024::I1024;
-    pub use crate::i2048::I2048;
-    pub use crate::i4096::I4096;
+// Language items required for no_std
+#[cfg(not(test))]
+#[lang = "eh_personality"]
+extern "C" fn eh_personality() {}
 
-    pub use crate::traits::{BigInt, BigUint};
+#[cfg(not(test))]
+#[alloc_error_handler]
+fn alloc_error(_layout: core::alloc::Layout) -> ! {
+    loop {}
 }

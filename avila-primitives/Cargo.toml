@@ -1,3 +1,6 @@
+[workspace]
+# Standalone workspace to avoid parent workspace conflicts
+
 [package]
 name = "avila-primitives"
 version = "0.1.0"
@@ -7,11 +10,11 @@ authors = [
     "Avila Development Team <dev@avila.inc>",
 ]
 license = "MIT OR Apache-2.0"
-description = "Big integer primitives (U256, U512, U1024, U2048, U4096) - Built on avila-nucleus"
+description = "Layer 1 primitive types - 100% from scratch, zero dependencies foundation for Avila ecosystem"
 repository = "https://github.com/avilaops/arxis"
 homepage = "https://avila.inc"
-keywords = ["bigint", "cryptography", "no-std", "u256", "multiprecision"]
-categories = ["cryptography", "no-std", "algorithms"]
+keywords = ["primitives", "no-std", "allocator", "collections", "foundation"]
+categories = ["no-std", "algorithms", "data-structures"]
 rust-version = "1.70"
 
 [lib]
@@ -19,12 +22,11 @@ name = "avila_primitives"
 path = "src/lib.rs"
 
 [dependencies]
-avila-nucleus = { version = "0.1.0", path = "../avila-nucleus" }
+# ABSOLUTELY ZERO DEPENDENCIES - Layer 1 foundation
 
 [features]
-default = ["simd"]
-simd = ["avila-nucleus/simd"]
-std = ["avila-nucleus/std"]
+default = []
+std = []
 
 [profile.release]
 opt-level = 3
@@ -32,3 +34,19 @@ lto = "fat"
 codegen-units = 1
 panic = "abort"
 strip = true
+
+[profile.bench]
+inherits = "release"
+
+[[example]]
+name = "basic_types"
+path = "examples/basic_types.rs"
+
+[[example]]
+name = "collections"
+path = "examples/collections.rs"
+
+[[bench]]
+name = "primitives_bench"
+path = "benches/primitives_bench.rs"
+harness = false
