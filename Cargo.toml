@@ -6,6 +6,7 @@ members = [
     "avila-gis-desktop",
     "avila-browser",
     "avila-vizzio",
+    "avl-console",
 ]
 
 exclude = []
