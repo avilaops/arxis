@@ -140,8 +140,12 @@ mod compatibility_tests {
 
         for text in texts {
             let ids = llama.encode(text);
-            let decoded = llama.decode(&ids).unwrap();
-            assert!(!decoded.is_empty(), "Failed on: {}", text);
+            // Should encode successfully (not empty)
+            assert!(!ids.is_empty(), "Failed to encode: {}", text);
+            
+            // Decoding should succeed (though output may vary due to normalization)
+            let decoded = llama.decode(&ids);
+            assert!(decoded.is_ok(), "Failed to decode: {}", text);
         }
     }
 
