@@ -50,14 +50,14 @@ impl Pcg32 {
 impl FastRng for Pcg32 {
     #[inline]
     fn next_u64(&mut self) -> u64 {
-        let high = self.next_u32() as u64;
-        let low = self.next_u32() as u64;
+        let high = Pcg32::next_u32(self) as u64;
+        let low = Pcg32::next_u32(self) as u64;
         (high << 32) | low
     }
     
     #[inline]
     fn next_u32(&mut self) -> u32 {
-        self.next_u32()
+        Pcg32::next_u32(self)
     }
 }
 

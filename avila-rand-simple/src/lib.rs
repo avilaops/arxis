@@ -18,11 +18,11 @@
 //! ## Example
 //!
 //! ```rust
-//! use avila_rand_simple::{Pcg64, FastRng};
+//! use avila_rand_simple::{Pcg64, FastRng, gen_range_u64};
 //!
 //! let mut rng = Pcg64::new(12345);
 //! let random_number = rng.next_u64();
-//! let in_range = rng.gen_range(1, 100);
+//! let in_range = gen_range_u64(&mut rng, 1, 100);
 //! ```
 
 #![cfg_attr(not(feature = "std"), no_std)]
