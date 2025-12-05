@@ -1,6 +1,46 @@
+[workspace]
+# Standalone workspace
+
 [package]
 name = "avila-rand-simple"
 version = "0.1.0"
 edition = "2021"
+authors = [
+    "Nícolas Ávila <nicolas@avila.inc>",
+    "Avila Development Team <dev@avila.inc>",
+]
+license = "MIT OR Apache-2.0"
+description = "Fast non-cryptographic RNG algorithms - PCG, Xorshift, Splitmix64"
+repository = "https://github.com/avilaops/arxis"
+homepage = "https://avila.inc"
+keywords = ["rng", "random", "no-std", "performance", "simd"]
+categories = ["algorithms", "no-std"]
+rust-version = "1.70"
+
+[lib]
+name = "avila_rand_simple"
+path = "src/lib.rs"
 
 [dependencies]
+avila-primitives = { version = "0.1.0", path = "../avila-primitives", default-features = false }
+
+[dev-dependencies]
+
+[features]
+default = ["simd"]
+simd = ["avila-primitives/simd"]
+std = ["avila-primitives/std"]
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = true
+
+[profile.bench]
+inherits = "release"
+
+[[bench]]
+name = "rng_bench"
+harness = true
