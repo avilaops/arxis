@@ -72,7 +72,7 @@ flate2 = "1.0"
 brotli = "7.0"
 
 # Geolocation
-maxminddb = { version = "0.24", optional = true }
+maxminddb = { version = "0.26", optional = true }
 
 # Time & UUID
 avila-id = { version = "0.1.0", path = "../avila-id" }
