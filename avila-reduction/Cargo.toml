@@ -22,7 +22,7 @@ categories = ["algorithms", "science"]
 ndarray = "0.17"
 # Removido ndarray-linalg por problemas com OpenBLAS no Windows
 # ndarray-linalg = { version = "0.16", features = ["openblas-static"] }
-ndarray-stats = "0.5"
+ndarray-stats = "0.6"
 ndarray-rand = "0.14"
 avila-parallel = { version = "0.4.0", path = "../avila-parallel" }
 num-traits = "0.2"

@@ -24,7 +24,7 @@ exclude = [
 [dependencies]
 ndarray = "0.17"
 # ndarray-linalg = { version = "0.16", features = ["openblas-static"] }
-ndarray-stats = "0.5"
+ndarray-stats = "0.6"
 ndarray-rand = "0.14"
 num-traits = "0.2"
 serde = { version = "1.0", features = ["derive"] }
