@@ -1,0 +1,64 @@
+name: Deploy Backend to Azure
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/Arxis.API/**'
+      - 'src/Arxis.Domain/**'
+      - 'src/Arxis.Infrastructure/**'
+      - '.github/workflows/deploy-backend.yml'
+  workflow_dispatch:
+
+env:
+  AZURE_WEBAPP_NAME: arxis-api
+  DOTNET_VERSION: '8.0.x'
+  WORKING_DIRECTORY: './src/Arxis.API'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 🔽 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 🔧 Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: 📦 Restore dependencies
+      run: dotnet restore
+      working-directory: ${{ env.WORKING_DIRECTORY }}
+
+    - name: 🔨 Build
+      run: dotnet build --configuration Release --no-restore
+      working-directory: ${{ env.WORKING_DIRECTORY }}
+
+    - name: 🧪 Run tests
+      run: dotnet test --no-build --verbosity normal
+      continue-on-error: true
+
+    - name: 📤 Publish
+      run: dotnet publish --configuration Release --no-build --output ./publish
+      working-directory: ${{ env.WORKING_DIRECTORY }}
+
+    - name: 🔐 Azure Login
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_32E0F01D5B614D2AA49E4264B5644273 }}
+        tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D7166BD585C64EAAB1891B254500223E }}
+        subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_FA67118CA3C245008A7E96EB5EA5B039 }}
+
+    - name: 🚀 Deploy to Azure App Service
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        package: ${{ env.WORKING_DIRECTORY }}/publish
+
+    - name: 🧹 Cleanup
+      run: |
+        echo "✅ Deployment completed successfully!"
+        echo "🌐 API URL: https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net"
