@@ -19,8 +19,22 @@ import {
   Assessment,
   Settings,
   People,
+  Timeline,
+  ThreeDRotation,
+  Map,
+  Paid,
+  ShoppingCart,
+  Description,
+  Security,
+  Analytics,
+  Hub,
+  Storefront,
+  AutoAwesome,
+  Tune,
+  AdminPanelSettings,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { activityModules } from '../../config/navigation';
 
 const drawerWidth = 260;
 
@@ -29,26 +43,48 @@ interface SidebarProps {
   onClose: () => void;
 }
 
-const menuItems = [
-  { text: 'Dashboard', icon: <Dashboard />, path: '/' },
-  { text: 'Projetos', icon: <Folder />, path: '/projects' },
-  { text: 'Tarefas', icon: <Assignment />, path: '/tasks' },
-  { text: 'Issues', icon: <BugReport />, path: '/issues' },
-  { text: 'Relatórios', icon: <Assessment />, path: '/reports' },
-];
-
-const bottomMenuItems = [
-  { text: 'Usuários', icon: <People />, path: '/users' },
-  { text: 'Configurações', icon: <Settings />, path: '/settings' },
-];
+const iconMap: Record<string, React.ReactNode> = {
+  Dashboard: <Dashboard />,
+  Folder: <Folder />,
+  Assignment: <Assignment />,
+  BugReport: <BugReport />,
+  Assessment: <Assessment />,
+  Settings: <Settings />,
+  People: <People />,
+  Timeline: <Timeline />,
+  ThreeDRotation: <ThreeDRotation />,
+  Map: <Map />,
+  Paid: <Paid />,
+  ShoppingCart: <ShoppingCart />,
+  Description: <Description />,
+  Security: <Security />,
+  Analytics: <Analytics />,
+  Hub: <Hub />,
+  Storefront: <Storefront />,
+  AutoAwesome: <AutoAwesome />,
+  Tune: <Tune />,
+  AdminPanelSettings: <AdminPanelSettings />,
+};
 
 export const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const primaryModules = activityModules.filter(
+    (module) => module.id !== 'settings' && module.id !== 'admin'
+  );
+  const secondaryModules = activityModules.filter((module) => module.id === 'settings' || module.id === 'admin');
+
   const handleNavigation = (path: string) => {
     navigate(path);
     onClose();
+  };
+
+  const isActive = (path: string) => {
+    if (path === '/') {
+      return location.pathname === '/';
+    }
+    return location.pathname === path || location.pathname.startsWith(`${path}/`);
   };
 
   return (
@@ -68,16 +104,20 @@ export const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
       <Toolbar />
       <Box sx={{ overflow: 'auto', display: 'flex', flexDirection: 'column', height: '100%' }}>
         <List>
-          {menuItems.map((item) => (
-            <ListItem key={item.text} disablePadding>
+          {primaryModules.map((module) => (
+            <ListItem key={module.id} disablePadding>
               <ListItemButton
-                selected={location.pathname === item.path}
-                onClick={() => handleNavigation(item.path)}
+                selected={isActive(module.path)}
+                onClick={() => handleNavigation(module.path)}
               >
-                <ListItemIcon sx={{ color: location.pathname === item.path ? 'primary.main' : 'inherit' }}>
-                  {item.icon}
+                <ListItemIcon sx={{ color: isActive(module.path) ? 'primary.main' : 'inherit' }}>
+                  {iconMap[module.icon]}
                 </ListItemIcon>
-                <ListItemText primary={item.text} />
+                <ListItemText
+                  primary={module.label}
+                  secondary={module.description}
+                  secondaryTypographyProps={{ noWrap: true }}
+                />
               </ListItemButton>
             </ListItem>
           ))}
@@ -87,16 +127,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
 
         <Divider />
         <List>
-          {bottomMenuItems.map((item) => (
-            <ListItem key={item.text} disablePadding>
+          {secondaryModules.map((module) => (
+            <ListItem key={module.id} disablePadding>
               <ListItemButton
-                selected={location.pathname === item.path}
-                onClick={() => handleNavigation(item.path)}
+                selected={isActive(module.path)}
+                onClick={() => handleNavigation(module.path)}
               >
-                <ListItemIcon sx={{ color: location.pathname === item.path ? 'primary.main' : 'inherit' }}>
-                  {item.icon}
+                <ListItemIcon sx={{ color: isActive(module.path) ? 'primary.main' : 'inherit' }}>
+                  {iconMap[module.icon]}
                 </ListItemIcon>
-                <ListItemText primary={item.text} />
+                <ListItemText primary={module.label} secondary={module.description} />
               </ListItemButton>
             </ListItem>
           ))}

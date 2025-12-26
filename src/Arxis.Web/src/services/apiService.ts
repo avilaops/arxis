@@ -1,6 +1,6 @@
-import axios, { AxiosInstance, AxiosError } from 'axios';
+import env from '../config/env';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = env.apiUrl + '/api';
 
 // Helper para obter token do localStorage
 const getAuthToken = (): string | null => {
@@ -40,19 +40,36 @@ async function handleResponse<T>(response: Response): Promise<T> {
 }
 
 export const apiService = {
-  async get<T>(endpoint: string): Promise<T> {
+  async get<T>(endpoint: string, options?: RequestInit): Promise<T> {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'GET',
       headers: getHeaders(),
+      ...options,
     });
+
+    // For blob responses
+    if (options?.responseType === 'blob') {
+      return response.blob() as any;
+    }
+
     return handleResponse<T>(response);
   },
 
-  async post<T, U>(endpoint: string, data: U): Promise<T> {
+  async post<T, U = any>(endpoint: string, data: U, options?: RequestInit): Promise<T> {
+    const isFormData = data instanceof FormData;
+    const headers: any = isFormData ? {} : getHeaders();
+
+    // Add auth token even for FormData
+    const token = getAuthToken();
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'POST',
-      headers: getHeaders(),
-      body: JSON.stringify(data),
+      headers,
+      body: isFormData ? data : JSON.stringify(data),
+      ...options,
     });
     return handleResponse<T>(response);
   },
@@ -83,3 +100,5 @@ export const apiService = {
     return handleResponse<T>(response);
   },
 };
+
+export default apiService;

@@ -15,6 +15,8 @@ import {
   Paper,
   Alert,
   CircularProgress,
+  IconButton,
+  Tooltip as MuiTooltip,
 } from '@mui/material';
 import {
   TrendingUp,
@@ -23,6 +25,8 @@ import {
   AttachMoney,
   CheckCircle,
   Warning,
+  Refresh,
+  Info,
 } from '@mui/icons-material';
 import {
   BarChart,
@@ -38,6 +42,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import dashboardService, { DashboardOverview } from '../services/dashboardService';
+import env from '../config/env';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
 
@@ -166,9 +171,28 @@ const DashboardNew: React.FC = () => {
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom fontWeight="bold">
-        Dashboard
-      </Typography>
+      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
+        <Box>
+          <Typography variant="h4" fontWeight="bold" gutterBottom>
+            Dashboard
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Bem-vindo ao {env.appName} - {env.companyName}
+          </Typography>
+        </Box>
+        <Stack direction="row" spacing={1}>
+          <MuiTooltip title="Atualizar dados">
+            <IconButton onClick={loadDashboardData} color="primary">
+              <Refresh />
+            </IconButton>
+          </MuiTooltip>
+          <MuiTooltip title="Informações">
+            <IconButton color="primary">
+              <Info />
+            </IconButton>
+          </MuiTooltip>
+        </Stack>
+      </Stack>
 
       {/* KPI Cards */}
       <Grid container spacing={3} mb={3}>

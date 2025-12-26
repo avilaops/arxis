@@ -9,15 +9,26 @@ import {
   Avatar,
   Box,
   Badge,
+  Button,
+  ListItemText,
+  Divider,
+  Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
   AccountCircle,
   Notifications,
   Logout,
+  Search,
 } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { topBarMenus, globalShortcuts } from '../../config/navigation';
 
 interface AppBarComponentProps {
   onMenuClick: () => void;
@@ -26,24 +37,38 @@ interface AppBarComponentProps {
 export const AppBarComponent: React.FC<AppBarComponentProps> = ({ onMenuClick }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [profileAnchor, setProfileAnchor] = useState<null | HTMLElement>(null);
+  const [menuAnchor, setMenuAnchor] = useState<{ id: string | null; anchor: HTMLElement | null }>({
+    id: null,
+    anchor: null,
+  });
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
 
-  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
+  const handleProfileMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setProfileAnchor(event.currentTarget);
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
+  const handleProfileClose = () => {
+    setProfileAnchor(null);
   };
 
   const handleLogout = () => {
     logout();
     navigate('/login');
-    handleClose();
+    handleProfileClose();
+  };
+
+  const handleMenuOpen = (menuId: string) => (event: React.MouseEvent<HTMLElement>) => {
+    setMenuAnchor({ id: menuId, anchor: event.currentTarget });
+  };
+
+  const handleMenuClose = () => {
+    setMenuAnchor({ id: null, anchor: null });
   };
 
   return (
-    <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+    <>
+      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
       <Toolbar>
         <IconButton
           color="inherit"
@@ -55,18 +80,55 @@ export const AppBarComponent: React.FC<AppBarComponentProps> = ({ onMenuClick })
           <MenuIcon />
         </IconButton>
 
-        <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+        <Typography variant="h6" noWrap component="div" sx={{ mr: 3 }}>
           ARXIS - Gerenciamento de Obras
         </Typography>
 
+        <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 1, flexGrow: 1 }}>
+          {topBarMenus.map((menu) => (
+            <React.Fragment key={menu.id}>
+              <Button
+                color="inherit"
+                onClick={handleMenuOpen(menu.id)}
+                aria-haspopup="true"
+                aria-controls={`${menu.id}-menu`}
+                sx={{ textTransform: 'none' }}
+              >
+                {menu.label}
+              </Button>
+              <Menu
+                id={`${menu.id}-menu`}
+                anchorEl={menuAnchor.anchor}
+                open={menuAnchor.id === menu.id}
+                onClose={handleMenuClose}
+                MenuListProps={{ sx: { minWidth: 280 } }}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+              >
+                {menu.items.map((item) => (
+                  <MenuItem key={item.label} onClick={handleMenuClose}>
+                    <ListItemText primary={item.label} secondary={item.description} />
+                  </MenuItem>
+                ))}
+              </Menu>
+            </React.Fragment>
+          ))}
+        </Box>
+
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Tooltip title={globalShortcuts[0]?.description ?? 'Abrir busca global'}>
+            <IconButton color="inherit" onClick={() => setCommandPaletteOpen(true)}>
+              <Search />
+            </IconButton>
+          </Tooltip>
+
           <IconButton color="inherit">
             <Badge badgeContent={3} color="error">
               <Notifications />
             </Badge>
           </IconButton>
 
-          <IconButton onClick={handleMenu} color="inherit">
+          <IconButton onClick={handleProfileMenu} color="inherit">
             <Avatar sx={{ width: 32, height: 32, bgcolor: 'secondary.main' }}>
               {user?.firstName?.charAt(0)}
               {user?.lastName?.charAt(0)}
@@ -74,9 +136,9 @@ export const AppBarComponent: React.FC<AppBarComponentProps> = ({ onMenuClick })
           </IconButton>
 
           <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
+            anchorEl={profileAnchor}
+            open={Boolean(profileAnchor)}
+            onClose={handleProfileClose}
             anchorOrigin={{
               vertical: 'bottom',
               horizontal: 'right',
@@ -96,10 +158,11 @@ export const AppBarComponent: React.FC<AppBarComponentProps> = ({ onMenuClick })
                 {user?.email}
               </Typography>
             </MenuItem>
-            <MenuItem onClick={handleClose}>
+            <MenuItem onClick={handleProfileClose}>
               <AccountCircle sx={{ mr: 1 }} />
               Perfil
             </MenuItem>
+            <Divider sx={{ my: 1 }} />
             <MenuItem onClick={handleLogout}>
               <Logout sx={{ mr: 1 }} />
               Sair
@@ -107,6 +170,23 @@ export const AppBarComponent: React.FC<AppBarComponentProps> = ({ onMenuClick })
           </Menu>
         </Box>
       </Toolbar>
-    </AppBar>
+      </AppBar>
+      <Dialog open={commandPaletteOpen} onClose={() => setCommandPaletteOpen(false)} fullWidth maxWidth="sm">
+        <DialogTitle>{globalShortcuts[0]?.label ?? 'Busca global'}</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Digite para procurar qualquer coisa no ARXIS"
+            type="search"
+            fullWidth
+            variant="outlined"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setCommandPaletteOpen(false)}>Fechar</Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };

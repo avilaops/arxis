@@ -56,7 +56,8 @@ export const Login: React.FC = () => {
     try {
       await login(email, password);
       navigate('/');
-    } catch (err) {
+    } catch (error) {
+      console.error('Erro ao entrar', error);
       setError('Email ou senha inválidos');
     } finally {
       setLoading(false);
@@ -77,7 +78,8 @@ export const Login: React.FC = () => {
         phone,
       });
       navigate('/');
-    } catch (err) {
+    } catch (error) {
+      console.error('Erro ao registrar', error);
       setError('Erro ao criar conta. Tente novamente.');
     } finally {
       setLoading(false);

@@ -1,4 +1,10 @@
+using System;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
 using Arxis.Domain.Entities;
 
 namespace Arxis.Infrastructure.Data;
@@ -17,10 +23,28 @@ public class ArxisDbContext : DbContext
     public DbSet<ProjectUser> ProjectUsers { get; set; }
     public DbSet<WorkTask> WorkTasks { get; set; }
     public DbSet<Issue> Issues { get; set; }
+    public DbSet<IssueComment> IssueComments { get; set; }
+    public DbSet<IssueAttachment> IssueAttachments { get; set; }
+    public DbSet<IssueLink> IssueLinks { get; set; }
+    public DbSet<Document> Documents { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        var stringListConverter = new ValueConverter<List<string>, string>(
+            v => SerializeStringList(v),
+            v => DeserializeStringList(v));
+
+        var stringListComparer = new ValueComparer<List<string>>(
+            (left, right) => (left == null && right == null) || (left != null && right != null && left.SequenceEqual(right)),
+            list => list == null ? 0 : list.Aggregate(0, (current, item) => HashCode.Combine(current, item == null ? 0 : item.GetHashCode())),
+            list => list == null ? new List<string>() : list.ToList());
+
+        var stringComparer = new ValueComparer<string>(
+            (left, right) => left == right,
+            value => value == null ? 0 : value.GetHashCode(),
+            value => value);
 
                 // Configure Project
         modelBuilder.Entity<Project>(entity =>
@@ -30,6 +54,11 @@ public class ArxisDbContext : DbContext
             entity.Property(e => e.Currency).HasMaxLength(3);
             entity.Property(e => e.TotalBudget).HasPrecision(18, 2);
             entity.HasIndex(e => e.TenantId);
+            var tagsProperty = entity.Property(e => e.Tags)
+                .HasConversion(stringListConverter)
+                .HasColumnType("TEXT");
+            tagsProperty.Metadata.SetValueComparer(stringListComparer);
+            tagsProperty.Metadata.SetProviderValueComparer(stringComparer);
         });
 
         // Configure User
@@ -75,7 +104,20 @@ public class ArxisDbContext : DbContext
                 .WithMany(t => t.SubTasks)
                 .HasForeignKey(e => e.ParentTaskId)
                 .OnDelete(DeleteBehavior.Restrict);
-            entity.OwnsMany(e => e.Checklist);
+            var workTaskTagsProperty = entity.Property(e => e.Tags)
+                .HasConversion(stringListConverter)
+                .HasColumnType("TEXT");
+            workTaskTagsProperty.Metadata.SetValueComparer(stringListComparer);
+            workTaskTagsProperty.Metadata.SetProviderValueComparer(stringComparer);
+            entity.OwnsMany(e => e.Checklist, checklist =>
+            {
+                checklist.ToTable("WorkTaskChecklistItems");
+                checklist.WithOwner().HasForeignKey("WorkTaskId");
+                checklist.Property<int>("Id");
+                checklist.HasKey("Id");
+                checklist.Property(c => c.Title).IsRequired().HasMaxLength(200);
+                checklist.Property(c => c.IsCompleted).HasDefaultValue(false);
+            });
         });
 
         // Configure Issue
@@ -83,6 +125,12 @@ public class ArxisDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Title).IsRequired().HasMaxLength(300);
+            entity.Property(e => e.ReferenceCode).IsRequired().HasMaxLength(40);
+            entity.Property(e => e.Location).HasMaxLength(200);
+            entity.Property(e => e.Discipline).HasMaxLength(120);
+            entity.Property(e => e.RfiQuestion).HasMaxLength(2000);
+            entity.Property(e => e.RfiAnswer).HasMaxLength(2000);
+            entity.Property(e => e.ExternalReference).HasMaxLength(200);
             entity.HasOne(e => e.Project)
                 .WithMany()
                 .HasForeignKey(e => e.ProjectId)
@@ -95,7 +143,115 @@ public class ArxisDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(e => e.ReportedByUserId)
                 .OnDelete(DeleteBehavior.SetNull);
+            entity.HasOne(e => e.RespondedByUser)
+                .WithMany()
+                .HasForeignKey(e => e.RespondedByUserId)
+                .OnDelete(DeleteBehavior.SetNull);
+            entity.HasOne(e => e.WorkTask)
+                .WithMany()
+                .HasForeignKey(e => e.WorkTaskId)
+                .OnDelete(DeleteBehavior.SetNull);
+            entity.HasIndex(e => new { e.ProjectId, e.ReferenceCode }).IsUnique();
+        });
+
+        modelBuilder.Entity<IssueComment>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Message).IsRequired().HasMaxLength(4000);
+            entity.HasOne(e => e.Issue)
+                .WithMany(i => i.Comments)
+                .HasForeignKey(e => e.IssueId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.Author)
+                .WithMany()
+                .HasForeignKey(e => e.AuthorId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<IssueAttachment>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.FileName).IsRequired().HasMaxLength(260);
+            entity.Property(e => e.FileUrl).IsRequired().HasMaxLength(500);
+            entity.Property(e => e.ContentType).HasMaxLength(120);
+            entity.HasOne(e => e.Issue)
+                .WithMany(i => i.Attachments)
+                .HasForeignKey(e => e.IssueId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.Comment)
+                .WithMany(c => c.Attachments)
+                .HasForeignKey(e => e.CommentId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.UploadedByUser)
+                .WithMany()
+                .HasForeignKey(e => e.UploadedByUserId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<IssueLink>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Label).HasMaxLength(200);
+            entity.Property(e => e.ExternalReference).HasMaxLength(200);
+            entity.Property(e => e.Metadata).HasMaxLength(2000);
+            entity.HasOne(e => e.Issue)
+                .WithMany(i => i.Links)
+                .HasForeignKey(e => e.IssueId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Configure Document
+        modelBuilder.Entity<Document>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.FileName).IsRequired().HasMaxLength(260);
+            entity.Property(e => e.OriginalFileName).IsRequired().HasMaxLength(260);
+            entity.Property(e => e.FileExtension).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.ContentType).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.StoragePath).IsRequired().HasMaxLength(500);
+            entity.Property(e => e.Description).HasMaxLength(2000);
+            entity.Property(e => e.FolderPath).HasMaxLength(500);
+            entity.HasOne(e => e.Project)
+                .WithMany()
+                .HasForeignKey(e => e.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.WorkTask)
+                .WithMany()
+                .HasForeignKey(e => e.WorkTaskId)
+                .OnDelete(DeleteBehavior.SetNull);
+            entity.HasOne(e => e.Issue)
+                .WithMany()
+                .HasForeignKey(e => e.IssueId)
+                .OnDelete(DeleteBehavior.SetNull);
+            entity.HasOne(e => e.UploadedByUser)
+                .WithMany()
+                .HasForeignKey(e => e.UploadedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(e => e.ParentDocument)
+                .WithMany(d => d.Versions)
+                .HasForeignKey(e => e.ParentDocumentId)
+                .OnDelete(DeleteBehavior.Restrict);
+            var documentTagsProperty = entity.Property(e => e.Tags)
+                .HasConversion(stringListConverter)
+                .HasColumnType("TEXT");
+            documentTagsProperty.Metadata.SetValueComparer(stringListComparer);
+            documentTagsProperty.Metadata.SetProviderValueComparer(stringComparer);
+            entity.HasIndex(e => new { e.ProjectId, e.FileName });
+            entity.HasIndex(e => e.Category);
         });
     }
+
+        private static string SerializeStringList(List<string> value)
+            => JsonSerializer.Serialize(value ?? new List<string>(), default(JsonSerializerOptions));
+
+        private static List<string> DeserializeStringList(string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return new List<string>();
+            }
+
+            return JsonSerializer.Deserialize<List<string>>(value, default(JsonSerializerOptions)) ?? new List<string>();
+        }
 }
 

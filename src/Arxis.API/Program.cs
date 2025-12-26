@@ -2,12 +2,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Arxis.Infrastructure.Data;
 using Arxis.API.Middleware;
 using Arxis.API.Services;
+using Arxis.API.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,35 +19,47 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
     });
 
 // Add FluentValidation
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
+// Register Configuration Services
+builder.Services.AddSingleton<ExternalServicesConfig>();
+
 // Register AuthService
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+// Register File Storage Service
+builder.Services.AddScoped<IFileStorageService, LocalFileStorageService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new() 
-    { 
-        Title = "ARXIS API", 
+    c.SwaggerDoc("v1", new()
+    {
+        Title = "ARXIS API",
         Version = "v1",
         Description = "API para gerenciamento de obras - Plataforma ARXIS com autenticação JWT",
-        Contact = new() 
-        { 
-            Name = "ARXIS Support", 
-            Email = "support@arxis.com" 
+        Contact = new()
+        {
+            Name = "ARXIS Support",
+            Email = "support@arxis.com"
         }
     });
 });
 
-// Configure Database
+// Configure Database - SQLite only
 builder.Services.AddDbContext<ArxisDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+        ?? "Data Source=arxis.db";
+
+    options.UseSqlite(connectionString);
+
     if (builder.Environment.IsDevelopment())
     {
         options.EnableSensitiveDataLogging();
@@ -77,14 +91,18 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 
 // Configure CORS
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+    ?? new[] { "http://localhost:3000", "http://localhost:5173" };
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
         policy =>
         {
-            policy.AllowAnyOrigin()
+            policy.WithOrigins(allowedOrigins)
                    .AllowAnyMethod()
-                   .AllowAnyHeader();
+                   .AllowAnyHeader()
+                   .AllowCredentials();
         });
 });
 
@@ -113,7 +131,7 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapHealthChecks("/health");
 
-// Auto-apply migrations on startup (only for development)
+// Auto-create database on startup (only for development with SQLite)
 if (app.Environment.IsDevelopment())
 {
     using var scope = app.Services.CreateScope();
