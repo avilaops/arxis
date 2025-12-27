@@ -10,6 +10,10 @@ using Arxis.Infrastructure.Data;
 using Arxis.API.Middleware;
 using Arxis.API.Services;
 using Arxis.API.Configuration;
+using DotNetEnv;
+
+// Load .env file
+Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,8 +43,23 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 // Register Notification Service (inspired by avx-events pub/sub)
 builder.Services.AddScoped<INotificationService, NotificationService>();
 
+// Register Analytics Service
+builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
+
+// Register Dashboard Service
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+
+// Register Clarity Service with HttpClient
+builder.Services.AddHttpClient<IClarityService, ClarityService>();
+
 // Register File Storage Service
 builder.Services.AddScoped<IFileStorageService, LocalFileStorageService>();
+
+// Add Application Insights
+builder.Services.AddApplicationInsightsTelemetry(options =>
+{
+    options.ConnectionString = builder.Configuration["ApplicationInsights:ConnectionString"];
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>

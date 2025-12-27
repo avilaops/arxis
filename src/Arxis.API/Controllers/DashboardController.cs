@@ -1,4 +1,5 @@
 using Arxis.API.Models;
+using Arxis.API.Services;
 using Arxis.Domain.Entities;
 using Arxis.Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
@@ -14,14 +15,19 @@ public class DashboardController : ControllerBase
 {
     private readonly ArxisDbContext _context;
     private readonly ILogger<DashboardController> _logger;
+    private readonly IDashboardService? _dashboardService;
+    private readonly IClarityService? _clarityService;
 
-    public DashboardController(ArxisDbContext context, ILogger<DashboardController> logger)
+    public DashboardController(
+        ArxisDbContext context,
+        ILogger<DashboardController> logger,
+        IDashboardService? dashboardService = null,
+        IClarityService? clarityService = null)
     {
         _context = context;
         _logger = logger;
-    }
-
-    /// <summary>
+        _dashboardService = dashboardService;
+        _clarityService = clarityService;
     /// Get complete dashboard overview with all KPIs
     /// </summary>
     [HttpGet("overview")]
@@ -308,6 +314,115 @@ public class DashboardController : ControllerBase
         timeline.AddRange(recentIssues);
 
         return timeline.OrderByDescending(e => e.Timestamp).Take(limit).ToList();
+    }
+
+    #endregion
+
+    #region Analytics & Business Metrics
+
+    /// <summary>
+    /// Get analytics metrics (sales, conversions, etc)
+    /// </summary>
+    [HttpGet("analytics/metrics")]
+    public async Task<IActionResult> GetAnalyticsMetrics([FromQuery] int days = 7)
+    {
+        if (_dashboardService == null)
+        {
+            return Ok(new { message = "Analytics service not configured" });
+        }
+
+        var metrics = await _dashboardService.GetMetricsAsync(days);
+        return Ok(metrics);
+    }
+
+    /// <summary>
+    /// Get recent events (real-time activity feed)
+    /// </summary>
+    [HttpGet("analytics/recent-events")]
+    public async Task<IActionResult> GetRecentAnalyticsEvents([FromQuery] int count = 50)
+    {
+        if (_dashboardService == null)
+        {
+            return Ok(new List<object>());
+        }
+
+        var events = await _dashboardService.GetRecentEventsAsync(count);
+        return Ok(events);
+    }
+
+    /// <summary>
+    /// Get conversion funnel data
+    /// </summary>
+    [HttpGet("analytics/conversion-funnel")]
+    public async Task<IActionResult> GetConversionFunnel()
+    {
+        if (_dashboardService == null)
+        {
+            return Ok(new List<object>());
+        }
+
+        var funnel = await _dashboardService.GetConversionFunnelAsync();
+        return Ok(funnel);
+    }
+
+    /// <summary>
+    /// Get plan interest data over time
+    /// </summary>
+    [HttpGet("analytics/plan-interest")]
+    public async Task<IActionResult> GetPlanInterestData([FromQuery] int days = 30)
+    {
+        if (_dashboardService == null)
+        {
+            return Ok(new List<object>());
+        }
+
+        var data = await _dashboardService.GetPlanInterestDataAsync(days);
+        return Ok(data);
+    }
+
+    /// <summary>
+    /// Get revenue data over time
+    /// </summary>
+    [HttpGet("analytics/revenue")]
+    public async Task<IActionResult> GetRevenueData([FromQuery] int days = 30)
+    {
+        if (_dashboardService == null)
+        {
+            return Ok(new List<object>());
+        }
+
+        var data = await _dashboardService.GetRevenueDataAsync(days);
+        return Ok(data);
+    }
+
+    /// <summary>
+    /// Get Clarity metrics (sessions, users, behavior)
+    /// </summary>
+    [HttpGet("clarity/metrics")]
+    public async Task<IActionResult> GetClarityMetrics([FromQuery] string projectId, [FromQuery] int days = 7)
+    {
+        if (_clarityService == null)
+        {
+            return Ok(new { message = "Clarity service not configured" });
+        }
+
+        var metrics = await _clarityService.GetProjectMetricsAsync(projectId, days);
+        return Ok(metrics);
+    }
+
+    /// <summary>
+    /// Get recent Clarity sessions with recordings
+    /// </summary>
+    [HttpGet("clarity/sessions")]
+    public async Task<IActionResult> GetClaritySessions([FromQuery] string projectId, [FromQuery] int limit = 20)
+    {
+        if (_clarityService == null)
+        {
+            return Ok(new List<object>());
+        }
+
+        var sessions = await _clarityService.GetRecentSessionsAsync(projectId, limit);
+        return Ok(sessions);
     }
 
     #endregion
