@@ -681,13 +681,13 @@ export const Issues: React.FC = () => {
         field: 'assignedToUserName',
         headerName: 'Responsável',
         width: 190,
-        valueGetter: (params: any) => params.row.assignedToUserName ?? '-',
+        valueGetter: (value, row) => row.assignedToUserName ?? '-',
       },
       {
         field: 'dueDate',
         headerName: 'Prazo',
         width: 140,
-        renderCell: (params: any) => {
+        renderCell: (params: GridRenderCellParams<IssueSummary>) => {
           const issue = params.row;
           if (!issue.dueDate) {
             return '-';
@@ -704,19 +704,19 @@ export const Issues: React.FC = () => {
         field: 'responseDueDate',
         headerName: 'SLA',
         width: 140,
-        valueGetter: (params: any) => formatDate(params.row.responseDueDate),
+        valueGetter: (value, row) => formatDate(row.responseDueDate),
       },
       {
         field: 'type',
         headerName: 'Tipo',
         width: 170,
-        valueFormatter: (params: any) => issueTypeLabel[params.value as IssueType],
+        valueFormatter: (value) => issueTypeLabel[value as IssueType],
       },
       {
         field: 'createdAt',
         headerName: 'Criado em',
         width: 150,
-        valueGetter: (params: any) => formatDate(params.row.createdAt),
+        valueGetter: (value, row) => formatDate(row.createdAt),
       },
     ],
     [],

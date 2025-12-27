@@ -15,7 +15,7 @@ import {
   ToggleButton,
   Divider,
 } from '@mui/material';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import {
   Add as AddIcon,
   Edit as EditIcon,
@@ -146,14 +146,14 @@ export const Projects: React.FC = () => {
       headerName: 'Cliente',
       flex: 1,
       minWidth: 160,
-      valueGetter: (params: any) => params.value ?? '-',
+      valueGetter: (value) => value ?? '-',
     },
     {
       field: 'city',
       headerName: 'Cidade',
       width: 140,
-      valueGetter: (params: any) => {
-        const { city, state } = params.row;
+      valueGetter: (value, row) => {
+        const { city, state } = row;
         if (city) {
           return state ? `${city}/${state}` : city;
         }
@@ -164,13 +164,13 @@ export const Projects: React.FC = () => {
       field: 'type',
       headerName: 'Tipo',
       width: 150,
-      valueFormatter: (params: any) => getTypeLabel(params.value as ProjectType | undefined),
+      valueFormatter: (value) => getTypeLabel(value as ProjectType | undefined),
     },
     {
       field: 'status',
       headerName: 'Status',
       width: 150,
-      renderCell: (params: any) => {
+      renderCell: (params: GridRenderCellParams<Project>) => {
         const statusKey = getStatusKey(params.value as ProjectStatus);
         return (
           <Chip
@@ -180,10 +180,9 @@ export const Projects: React.FC = () => {
           />
         );
       },
-      valueFormatter: (params: any) => {
-        const value = params.value as ProjectStatus | undefined;
+      valueFormatter: (value) => {
         if (value === undefined) return '-';
-        const statusKey = getStatusKey(value);
+        const statusKey = getStatusKey(value as ProjectStatus);
         return statusLabelMap[statusKey] ?? statusKey;
       },
     },
@@ -191,7 +190,7 @@ export const Projects: React.FC = () => {
       field: 'totalBudget',
       headerName: 'Orçamento',
       width: 160,
-      valueFormatter: (params: any) => formatCurrency(params.row.totalBudget, params.row.currency),
+      valueFormatter: (value, row) => formatCurrency(row.totalBudget, row.currency),
     },
     {
       field: 'startDate',
@@ -210,7 +209,7 @@ export const Projects: React.FC = () => {
       headerName: 'Tags',
       flex: 1,
       minWidth: 200,
-      renderCell: (params: any) => {
+      renderCell: (params: GridRenderCellParams<Project>) => {
         const tags = params.value ?? [];
         const displayTags = tags.slice(0, 3);
         const extraCount = tags.length - displayTags.length;
