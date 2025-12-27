@@ -681,13 +681,13 @@ export const Issues: React.FC = () => {
         field: 'assignedToUserName',
         headerName: 'Responsável',
         width: 190,
-        valueGetter: (params) => params.row.assignedToUserName ?? '-',
+        valueGetter: (params: any) => params.row.assignedToUserName ?? '-',
       },
       {
         field: 'dueDate',
         headerName: 'Prazo',
         width: 140,
-        renderCell: (params) => {
+        renderCell: (params: any) => {
           const issue = params.row;
           if (!issue.dueDate) {
             return '-';
@@ -710,7 +710,7 @@ export const Issues: React.FC = () => {
         field: 'type',
         headerName: 'Tipo',
         width: 170,
-        valueFormatter: (params) => issueTypeLabel[params.value as IssueType],
+        valueFormatter: (params: any) => issueTypeLabel[params.value as IssueType],
       },
       {
         field: 'createdAt',

@@ -48,10 +48,10 @@ export const taskService = {
   create: (task: Partial<WorkTask>) => apiService.post<WorkTask>('/tasks', task),
   
   update: (id: string, task: Partial<WorkTask>) => 
-    apiService.put<void>(`/tasks/${id}`, task),
+    apiService.put<void, Partial<WorkTask>>(`/tasks/${id}`, task),
   
   updateStatus: (id: string, status: TaskStatus) => 
-    apiService.patch<void>(`/tasks/${id}/status`, status),
+    apiService.patch<void, TaskStatus>(`/tasks/${id}/status`, status),
   
   delete: (id: string) => apiService.delete<void>(`/tasks/${id}`),
 };

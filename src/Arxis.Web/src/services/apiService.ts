@@ -47,8 +47,9 @@ export const apiService = {
       ...options,
     });
 
-    // For blob responses
-    if (options?.responseType === 'blob') {
+    // For blob responses - handle differently
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/octet-stream')) {
       return response.blob() as any;
     }
 

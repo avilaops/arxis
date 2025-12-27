@@ -48,7 +48,7 @@ export const projectService = {
   create: (project: Partial<Project>) => apiService.post<Project>('/projects', project),
   
   update: (id: string, project: Partial<Project>) => 
-    apiService.put<void>(`/projects/${id}`, project),
+    apiService.put<void, Partial<Project>>(`/projects/${id}`, project),
   
   delete: (id: string) => apiService.delete<void>(`/projects/${id}`),
 };
