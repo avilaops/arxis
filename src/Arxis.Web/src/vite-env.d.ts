@@ -1,6 +1,11 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
+  // Vite built-in
+  readonly DEV: boolean;
+  readonly PROD: boolean;
+  readonly MODE: string;
+
   // API Configuration
   readonly VITE_API_URL: string;
   readonly VITE_API_TIMEOUT: string;
