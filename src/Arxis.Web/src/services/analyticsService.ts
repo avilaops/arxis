@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5136';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5136/api';
 
 interface AnalyticsEvent {
   userId?: string;
@@ -78,10 +78,10 @@ class AnalyticsService {
     }
   }
 
-  private async sendToBackend(eventName: string, properties: Record<string, any>) {
+  private async sendToBackend(_eventName: string, _properties: Record<string, any>) {
     try {
       // Don't send if no specific endpoint needed
-      if (eventName === 'UserIdentified') return;
+      if (_eventName === 'UserIdentified') return;
 
       // Map event names to endpoints if needed
       // Most events are handled through specific methods below

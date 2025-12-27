@@ -681,7 +681,7 @@ export const Issues: React.FC = () => {
         field: 'assignedToUserName',
         headerName: 'Responsável',
         width: 190,
-        valueGetter: (value, row) => row.assignedToUserName ?? '-',
+        valueGetter: (_value, row) => row.assignedToUserName ?? '-',
       },
       {
         field: 'dueDate',
@@ -704,7 +704,7 @@ export const Issues: React.FC = () => {
         field: 'responseDueDate',
         headerName: 'SLA',
         width: 140,
-        valueGetter: (value, row) => formatDate(row.responseDueDate),
+        valueGetter: (_value, row) => formatDate(row.responseDueDate),
       },
       {
         field: 'type',
@@ -716,7 +716,7 @@ export const Issues: React.FC = () => {
         field: 'createdAt',
         headerName: 'Criado em',
         width: 150,
-        valueGetter: (value, row) => formatDate(row.createdAt),
+        valueGetter: (_value, row) => formatDate(row.createdAt),
       },
     ],
     [],

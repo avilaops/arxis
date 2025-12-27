@@ -152,7 +152,7 @@ export const Projects: React.FC = () => {
       field: 'city',
       headerName: 'Cidade',
       width: 140,
-      valueGetter: (value, row) => {
+      valueGetter: (_value, row) => {
         const { city, state } = row;
         if (city) {
           return state ? `${city}/${state}` : city;
@@ -190,7 +190,7 @@ export const Projects: React.FC = () => {
       field: 'totalBudget',
       headerName: 'Orçamento',
       width: 160,
-      valueFormatter: (value, row) => formatCurrency(row.totalBudget, row.currency),
+      valueFormatter: (_value, row) => formatCurrency(row.totalBudget, row.currency),
     },
     {
       field: 'startDate',
