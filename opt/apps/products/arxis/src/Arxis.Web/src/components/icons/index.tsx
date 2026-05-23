@@ -2,7 +2,6 @@
 import {
   // Navigation & Dashboard
   HomeSimple,
-  FolderAlert,
   CheckSquare,
   WarningTriangle,
   Timeline,
@@ -82,14 +81,11 @@ import {
   Bookmark,
 } from 'iconoir-react';
 
-// 3D/BIM
-import { Cube3D } from 'iconoir-react';
-
 export const Icons = {
   // Navigation & Dashboard
   Dashboard: HomeSimple,
   Home: Home,
-  Projects: FolderAlert,
+  Projects: Folder,
   Tasks: CheckSquare,
   Issues: WarningTriangle,
   Timeline: Timeline,
