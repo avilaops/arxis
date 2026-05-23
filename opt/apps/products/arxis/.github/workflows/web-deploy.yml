@@ -3,14 +3,8 @@ name: Deploy Arxis Web (Vite)
 on:
   push:
     branches: [main]
-    paths:
-      - 'src/Arxis.Web/**'
-      - '.github/workflows/web-deploy.yml'
   pull_request:
     branches: [main]
-    paths:
-      - 'src/Arxis.Web/**'
-      - '.github/workflows/web-deploy.yml'
 
 jobs:
   build-and-deploy:
