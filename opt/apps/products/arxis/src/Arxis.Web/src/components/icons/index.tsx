@@ -4,7 +4,6 @@ import {
   HomeSimple,
   CheckSquare,
   WarningTriangle,
-  Timeline,
   Cube3D,
   Map,
   // Money & Business
@@ -88,11 +87,11 @@ export const Icons = {
   Projects: Folder,
   Tasks: CheckSquare,
   Issues: WarningTriangle,
-  Timeline: Timeline,
+  Timeline: Clock,
   Model3D: Cube3D,
   Map: Map,
   Field: Map,
-  
+
   // Money & Business
   Money: DollarCircle,
   Budget: DollarCircle,
@@ -102,7 +101,7 @@ export const Icons = {
   Contracts: FileText,
   Quality: Shield,
   Security: Shield,
-  
+
   // Data & Analytics
   Analytics: BarChart,
   Chart: BarChart,
@@ -111,7 +110,7 @@ export const Icons = {
   Trending: TrendingUp,
   CRM: TrendingUp,
   Database: Database,
-  
+
   // Actions
   Add: Plus,
   Create: Plus,
@@ -129,14 +128,14 @@ export const Icons = {
   Export: Download,
   Refresh: Refresh,
   Settings: Settings,
-  
+
   // Communication
   Notifications: Bell,
   Email: Mail,
   Phone: Phone,
   Message: Message,
   Chat: Message,
-  
+
   // User & People
   User: User,
   UserAdd: UserPlus,
@@ -144,7 +143,7 @@ export const Icons = {
   Team: Group,
   Stakeholders: Group,
   Admin: Crown,
-  
+
   // Navigation & UI
   Menu: Menu,
   ArrowRight: NavArrowRight,
@@ -154,7 +153,7 @@ export const Icons = {
   Success: Check,
   Info: InfoCircle,
   Help: QuestionMark,
-  
+
   // Integration & Tech
   Integrations: PlugConnected,
   Plugin: PlugConnected,
@@ -162,12 +161,12 @@ export const Icons = {
   Code: Code,
   Terminal: Terminal,
   Cloud: CloudDownload,
-  
+
   // Building & Construction
   Building: Building,
   Tools: Tools,
   Hammer: Hammer,
-  
+
   // Tags & Organization
   Tag: Tag,
   Tags: Tag,
@@ -177,14 +176,14 @@ export const Icons = {
   Pin: Pin,
   Star: Star,
   Favorite: Star,
-  
+
   // Files & Documents
   Folder: Folder,
   FolderOpen: FolderOpen,
   File: Page,
   Document: Page,
   Page: PageStar,
-  
+
   // Special
   Marketplace: ShoppingBag,
   Automations: Flash,
@@ -192,7 +191,7 @@ export const Icons = {
   Rocket: Rocket,
   Target: Target,
   Award: Award,
-  
+
   // More
   Logout: LogOut,
   Share: ShareIos,
