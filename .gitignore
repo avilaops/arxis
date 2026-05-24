@@ -1,0 +1,276 @@
+# Dependencies
+node_modules/
+nodemodules/
+.pnp
+.pnp.js
+.pnp.cjs
+.pnpm-store/
+.pnpm-cache/
+.pnpm-state/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.eggs/
+*.egg-info/
+pip-wheel-metadata/
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Testing
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+
+# Tool caches
+.eslintcache
+.stylelintcache
+.turbo/
+.parcel-cache/
+
+# Production
+build/
+dist/
+*.tsbuildinfo
+
+# Environment variables
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production
+.env.production.local
+!.env.example
+!.env.*.example
+
+# Docker local files
+.docker/
+*.docker
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Temporary files
+*.tmp
+tmp-*
+.cache/
+.temp/
+tmp/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploads/Downloads
+uploads/
+downloads/
+
+# Build artifacts
+.next/
+.nuxt/
+.output/
+.vercel/
+.netlify/
+
+/dist/
+/log/
+/results/
+/tmp_check/
+/sql/vector--?.?.?.sql
+regression.*
+*.o
+*.so
+*.bc
+*.dll
+*.dylib
+*.obj
+*.lib
+*.exp
+
+# Binaries and executables
+*.exe
+*.msi
+*.dmg
+*.pkg
+*.deb
+*.rpm
+*.appimage
+*.AppImage
+
+# Machine learning models
+*.onnx
+*.pb
+*.h5
+*.pkl
+*.bin
+*.ckpt
+*.pt
+*.pth
+
+# Archives
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+*.gz
+*.bz2
+*.xz
+
+# Media files
+*.mp4
+*.avi
+*.mov
+*.wmv
+*.flv
+*.mp3
+*.wav
+*.flac
+
+# Backups
+*.backup
+*.bak
+*.old
+*.orig
+*~
+*.swp
+*.swo
+.backup.*
+backup-*
+*.backup.*
+
+# Reports and audits
+report*.json
+report*.md
+audit*.json
+*-audit.json
+*-report.json
+
+# Nginx backups
+etc/nginx.backup.*
+# Ignore embedded git repos
+opt/avilaops/apps/lab/Crates/
+opt/avilaops/apps/lab/ai/ChatDev/
+opt/avilaops/apps/products/Instagram/
+opt/avilaops/apps/products/arxisvr/
+opt/avilaops/apps/products/flow182/
+opt/avilaops/apps/products/pk-vedacoes-catalog/
+opt/avilaops/apps/unified/Mcp/
+opt/avilaops/apps/unified/control-panel/
+opt/avilaops/apps/unified/mail/
+opt/avilaops/apps/unified/stable-diffusion/
+tools/caveman/
+
+# Tor Browser (binários de terceiros)
+opt/avilaops/apps/products/Goipo/tor/
+
+# WordPress billing scrape files
+opt/avilaops/apps/platform/billing/
+
+# Voice models
+vozes/
+
+# Reports and audits
+opt/avilaops/var/avilaops/*.json
+opt/avilaops/docs/report/
+
+# Local Node toolchain caches (nodejs/ root)
+nodejs/pnpm-store/
+nodejs/pnpm-cache/
+nodejs/pnpm-state/
+nodejs/pnpm/
+nodejs/npm-cache/
+nodejs/npm-global/
+
+# Local artifacts/tmp/var
+artifacts/
+tmp/
+var/log/
+
+
+# Embedded git repos (not yet promoted to submodules)
+opt/apps/platform/LedgerSMB/
+opt/apps/products/groq-studio/
+opt/apps/unified/openclaw/
+opt/infra/nginx/docker-nginx/
+opt/infra/nginx/unit/
+opt/repos/avilainc/.github/
+
+# Git worktrees (never commit)
+opt/apps/products/arxisvr.worktrees/
+
+# Stale path remap: opt/avilaops/* -> opt/* (only for repos NOT already tracked as gitlinks)
+opt/apps/lab/Crates/
+opt/apps/lab/ai/ChatDev/
+opt/apps/products/arxisvr/
+opt/apps/products/flow182/
+opt/apps/unified/control-panel/
+opt/apps/unified/mail/
+opt/apps/products/Goipo/tor/
+opt/apps/platform/billing/
+
+# Embedded repos at new paths (must match without trailing slash for gitlinks)
+# NOTE: Instagram, Mcp, stable-diffusion, pk-vedacoes-catalog ja sao gitlinks trackeados; nao listar aqui.
+opt/apps/products/arxisvr
+opt/apps/products/flow182
+opt/apps/products/groq-studio
+opt/apps/unified/control-panel
+opt/apps/unified/mail
+opt/apps/unified/openclaw
+opt/apps/platform/LedgerSMB
+opt/apps/lab/Crates
+opt/apps/lab/ai/ChatDev
+opt/infra/nginx/docker-nginx
+opt/infra/nginx/unit
+opt/repos/avilainc/.github
+
+# Harness secrets (rotate before re-introducing under another form)
+etc/secrets/harness/gitness.secrets.env
+opt/infra/harness/harness.env
+
+# Dokploy configuration (managed locally, synced to server)
+!etc/dokploy/
+etc/dokploy/logs/
+etc/dokploy/traefik/dynamic/acme.json
+etc/dokploy/traefik/dynamic/access.log

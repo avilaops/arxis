@@ -1,0 +1,69 @@
+{
+  "name": "AvilaOps - Email Relay",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "avilaops-email-relay",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-email-relay",
+      "name": "Email Relay Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body || $json;\nreturn [{ json: { ok: false, configured: false, message: 'Email provider not configured in n8n yet', outboxId: body.outboxId, messageId: body.messageId, from: body.from, to: body.to } }];"
+      },
+      "id": "prepare-response",
+      "name": "Provider Not Configured",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [240, 0]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": 503
+        }
+      },
+      "id": "respond-503",
+      "name": "Respond 503 Deferred",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [480, 0]
+    }
+  ],
+  "connections": {
+    "Email Relay Webhook": {
+      "main": [
+        [
+          {
+            "node": "Provider Not Configured",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Provider Not Configured": {
+      "main": [
+        [
+          {
+            "node": "Respond 503 Deferred",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
