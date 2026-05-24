@@ -1,0 +1,33 @@
+name: Arxis Web Version Test
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'opt/apps/products/arxis/src/Arxis.Web/**'
+      - '.github/workflows/arxis-web-version-test.yml'
+  workflow_dispatch:
+
+jobs:
+  version-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: opt/apps/products/arxis/src/Arxis.Web
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Print version
+        run: node -p "require('./package.json').version"
