@@ -4,8 +4,10 @@ import { UploadIFC } from '../components/Viewer/UploadIFC';
 import { Viewer3D } from '../components/Viewer/Viewer3D';
 import { TimelineSlider } from '../components/Viewer/TimelineSlider';
 import axios from 'axios';
+import { useSearchParams } from 'react-router-dom';
 
 export default function Viewer() {
+  const [searchParams] = useSearchParams();
   const [file, setFile] = useState<File | null>(null);
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   const [modelId, setModelId] = useState<string | null>(null);
@@ -15,6 +17,7 @@ export default function Viewer() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
   const [inputScheduleId, setInputScheduleId] = useState('');
+  const projectId = searchParams.get('projectId') || '00000000-0000-0000-0000-000000000000';
 
   const handleFileSelected = (f: File) => {
     setFile(f);
@@ -28,7 +31,7 @@ export default function Viewer() {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('projectId', '00000000-0000-0000-0000-000000000000'); // TODO: Get from context
+      formData.append('projectId', projectId);
       formData.append('name', file.name);
 
       const response = await axios.post('/api/v1/fourd/bimmodels/upload', formData, {

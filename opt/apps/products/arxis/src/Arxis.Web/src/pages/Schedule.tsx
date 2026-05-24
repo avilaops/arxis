@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Typography, Paper, Button, Stack, TextField, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { ViewList } from 'gantt-task-react';
 import axios from 'axios';
+import { useSearchParams } from 'react-router-dom';
 
 interface Task {
   id: string;
@@ -14,11 +15,13 @@ interface Task {
 }
 
 export default function Schedule() {
+  const [searchParams] = useSearchParams();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(false);
   const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [xmlContent, setXmlContent] = useState('');
   const [scheduleName, setScheduleName] = useState('');
+  const projectId = searchParams.get('projectId') || '00000000-0000-0000-0000-000000000000';
 
   const handleImport = async () => {
     if (!xmlContent || !scheduleName) return;
@@ -27,7 +30,7 @@ export default function Schedule() {
     try {
       const response = await axios.post('/api/v1/fourd/schedules/import', {
         name: scheduleName,
-        projectId: '00000000-0000-0000-0000-000000000000', // TODO: Get from context
+        projectId,
         xmlContent,
         baselineDate: new Date().toISOString(),
       });
